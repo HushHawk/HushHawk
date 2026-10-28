@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { db } from '../store/database.js';
+import { checkDatabaseHealth } from '../store/pgClient.js';
 import { CrownKeyService } from '../services/crownkeyService.js';
 import { EventService } from '../services/eventService.js';
 import { IdentityService } from '../services/identityService.js';
@@ -14,19 +15,21 @@ export const apiRouter = Router();
 // Middleware: correlation ID
 apiRouter.use((req, res, next) => {
     res.setHeader('X-HushHawk-Version', 'v1.0.0');
-    res.setHeader('X-Canonical-Truth', 'PostgreSQL');
+    res.setHeader('X-Canonical-Truth', 'PostgreSQL-AWS-RDS');
     next();
 });
 
 // ============================================================================
 // 1. Health & System Overview
 // ============================================================================
-apiRouter.get('/health', (req, res) => {
+apiRouter.get('/health', async (req, res) => {
+    const pgHealth = await checkDatabaseHealth();
     res.json({
         status: 'ONLINE',
         platform: 'HushHawk A-to-Z Property Intelligence Platform',
         version: '1.0.0',
-        canonical_db: 'PostgreSQL-Canonical (Active)',
+        canonical_db: `AWS-RDS-PostgreSQL (${pgHealth.status})`,
+        db_details: pgHealth,
         graph_projection: 'Neo4j Outbox-Synchronized',
         time: new Date().toISOString(),
     });
