@@ -1,0 +1,3665 @@
+{
+  "cacheVersion": "2",
+  "page": {
+    "id": "0921099a-dc1e-4897-809d-bd39a527558d",
+    "paths": {
+      "en": "team",
+      "default": "team"
+    },
+    "cmsDataSetPath": null,
+    "workflows": [],
+    "_sm": [
+      2,
+      [],
+      [
+        [
+          2,
+          "ww-a-ah5kXiW44wImNtcA",
+          [
+            0
+          ]
+        ],
+        [
+          3,
+          "ww-a-0VjvCJ39bZQIpenG",
+          [
+            0
+          ]
+        ],
+        [
+          0,
+          "ww-a-GfbQibRQPgXgCmyn",
+          [
+            1,
+            5,
+            7,
+            9,
+            11,
+            13,
+            15,
+            17,
+            19,
+            21,
+            23,
+            25,
+            28,
+            31,
+            33,
+            35,
+            37,
+            42,
+            47,
+            50,
+            54,
+            58,
+            62,
+            68,
+            71,
+            74,
+            77,
+            80,
+            83,
+            95,
+            98,
+            99
+          ]
+        ],
+        [
+          0,
+          "ww-a-YF0k00I-Mi8zOhMt",
+          [
+            2,
+            40,
+            41,
+            43,
+            48,
+            49,
+            53,
+            57,
+            61,
+            65,
+            70,
+            73,
+            76,
+            79,
+            82,
+            85,
+            94
+          ]
+        ],
+        [
+          0,
+          "ww-a-8BdkzjVNbpKFMJuw",
+          [
+            3
+          ]
+        ],
+        [
+          0,
+          "ww-a-YRfn88Fc_a_pUrQN",
+          [
+            4,
+            6,
+            8,
+            10,
+            12,
+            14,
+            16,
+            18,
+            20,
+            22,
+            24,
+            26,
+            27,
+            29,
+            32,
+            34,
+            36
+          ]
+        ],
+        [
+          0,
+          "ww-a-xcvtKf9v4YXjru0H",
+          [
+            30,
+            38,
+            39,
+            45,
+            51,
+            52,
+            55,
+            56,
+            59,
+            60,
+            63,
+            64,
+            69,
+            72,
+            75,
+            78,
+            81,
+            84,
+            96
+          ]
+        ],
+        [
+          0,
+          "ww-a-JNYYuTsbWRUNLvfX",
+          [
+            44
+          ]
+        ],
+        [
+          0,
+          "ww-a-wepO1Mjw7DgHz3WK",
+          [
+            46,
+            66,
+            92,
+            93,
+            97
+          ]
+        ],
+        [
+          0,
+          "ww-a-jmcmduGw2BpHZ9RI",
+          [
+            67,
+            86,
+            87,
+            88,
+            89,
+            90,
+            91
+          ]
+        ]
+      ]
+    ]
+  },
+  "sections": {
+    "a7e526b1-0344-467a-9cca-c4e3fd518a63": {
+      "uid": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "linkId": "b1c37948-e94b-4b99-bd27-e9cef6b9d4fb",
+      "_state": {
+        "style": {
+          "default": {
+            "width": "100%",
+            "display": "flex",
+            "maxWidth": "100%",
+            "customCss": {
+              "boxSizing": "border-box"
+            },
+            "minHeight": "100vh",
+            "fontFamily": "Plus Jakarta Sans",
+            "backgroundColor": "#041427"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "wwObjects": [
+            {
+              "uid": "hh-cmd-team",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "sectionBaseId": "99586bd3-2b15-4d6b-a025-6a50d07ca845",
+      "sectionTitle": "Team Page Shell",
+      "_si": 17
+    }
+  },
+  "wwObjects": {
+    "1510764c-05a8-4b4b-b67e-72e736d20e98": {
+      "uid": "1510764c-05a8-4b4b-b67e-72e736d20e98",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Dashboard"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Team Nav Dashboard Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2468
+    },
+    "7e5f5692-4dfb-4de0-8c84-90b0ba4530f9": {
+      "uid": "7e5f5692-4dfb-4de0-8c84-90b0ba4530f9",
+      "_state": {
+        "style": {
+          "mobile": {
+            "padding": "16px"
+          },
+          "default": {
+            "flex": "1",
+            "display": "flex",
+            "padding": "22px 28px",
+            "customCss": {
+              "overflowY": "auto"
+            },
+            "backgroundColor": "var(--dacf6d89-481f-4709-a2ec-c8b13d22e0af,#F8FAFC)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "ffa64941-2771-493b-92ff-100868cd1292",
+              "isWwObject": true
+            },
+            {
+              "uid": "4b27cd0d-301e-45a1-b93e-82f419ff0d88",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_rowGap": "18px",
+          "_ww-layout_columnGap": "18px",
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Team Main Panel",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2469
+    },
+    "95830c2b-78c1-420d-ad29-fb0b970614cb": {
+      "uid": "95830c2b-78c1-420d-ad29-fb0b970614cb",
+      "_state": {
+        "style": {
+          "default": {
+            "flex": "1",
+            "height": "auto",
+            "display": "flex",
+            "minWidth": "0px",
+            "minHeight": "100vh",
+            "backgroundColor": "var(--dacf6d89-481f-4709-a2ec-c8b13d22e0af,#F8FAFC)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "7f495b67-d561-46ea-8f8b-794e2870b97f",
+              "isWwObject": true
+            },
+            {
+              "uid": "7e5f5692-4dfb-4de0-8c84-90b0ba4530f9",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Team Main",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2470
+    },
+    "917f8e2d-fe16-4a74-a8dc-0cdfd85e22f6": {
+      "uid": "917f8e2d-fe16-4a74-a8dc-0cdfd85e22f6",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "64b6f7f3-21a2-4e15-a6d3-80c2f4216ed2",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "1510764c-05a8-4b4b-b67e-72e736d20e98",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Team Nav Dashboard",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2471
+    },
+    "5d9f772d-ff8e-40e0-88ec-bc98baa36c50": {
+      "uid": "5d9f772d-ff8e-40e0-88ec-bc98baa36c50",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Seller Leads"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Team Nav Seller Leads Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2472
+    },
+    "e0d5cd8f-8364-4f19-8e40-0d8877099e53": {
+      "uid": "e0d5cd8f-8364-4f19-8e40-0d8877099e53",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "5ac8292b-4a7d-4552-ae7e-c099f194016f",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "5d9f772d-ff8e-40e0-88ec-bc98baa36c50",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Team Nav Seller Leads",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2473
+    },
+    "1872c974-7c8d-4504-9dbf-9a80ab4f8d4f": {
+      "uid": "1872c974-7c8d-4504-9dbf-9a80ab4f8d4f",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Acquisitions"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Team Nav Acquisitions Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2474
+    },
+    "90cd58eb-9a54-4e76-b3dc-36e28bb471a8": {
+      "uid": "90cd58eb-9a54-4e76-b3dc-36e28bb471a8",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "f405dfa0-cbe5-4a9e-b76a-205819446a89",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "1872c974-7c8d-4504-9dbf-9a80ab4f8d4f",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Team Nav Acquisitions",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2475
+    },
+    "14ba236e-fbc7-4bf2-b951-0cbb760622b0": {
+      "uid": "14ba236e-fbc7-4bf2-b951-0cbb760622b0",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Dispositions"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Team Nav Dispositions Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2476
+    },
+    "21343e5b-3269-4913-b09a-91a5a53244d8": {
+      "uid": "21343e5b-3269-4913-b09a-91a5a53244d8",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "a17a6122-e36c-4582-aa7d-a33451821a3f",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "14ba236e-fbc7-4bf2-b951-0cbb760622b0",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Team Nav Dispositions",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2477
+    },
+    "4361bfd3-669b-4582-b211-fb83dba395aa": {
+      "uid": "4361bfd3-669b-4582-b211-fb83dba395aa",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Cash Buyers"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Team Nav Cash Buyers Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2478
+    },
+    "328c7961-8e10-48a1-9b38-9430c95d50db": {
+      "uid": "328c7961-8e10-48a1-9b38-9430c95d50db",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "b9987b36-cabf-4d22-a61f-bb1878fbd81a",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "4361bfd3-669b-4582-b211-fb83dba395aa",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Team Nav Cash Buyers",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2479
+    },
+    "8d20e992-bbb8-4e3c-b749-9fd9c7e07152": {
+      "uid": "8d20e992-bbb8-4e3c-b749-9fd9c7e07152",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Communications"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Team Nav Communications Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2480
+    },
+    "7c14aa1e-1a73-4813-a9f3-ff8867e0575b": {
+      "uid": "7c14aa1e-1a73-4813-a9f3-ff8867e0575b",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "9d4b26e3-28a9-43e6-9b22-66f11b94aa1c",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "8d20e992-bbb8-4e3c-b749-9fd9c7e07152",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Team Nav Communications",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2481
+    },
+    "a1f3d544-06c4-4c02-a414-645df34bd647": {
+      "uid": "a1f3d544-06c4-4c02-a414-645df34bd647",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Marketing"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Team Nav Marketing Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2482
+    },
+    "6a478f14-d8f7-472a-8b02-083becf195c0": {
+      "uid": "6a478f14-d8f7-472a-8b02-083becf195c0",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "a2d0d91c-0e12-4dc0-b922-5858c7917ee3",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "a1f3d544-06c4-4c02-a414-645df34bd647",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Team Nav Marketing",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2483
+    },
+    "ea124d32-95b9-4922-b56e-4dce8aff41e1": {
+      "uid": "ea124d32-95b9-4922-b56e-4dce8aff41e1",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "County Data"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Team Nav County Data Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2484
+    },
+    "66154c94-18c5-4c1d-82df-d8a3ad411081": {
+      "uid": "66154c94-18c5-4c1d-82df-d8a3ad411081",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "87b38826-b41a-4950-95c2-afa18dec2b38",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "ea124d32-95b9-4922-b56e-4dce8aff41e1",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Team Nav County Data",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2485
+    },
+    "733a5c9c-6f7c-441f-bee8-f85205c46b2e": {
+      "uid": "733a5c9c-6f7c-441f-bee8-f85205c46b2e",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Skip Tracing"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Team Nav Skip Tracing Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2486
+    },
+    "08a8ad9d-f5df-41b8-a056-fa93fc10471c": {
+      "uid": "08a8ad9d-f5df-41b8-a056-fa93fc10471c",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "4ad6b22e-4151-4bf7-bc63-7dec86f377a2",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "733a5c9c-6f7c-441f-bee8-f85205c46b2e",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Team Nav Skip Tracing",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2487
+    },
+    "fdabdfe1-e7cc-4e24-9643-1b101cbd8f21": {
+      "uid": "fdabdfe1-e7cc-4e24-9643-1b101cbd8f21",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Contracts"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Team Nav Contracts Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2488
+    },
+    "937fe344-e4d4-4372-994b-cee5cc0c25f5": {
+      "uid": "937fe344-e4d4-4372-994b-cee5cc0c25f5",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "d588127b-5b3e-4f99-a6dc-7a22ef7c128b",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "fdabdfe1-e7cc-4e24-9643-1b101cbd8f21",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Team Nav Contracts",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2489
+    },
+    "208f75ab-fc47-4e02-9e5a-a0c42a152acb": {
+      "uid": "208f75ab-fc47-4e02-9e5a-a0c42a152acb",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Follow Ups"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Team Nav Follow Ups Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2490
+    },
+    "999ba1a5-4b70-44e7-8173-c19b665bd8b9": {
+      "uid": "999ba1a5-4b70-44e7-8173-c19b665bd8b9",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "e01977a5-5afc-427b-a25d-39b555fa3b0d",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "208f75ab-fc47-4e02-9e5a-a0c42a152acb",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Team Nav Follow Ups",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2491
+    },
+    "bdcd4f55-06b9-4719-8373-726d604f91b1": {
+      "uid": "bdcd4f55-06b9-4719-8373-726d604f91b1",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Analytics"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Team Nav Analytics Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2492
+    },
+    "fa83cc98-5170-459e-9dd9-e87322d84022": {
+      "uid": "fa83cc98-5170-459e-9dd9-e87322d84022",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "dba9b37a-872b-4425-9993-79f3ceaadb92",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "bdcd4f55-06b9-4719-8373-726d604f91b1",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Team Nav Analytics",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2493
+    },
+    "eaa5e25e-fe24-4f08-9237-24da88974e47": {
+      "uid": "eaa5e25e-fe24-4f08-9237-24da88974e47",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "0921099a-dc1e-4897-809d-bd39a527558d",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "4b9e00eb-f4ea-45dd-869d-cbeda6a721a7",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Team Nav Team",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2494
+    },
+    "38d4511d-3ef7-4832-8302-c4719fa98669": {
+      "uid": "38d4511d-3ef7-4832-8302-c4719fa98669",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Settings"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Team Nav Settings Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2495
+    },
+    "8c8dde9c-6ed5-46aa-b3d6-34115c9276bd": {
+      "uid": "8c8dde9c-6ed5-46aa-b3d6-34115c9276bd",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "e2af833d-5f07-4ee1-a59b-5a41b3502933",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "38d4511d-3ef7-4832-8302-c4719fa98669",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Team Nav Settings",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2496
+    },
+    "9344c356-ed75-493f-aae3-1e6efb211f1a": {
+      "uid": "9344c356-ed75-493f-aae3-1e6efb211f1a",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "12px 12px 6px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "SPECIALIZED TOOLS"
+          },
+          "_ww-text_color": "#64748B",
+          "_ww-text_fontSize": "9px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "1px"
+        }
+      },
+      "name": "Team Tools Label",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2497
+    },
+    "c78df044-4448-4be0-9983-5df3e7f4c664": {
+      "uid": "c78df044-4448-4be0-9983-5df3e7f4c664",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Facebook Leads"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Team Nav Facebook Leads Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2498
+    },
+    "ccff694e-2ed8-4c5d-b8ed-65ae7672c284": {
+      "uid": "ccff694e-2ed8-4c5d-b8ed-65ae7672c284",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "c6707652-6174-47b7-84a7-042a2dee960f",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "8px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "c78df044-4448-4be0-9983-5df3e7f4c664",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Team Nav Facebook Leads",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2499
+    },
+    "4f02b434-aa46-4a99-9395-e7e9ef08a68f": {
+      "uid": "4f02b434-aa46-4a99-9395-e7e9ef08a68f",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Direct Mail"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Team Nav Direct Mail Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2500
+    },
+    "95a2b712-65ad-4ab3-b9ce-eb476efcc179": {
+      "uid": "95a2b712-65ad-4ab3-b9ce-eb476efcc179",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "72fa8746-8396-4460-890f-36d72912cf95",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "8px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "4f02b434-aa46-4a99-9395-e7e9ef08a68f",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Team Nav Direct Mail",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2501
+    },
+    "c109a9cf-1ffd-498e-9854-86ace805c9ae": {
+      "uid": "c109a9cf-1ffd-498e-9854-86ace805c9ae",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Deal Analyzer"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Team Nav Deal Analyzer Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2502
+    },
+    "ff3a2338-19a3-4ccc-9b63-2b8833816fbb": {
+      "uid": "ff3a2338-19a3-4ccc-9b63-2b8833816fbb",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "964e5528-8760-4680-938d-5b201255047c",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "8px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "c109a9cf-1ffd-498e-9854-86ace805c9ae",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Team Nav Deal Analyzer",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2503
+    },
+    "0ef91a20-8562-4261-baad-18ba799cadb0": {
+      "uid": "0ef91a20-8562-4261-baad-18ba799cadb0",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "HUSHHAWK INTELLIGENCE"
+          },
+          "_ww-text_color": "#94A3B8",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "700",
+          "_ww-text_letterSpacing": "1.2px"
+        }
+      },
+      "name": "Team Brand Eyebrow",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2504
+    },
+    "1cac6e30-af6f-41ea-aae4-fa85f326ba2c": {
+      "uid": "1cac6e30-af6f-41ea-aae4-fa85f326ba2c",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "2px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "HUSHHAWK"
+          },
+          "_ww-text_color": "#FFFFFF",
+          "_ww-text_fontSize": "24px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Team Brand Title",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2505
+    },
+    "dd724380-ef8f-4ea8-8207-77f95dc3a705": {
+      "uid": "dd724380-ef8f-4ea8-8207-77f95dc3a705",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "2px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Wholesale Command Center"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Team Brand Sub",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2506
+    },
+    "e5314264-9c0d-4266-bc76-3e9bd9b1e9f2": {
+      "uid": "e5314264-9c0d-4266-bc76-3e9bd9b1e9f2",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "20px 18px 16px",
+            "borderBottom": "1px solid #1E293B"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "0ef91a20-8562-4261-baad-18ba799cadb0",
+              "isWwObject": true
+            },
+            {
+              "uid": "1cac6e30-af6f-41ea-aae4-fa85f326ba2c",
+              "isWwObject": true
+            },
+            {
+              "uid": "dd724380-ef8f-4ea8-8207-77f95dc3a705",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Team Sidebar Brand",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2507
+    },
+    "8b55ab40-49df-4870-876e-5b78e9bd2101": {
+      "uid": "8b55ab40-49df-4870-876e-5b78e9bd2101",
+      "_state": {
+        "style": {
+          "default": {
+            "flex": "1",
+            "display": "flex",
+            "padding": "10px 12px",
+            "customCss": {
+              "overflowY": "auto"
+            }
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "917f8e2d-fe16-4a74-a8dc-0cdfd85e22f6",
+              "isWwObject": true
+            },
+            {
+              "uid": "e0d5cd8f-8364-4f19-8e40-0d8877099e53",
+              "isWwObject": true
+            },
+            {
+              "uid": "90cd58eb-9a54-4e76-b3dc-36e28bb471a8",
+              "isWwObject": true
+            },
+            {
+              "uid": "21343e5b-3269-4913-b09a-91a5a53244d8",
+              "isWwObject": true
+            },
+            {
+              "uid": "328c7961-8e10-48a1-9b38-9430c95d50db",
+              "isWwObject": true
+            },
+            {
+              "uid": "7c14aa1e-1a73-4813-a9f3-ff8867e0575b",
+              "isWwObject": true
+            },
+            {
+              "uid": "6a478f14-d8f7-472a-8b02-083becf195c0",
+              "isWwObject": true
+            },
+            {
+              "uid": "66154c94-18c5-4c1d-82df-d8a3ad411081",
+              "isWwObject": true
+            },
+            {
+              "uid": "08a8ad9d-f5df-41b8-a056-fa93fc10471c",
+              "isWwObject": true
+            },
+            {
+              "uid": "937fe344-e4d4-4372-994b-cee5cc0c25f5",
+              "isWwObject": true
+            },
+            {
+              "uid": "999ba1a5-4b70-44e7-8173-c19b665bd8b9",
+              "isWwObject": true
+            },
+            {
+              "uid": "fa83cc98-5170-459e-9dd9-e87322d84022",
+              "isWwObject": true
+            },
+            {
+              "uid": "eaa5e25e-fe24-4f08-9237-24da88974e47",
+              "isWwObject": true
+            },
+            {
+              "uid": "8c8dde9c-6ed5-46aa-b3d6-34115c9276bd",
+              "isWwObject": true
+            },
+            {
+              "uid": "9344c356-ed75-493f-aae3-1e6efb211f1a",
+              "isWwObject": true
+            },
+            {
+              "uid": "ccff694e-2ed8-4c5d-b8ed-65ae7672c284",
+              "isWwObject": true
+            },
+            {
+              "uid": "95a2b712-65ad-4ab3-b9ce-eb476efcc179",
+              "isWwObject": true
+            },
+            {
+              "uid": "ff3a2338-19a3-4ccc-9b63-2b8833816fbb",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Team Sidebar Navigation",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2596
+    },
+    "55511455-c1c6-43e2-a890-03de4458f780": {
+      "uid": "55511455-c1c6-43e2-a890-03de4458f780",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "●  Podio sync pending"
+          },
+          "_ww-text_color": "#F59E0B",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Team Podio Status",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2597
+    },
+    "75edf72c-0827-497f-845f-341baab6cccf": {
+      "uid": "75edf72c-0827-497f-845f-341baab6cccf",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "13px 16px",
+            "borderTop": "1px solid #1E293B"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "55511455-c1c6-43e2-a890-03de4458f780",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Team Sidebar Footer",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2598
+    },
+    "37eba44f-1fa1-423b-94ab-bcf623055815": {
+      "uid": "37eba44f-1fa1-423b-94ab-bcf623055815",
+      "_state": {
+        "style": {
+          "mobile": {
+            "display": "none"
+          },
+          "default": {
+            "top": "0px",
+            "width": "240px",
+            "height": "100vh",
+            "display": "flex",
+            "minWidth": "240px",
+            "position": "sticky",
+            "backgroundColor": "var(--606b9809-8abd-44ce-b314-0b0ba43271b7,#070B14)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "e5314264-9c0d-4266-bc76-3e9bd9b1e9f2",
+              "isWwObject": true
+            },
+            {
+              "uid": "8b55ab40-49df-4870-876e-5b78e9bd2101",
+              "isWwObject": true
+            },
+            {
+              "uid": "75edf72c-0827-497f-845f-341baab6cccf",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Team Sidebar",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2599
+    },
+    "5536b307-5d36-409b-bacb-cb025873e8d6": {
+      "uid": "5536b307-5d36-409b-bacb-cb025873e8d6",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "4px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Assignments, roles, production and accountability across HushHawk Property Intelligence."
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Team Page Subtitle",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2600
+    },
+    "d6c12cff-2358-48a7-a79b-8fc089d49cc7": {
+      "uid": "d6c12cff-2358-48a7-a79b-8fc089d49cc7",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "7e88f84d-3df6-48ca-a96a-0741e8aa9373",
+              "isWwObject": true
+            },
+            {
+              "uid": "5536b307-5d36-409b-bacb-cb025873e8d6",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Team Title Wrap",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2601
+    },
+    "c3d79e75-6c49-45ce-870e-7e2173a11068": {
+      "uid": "c3d79e75-6c49-45ce-870e-7e2173a11068",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "HUSHHAWK • FRONT END READY"
+          },
+          "_ww-text_color": "#92400E",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "0.7px"
+        }
+      },
+      "name": "Team Badge Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2602
+    },
+    "da0266a9-a840-4f4b-b596-0983121b252e": {
+      "uid": "da0266a9-a840-4f4b-b596-0983121b252e",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid #FDE68A",
+            "display": "flex",
+            "padding": "6px 9px",
+            "borderRadius": "999px",
+            "backgroundColor": "#FFFBEB"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "c3d79e75-6c49-45ce-870e-7e2173a11068",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Team Environment Badge",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2603
+    },
+    "7f495b67-d561-46ea-8f8b-794e2870b97f": {
+      "uid": "7f495b67-d561-46ea-8f8b-794e2870b97f",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "22px 28px",
+            "borderBottom": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "d6c12cff-2358-48a7-a79b-8fc089d49cc7",
+              "isWwObject": true
+            },
+            {
+              "uid": "da0266a9-a840-4f4b-b596-0983121b252e",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row",
+          "_ww-layout_justifyContent": "space-between"
+        }
+      },
+      "name": "Team Header",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2604
+    },
+    "284c3c24-57a7-42a9-9680-abb2d03f3ccf": {
+      "uid": "284c3c24-57a7-42a9-9680-abb2d03f3ccf",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "ACTIVE USERS"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "0.7px"
+        }
+      },
+      "name": "Team KPI 1 Label",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2605
+    },
+    "44afe39a-ee3b-4212-a16a-28ffda9b54a3": {
+      "uid": "44afe39a-ee3b-4212-a16a-28ffda9b54a3",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "8px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "8"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "24px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Team KPI 1 Value",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2606
+    },
+    "ef445cb2-a579-451e-8aa4-f279506fd7d5": {
+      "uid": "ef445cb2-a579-451e-8aa4-f279506fd7d5",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "6px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "CRM team members"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Team KPI 1 Sub",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2607
+    },
+    "159e470a-33b8-4d6e-a8a2-1e7671ef5a7b": {
+      "uid": "159e470a-33b8-4d6e-a8a2-1e7671ef5a7b",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "display": "flex",
+            "padding": "17px",
+            "borderTop": "3px solid var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)",
+            "borderRadius": "12px",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "284c3c24-57a7-42a9-9680-abb2d03f3ccf",
+              "isWwObject": true
+            },
+            {
+              "uid": "44afe39a-ee3b-4212-a16a-28ffda9b54a3",
+              "isWwObject": true
+            },
+            {
+              "uid": "ef445cb2-a579-451e-8aa4-f279506fd7d5",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Team KPI 1",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2608
+    },
+    "44dc5ff3-ca52-4b3d-9fa4-13c2bba7bbb8": {
+      "uid": "44dc5ff3-ca52-4b3d-9fa4-13c2bba7bbb8",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "LEADS ASSIGNED"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "0.7px"
+        }
+      },
+      "name": "Team KPI 2 Label",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2609
+    },
+    "dc8f20c5-ad9e-44c7-853e-4baf6230c3e4": {
+      "uid": "dc8f20c5-ad9e-44c7-853e-4baf6230c3e4",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "8px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "142"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "24px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Team KPI 2 Value",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2610
+    },
+    "3fe4b8f9-1ec0-4de2-8d58-7c819a760e10": {
+      "uid": "3fe4b8f9-1ec0-4de2-8d58-7c819a760e10",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "6px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Current acquisition workload"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Team KPI 2 Sub",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2611
+    },
+    "0db35379-06e3-49b9-ac32-c66435a50f6c": {
+      "uid": "0db35379-06e3-49b9-ac32-c66435a50f6c",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "display": "flex",
+            "padding": "17px",
+            "borderTop": "3px solid var(--b563c8ea-b5cd-4950-ac34-983a20eacf71,#DC2626)",
+            "borderRadius": "12px",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "44dc5ff3-ca52-4b3d-9fa4-13c2bba7bbb8",
+              "isWwObject": true
+            },
+            {
+              "uid": "dc8f20c5-ad9e-44c7-853e-4baf6230c3e4",
+              "isWwObject": true
+            },
+            {
+              "uid": "3fe4b8f9-1ec0-4de2-8d58-7c819a760e10",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Team KPI 2",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2612
+    },
+    "46aa7a02-cff2-45a5-a6ef-fa7efcc9ab85": {
+      "uid": "46aa7a02-cff2-45a5-a6ef-fa7efcc9ab85",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "TASKS DUE"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "0.7px"
+        }
+      },
+      "name": "Team KPI 3 Label",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2613
+    },
+    "3d0b8385-6af9-4f42-95ba-34e31bc11b83": {
+      "uid": "3d0b8385-6af9-4f42-95ba-34e31bc11b83",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "8px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "18"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "24px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Team KPI 3 Value",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2614
+    },
+    "5f9cf2bd-f21a-48e9-99ac-1646a2d5cf52": {
+      "uid": "5f9cf2bd-f21a-48e9-99ac-1646a2d5cf52",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "6px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Team follow-ups"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Team KPI 3 Sub",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2615
+    },
+    "562e78e9-b244-4129-b41b-3901aa48e622": {
+      "uid": "562e78e9-b244-4129-b41b-3901aa48e622",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "display": "flex",
+            "padding": "17px",
+            "borderTop": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "borderRadius": "12px",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "46aa7a02-cff2-45a5-a6ef-fa7efcc9ab85",
+              "isWwObject": true
+            },
+            {
+              "uid": "3d0b8385-6af9-4f42-95ba-34e31bc11b83",
+              "isWwObject": true
+            },
+            {
+              "uid": "5f9cf2bd-f21a-48e9-99ac-1646a2d5cf52",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Team KPI 3",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2616
+    },
+    "af048e50-f656-457c-9fd7-10f489d9275c": {
+      "uid": "af048e50-f656-457c-9fd7-10f489d9275c",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "CLOSED MTD"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "0.7px"
+        }
+      },
+      "name": "Team KPI 4 Label",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2617
+    },
+    "e12d0713-ce19-4331-b953-a471905b355c": {
+      "uid": "e12d0713-ce19-4331-b953-a471905b355c",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "8px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "12"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "24px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Team KPI 4 Value",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2618
+    },
+    "24dd2238-7967-436f-ae58-91955f8b6e23": {
+      "uid": "24dd2238-7967-436f-ae58-91955f8b6e23",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "6px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Team production"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Team KPI 4 Sub",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2619
+    },
+    "2ef5b20c-1c8d-4bd4-90c2-13356ae0eb6f": {
+      "uid": "2ef5b20c-1c8d-4bd4-90c2-13356ae0eb6f",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "display": "flex",
+            "padding": "17px",
+            "borderTop": "3px solid var(--f325d1d5-41bf-4fea-bdc4-e18a2d9c68c6,#16A34A)",
+            "borderRadius": "12px",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "af048e50-f656-457c-9fd7-10f489d9275c",
+              "isWwObject": true
+            },
+            {
+              "uid": "e12d0713-ce19-4331-b953-a471905b355c",
+              "isWwObject": true
+            },
+            {
+              "uid": "24dd2238-7967-436f-ae58-91955f8b6e23",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Team KPI 4",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2620
+    },
+    "ffa64941-2771-493b-92ff-100868cd1292": {
+      "uid": "ffa64941-2771-493b-92ff-100868cd1292",
+      "_state": {
+        "style": {
+          "mobile": {},
+          "tablet": {},
+          "default": {
+            "display": "grid",
+            "flexDirection": "column"
+          }
+        }
+      },
+      "content": {
+        "mobile": {
+          "_ww-grid_columns": [
+            "1fr"
+          ]
+        },
+        "tablet": {
+          "_ww-grid_columns": [
+            "1fr",
+            "1fr"
+          ]
+        },
+        "default": {
+          "children": [
+            {
+              "uid": "159e470a-33b8-4d6e-a8a2-1e7671ef5a7b",
+              "isWwObject": true
+            },
+            {
+              "uid": "0db35379-06e3-49b9-ac32-c66435a50f6c",
+              "isWwObject": true
+            },
+            {
+              "uid": "562e78e9-b244-4129-b41b-3901aa48e622",
+              "isWwObject": true
+            },
+            {
+              "uid": "2ef5b20c-1c8d-4bd4-90c2-13356ae0eb6f",
+              "isWwObject": true
+            }
+          ],
+          "_ww-grid_rowGap": "14px",
+          "_ww-grid_columns": [
+            "1fr",
+            "1fr",
+            "1fr",
+            "1fr"
+          ],
+          "_ww-grid_columnGap": "14px"
+        }
+      },
+      "name": "Team KPI Grid",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2621
+    },
+    "69fbbf6a-fc53-4c02-aed9-072d272ad7eb": {
+      "uid": "69fbbf6a-fc53-4c02-aed9-072d272ad7eb",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "16px 16px 10px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Team Roles"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "16px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Team Primary Panel Title",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2622
+    },
+    "a5793769-a8cc-4c30-a691-8e0497589651": {
+      "uid": "a5793769-a8cc-4c30-a691-8e0497589651",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Admin"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Team Item 1 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2623
+    },
+    "a8fe820c-a647-4b9d-a74a-e5c4de1d5e2b": {
+      "uid": "a8fe820c-a647-4b9d-a74a-e5c4de1d5e2b",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "System settings, integrations and data ownership"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Team Item 1 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2624
+    },
+    "41fa70fd-dbf0-47b7-948f-4465a6931c52": {
+      "uid": "41fa70fd-dbf0-47b7-948f-4465a6931c52",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "a5793769-a8cc-4c30-a691-8e0497589651",
+              "isWwObject": true
+            },
+            {
+              "uid": "a8fe820c-a647-4b9d-a74a-e5c4de1d5e2b",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Team Workflow Item 1",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2625
+    },
+    "438992c7-4990-47e7-8447-306aa69e35e9": {
+      "uid": "438992c7-4990-47e7-8447-306aa69e35e9",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Acquisitions"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Team Item 2 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2626
+    },
+    "2bea61b4-7124-4c53-8a33-edcb39ba24b4": {
+      "uid": "2bea61b4-7124-4c53-8a33-edcb39ba24b4",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Seller contact, appointments, offers and contracts"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Team Item 2 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2627
+    },
+    "dabb6112-3838-41fb-8405-292b2a51ba5f": {
+      "uid": "dabb6112-3838-41fb-8405-292b2a51ba5f",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "438992c7-4990-47e7-8447-306aa69e35e9",
+              "isWwObject": true
+            },
+            {
+              "uid": "2bea61b4-7124-4c53-8a33-edcb39ba24b4",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Team Workflow Item 2",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2628
+    },
+    "a2d5854a-f6fd-4b59-9dbd-85c28ef39603": {
+      "uid": "a2d5854a-f6fd-4b59-9dbd-85c28ef39603",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Dispositions"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Team Item 3 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2629
+    },
+    "d0c41256-4d24-4d6b-992b-d6f40b50f0a3": {
+      "uid": "d0c41256-4d24-4d6b-992b-d6f40b50f0a3",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Buyer matching, assignment and buyer follow-up"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Team Item 3 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2630
+    },
+    "a981f19a-ea15-440e-b3e2-1c6ecc5b0793": {
+      "uid": "a981f19a-ea15-440e-b3e2-1c6ecc5b0793",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "a2d5854a-f6fd-4b59-9dbd-85c28ef39603",
+              "isWwObject": true
+            },
+            {
+              "uid": "d0c41256-4d24-4d6b-992b-d6f40b50f0a3",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Team Workflow Item 3",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2631
+    },
+    "73a4b0e7-2caf-420b-a0dc-1c0ec8a4e569": {
+      "uid": "73a4b0e7-2caf-420b-a0dc-1c0ec8a4e569",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Marketing"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Team Item 4 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2632
+    },
+    "ea6b79c0-7672-4d62-9e16-cc2628047ff1": {
+      "uid": "ea6b79c0-7672-4d62-9e16-cc2628047ff1",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Campaigns, source tracking and lead generation"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Team Item 4 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2633
+    },
+    "ad6f5650-e5ce-4d3d-b6e2-198f31bad32f": {
+      "uid": "ad6f5650-e5ce-4d3d-b6e2-198f31bad32f",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "73a4b0e7-2caf-420b-a0dc-1c0ec8a4e569",
+              "isWwObject": true
+            },
+            {
+              "uid": "ea6b79c0-7672-4d62-9e16-cc2628047ff1",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Team Workflow Item 4",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2634
+    },
+    "4ebabc70-60bc-47fc-853e-a29c46e51b71": {
+      "uid": "4ebabc70-60bc-47fc-853e-a29c46e51b71",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Operations"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Team Item 5 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2635
+    },
+    "651f6def-e679-47de-b541-b62bfc503523": {
+      "uid": "651f6def-e679-47de-b541-b62bfc503523",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Data cleanup, tasks, documents and reporting"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Team Item 5 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2636
+    },
+    "b7b140d4-abc5-4f51-8388-ba5b1c5bc152": {
+      "uid": "b7b140d4-abc5-4f51-8388-ba5b1c5bc152",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "4ebabc70-60bc-47fc-853e-a29c46e51b71",
+              "isWwObject": true
+            },
+            {
+              "uid": "651f6def-e679-47de-b541-b62bfc503523",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Team Workflow Item 5",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2637
+    },
+    "e6ed61a8-0585-4611-a8c8-920999063c0a": {
+      "uid": "e6ed61a8-0585-4611-a8c8-920999063c0a",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Management"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Team Item 6 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2638
+    },
+    "235fef6b-e17b-4996-b305-edf29ecc5097": {
+      "uid": "235fef6b-e17b-4996-b305-edf29ecc5097",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "KPIs, pipeline review and approvals"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Team Item 6 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2639
+    },
+    "620ad0ae-02a5-4ea9-99fd-a3e02f842c86": {
+      "uid": "620ad0ae-02a5-4ea9-99fd-a3e02f842c86",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "e6ed61a8-0585-4611-a8c8-920999063c0a",
+              "isWwObject": true
+            },
+            {
+              "uid": "235fef6b-e17b-4996-b305-edf29ecc5097",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Team Workflow Item 6",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2640
+    },
+    "5fe63190-69d9-4b45-83a4-4169f4919b9b": {
+      "uid": "5fe63190-69d9-4b45-83a4-4169f4919b9b",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "16px 16px 8px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Ownership Rule"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "16px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Team Secondary Panel Title",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2641
+    },
+    "81233cb7-ff94-4888-9e35-13e9d6336ff7": {
+      "uid": "81233cb7-ff94-4888-9e35-13e9d6336ff7",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "8px 16px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "• HushHawk Intelligence retains admin access and credentials"
+          },
+          "_ww-text_color": "var(--e133e327-b4a1-439d-be88-d91207b49f9d,#334155)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500",
+          "_ww-text_lineHeight": "1.45"
+        }
+      },
+      "name": "Team Side Rule 1",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2642
+    },
+    "2fa50a67-e9f5-4f6d-a204-3205f36882ff": {
+      "uid": "2fa50a67-e9f5-4f6d-a204-3205f36882ff",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "8px 16px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "• No contractor/developer lock-in"
+          },
+          "_ww-text_color": "var(--e133e327-b4a1-439d-be88-d91207b49f9d,#334155)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500",
+          "_ww-text_lineHeight": "1.45"
+        }
+      },
+      "name": "Team Side Rule 2",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2643
+    },
+    "84e481dd-1fc1-4862-a5c1-08c8bd2f9a83": {
+      "uid": "84e481dd-1fc1-4862-a5c1-08c8bd2f9a83",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "8px 16px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "• Every lead/deal shows assigned owner"
+          },
+          "_ww-text_color": "var(--e133e327-b4a1-439d-be88-d91207b49f9d,#334155)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500",
+          "_ww-text_lineHeight": "1.45"
+        }
+      },
+      "name": "Team Side Rule 3",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2644
+    },
+    "7b0f981c-c06b-441a-bdd0-830b86374a6b": {
+      "uid": "7b0f981c-c06b-441a-bdd0-830b86374a6b",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "8px 16px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "• Audit trail should record important changes"
+          },
+          "_ww-text_color": "var(--e133e327-b4a1-439d-be88-d91207b49f9d,#334155)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500",
+          "_ww-text_lineHeight": "1.45"
+        }
+      },
+      "name": "Team Side Rule 4",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2645
+    },
+    "a99d95eb-4189-455f-a7b0-d445e23557f0": {
+      "uid": "a99d95eb-4189-455f-a7b0-d445e23557f0",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "12px 16px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "LIVE DATA: activates when Podio / provider connectors are authorized."
+          },
+          "_ww-text_color": "#92400E",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "0.5px"
+        }
+      },
+      "name": "Team Data Ready Note",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2646
+    },
+    "c1002ddd-6a65-4193-8a08-cf9de036cd26": {
+      "uid": "c1002ddd-6a65-4193-8a08-cf9de036cd26",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "display": "flex",
+            "overflow": "hidden",
+            "borderRadius": "12px",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "5fe63190-69d9-4b45-83a4-4169f4919b9b",
+              "isWwObject": true
+            },
+            {
+              "uid": "81233cb7-ff94-4888-9e35-13e9d6336ff7",
+              "isWwObject": true
+            },
+            {
+              "uid": "2fa50a67-e9f5-4f6d-a204-3205f36882ff",
+              "isWwObject": true
+            },
+            {
+              "uid": "84e481dd-1fc1-4862-a5c1-08c8bd2f9a83",
+              "isWwObject": true
+            },
+            {
+              "uid": "7b0f981c-c06b-441a-bdd0-830b86374a6b",
+              "isWwObject": true
+            },
+            {
+              "uid": "a99d95eb-4189-455f-a7b0-d445e23557f0",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Team Secondary Panel",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2647
+    },
+    "4b27cd0d-301e-45a1-b93e-82f419ff0d88": {
+      "uid": "4b27cd0d-301e-45a1-b93e-82f419ff0d88",
+      "_state": {
+        "style": {
+          "mobile": {},
+          "tablet": {},
+          "default": {
+            "display": "grid",
+            "flexDirection": "column"
+          }
+        }
+      },
+      "content": {
+        "mobile": {
+          "_ww-grid_columns": [
+            "1fr"
+          ]
+        },
+        "tablet": {
+          "_ww-grid_columns": [
+            "1fr"
+          ]
+        },
+        "default": {
+          "children": [
+            {
+              "uid": "aad24212-5c48-4996-80bb-782872987ba8",
+              "isWwObject": true
+            },
+            {
+              "uid": "c1002ddd-6a65-4193-8a08-cf9de036cd26",
+              "isWwObject": true
+            }
+          ],
+          "_ww-grid_rowGap": "16px",
+          "_ww-grid_columns": [
+            "1.7fr",
+            "1fr"
+          ],
+          "_ww-grid_columnGap": "16px"
+        }
+      },
+      "name": "Team Content Grid",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 2648
+    },
+    "65e3adcc-bcdc-4dde-9f4f-b6c1c425cea1": {
+      "uid": "65e3adcc-bcdc-4dde-9f4f-b6c1c425cea1",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "e334dba6-86fc-44ac-a0dc-4b2465057f7e",
+              "isWwObject": true
+            },
+            {
+              "uid": "50f3b85d-a2d1-452e-aa6a-059a611b2b1b",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Team Workflow Item 7",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 3214
+    },
+    "e334dba6-86fc-44ac-a0dc-4b2465057f7e": {
+      "uid": "e334dba6-86fc-44ac-a0dc-4b2465057f7e",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Spanish Marketing"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Team Item 7 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 3215
+    },
+    "50f3b85d-a2d1-452e-aa6a-059a611b2b1b": {
+      "uid": "50f3b85d-a2d1-452e-aa6a-059a611b2b1b",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Spanish-language campaigns, seller outreach, lead generation and follow-up"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Team Item 7 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 3216
+    },
+    "aad24212-5c48-4996-80bb-782872987ba8": {
+      "uid": "aad24212-5c48-4996-80bb-782872987ba8",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "display": "flex",
+            "overflow": "hidden",
+            "borderRadius": "12px",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "69fbbf6a-fc53-4c02-aed9-072d272ad7eb",
+              "isWwObject": true
+            },
+            {
+              "uid": "41fa70fd-dbf0-47b7-948f-4465a6931c52",
+              "isWwObject": true
+            },
+            {
+              "uid": "dabb6112-3838-41fb-8405-292b2a51ba5f",
+              "isWwObject": true
+            },
+            {
+              "uid": "a981f19a-ea15-440e-b3e2-1c6ecc5b0793",
+              "isWwObject": true
+            },
+            {
+              "uid": "ad6f5650-e5ce-4d3d-b6e2-198f31bad32f",
+              "isWwObject": true
+            },
+            {
+              "uid": "b7b140d4-abc5-4f51-8388-ba5b1c5bc152",
+              "isWwObject": true
+            },
+            {
+              "uid": "620ad0ae-02a5-4ea9-99fd-a3e02f842c86",
+              "isWwObject": true
+            },
+            {
+              "uid": "65e3adcc-bcdc-4dde-9f4f-b6c1c425cea1",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Team Primary Panel",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 3217
+    },
+    "4b9e00eb-f4ea-45dd-869d-cbeda6a721a7": {
+      "uid": "4b9e00eb-f4ea-45dd-869d-cbeda6a721a7",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Teams"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Team Nav Team Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 3218
+    },
+    "7e88f84d-3df6-48ca-a96a-0741e8aa9373": {
+      "uid": "7e88f84d-3df6-48ca-a96a-0741e8aa9373",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Teams"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "27px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Team Page Title",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 3219
+    },
+    "hh-cmd-team": {
+      "uid": "hh-cmd-team",
+      "_state": {
+        "style": {
+          "default": {
+            "width": "100%",
+            "display": "block",
+            "minWidth": "0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "workspacePage": "team",
+          "skyline": "https://u.realgeeks.media/nuviewrealty/Jacksonville_Skyline_Sunset_2.jpeg"
+        }
+      },
+      "name": "Team Command Center Workspace",
+      "wwObjectBaseId": "f1b67d54-2716-43a4-a414-ab7f505c2ace",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "a7e526b1-0344-467a-9cca-c4e3fd518a63",
+      "_si": 9999
+    }
+  },
+  "collections": [],
+  "variables": [],
+  "workflows": [],
+  "formulas": [],
+  "libraryComponents": []
+}

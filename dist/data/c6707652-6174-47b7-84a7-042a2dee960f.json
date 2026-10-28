@@ -1,0 +1,3783 @@
+{
+  "cacheVersion": "2",
+  "page": {
+    "id": "c6707652-6174-47b7-84a7-042a2dee960f",
+    "paths": {
+      "en": "facebook-leads",
+      "default": "facebook-leads"
+    },
+    "cmsDataSetPath": null,
+    "workflows": [],
+    "_sm": [
+      2,
+      [],
+      [
+        [
+          2,
+          "ww-a-ah5kXiW44wImNtcA",
+          [
+            0
+          ]
+        ],
+        [
+          3,
+          "ww-a-0VjvCJ39bZQIpenG",
+          [
+            0
+          ]
+        ],
+        [
+          0,
+          "ww-a-GfbQibRQPgXgCmyn",
+          [
+            1,
+            3,
+            5,
+            7,
+            9,
+            11,
+            13,
+            15,
+            17,
+            19,
+            21,
+            23,
+            26,
+            29,
+            31,
+            33,
+            35,
+            40,
+            43,
+            46,
+            49,
+            53,
+            57,
+            61,
+            67,
+            70,
+            73,
+            76,
+            79,
+            82,
+            85,
+            88,
+            102
+          ]
+        ],
+        [
+          0,
+          "ww-a-YRfn88Fc_a_pUrQN",
+          [
+            2,
+            4,
+            6,
+            8,
+            10,
+            12,
+            14,
+            16,
+            18,
+            20,
+            22,
+            24,
+            25,
+            27,
+            30,
+            32,
+            34
+          ]
+        ],
+        [
+          0,
+          "ww-a-xcvtKf9v4YXjru0H",
+          [
+            28,
+            36,
+            37,
+            44,
+            50,
+            51,
+            54,
+            55,
+            58,
+            59,
+            62,
+            63,
+            68,
+            71,
+            74,
+            77,
+            80,
+            83,
+            86,
+            89
+          ]
+        ],
+        [
+          0,
+          "ww-a-YF0k00I-Mi8zOhMt",
+          [
+            38,
+            39,
+            41,
+            47,
+            48,
+            52,
+            56,
+            60,
+            64,
+            69,
+            72,
+            75,
+            78,
+            81,
+            84,
+            87,
+            90,
+            100
+          ]
+        ],
+        [
+          0,
+          "ww-a-JNYYuTsbWRUNLvfX",
+          [
+            42
+          ]
+        ],
+        [
+          0,
+          "ww-a-wepO1Mjw7DgHz3WK",
+          [
+            45,
+            65,
+            91,
+            98,
+            99
+          ]
+        ],
+        [
+          0,
+          "ww-a-jmcmduGw2BpHZ9RI",
+          [
+            66,
+            92,
+            93,
+            94,
+            95,
+            96,
+            97
+          ]
+        ],
+        [
+          0,
+          "ww-a-8BdkzjVNbpKFMJuw",
+          [
+            101
+          ]
+        ]
+      ]
+    ]
+  },
+  "sections": {
+    "5c2958b3-179b-4a5a-8f60-a4e3d308e56a": {
+      "uid": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "linkId": "965fe5af-d519-4683-8902-eff8e0b4aa82",
+      "_state": {
+        "style": {
+          "default": {
+            "width": "100%",
+            "display": "flex",
+            "maxWidth": "100%",
+            "customCss": {
+              "boxSizing": "border-box"
+            },
+            "minHeight": "100vh",
+            "fontFamily": "Plus Jakarta Sans",
+            "backgroundColor": "#041427"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "wwObjects": [
+            {
+              "uid": "hh-cmd-facebook-leads",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "sectionBaseId": "99586bd3-2b15-4d6b-a025-6a50d07ca845",
+      "sectionTitle": "Facebook Leads Page Shell",
+      "_si": 8
+    }
+  },
+  "wwObjects": {
+    "a2387c23-5eb6-4711-9ffe-e212f832c551": {
+      "uid": "a2387c23-5eb6-4711-9ffe-e212f832c551",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Dashboard"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Facebook Leads Nav Dashboard Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1692
+    },
+    "5d84a685-e686-487a-806b-b562b21aec88": {
+      "uid": "5d84a685-e686-487a-806b-b562b21aec88",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "64b6f7f3-21a2-4e15-a6d3-80c2f4216ed2",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "a2387c23-5eb6-4711-9ffe-e212f832c551",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Facebook Leads Nav Dashboard",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1693
+    },
+    "f4c785ec-5269-4fc0-954f-5b9deecbf8b2": {
+      "uid": "f4c785ec-5269-4fc0-954f-5b9deecbf8b2",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Seller Leads"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Facebook Leads Nav Seller Leads Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1694
+    },
+    "97eaae33-7216-4b8c-af7a-c3653ff42cb8": {
+      "uid": "97eaae33-7216-4b8c-af7a-c3653ff42cb8",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "5ac8292b-4a7d-4552-ae7e-c099f194016f",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "f4c785ec-5269-4fc0-954f-5b9deecbf8b2",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Facebook Leads Nav Seller Leads",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1695
+    },
+    "3839d7cc-bddc-4b4d-b559-b2eb8f23a3af": {
+      "uid": "3839d7cc-bddc-4b4d-b559-b2eb8f23a3af",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Acquisitions"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Facebook Leads Nav Acquisitions Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1696
+    },
+    "7898e1b6-21da-4574-8d4e-fbc719822684": {
+      "uid": "7898e1b6-21da-4574-8d4e-fbc719822684",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "f405dfa0-cbe5-4a9e-b76a-205819446a89",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "3839d7cc-bddc-4b4d-b559-b2eb8f23a3af",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Facebook Leads Nav Acquisitions",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1697
+    },
+    "99681eb4-b1ea-4626-9dfc-3336ca984c32": {
+      "uid": "99681eb4-b1ea-4626-9dfc-3336ca984c32",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Dispositions"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Facebook Leads Nav Dispositions Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1698
+    },
+    "3327ef48-1335-4e86-bc6d-deb8d243359f": {
+      "uid": "3327ef48-1335-4e86-bc6d-deb8d243359f",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "a17a6122-e36c-4582-aa7d-a33451821a3f",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "99681eb4-b1ea-4626-9dfc-3336ca984c32",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Facebook Leads Nav Dispositions",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1699
+    },
+    "8f24369a-55ab-486d-aa54-b32fea46dc2d": {
+      "uid": "8f24369a-55ab-486d-aa54-b32fea46dc2d",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Cash Buyers"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Facebook Leads Nav Cash Buyers Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1700
+    },
+    "fdbc51ac-c3bc-4f61-b4c4-edc981beb505": {
+      "uid": "fdbc51ac-c3bc-4f61-b4c4-edc981beb505",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "b9987b36-cabf-4d22-a61f-bb1878fbd81a",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "8f24369a-55ab-486d-aa54-b32fea46dc2d",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Facebook Leads Nav Cash Buyers",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1701
+    },
+    "2525ebe2-083a-4b4c-8a24-552f3889494b": {
+      "uid": "2525ebe2-083a-4b4c-8a24-552f3889494b",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Communications"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Facebook Leads Nav Communications Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1702
+    },
+    "b7f974a0-c1f1-4cac-a27f-d1ae2a614228": {
+      "uid": "b7f974a0-c1f1-4cac-a27f-d1ae2a614228",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "9d4b26e3-28a9-43e6-9b22-66f11b94aa1c",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "2525ebe2-083a-4b4c-8a24-552f3889494b",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Facebook Leads Nav Communications",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1703
+    },
+    "72067e1d-44bf-45cc-8488-013a5ce19df4": {
+      "uid": "72067e1d-44bf-45cc-8488-013a5ce19df4",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Marketing"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Facebook Leads Nav Marketing Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1704
+    },
+    "d3816b61-0dbf-48eb-9f83-29b65563efc4": {
+      "uid": "d3816b61-0dbf-48eb-9f83-29b65563efc4",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "a2d0d91c-0e12-4dc0-b922-5858c7917ee3",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "72067e1d-44bf-45cc-8488-013a5ce19df4",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Facebook Leads Nav Marketing",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1705
+    },
+    "f0942de9-2a5d-45a7-be0f-a56a45799dc9": {
+      "uid": "f0942de9-2a5d-45a7-be0f-a56a45799dc9",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "County Data"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Facebook Leads Nav County Data Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1706
+    },
+    "a6bc5111-0c59-4623-a7b9-2435e6ee0973": {
+      "uid": "a6bc5111-0c59-4623-a7b9-2435e6ee0973",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "87b38826-b41a-4950-95c2-afa18dec2b38",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "f0942de9-2a5d-45a7-be0f-a56a45799dc9",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Facebook Leads Nav County Data",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1707
+    },
+    "c4529098-8426-4145-bc94-cffa2f22bf90": {
+      "uid": "c4529098-8426-4145-bc94-cffa2f22bf90",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Skip Tracing"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Facebook Leads Nav Skip Tracing Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1708
+    },
+    "5bfd0f6c-1487-4f8e-9738-2804fc64e552": {
+      "uid": "5bfd0f6c-1487-4f8e-9738-2804fc64e552",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "4ad6b22e-4151-4bf7-bc63-7dec86f377a2",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "c4529098-8426-4145-bc94-cffa2f22bf90",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Facebook Leads Nav Skip Tracing",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1709
+    },
+    "614bcea9-5e57-47ae-a722-354d83a0ca78": {
+      "uid": "614bcea9-5e57-47ae-a722-354d83a0ca78",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Contracts"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Facebook Leads Nav Contracts Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1710
+    },
+    "02a8b1b5-f5ce-471a-8c2f-7f34158fc6d9": {
+      "uid": "02a8b1b5-f5ce-471a-8c2f-7f34158fc6d9",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "d588127b-5b3e-4f99-a6dc-7a22ef7c128b",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "614bcea9-5e57-47ae-a722-354d83a0ca78",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Facebook Leads Nav Contracts",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1711
+    },
+    "d2d7b50a-0d29-4c68-9d20-b9a67ec8bece": {
+      "uid": "d2d7b50a-0d29-4c68-9d20-b9a67ec8bece",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Follow Ups"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Facebook Leads Nav Follow Ups Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1712
+    },
+    "a4e26b82-31f1-47d2-b14d-aa6c58ef1a45": {
+      "uid": "a4e26b82-31f1-47d2-b14d-aa6c58ef1a45",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "e01977a5-5afc-427b-a25d-39b555fa3b0d",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "d2d7b50a-0d29-4c68-9d20-b9a67ec8bece",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Facebook Leads Nav Follow Ups",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1713
+    },
+    "d63a102d-6f3d-4417-989b-6118bcdd9202": {
+      "uid": "d63a102d-6f3d-4417-989b-6118bcdd9202",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Analytics"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Facebook Leads Nav Analytics Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1714
+    },
+    "be952ea0-f682-4475-8223-7466c46742d2": {
+      "uid": "be952ea0-f682-4475-8223-7466c46742d2",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "dba9b37a-872b-4425-9993-79f3ceaadb92",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "d63a102d-6f3d-4417-989b-6118bcdd9202",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Facebook Leads Nav Analytics",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1715
+    },
+    "7c8668e5-7b43-4eb4-abcc-fa4a316bbefe": {
+      "uid": "7c8668e5-7b43-4eb4-abcc-fa4a316bbefe",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "0921099a-dc1e-4897-809d-bd39a527558d",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "2045f4cf-aeb5-463b-99c0-ba3225565a81",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Facebook Leads Nav Team",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1716
+    },
+    "ca23a946-5fbd-499b-863f-f54e39575264": {
+      "uid": "ca23a946-5fbd-499b-863f-f54e39575264",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Settings"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Facebook Leads Nav Settings Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1717
+    },
+    "25aafb81-b46c-4e97-9a1a-97ccee26bb95": {
+      "uid": "25aafb81-b46c-4e97-9a1a-97ccee26bb95",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "e2af833d-5f07-4ee1-a59b-5a41b3502933",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "ca23a946-5fbd-499b-863f-f54e39575264",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Facebook Leads Nav Settings",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1718
+    },
+    "7ec32f76-c405-4b2d-9612-d0dbba58f920": {
+      "uid": "7ec32f76-c405-4b2d-9612-d0dbba58f920",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "12px 12px 6px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "SPECIALIZED TOOLS"
+          },
+          "_ww-text_color": "#64748B",
+          "_ww-text_fontSize": "9px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "1px"
+        }
+      },
+      "name": "Facebook Leads Tools Label",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1719
+    },
+    "53485c44-387f-494a-8e90-c83305c1de5b": {
+      "uid": "53485c44-387f-494a-8e90-c83305c1de5b",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Facebook Leads"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Facebook Leads Nav Facebook Leads Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1720
+    },
+    "2b7a59ef-107d-403c-9bcb-ffa5c5331824": {
+      "uid": "2b7a59ef-107d-403c-9bcb-ffa5c5331824",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "c6707652-6174-47b7-84a7-042a2dee960f",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "8px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "53485c44-387f-494a-8e90-c83305c1de5b",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Facebook Leads Nav Facebook Leads",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1721
+    },
+    "be370470-6fd1-4d10-8584-9b78d732d10e": {
+      "uid": "be370470-6fd1-4d10-8584-9b78d732d10e",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Direct Mail"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Facebook Leads Nav Direct Mail Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1722
+    },
+    "46cfb493-a281-44f7-9cbb-db015162c145": {
+      "uid": "46cfb493-a281-44f7-9cbb-db015162c145",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "72fa8746-8396-4460-890f-36d72912cf95",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "8px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "be370470-6fd1-4d10-8584-9b78d732d10e",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Facebook Leads Nav Direct Mail",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1723
+    },
+    "18397fba-59d5-44bb-83fa-440b7ef0e81a": {
+      "uid": "18397fba-59d5-44bb-83fa-440b7ef0e81a",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Deal Analyzer"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Facebook Leads Nav Deal Analyzer Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1724
+    },
+    "fc0b8313-5bf1-4854-b523-3304d9daf03b": {
+      "uid": "fc0b8313-5bf1-4854-b523-3304d9daf03b",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "964e5528-8760-4680-938d-5b201255047c",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "8px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "18397fba-59d5-44bb-83fa-440b7ef0e81a",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Facebook Leads Nav Deal Analyzer",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1725
+    },
+    "c79ed42e-74d4-4c2e-be06-fb17cb399756": {
+      "uid": "c79ed42e-74d4-4c2e-be06-fb17cb399756",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "HUSHHAWK INTELLIGENCE"
+          },
+          "_ww-text_color": "#94A3B8",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "700",
+          "_ww-text_letterSpacing": "1.2px"
+        }
+      },
+      "name": "Facebook Leads Brand Eyebrow",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1726
+    },
+    "ba401995-1a2b-4203-be33-95dd277617ef": {
+      "uid": "ba401995-1a2b-4203-be33-95dd277617ef",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "2px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "HUSHHAWK"
+          },
+          "_ww-text_color": "#FFFFFF",
+          "_ww-text_fontSize": "24px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Facebook Leads Brand Title",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1727
+    },
+    "01d52b65-8e2c-4256-9ea3-afe1fa22af39": {
+      "uid": "01d52b65-8e2c-4256-9ea3-afe1fa22af39",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "2px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Wholesale Command Center"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Facebook Leads Brand Sub",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1728
+    },
+    "56aeb7be-79bd-43f3-ba37-56aa4aa7d124": {
+      "uid": "56aeb7be-79bd-43f3-ba37-56aa4aa7d124",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "20px 18px 16px",
+            "borderBottom": "1px solid #1E293B",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "c79ed42e-74d4-4c2e-be06-fb17cb399756",
+              "isWwObject": true
+            },
+            {
+              "uid": "ba401995-1a2b-4203-be33-95dd277617ef",
+              "isWwObject": true
+            },
+            {
+              "uid": "01d52b65-8e2c-4256-9ea3-afe1fa22af39",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Facebook Leads Sidebar Brand",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1729
+    },
+    "cb7c70d2-f9d2-406d-a339-278d8aa540bd": {
+      "uid": "cb7c70d2-f9d2-406d-a339-278d8aa540bd",
+      "_state": {
+        "style": {
+          "default": {
+            "flex": "1",
+            "display": "flex",
+            "padding": "10px 12px",
+            "customCss": {
+              "overflowY": "auto"
+            },
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "5d84a685-e686-487a-806b-b562b21aec88",
+              "isWwObject": true
+            },
+            {
+              "uid": "97eaae33-7216-4b8c-af7a-c3653ff42cb8",
+              "isWwObject": true
+            },
+            {
+              "uid": "7898e1b6-21da-4574-8d4e-fbc719822684",
+              "isWwObject": true
+            },
+            {
+              "uid": "3327ef48-1335-4e86-bc6d-deb8d243359f",
+              "isWwObject": true
+            },
+            {
+              "uid": "fdbc51ac-c3bc-4f61-b4c4-edc981beb505",
+              "isWwObject": true
+            },
+            {
+              "uid": "b7f974a0-c1f1-4cac-a27f-d1ae2a614228",
+              "isWwObject": true
+            },
+            {
+              "uid": "d3816b61-0dbf-48eb-9f83-29b65563efc4",
+              "isWwObject": true
+            },
+            {
+              "uid": "a6bc5111-0c59-4623-a7b9-2435e6ee0973",
+              "isWwObject": true
+            },
+            {
+              "uid": "5bfd0f6c-1487-4f8e-9738-2804fc64e552",
+              "isWwObject": true
+            },
+            {
+              "uid": "02a8b1b5-f5ce-471a-8c2f-7f34158fc6d9",
+              "isWwObject": true
+            },
+            {
+              "uid": "a4e26b82-31f1-47d2-b14d-aa6c58ef1a45",
+              "isWwObject": true
+            },
+            {
+              "uid": "be952ea0-f682-4475-8223-7466c46742d2",
+              "isWwObject": true
+            },
+            {
+              "uid": "7c8668e5-7b43-4eb4-abcc-fa4a316bbefe",
+              "isWwObject": true
+            },
+            {
+              "uid": "25aafb81-b46c-4e97-9a1a-97ccee26bb95",
+              "isWwObject": true
+            },
+            {
+              "uid": "7ec32f76-c405-4b2d-9612-d0dbba58f920",
+              "isWwObject": true
+            },
+            {
+              "uid": "2b7a59ef-107d-403c-9bcb-ffa5c5331824",
+              "isWwObject": true
+            },
+            {
+              "uid": "46cfb493-a281-44f7-9cbb-db015162c145",
+              "isWwObject": true
+            },
+            {
+              "uid": "fc0b8313-5bf1-4854-b523-3304d9daf03b",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Facebook Leads Sidebar Navigation",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1730
+    },
+    "31c3a378-5629-4a0e-b614-b2c17c69b6fd": {
+      "uid": "31c3a378-5629-4a0e-b614-b2c17c69b6fd",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "●  Podio sync pending"
+          },
+          "_ww-text_color": "#F59E0B",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Facebook Leads Podio Status",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1731
+    },
+    "33e5e126-1ac8-49f8-b0ea-92f27fa89127": {
+      "uid": "33e5e126-1ac8-49f8-b0ea-92f27fa89127",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "13px 16px",
+            "borderTop": "1px solid #1E293B",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "31c3a378-5629-4a0e-b614-b2c17c69b6fd",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Facebook Leads Sidebar Footer",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1732
+    },
+    "f79b54ed-c104-4a89-bd2c-b07aad4e6d4e": {
+      "uid": "f79b54ed-c104-4a89-bd2c-b07aad4e6d4e",
+      "_state": {
+        "style": {
+          "mobile": {
+            "display": "none"
+          },
+          "default": {
+            "top": "0px",
+            "width": "240px",
+            "height": "100vh",
+            "display": "flex",
+            "minWidth": "240px",
+            "position": "sticky",
+            "backgroundColor": "var(--606b9809-8abd-44ce-b314-0b0ba43271b7,#070B14)",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "56aeb7be-79bd-43f3-ba37-56aa4aa7d124",
+              "isWwObject": true
+            },
+            {
+              "uid": "cb7c70d2-f9d2-406d-a339-278d8aa540bd",
+              "isWwObject": true
+            },
+            {
+              "uid": "33e5e126-1ac8-49f8-b0ea-92f27fa89127",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Facebook Leads Sidebar",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1733
+    },
+    "f9ea829d-1c55-495a-a96b-de9f12488446": {
+      "uid": "f9ea829d-1c55-495a-a96b-de9f12488446",
+      "_state": {
+        "style": {
+          "default": {
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Facebook Lead Intelligence"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "27px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Facebook Leads Page Title",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1734
+    },
+    "89f01b4c-f568-4fc8-b4f9-8740f4178e5c": {
+      "uid": "89f01b4c-f568-4fc8-b4f9-8740f4178e5c",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "4px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "From social engagement to matched identity, property intelligence and CRM-ready leads."
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Facebook Leads Page Subtitle",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1735
+    },
+    "b2ec0b68-2f2b-4a80-8e7b-58d498cd29a2": {
+      "uid": "b2ec0b68-2f2b-4a80-8e7b-58d498cd29a2",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "f9ea829d-1c55-495a-a96b-de9f12488446",
+              "isWwObject": true
+            },
+            {
+              "uid": "89f01b4c-f568-4fc8-b4f9-8740f4178e5c",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Facebook Leads Title Wrap",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1736
+    },
+    "15087580-c273-4ba6-b951-5d9a7d11dd8b": {
+      "uid": "15087580-c273-4ba6-b951-5d9a7d11dd8b",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "HUSHHAWK • FRONT END READY"
+          },
+          "_ww-text_color": "#92400E",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "0.7px"
+        }
+      },
+      "name": "Facebook Leads Badge Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1737
+    },
+    "c5504610-56c2-43d4-9466-390be269702c": {
+      "uid": "c5504610-56c2-43d4-9466-390be269702c",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid #FDE68A",
+            "display": "flex",
+            "padding": "6px 9px",
+            "borderRadius": "999px",
+            "backgroundColor": "#FFFBEB"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "15087580-c273-4ba6-b951-5d9a7d11dd8b",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Facebook Leads Environment Badge",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1738
+    },
+    "fe80ac18-eee8-40f6-a04e-a0fa89dcd02f": {
+      "uid": "fe80ac18-eee8-40f6-a04e-a0fa89dcd02f",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "22px 28px",
+            "borderBottom": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "b2ec0b68-2f2b-4a80-8e7b-58d498cd29a2",
+              "isWwObject": true
+            },
+            {
+              "uid": "c5504610-56c2-43d4-9466-390be269702c",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row",
+          "_ww-layout_justifyContent": "space-between"
+        }
+      },
+      "name": "Facebook Leads Header",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1739
+    },
+    "739ed3ca-f091-4e6e-95aa-2a1760f04210": {
+      "uid": "739ed3ca-f091-4e6e-95aa-2a1760f04210",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "RAW ACTIVITY"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "0.7px"
+        }
+      },
+      "name": "Facebook Leads KPI 1 Label",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1740
+    },
+    "961ab1c2-e37c-4c76-9e85-1c8f22f4fc7c": {
+      "uid": "961ab1c2-e37c-4c76-9e85-1c8f22f4fc7c",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "8px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "3,210"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "24px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Facebook Leads KPI 1 Value",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1741
+    },
+    "af55e21d-c290-450c-aa83-adee86e0937f": {
+      "uid": "af55e21d-c290-450c-aa83-adee86e0937f",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "6px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Comments + reactions collected"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Facebook Leads KPI 1 Sub",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1742
+    },
+    "a0623f6d-b747-4ec4-b6b0-b997b31862ef": {
+      "uid": "a0623f6d-b747-4ec4-b6b0-b997b31862ef",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "display": "flex",
+            "padding": "17px",
+            "borderTop": "3px solid var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)",
+            "borderRadius": "12px",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "739ed3ca-f091-4e6e-95aa-2a1760f04210",
+              "isWwObject": true
+            },
+            {
+              "uid": "961ab1c2-e37c-4c76-9e85-1c8f22f4fc7c",
+              "isWwObject": true
+            },
+            {
+              "uid": "af55e21d-c290-450c-aa83-adee86e0937f",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Facebook Leads KPI 1",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1743
+    },
+    "d7cb0b2e-1af4-406d-b8b9-8aa6162a9707": {
+      "uid": "d7cb0b2e-1af4-406d-b8b9-8aa6162a9707",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "IDENTITIES MATCHED"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "0.7px"
+        }
+      },
+      "name": "Facebook Leads KPI 2 Label",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1744
+    },
+    "bee0746d-be88-4796-9ade-353b141232e7": {
+      "uid": "bee0746d-be88-4796-9ade-353b141232e7",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "8px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "1,420"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "24px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Facebook Leads KPI 2 Value",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1745
+    },
+    "aaef4e1a-f2b3-4fe1-a806-d41307db1c71": {
+      "uid": "aaef4e1a-f2b3-4fe1-a806-d41307db1c71",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "6px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "People resolved across records"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Facebook Leads KPI 2 Sub",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1746
+    },
+    "a8f75d98-3d10-4c5f-9f3a-88b7b8c7987f": {
+      "uid": "a8f75d98-3d10-4c5f-9f3a-88b7b8c7987f",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "display": "flex",
+            "padding": "17px",
+            "borderTop": "3px solid var(--b563c8ea-b5cd-4950-ac34-983a20eacf71,#DC2626)",
+            "borderRadius": "12px",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "d7cb0b2e-1af4-406d-b8b9-8aa6162a9707",
+              "isWwObject": true
+            },
+            {
+              "uid": "bee0746d-be88-4796-9ade-353b141232e7",
+              "isWwObject": true
+            },
+            {
+              "uid": "aaef4e1a-f2b3-4fe1-a806-d41307db1c71",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Facebook Leads KPI 2",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1747
+    },
+    "42e7bc96-fbdb-4f41-ab49-daebfd9b87c6": {
+      "uid": "42e7bc96-fbdb-4f41-ab49-daebfd9b87c6",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "CONTACT READY"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "0.7px"
+        }
+      },
+      "name": "Facebook Leads KPI 3 Label",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1748
+    },
+    "92ae83d9-50af-4e0c-8c20-e864864d9a13": {
+      "uid": "92ae83d9-50af-4e0c-8c20-e864864d9a13",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "8px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "890"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "24px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Facebook Leads KPI 3 Value",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1749
+    },
+    "3e95eaff-84d4-474e-a3f6-d8e0612211f8": {
+      "uid": "3e95eaff-84d4-474e-a3f6-d8e0612211f8",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "6px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Phone/email/address validated"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Facebook Leads KPI 3 Sub",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1750
+    },
+    "04c1d170-8dcb-4c38-9a9f-af64c4f8048c": {
+      "uid": "04c1d170-8dcb-4c38-9a9f-af64c4f8048c",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "display": "flex",
+            "padding": "17px",
+            "borderTop": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "borderRadius": "12px",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "42e7bc96-fbdb-4f41-ab49-daebfd9b87c6",
+              "isWwObject": true
+            },
+            {
+              "uid": "92ae83d9-50af-4e0c-8c20-e864864d9a13",
+              "isWwObject": true
+            },
+            {
+              "uid": "3e95eaff-84d4-474e-a3f6-d8e0612211f8",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Facebook Leads KPI 3",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1751
+    },
+    "7ea42108-67c2-48e1-91fc-ae7b749d1b9c": {
+      "uid": "7ea42108-67c2-48e1-91fc-ae7b749d1b9c",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "QUALIFIED"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "0.7px"
+        }
+      },
+      "name": "Facebook Leads KPI 4 Label",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1752
+    },
+    "7aad467f-1a8f-4ad2-9e82-0832bdd8a775": {
+      "uid": "7aad467f-1a8f-4ad2-9e82-0832bdd8a775",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "8px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "312"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "24px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Facebook Leads KPI 4 Value",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1753
+    },
+    "37326c9e-a181-48ac-8aa6-b834350fd8de": {
+      "uid": "37326c9e-a181-48ac-8aa6-b834350fd8de",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "6px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Score meets CRM push threshold"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Facebook Leads KPI 4 Sub",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1754
+    },
+    "01a7737b-5712-491c-97e3-77197697208f": {
+      "uid": "01a7737b-5712-491c-97e3-77197697208f",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "display": "flex",
+            "padding": "17px",
+            "borderTop": "3px solid var(--f325d1d5-41bf-4fea-bdc4-e18a2d9c68c6,#16A34A)",
+            "borderRadius": "12px",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "7ea42108-67c2-48e1-91fc-ae7b749d1b9c",
+              "isWwObject": true
+            },
+            {
+              "uid": "7aad467f-1a8f-4ad2-9e82-0832bdd8a775",
+              "isWwObject": true
+            },
+            {
+              "uid": "37326c9e-a181-48ac-8aa6-b834350fd8de",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Facebook Leads KPI 4",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1755
+    },
+    "0e17d208-7497-4abc-85ca-ca391cac3e0c": {
+      "uid": "0e17d208-7497-4abc-85ca-ca391cac3e0c",
+      "_state": {
+        "style": {
+          "mobile": {},
+          "tablet": {},
+          "default": {
+            "display": "grid",
+            "flexDirection": "column",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "mobile": {
+          "_ww-grid_columns": [
+            "1fr"
+          ]
+        },
+        "tablet": {
+          "_ww-grid_columns": [
+            "1fr",
+            "1fr"
+          ]
+        },
+        "default": {
+          "children": [
+            {
+              "uid": "a0623f6d-b747-4ec4-b6b0-b997b31862ef",
+              "isWwObject": true
+            },
+            {
+              "uid": "a8f75d98-3d10-4c5f-9f3a-88b7b8c7987f",
+              "isWwObject": true
+            },
+            {
+              "uid": "04c1d170-8dcb-4c38-9a9f-af64c4f8048c",
+              "isWwObject": true
+            },
+            {
+              "uid": "01a7737b-5712-491c-97e3-77197697208f",
+              "isWwObject": true
+            }
+          ],
+          "_ww-grid_rowGap": "14px",
+          "_ww-grid_columns": [
+            "1fr",
+            "1fr",
+            "1fr",
+            "1fr"
+          ],
+          "_ww-grid_columnGap": "14px"
+        }
+      },
+      "name": "Facebook Leads KPI Grid",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1756
+    },
+    "aae720cd-e425-4a97-8dbe-4a915f3d613a": {
+      "uid": "aae720cd-e425-4a97-8dbe-4a915f3d613a",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "16px 16px 10px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "EHUSA Master Activity Flow"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "16px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Facebook Leads Primary Panel Title",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1757
+    },
+    "9c88e86a-7f97-4b14-ad9d-a74d0892aa38": {
+      "uid": "9c88e86a-7f97-4b14-ad9d-a74d0892aa38",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "1. Source Capture"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Facebook Leads Item 1 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1758
+    },
+    "a1a042d9-7ec4-41c8-b0d4-a102ea5b79b2": {
+      "uid": "a1a042d9-7ec4-41c8-b0d4-a102ea5b79b2",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Group, post, user, comment/reaction and timestamp"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Facebook Leads Item 1 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1759
+    },
+    "ab887bdb-c5f0-495b-9af1-e768fb2896e5": {
+      "uid": "ab887bdb-c5f0-495b-9af1-e768fb2896e5",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "9c88e86a-7f97-4b14-ad9d-a74d0892aa38",
+              "isWwObject": true
+            },
+            {
+              "uid": "a1a042d9-7ec4-41c8-b0d4-a102ea5b79b2",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Facebook Leads Workflow Item 1",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1760
+    },
+    "cdd54bbb-8b68-43e1-9e0f-52117cac486f": {
+      "uid": "cdd54bbb-8b68-43e1-9e0f-52117cac486f",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "2. Identity Resolution"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Facebook Leads Item 2 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1761
+    },
+    "0c55032a-c5e4-4afa-8e29-6a97421e695b": {
+      "uid": "0c55032a-c5e4-4afa-8e29-6a97421e695b",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Normalize person and remove duplicates"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Facebook Leads Item 2 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1762
+    },
+    "dfc90d78-2f2d-4f31-a4d9-fc325d83d470": {
+      "uid": "dfc90d78-2f2d-4f31-a4d9-fc325d83d470",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "cdd54bbb-8b68-43e1-9e0f-52117cac486f",
+              "isWwObject": true
+            },
+            {
+              "uid": "0c55032a-c5e4-4afa-8e29-6a97421e695b",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Facebook Leads Workflow Item 2",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1763
+    },
+    "52c48bd6-64f5-44d2-bb05-8df1d0505768": {
+      "uid": "52c48bd6-64f5-44d2-bb05-8df1d0505768",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "3. Enrichment"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Facebook Leads Item 3 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1764
+    },
+    "84c60946-6da3-43c5-8233-6230f04783c5": {
+      "uid": "84c60946-6da3-43c5-8233-6230f04783c5",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Phone, email, mailing address and property match"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Facebook Leads Item 3 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1765
+    },
+    "456dfae2-a4b5-4bcc-870b-839cbde17ae7": {
+      "uid": "456dfae2-a4b5-4bcc-870b-839cbde17ae7",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "52c48bd6-64f5-44d2-bb05-8df1d0505768",
+              "isWwObject": true
+            },
+            {
+              "uid": "84c60946-6da3-43c5-8233-6230f04783c5",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Facebook Leads Workflow Item 3",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1766
+    },
+    "2fbc32e7-7353-4f1f-a5c9-5f6de20a2f68": {
+      "uid": "2fbc32e7-7353-4f1f-a5c9-5f6de20a2f68",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "4. Validation"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Facebook Leads Item 4 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1767
+    },
+    "6dee2b3b-8d63-45b6-a4db-bf41c5f927d3": {
+      "uid": "6dee2b3b-8d63-45b6-a4db-bf41c5f927d3",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Confirm contact and property confidence"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Facebook Leads Item 4 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1768
+    },
+    "7d7c3c95-2f43-4d1d-938f-ce570ba9038f": {
+      "uid": "7d7c3c95-2f43-4d1d-938f-ce570ba9038f",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "2fbc32e7-7353-4f1f-a5c9-5f6de20a2f68",
+              "isWwObject": true
+            },
+            {
+              "uid": "6dee2b3b-8d63-45b6-a4db-bf41c5f927d3",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Facebook Leads Workflow Item 4",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1769
+    },
+    "ec065093-4b32-4a38-9815-aff77caa05c1": {
+      "uid": "ec065093-4b32-4a38-9815-aff77caa05c1",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "5. Scoring"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Facebook Leads Item 5 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1770
+    },
+    "34b185b7-5136-4c98-b2f2-dd124fa3881c": {
+      "uid": "34b185b7-5136-4c98-b2f2-dd124fa3881c",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Priority = 70% Intent + 30% Data Completeness"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Facebook Leads Item 5 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1771
+    },
+    "7099fab9-e1c8-415f-84f1-84b225a66745": {
+      "uid": "7099fab9-e1c8-415f-84f1-84b225a66745",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "ec065093-4b32-4a38-9815-aff77caa05c1",
+              "isWwObject": true
+            },
+            {
+              "uid": "34b185b7-5136-4c98-b2f2-dd124fa3881c",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Facebook Leads Workflow Item 5",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1772
+    },
+    "f7d59307-5b1d-4633-bfeb-0a7154de0ff1": {
+      "uid": "f7d59307-5b1d-4633-bfeb-0a7154de0ff1",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "6. Qualification"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Facebook Leads Item 6 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1773
+    },
+    "cf6fe260-5f06-4076-84f3-1730ed79650d": {
+      "uid": "cf6fe260-5f06-4076-84f3-1730ed79650d",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "HOT 85–100 / HIGH 70–84 / WARM 50–69 / MONITOR 0–49"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Facebook Leads Item 6 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1774
+    },
+    "22c5ba55-eb50-46e2-8d20-55051d10e277": {
+      "uid": "22c5ba55-eb50-46e2-8d20-55051d10e277",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "f7d59307-5b1d-4633-bfeb-0a7154de0ff1",
+              "isWwObject": true
+            },
+            {
+              "uid": "cf6fe260-5f06-4076-84f3-1730ed79650d",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Facebook Leads Workflow Item 6",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1775
+    },
+    "566723f4-dbc6-4792-89cd-3f1be8eaf7b2": {
+      "uid": "566723f4-dbc6-4792-89cd-3f1be8eaf7b2",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "7. CRM Push"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Facebook Leads Item 7 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1776
+    },
+    "49de0b62-57a2-4dd9-b22c-5de4d1e44235": {
+      "uid": "49de0b62-57a2-4dd9-b22c-5de4d1e44235",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Create/update seller lead and preserve Facebook source"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Facebook Leads Item 7 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1777
+    },
+    "62764d7b-5602-4931-8528-88c7066145fe": {
+      "uid": "62764d7b-5602-4931-8528-88c7066145fe",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "566723f4-dbc6-4792-89cd-3f1be8eaf7b2",
+              "isWwObject": true
+            },
+            {
+              "uid": "49de0b62-57a2-4dd9-b22c-5de4d1e44235",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Facebook Leads Workflow Item 7",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1778
+    },
+    "19a9408f-9666-4bbc-8bf6-d13714fa2d1d": {
+      "uid": "19a9408f-9666-4bbc-8bf6-d13714fa2d1d",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "8. Writeback"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Facebook Leads Item 8 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1779
+    },
+    "ee46a44d-3ff0-4b49-a4a6-474f5dfdeb77": {
+      "uid": "ee46a44d-3ff0-4b49-a4a6-474f5dfdeb77",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Track outreach, contract, disposition and revenue"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Facebook Leads Item 8 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1780
+    },
+    "e1e09717-c6ec-4ecf-b2ce-95bed63b51d8": {
+      "uid": "e1e09717-c6ec-4ecf-b2ce-95bed63b51d8",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "19a9408f-9666-4bbc-8bf6-d13714fa2d1d",
+              "isWwObject": true
+            },
+            {
+              "uid": "ee46a44d-3ff0-4b49-a4a6-474f5dfdeb77",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Facebook Leads Workflow Item 8",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1781
+    },
+    "e8354627-4da1-478f-b093-edc252bf2b8b": {
+      "uid": "e8354627-4da1-478f-b093-edc252bf2b8b",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "display": "flex",
+            "overflow": "hidden",
+            "borderRadius": "12px",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "aae720cd-e425-4a97-8dbe-4a915f3d613a",
+              "isWwObject": true
+            },
+            {
+              "uid": "ab887bdb-c5f0-495b-9af1-e768fb2896e5",
+              "isWwObject": true
+            },
+            {
+              "uid": "dfc90d78-2f2d-4f31-a4d9-fc325d83d470",
+              "isWwObject": true
+            },
+            {
+              "uid": "456dfae2-a4b5-4bcc-870b-839cbde17ae7",
+              "isWwObject": true
+            },
+            {
+              "uid": "7d7c3c95-2f43-4d1d-938f-ce570ba9038f",
+              "isWwObject": true
+            },
+            {
+              "uid": "7099fab9-e1c8-415f-84f1-84b225a66745",
+              "isWwObject": true
+            },
+            {
+              "uid": "22c5ba55-eb50-46e2-8d20-55051d10e277",
+              "isWwObject": true
+            },
+            {
+              "uid": "62764d7b-5602-4931-8528-88c7066145fe",
+              "isWwObject": true
+            },
+            {
+              "uid": "e1e09717-c6ec-4ecf-b2ce-95bed63b51d8",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Facebook Leads Primary Panel",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1782
+    },
+    "e34b35a5-6ce1-414f-b4b9-b80c700c4ab4": {
+      "uid": "e34b35a5-6ce1-414f-b4b9-b80c700c4ab4",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "16px 16px 8px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Master Record Rule"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "16px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Facebook Leads Secondary Panel Title",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1783
+    },
+    "2a813ec3-034b-4735-a7e5-62fe401a71e4": {
+      "uid": "2a813ec3-034b-4735-a7e5-62fe401a71e4",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "8px 16px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "• EHUSA Master Activity is the source-of-truth activity layer"
+          },
+          "_ww-text_color": "var(--e133e327-b4a1-439d-be88-d91207b49f9d,#334155)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500",
+          "_ww-text_lineHeight": "1.45"
+        }
+      },
+      "name": "Facebook Leads Side Rule 1",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1784
+    },
+    "edd5200d-7e2e-45fc-a7fa-57e455969847": {
+      "uid": "edd5200d-7e2e-45fc-a7fa-57e455969847",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "8px 16px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "• Use short permanent IDs for people, properties and activity"
+          },
+          "_ww-text_color": "var(--e133e327-b4a1-439d-be88-d91207b49f9d,#334155)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500",
+          "_ww-text_lineHeight": "1.45"
+        }
+      },
+      "name": "Facebook Leads Side Rule 2",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1785
+    },
+    "57ebdfdc-ebac-40eb-b1fd-6a227c113911": {
+      "uid": "57ebdfdc-ebac-40eb-b1fd-6a227c113911",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "8px 16px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "• Never create duplicate CRM leads for the same person/property pair"
+          },
+          "_ww-text_color": "var(--e133e327-b4a1-439d-be88-d91207b49f9d,#334155)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500",
+          "_ww-text_lineHeight": "1.45"
+        }
+      },
+      "name": "Facebook Leads Side Rule 3",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1786
+    },
+    "935ba924-8ebc-4fdc-ba43-b252288e02ee": {
+      "uid": "935ba924-8ebc-4fdc-ba43-b252288e02ee",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "8px 16px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "• Keep scraping status, enrichment status, score and CRM status visible"
+          },
+          "_ww-text_color": "var(--e133e327-b4a1-439d-be88-d91207b49f9d,#334155)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500",
+          "_ww-text_lineHeight": "1.45"
+        }
+      },
+      "name": "Facebook Leads Side Rule 4",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1787
+    },
+    "f01b9b27-5b91-4d2c-adc7-c8daaf82feb4": {
+      "uid": "f01b9b27-5b91-4d2c-adc7-c8daaf82feb4",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "12px 16px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "LIVE DATA: activates when Podio / provider connectors are authorized."
+          },
+          "_ww-text_color": "#92400E",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "0.5px"
+        }
+      },
+      "name": "Facebook Leads Data Ready Note",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1788
+    },
+    "4c38dbb0-e10d-4aab-9885-ea419d9f5aca": {
+      "uid": "4c38dbb0-e10d-4aab-9885-ea419d9f5aca",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "display": "flex",
+            "overflow": "hidden",
+            "borderRadius": "12px",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "e34b35a5-6ce1-414f-b4b9-b80c700c4ab4",
+              "isWwObject": true
+            },
+            {
+              "uid": "2a813ec3-034b-4735-a7e5-62fe401a71e4",
+              "isWwObject": true
+            },
+            {
+              "uid": "edd5200d-7e2e-45fc-a7fa-57e455969847",
+              "isWwObject": true
+            },
+            {
+              "uid": "57ebdfdc-ebac-40eb-b1fd-6a227c113911",
+              "isWwObject": true
+            },
+            {
+              "uid": "935ba924-8ebc-4fdc-ba43-b252288e02ee",
+              "isWwObject": true
+            },
+            {
+              "uid": "f01b9b27-5b91-4d2c-adc7-c8daaf82feb4",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Facebook Leads Secondary Panel",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1789
+    },
+    "34a65927-8b71-4f59-94bd-c7b5d0748da7": {
+      "uid": "34a65927-8b71-4f59-94bd-c7b5d0748da7",
+      "_state": {
+        "style": {
+          "mobile": {},
+          "tablet": {},
+          "default": {
+            "display": "grid",
+            "flexDirection": "column",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "mobile": {
+          "_ww-grid_columns": [
+            "1fr"
+          ]
+        },
+        "tablet": {
+          "_ww-grid_columns": [
+            "1fr"
+          ]
+        },
+        "default": {
+          "children": [
+            {
+              "uid": "e8354627-4da1-478f-b093-edc252bf2b8b",
+              "isWwObject": true
+            },
+            {
+              "uid": "4c38dbb0-e10d-4aab-9885-ea419d9f5aca",
+              "isWwObject": true
+            }
+          ],
+          "_ww-grid_rowGap": "16px",
+          "_ww-grid_columns": [
+            "1.7fr",
+            "1fr"
+          ],
+          "_ww-grid_columnGap": "16px"
+        }
+      },
+      "name": "Facebook Leads Content Grid",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1790
+    },
+    "9dc00fbc-64cb-443b-9b6b-76ea65c9d7fc": {
+      "uid": "9dc00fbc-64cb-443b-9b6b-76ea65c9d7fc",
+      "_state": {
+        "style": {
+          "mobile": {
+            "padding": "16px"
+          },
+          "default": {
+            "flex": "1",
+            "display": "flex",
+            "padding": "22px 28px",
+            "customCss": {
+              "overflowY": "auto"
+            },
+            "backgroundColor": "var(--dacf6d89-481f-4709-a2ec-c8b13d22e0af,#F8FAFC)",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "hh-cmd-facebook-leads",
+              "isWwObject": true
+            },
+            {
+              "uid": "0e17d208-7497-4abc-85ca-ca391cac3e0c",
+              "isWwObject": true
+            },
+            {
+              "uid": "34a65927-8b71-4f59-94bd-c7b5d0748da7",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_rowGap": "18px",
+          "_ww-layout_columnGap": "18px",
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Facebook Leads Main Panel",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1791
+    },
+    "8f238a97-6f01-4a92-8c39-b45e71b0caa4": {
+      "uid": "8f238a97-6f01-4a92-8c39-b45e71b0caa4",
+      "_state": {
+        "style": {
+          "default": {
+            "flex": "1",
+            "height": "auto",
+            "display": "flex",
+            "minWidth": "0px",
+            "minHeight": "100vh",
+            "backgroundColor": "var(--dacf6d89-481f-4709-a2ec-c8b13d22e0af,#F8FAFC)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "fe80ac18-eee8-40f6-a04e-a0fa89dcd02f",
+              "isWwObject": true
+            },
+            {
+              "uid": "9dc00fbc-64cb-443b-9b6b-76ea65c9d7fc",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Facebook Leads Main",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 1792
+    },
+    "2045f4cf-aeb5-463b-99c0-ba3225565a81": {
+      "uid": "2045f4cf-aeb5-463b-99c0-ba3225565a81",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Teams"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Facebook Leads Nav Team Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 3221
+    },
+    "hh-cmd-facebook-leads": {
+      "uid": "hh-cmd-facebook-leads",
+      "_state": {
+        "style": {
+          "default": {
+            "width": "100%",
+            "display": "block",
+            "minWidth": "0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "workspacePage": "facebook-leads",
+          "skyline": "https://u.realgeeks.media/nuviewrealty/Jacksonville_Skyline_Sunset_2.jpeg"
+        }
+      },
+      "name": "Facebook Leads Command Center Workspace",
+      "wwObjectBaseId": "f1b67d54-2716-43a4-a414-ab7f505c2ace",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "5c2958b3-179b-4a5a-8f60-a4e3d308e56a",
+      "_si": 9999
+    }
+  },
+  "collections": [],
+  "variables": [],
+  "workflows": [],
+  "formulas": [],
+  "libraryComponents": []
+}
