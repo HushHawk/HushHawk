@@ -1,0 +1,3599 @@
+{
+  "cacheVersion": "2",
+  "page": {
+    "id": "a2d0d91c-0e12-4dc0-b922-5858c7917ee3",
+    "paths": {
+      "en": "marketing",
+      "default": "marketing"
+    },
+    "cmsDataSetPath": null,
+    "workflows": [],
+    "_sm": [
+      2,
+      [],
+      [
+        [
+          2,
+          "ww-a-ah5kXiW44wImNtcA",
+          [
+            0
+          ]
+        ],
+        [
+          3,
+          "ww-a-0VjvCJ39bZQIpenG",
+          [
+            0
+          ]
+        ],
+        [
+          0,
+          "ww-a-GfbQibRQPgXgCmyn",
+          [
+            1,
+            3,
+            5,
+            7,
+            9,
+            11,
+            13,
+            15,
+            17,
+            19,
+            21,
+            23,
+            26,
+            27,
+            30,
+            32,
+            34,
+            36,
+            41,
+            44,
+            47,
+            50,
+            54,
+            58,
+            62,
+            68,
+            71,
+            74,
+            77,
+            80,
+            83
+          ]
+        ],
+        [
+          0,
+          "ww-a-YRfn88Fc_a_pUrQN",
+          [
+            2,
+            4,
+            6,
+            8,
+            10,
+            12,
+            14,
+            16,
+            18,
+            20,
+            22,
+            24,
+            25,
+            28,
+            31,
+            33,
+            35
+          ]
+        ],
+        [
+          0,
+          "ww-a-xcvtKf9v4YXjru0H",
+          [
+            29,
+            37,
+            38,
+            45,
+            51,
+            52,
+            55,
+            56,
+            59,
+            60,
+            63,
+            64,
+            69,
+            72,
+            75,
+            78,
+            81,
+            84
+          ]
+        ],
+        [
+          0,
+          "ww-a-YF0k00I-Mi8zOhMt",
+          [
+            39,
+            40,
+            42,
+            48,
+            49,
+            53,
+            57,
+            61,
+            65,
+            70,
+            73,
+            76,
+            79,
+            82,
+            85,
+            95
+          ]
+        ],
+        [
+          0,
+          "ww-a-JNYYuTsbWRUNLvfX",
+          [
+            43
+          ]
+        ],
+        [
+          0,
+          "ww-a-wepO1Mjw7DgHz3WK",
+          [
+            46,
+            66,
+            86,
+            93,
+            94
+          ]
+        ],
+        [
+          0,
+          "ww-a-jmcmduGw2BpHZ9RI",
+          [
+            67,
+            87,
+            88,
+            89,
+            90,
+            91,
+            92
+          ]
+        ],
+        [
+          0,
+          "ww-a-8BdkzjVNbpKFMJuw",
+          [
+            96
+          ]
+        ]
+      ]
+    ]
+  },
+  "sections": {
+    "8385542e-3bad-49ce-a4e8-1858e0d46d98": {
+      "uid": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "linkId": "ada82b97-a58c-4cd4-9ed7-8640516a99b2",
+      "_state": {
+        "style": {
+          "default": {
+            "width": "100%",
+            "display": "flex",
+            "maxWidth": "100%",
+            "customCss": {
+              "boxSizing": "border-box"
+            },
+            "minHeight": "100vh",
+            "fontFamily": "Plus Jakarta Sans",
+            "backgroundColor": "#041427"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "wwObjects": [
+            {
+              "uid": "hh-cmd-marketing",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "sectionBaseId": "99586bd3-2b15-4d6b-a025-6a50d07ca845",
+      "sectionTitle": "Marketing Page Shell",
+      "_si": 12
+    }
+  },
+  "wwObjects": {
+    "8091fa87-8415-4b3a-ba8b-46de37f65c5e": {
+      "uid": "8091fa87-8415-4b3a-ba8b-46de37f65c5e",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Dashboard"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Marketing Nav Dashboard Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1507
+    },
+    "b31d7844-96e4-4045-9679-02039c8f06d8": {
+      "uid": "b31d7844-96e4-4045-9679-02039c8f06d8",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "64b6f7f3-21a2-4e15-a6d3-80c2f4216ed2",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "8091fa87-8415-4b3a-ba8b-46de37f65c5e",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Marketing Nav Dashboard",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1597
+    },
+    "4bce3233-ef2d-43b3-81da-639e440b5d3f": {
+      "uid": "4bce3233-ef2d-43b3-81da-639e440b5d3f",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Seller Leads"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Marketing Nav Seller Leads Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1598
+    },
+    "bd6f0cee-435d-4d0a-b907-03efcb1951c9": {
+      "uid": "bd6f0cee-435d-4d0a-b907-03efcb1951c9",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "5ac8292b-4a7d-4552-ae7e-c099f194016f",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "4bce3233-ef2d-43b3-81da-639e440b5d3f",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Marketing Nav Seller Leads",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1599
+    },
+    "ee0178d6-d3ef-4cda-a9bb-f61cae610a04": {
+      "uid": "ee0178d6-d3ef-4cda-a9bb-f61cae610a04",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Acquisitions"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Marketing Nav Acquisitions Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1600
+    },
+    "997c016a-f879-4a4c-b704-c32bc80e4460": {
+      "uid": "997c016a-f879-4a4c-b704-c32bc80e4460",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "f405dfa0-cbe5-4a9e-b76a-205819446a89",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "ee0178d6-d3ef-4cda-a9bb-f61cae610a04",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Marketing Nav Acquisitions",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1601
+    },
+    "85982ef0-bf00-428f-a620-0719a1ab7df6": {
+      "uid": "85982ef0-bf00-428f-a620-0719a1ab7df6",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Dispositions"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Marketing Nav Dispositions Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1602
+    },
+    "e679bfd9-c92b-49b5-a7c1-84ba05e2d73f": {
+      "uid": "e679bfd9-c92b-49b5-a7c1-84ba05e2d73f",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "a17a6122-e36c-4582-aa7d-a33451821a3f",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "85982ef0-bf00-428f-a620-0719a1ab7df6",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Marketing Nav Dispositions",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1603
+    },
+    "f09f39ab-1657-42bd-834f-00ef44b0a364": {
+      "uid": "f09f39ab-1657-42bd-834f-00ef44b0a364",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Cash Buyers"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Marketing Nav Cash Buyers Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1604
+    },
+    "2bdf84d2-f89f-4bc6-bb6d-c6b44f431fa9": {
+      "uid": "2bdf84d2-f89f-4bc6-bb6d-c6b44f431fa9",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "b9987b36-cabf-4d22-a61f-bb1878fbd81a",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "f09f39ab-1657-42bd-834f-00ef44b0a364",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Marketing Nav Cash Buyers",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1605
+    },
+    "554464fc-0129-4747-91c7-edf7d34a4378": {
+      "uid": "554464fc-0129-4747-91c7-edf7d34a4378",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Communications"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Marketing Nav Communications Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1606
+    },
+    "230c226e-489c-4d95-bdd6-682ce316e492": {
+      "uid": "230c226e-489c-4d95-bdd6-682ce316e492",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "9d4b26e3-28a9-43e6-9b22-66f11b94aa1c",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "554464fc-0129-4747-91c7-edf7d34a4378",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Marketing Nav Communications",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1607
+    },
+    "887c5335-0564-415e-8287-b5a76b2ccd76": {
+      "uid": "887c5335-0564-415e-8287-b5a76b2ccd76",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Marketing"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Marketing Nav Marketing Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1608
+    },
+    "bc4bb805-ca6f-4d0a-bd30-d1f9a45d10b8": {
+      "uid": "bc4bb805-ca6f-4d0a-bd30-d1f9a45d10b8",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "a2d0d91c-0e12-4dc0-b922-5858c7917ee3",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "887c5335-0564-415e-8287-b5a76b2ccd76",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Marketing Nav Marketing",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1609
+    },
+    "d684cb78-d843-4dad-89b9-89cae215e642": {
+      "uid": "d684cb78-d843-4dad-89b9-89cae215e642",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "County Data"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Marketing Nav County Data Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1610
+    },
+    "8c14f8b9-2ca1-45b4-83fd-4fbd9c053a70": {
+      "uid": "8c14f8b9-2ca1-45b4-83fd-4fbd9c053a70",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "87b38826-b41a-4950-95c2-afa18dec2b38",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "d684cb78-d843-4dad-89b9-89cae215e642",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Marketing Nav County Data",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1611
+    },
+    "807a858c-4952-4be7-9260-c0000888eb7a": {
+      "uid": "807a858c-4952-4be7-9260-c0000888eb7a",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Skip Tracing"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Marketing Nav Skip Tracing Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1612
+    },
+    "c3729e4b-6b82-4c7f-82c6-03a0b87fed07": {
+      "uid": "c3729e4b-6b82-4c7f-82c6-03a0b87fed07",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "4ad6b22e-4151-4bf7-bc63-7dec86f377a2",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "807a858c-4952-4be7-9260-c0000888eb7a",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Marketing Nav Skip Tracing",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1613
+    },
+    "2d9058e5-3e03-42f3-a344-30db454f9238": {
+      "uid": "2d9058e5-3e03-42f3-a344-30db454f9238",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Contracts"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Marketing Nav Contracts Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1614
+    },
+    "e2193e43-4401-4ae6-beed-c0c980ffe1cf": {
+      "uid": "e2193e43-4401-4ae6-beed-c0c980ffe1cf",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "d588127b-5b3e-4f99-a6dc-7a22ef7c128b",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "2d9058e5-3e03-42f3-a344-30db454f9238",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Marketing Nav Contracts",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1615
+    },
+    "7cb79dad-9e11-4fe0-aa9a-93d227b9f8c1": {
+      "uid": "7cb79dad-9e11-4fe0-aa9a-93d227b9f8c1",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Follow Ups"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Marketing Nav Follow Ups Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1616
+    },
+    "9c9705e8-d85a-4fb2-998d-e4babd5f12f6": {
+      "uid": "9c9705e8-d85a-4fb2-998d-e4babd5f12f6",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "e01977a5-5afc-427b-a25d-39b555fa3b0d",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "7cb79dad-9e11-4fe0-aa9a-93d227b9f8c1",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Marketing Nav Follow Ups",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1617
+    },
+    "7d4fdce4-449b-405d-b9c7-69f8e48a0a06": {
+      "uid": "7d4fdce4-449b-405d-b9c7-69f8e48a0a06",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Analytics"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Marketing Nav Analytics Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1618
+    },
+    "1699157e-9cc2-46c8-8710-688c013dc431": {
+      "uid": "1699157e-9cc2-46c8-8710-688c013dc431",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "dba9b37a-872b-4425-9993-79f3ceaadb92",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "7d4fdce4-449b-405d-b9c7-69f8e48a0a06",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Marketing Nav Analytics",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1619
+    },
+    "ce11ae82-b087-486d-bac1-ad5a65f78ea4": {
+      "uid": "ce11ae82-b087-486d-bac1-ad5a65f78ea4",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "0921099a-dc1e-4897-809d-bd39a527558d",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "f0f3663f-1e1d-4a89-9a88-6240e5ae1e7f",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Marketing Nav Team",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1620
+    },
+    "8bd4c4d3-2d3c-43dc-9cfe-220fe03d3e52": {
+      "uid": "8bd4c4d3-2d3c-43dc-9cfe-220fe03d3e52",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Settings"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Marketing Nav Settings Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1621
+    },
+    "f0f3663f-1e1d-4a89-9a88-6240e5ae1e7f": {
+      "uid": "f0f3663f-1e1d-4a89-9a88-6240e5ae1e7f",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Teams"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Marketing Nav Team Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1622
+    },
+    "2ee57908-859f-4fb3-a229-7257ff087316": {
+      "uid": "2ee57908-859f-4fb3-a229-7257ff087316",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "e2af833d-5f07-4ee1-a59b-5a41b3502933",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "8bd4c4d3-2d3c-43dc-9cfe-220fe03d3e52",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Marketing Nav Settings",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1623
+    },
+    "17582186-f40d-4f44-97a3-aec5b9dbadbf": {
+      "uid": "17582186-f40d-4f44-97a3-aec5b9dbadbf",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "12px 12px 6px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "SPECIALIZED TOOLS"
+          },
+          "_ww-text_color": "#64748B",
+          "_ww-text_fontSize": "9px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "1px"
+        }
+      },
+      "name": "Marketing Tools Label",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1624
+    },
+    "b09fe68d-3bda-492f-8d81-6759cb374f6f": {
+      "uid": "b09fe68d-3bda-492f-8d81-6759cb374f6f",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Facebook Leads"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Marketing Nav Facebook Leads Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1625
+    },
+    "e5152a41-af12-4db9-a5e3-5b0922e58868": {
+      "uid": "e5152a41-af12-4db9-a5e3-5b0922e58868",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "c6707652-6174-47b7-84a7-042a2dee960f",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "8px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "b09fe68d-3bda-492f-8d81-6759cb374f6f",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Marketing Nav Facebook Leads",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1626
+    },
+    "d0dde6c0-2205-4e36-aa72-81a5251c97fa": {
+      "uid": "d0dde6c0-2205-4e36-aa72-81a5251c97fa",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Direct Mail"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Marketing Nav Direct Mail Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1627
+    },
+    "dbd768f8-dcfa-462b-8aeb-a4dda8961b07": {
+      "uid": "dbd768f8-dcfa-462b-8aeb-a4dda8961b07",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "72fa8746-8396-4460-890f-36d72912cf95",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "8px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "d0dde6c0-2205-4e36-aa72-81a5251c97fa",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Marketing Nav Direct Mail",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1628
+    },
+    "02110a98-1120-4566-93de-0a24b3b9babc": {
+      "uid": "02110a98-1120-4566-93de-0a24b3b9babc",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Deal Analyzer"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Marketing Nav Deal Analyzer Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1629
+    },
+    "ecb5fc0d-ca1e-43bf-8272-794b22f40af4": {
+      "uid": "ecb5fc0d-ca1e-43bf-8272-794b22f40af4",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "964e5528-8760-4680-938d-5b201255047c",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "8px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "02110a98-1120-4566-93de-0a24b3b9babc",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Marketing Nav Deal Analyzer",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1630
+    },
+    "9ea78b14-0460-4b43-a190-b2f2efbae13d": {
+      "uid": "9ea78b14-0460-4b43-a190-b2f2efbae13d",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "HUSHHAWK INTELLIGENCE"
+          },
+          "_ww-text_color": "#94A3B8",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "700",
+          "_ww-text_letterSpacing": "1.2px"
+        }
+      },
+      "name": "Marketing Brand Eyebrow",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1631
+    },
+    "8a2b43fa-bceb-4228-bd0c-eef253d842f1": {
+      "uid": "8a2b43fa-bceb-4228-bd0c-eef253d842f1",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "2px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "HUSHHAWK"
+          },
+          "_ww-text_color": "#FFFFFF",
+          "_ww-text_fontSize": "24px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Marketing Brand Title",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1632
+    },
+    "b99713dc-a7fa-41fe-b253-d5f0f29209a2": {
+      "uid": "b99713dc-a7fa-41fe-b253-d5f0f29209a2",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "2px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Wholesale Command Center"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Marketing Brand Sub",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1633
+    },
+    "d6a64e63-272e-4f6c-9e9e-ff8b646faffd": {
+      "uid": "d6a64e63-272e-4f6c-9e9e-ff8b646faffd",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "20px 18px 16px",
+            "borderBottom": "1px solid #1E293B",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "9ea78b14-0460-4b43-a190-b2f2efbae13d",
+              "isWwObject": true
+            },
+            {
+              "uid": "8a2b43fa-bceb-4228-bd0c-eef253d842f1",
+              "isWwObject": true
+            },
+            {
+              "uid": "b99713dc-a7fa-41fe-b253-d5f0f29209a2",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Marketing Sidebar Brand",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1634
+    },
+    "ea52b1c8-8b5b-4b24-83f9-a281af228a54": {
+      "uid": "ea52b1c8-8b5b-4b24-83f9-a281af228a54",
+      "_state": {
+        "style": {
+          "default": {
+            "flex": "1",
+            "display": "flex",
+            "padding": "10px 12px",
+            "customCss": {
+              "overflowY": "auto"
+            },
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "b31d7844-96e4-4045-9679-02039c8f06d8",
+              "isWwObject": true
+            },
+            {
+              "uid": "bd6f0cee-435d-4d0a-b907-03efcb1951c9",
+              "isWwObject": true
+            },
+            {
+              "uid": "997c016a-f879-4a4c-b704-c32bc80e4460",
+              "isWwObject": true
+            },
+            {
+              "uid": "e679bfd9-c92b-49b5-a7c1-84ba05e2d73f",
+              "isWwObject": true
+            },
+            {
+              "uid": "2bdf84d2-f89f-4bc6-bb6d-c6b44f431fa9",
+              "isWwObject": true
+            },
+            {
+              "uid": "230c226e-489c-4d95-bdd6-682ce316e492",
+              "isWwObject": true
+            },
+            {
+              "uid": "bc4bb805-ca6f-4d0a-bd30-d1f9a45d10b8",
+              "isWwObject": true
+            },
+            {
+              "uid": "8c14f8b9-2ca1-45b4-83fd-4fbd9c053a70",
+              "isWwObject": true
+            },
+            {
+              "uid": "c3729e4b-6b82-4c7f-82c6-03a0b87fed07",
+              "isWwObject": true
+            },
+            {
+              "uid": "e2193e43-4401-4ae6-beed-c0c980ffe1cf",
+              "isWwObject": true
+            },
+            {
+              "uid": "9c9705e8-d85a-4fb2-998d-e4babd5f12f6",
+              "isWwObject": true
+            },
+            {
+              "uid": "1699157e-9cc2-46c8-8710-688c013dc431",
+              "isWwObject": true
+            },
+            {
+              "uid": "ce11ae82-b087-486d-bac1-ad5a65f78ea4",
+              "isWwObject": true
+            },
+            {
+              "uid": "2ee57908-859f-4fb3-a229-7257ff087316",
+              "isWwObject": true
+            },
+            {
+              "uid": "17582186-f40d-4f44-97a3-aec5b9dbadbf",
+              "isWwObject": true
+            },
+            {
+              "uid": "e5152a41-af12-4db9-a5e3-5b0922e58868",
+              "isWwObject": true
+            },
+            {
+              "uid": "dbd768f8-dcfa-462b-8aeb-a4dda8961b07",
+              "isWwObject": true
+            },
+            {
+              "uid": "ecb5fc0d-ca1e-43bf-8272-794b22f40af4",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Marketing Sidebar Navigation",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1635
+    },
+    "0b88483e-347a-4bd8-a843-c49832c29f0c": {
+      "uid": "0b88483e-347a-4bd8-a843-c49832c29f0c",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "●  Podio sync pending"
+          },
+          "_ww-text_color": "#F59E0B",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Marketing Podio Status",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1636
+    },
+    "5235622e-766d-4209-b5cd-078d2c339734": {
+      "uid": "5235622e-766d-4209-b5cd-078d2c339734",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "13px 16px",
+            "borderTop": "1px solid #1E293B",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "0b88483e-347a-4bd8-a843-c49832c29f0c",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Marketing Sidebar Footer",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1637
+    },
+    "2a86e1f2-064d-448f-92ce-17c05e78bc43": {
+      "uid": "2a86e1f2-064d-448f-92ce-17c05e78bc43",
+      "_state": {
+        "style": {
+          "mobile": {
+            "display": "none"
+          },
+          "default": {
+            "top": "0px",
+            "width": "240px",
+            "height": "100vh",
+            "display": "flex",
+            "minWidth": "240px",
+            "position": "sticky",
+            "backgroundColor": "var(--606b9809-8abd-44ce-b314-0b0ba43271b7,#070B14)",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "d6a64e63-272e-4f6c-9e9e-ff8b646faffd",
+              "isWwObject": true
+            },
+            {
+              "uid": "ea52b1c8-8b5b-4b24-83f9-a281af228a54",
+              "isWwObject": true
+            },
+            {
+              "uid": "5235622e-766d-4209-b5cd-078d2c339734",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Marketing Sidebar",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1638
+    },
+    "ee6233a7-4bc1-44cc-a0dc-6271961cf45a": {
+      "uid": "ee6233a7-4bc1-44cc-a0dc-6271961cf45a",
+      "_state": {
+        "style": {
+          "default": {
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Marketing Command Center"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "27px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Marketing Page Title",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1639
+    },
+    "bfbf07ac-859a-49de-bb04-e7b0d36e2328": {
+      "uid": "bfbf07ac-859a-49de-bb04-e7b0d36e2328",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "4px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Manage channels, campaigns, lead attribution and citywide brand activity."
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Marketing Page Subtitle",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1640
+    },
+    "a5defaed-80f9-49da-b4a2-e328fe0b05aa": {
+      "uid": "a5defaed-80f9-49da-b4a2-e328fe0b05aa",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "ee6233a7-4bc1-44cc-a0dc-6271961cf45a",
+              "isWwObject": true
+            },
+            {
+              "uid": "bfbf07ac-859a-49de-bb04-e7b0d36e2328",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Marketing Title Wrap",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1641
+    },
+    "7b56e9f4-b915-4b0f-bf6a-d239dc4a6eca": {
+      "uid": "7b56e9f4-b915-4b0f-bf6a-d239dc4a6eca",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "HUSHHAWK • FRONT END READY"
+          },
+          "_ww-text_color": "#92400E",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "0.7px"
+        }
+      },
+      "name": "Marketing Badge Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1642
+    },
+    "c458d250-bafc-444a-bced-67c649b62734": {
+      "uid": "c458d250-bafc-444a-bced-67c649b62734",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid #FDE68A",
+            "display": "flex",
+            "padding": "6px 9px",
+            "borderRadius": "999px",
+            "backgroundColor": "#FFFBEB"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "7b56e9f4-b915-4b0f-bf6a-d239dc4a6eca",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Marketing Environment Badge",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1643
+    },
+    "10e9e7e1-8c69-4917-a537-a6924d77912d": {
+      "uid": "10e9e7e1-8c69-4917-a537-a6924d77912d",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "22px 28px",
+            "borderBottom": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "a5defaed-80f9-49da-b4a2-e328fe0b05aa",
+              "isWwObject": true
+            },
+            {
+              "uid": "c458d250-bafc-444a-bced-67c649b62734",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row",
+          "_ww-layout_justifyContent": "space-between"
+        }
+      },
+      "name": "Marketing Header",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1644
+    },
+    "26ae4c5c-c2c5-4cf8-a286-e2bfb5d7d49e": {
+      "uid": "26ae4c5c-c2c5-4cf8-a286-e2bfb5d7d49e",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "ACTIVE CAMPAIGNS"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "0.7px"
+        }
+      },
+      "name": "Marketing KPI 1 Label",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1645
+    },
+    "a989b5f5-8934-46e1-b3d1-ced4f79e013c": {
+      "uid": "a989b5f5-8934-46e1-b3d1-ced4f79e013c",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "8px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "8"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "24px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Marketing KPI 1 Value",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1646
+    },
+    "eac4bc89-bbba-478b-ba70-325be9ea6ae4": {
+      "uid": "eac4bc89-bbba-478b-ba70-325be9ea6ae4",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "6px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Direct mail + digital + local"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Marketing KPI 1 Sub",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1647
+    },
+    "6d42e1ab-fe22-4b9b-8b70-861922f0fe8f": {
+      "uid": "6d42e1ab-fe22-4b9b-8b70-861922f0fe8f",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "display": "flex",
+            "padding": "17px",
+            "borderTop": "3px solid var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)",
+            "borderRadius": "12px",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "26ae4c5c-c2c5-4cf8-a286-e2bfb5d7d49e",
+              "isWwObject": true
+            },
+            {
+              "uid": "a989b5f5-8934-46e1-b3d1-ced4f79e013c",
+              "isWwObject": true
+            },
+            {
+              "uid": "eac4bc89-bbba-478b-ba70-325be9ea6ae4",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Marketing KPI 1",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1648
+    },
+    "765715bf-8974-4812-8413-401eb0120114": {
+      "uid": "765715bf-8974-4812-8413-401eb0120114",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "LEADS GENERATED"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "0.7px"
+        }
+      },
+      "name": "Marketing KPI 2 Label",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1649
+    },
+    "5371707a-d22b-4183-98c2-08adbd8b01fa": {
+      "uid": "5371707a-d22b-4183-98c2-08adbd8b01fa",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "8px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "342"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "24px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Marketing KPI 2 Value",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1650
+    },
+    "15473805-1b0e-4da4-8a80-58a1e647ffb6": {
+      "uid": "15473805-1b0e-4da4-8a80-58a1e647ffb6",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "6px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Attributed marketing responses"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Marketing KPI 2 Sub",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1651
+    },
+    "b58fd2cb-71b9-4e59-8cad-c64ccff09d47": {
+      "uid": "b58fd2cb-71b9-4e59-8cad-c64ccff09d47",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "display": "flex",
+            "padding": "17px",
+            "borderTop": "3px solid var(--b563c8ea-b5cd-4950-ac34-983a20eacf71,#DC2626)",
+            "borderRadius": "12px",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "765715bf-8974-4812-8413-401eb0120114",
+              "isWwObject": true
+            },
+            {
+              "uid": "5371707a-d22b-4183-98c2-08adbd8b01fa",
+              "isWwObject": true
+            },
+            {
+              "uid": "15473805-1b0e-4da4-8a80-58a1e647ffb6",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Marketing KPI 2",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1652
+    },
+    "5d4fe7d2-e374-4013-9d5a-4c5ef2bd0d87": {
+      "uid": "5d4fe7d2-e374-4013-9d5a-4c5ef2bd0d87",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "COST / LEAD"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "0.7px"
+        }
+      },
+      "name": "Marketing KPI 3 Label",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1653
+    },
+    "e6bf44a3-4bd2-411f-a713-462d88208c28": {
+      "uid": "e6bf44a3-4bd2-411f-a713-462d88208c28",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "8px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "$42"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "24px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Marketing KPI 3 Value",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1654
+    },
+    "3e2538bb-501d-4016-beca-cd23d9ccef3a": {
+      "uid": "3e2538bb-501d-4016-beca-cd23d9ccef3a",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "6px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Channel efficiency"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Marketing KPI 3 Sub",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1655
+    },
+    "37345c5d-362f-4b8d-a985-d91a86bd79e5": {
+      "uid": "37345c5d-362f-4b8d-a985-d91a86bd79e5",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "display": "flex",
+            "padding": "17px",
+            "borderTop": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "borderRadius": "12px",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "5d4fe7d2-e374-4013-9d5a-4c5ef2bd0d87",
+              "isWwObject": true
+            },
+            {
+              "uid": "e6bf44a3-4bd2-411f-a713-462d88208c28",
+              "isWwObject": true
+            },
+            {
+              "uid": "3e2538bb-501d-4016-beca-cd23d9ccef3a",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Marketing KPI 3",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1656
+    },
+    "aa435d3c-677d-47d5-b7c2-8db6ab495b59": {
+      "uid": "aa435d3c-677d-47d5-b7c2-8db6ab495b59",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "CONTRACTS WON"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "0.7px"
+        }
+      },
+      "name": "Marketing KPI 4 Label",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1657
+    },
+    "799f2f9b-4140-40d5-844a-7d1db65b9b04": {
+      "uid": "799f2f9b-4140-40d5-844a-7d1db65b9b04",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "8px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "28"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "24px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Marketing KPI 4 Value",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1658
+    },
+    "d2a543d9-6f29-45ff-8d7c-b55ea87d9ec0": {
+      "uid": "d2a543d9-6f29-45ff-8d7c-b55ea87d9ec0",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "6px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Marketing-attributed deals"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Marketing KPI 4 Sub",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1659
+    },
+    "962c8c59-4226-4526-b2ff-b66ed302b1c2": {
+      "uid": "962c8c59-4226-4526-b2ff-b66ed302b1c2",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "display": "flex",
+            "padding": "17px",
+            "borderTop": "3px solid var(--f325d1d5-41bf-4fea-bdc4-e18a2d9c68c6,#16A34A)",
+            "borderRadius": "12px",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "aa435d3c-677d-47d5-b7c2-8db6ab495b59",
+              "isWwObject": true
+            },
+            {
+              "uid": "799f2f9b-4140-40d5-844a-7d1db65b9b04",
+              "isWwObject": true
+            },
+            {
+              "uid": "d2a543d9-6f29-45ff-8d7c-b55ea87d9ec0",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Marketing KPI 4",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1660
+    },
+    "6b03cef0-b7f9-433f-b252-087f52a4209c": {
+      "uid": "6b03cef0-b7f9-433f-b252-087f52a4209c",
+      "_state": {
+        "style": {
+          "mobile": {},
+          "tablet": {},
+          "default": {
+            "display": "grid",
+            "flexDirection": "column",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "mobile": {
+          "_ww-grid_columns": [
+            "1fr"
+          ]
+        },
+        "tablet": {
+          "_ww-grid_columns": [
+            "1fr",
+            "1fr"
+          ]
+        },
+        "default": {
+          "children": [
+            {
+              "uid": "6d42e1ab-fe22-4b9b-8b70-861922f0fe8f",
+              "isWwObject": true
+            },
+            {
+              "uid": "b58fd2cb-71b9-4e59-8cad-c64ccff09d47",
+              "isWwObject": true
+            },
+            {
+              "uid": "37345c5d-362f-4b8d-a985-d91a86bd79e5",
+              "isWwObject": true
+            },
+            {
+              "uid": "962c8c59-4226-4526-b2ff-b66ed302b1c2",
+              "isWwObject": true
+            }
+          ],
+          "_ww-grid_rowGap": "14px",
+          "_ww-grid_columns": [
+            "1fr",
+            "1fr",
+            "1fr",
+            "1fr"
+          ],
+          "_ww-grid_columnGap": "14px"
+        }
+      },
+      "name": "Marketing KPI Grid",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1661
+    },
+    "a2a402bf-b82f-4b46-8010-b9a04b90d731": {
+      "uid": "a2a402bf-b82f-4b46-8010-b9a04b90d731",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "16px 16px 10px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "HushHawk Property Intelligence Marketing Channels"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "16px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Marketing Primary Panel Title",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1662
+    },
+    "057dab58-6eb3-41e7-9755-8a15c2dfe410": {
+      "uid": "057dab58-6eb3-41e7-9755-8a15c2dfe410",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Direct Mail"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Marketing Item 1 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1663
+    },
+    "4d4fa604-1506-4828-a8f5-c663a36fd081": {
+      "uid": "4d4fa604-1506-4828-a8f5-c663a36fd081",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "ZIP campaigns, targeted lists, mail IDs and response attribution"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Marketing Item 1 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1664
+    },
+    "6b8992ea-6355-4245-bec2-08cac583cba6": {
+      "uid": "6b8992ea-6355-4245-bec2-08cac583cba6",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "057dab58-6eb3-41e7-9755-8a15c2dfe410",
+              "isWwObject": true
+            },
+            {
+              "uid": "4d4fa604-1506-4828-a8f5-c663a36fd081",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Marketing Workflow Item 1",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1665
+    },
+    "c7883cae-07de-4ce3-98eb-c45f10cde539": {
+      "uid": "c7883cae-07de-4ce3-98eb-c45f10cde539",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Facebook Intelligence"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Marketing Item 2 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1666
+    },
+    "7d710262-92f4-44ef-8433-29b68c575b22": {
+      "uid": "7d710262-92f4-44ef-8433-29b68c575b22",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Comments/reactions → enrichment → lead score → CRM"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Marketing Item 2 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1667
+    },
+    "da023f0c-e9d1-4acd-96b8-ffee5fa3d056": {
+      "uid": "da023f0c-e9d1-4acd-96b8-ffee5fa3d056",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "c7883cae-07de-4ce3-98eb-c45f10cde539",
+              "isWwObject": true
+            },
+            {
+              "uid": "7d710262-92f4-44ef-8433-29b68c575b22",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Marketing Workflow Item 2",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1668
+    },
+    "7e501d6e-b5ef-4bf9-94b2-a452c1549581": {
+      "uid": "7e501d6e-b5ef-4bf9-94b2-a452c1549581",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "SEO / PPC / AEO / GEO"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Marketing Item 3 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1669
+    },
+    "8d480123-d1fc-47df-bada-0d82ffec5c1d": {
+      "uid": "8d480123-d1fc-47df-bada-0d82ffec5c1d",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Search visibility, paid traffic and AI-search discovery"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Marketing Item 3 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1670
+    },
+    "051e58d4-65d0-4070-a1b7-ed4caa7d0b3f": {
+      "uid": "051e58d4-65d0-4070-a1b7-ed4caa7d0b3f",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "7e501d6e-b5ef-4bf9-94b2-a452c1549581",
+              "isWwObject": true
+            },
+            {
+              "uid": "8d480123-d1fc-47df-bada-0d82ffec5c1d",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Marketing Workflow Item 3",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1671
+    },
+    "089dc4cb-877f-400d-9a6f-b0be8260e7c6": {
+      "uid": "089dc4cb-877f-400d-9a6f-b0be8260e7c6",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Notary Referral Program"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Marketing Item 4 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1672
+    },
+    "f8233c56-e778-44ff-ada9-5cd9419440d3": {
+      "uid": "f8233c56-e778-44ff-ada9-5cd9419440d3",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Referral capture with source credit"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Marketing Item 4 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1673
+    },
+    "d66321ac-b786-496a-acb6-8c89721d066f": {
+      "uid": "d66321ac-b786-496a-acb6-8c89721d066f",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "089dc4cb-877f-400d-9a6f-b0be8260e7c6",
+              "isWwObject": true
+            },
+            {
+              "uid": "f8233c56-e778-44ff-ada9-5cd9419440d3",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Marketing Workflow Item 4",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1674
+    },
+    "f487db70-73e8-4280-ad02-15505d05d3e9": {
+      "uid": "f487db70-73e8-4280-ad02-15505d05d3e9",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Pancakes on the Block"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Marketing Item 5 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1675
+    },
+    "996b28a5-9180-4042-9983-86c57d7345dd": {
+      "uid": "996b28a5-9180-4042-9983-86c57d7345dd",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Local goodwill + content + lead generation"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Marketing Item 5 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1676
+    },
+    "8a646231-42a6-4db1-9752-1b98b1580c07": {
+      "uid": "8a646231-42a6-4db1-9752-1b98b1580c07",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "f487db70-73e8-4280-ad02-15505d05d3e9",
+              "isWwObject": true
+            },
+            {
+              "uid": "996b28a5-9180-4042-9983-86c57d7345dd",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Marketing Workflow Item 5",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1677
+    },
+    "2a776388-0eba-4948-aa26-b16757f0fbbf": {
+      "uid": "2a776388-0eba-4948-aa26-b16757f0fbbf",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Visible City Marketing"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Marketing Item 6 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1678
+    },
+    "cf8cfece-f2a0-40b4-b791-e731a8e55b97": {
+      "uid": "cf8cfece-f2a0-40b4-b791-e731a8e55b97",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Bus, benches, billboards and high-frequency local presence"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Marketing Item 6 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1679
+    },
+    "186a35b9-6b60-4e42-80de-4a3ef7de91a1": {
+      "uid": "186a35b9-6b60-4e42-80de-4a3ef7de91a1",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "2a776388-0eba-4948-aa26-b16757f0fbbf",
+              "isWwObject": true
+            },
+            {
+              "uid": "cf8cfece-f2a0-40b4-b791-e731a8e55b97",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Marketing Workflow Item 6",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1680
+    },
+    "560e4d5c-3e6a-4883-b2c3-f2f12dd3d0c5": {
+      "uid": "560e4d5c-3e6a-4883-b2c3-f2f12dd3d0c5",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "display": "flex",
+            "overflow": "hidden",
+            "borderRadius": "12px",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "a2a402bf-b82f-4b46-8010-b9a04b90d731",
+              "isWwObject": true
+            },
+            {
+              "uid": "6b8992ea-6355-4245-bec2-08cac583cba6",
+              "isWwObject": true
+            },
+            {
+              "uid": "da023f0c-e9d1-4acd-96b8-ffee5fa3d056",
+              "isWwObject": true
+            },
+            {
+              "uid": "051e58d4-65d0-4070-a1b7-ed4caa7d0b3f",
+              "isWwObject": true
+            },
+            {
+              "uid": "d66321ac-b786-496a-acb6-8c89721d066f",
+              "isWwObject": true
+            },
+            {
+              "uid": "8a646231-42a6-4db1-9752-1b98b1580c07",
+              "isWwObject": true
+            },
+            {
+              "uid": "186a35b9-6b60-4e42-80de-4a3ef7de91a1",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Marketing Primary Panel",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1681
+    },
+    "2634d012-a90a-4c58-8221-79d1175aee9f": {
+      "uid": "2634d012-a90a-4c58-8221-79d1175aee9f",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "16px 16px 8px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Campaign Rule"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "16px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Marketing Secondary Panel Title",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1682
+    },
+    "d4d2a2fd-c2f7-4df8-a97a-24cbc6096e3e": {
+      "uid": "d4d2a2fd-c2f7-4df8-a97a-24cbc6096e3e",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "8px 16px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "• Every lead must keep original source and campaign ID"
+          },
+          "_ww-text_color": "var(--e133e327-b4a1-439d-be88-d91207b49f9d,#334155)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500",
+          "_ww-text_lineHeight": "1.45"
+        }
+      },
+      "name": "Marketing Side Rule 1",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1683
+    },
+    "2a6708d8-aa9e-4577-964f-1fb982e169cd": {
+      "uid": "2a6708d8-aa9e-4577-964f-1fb982e169cd",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "8px 16px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "• Track target ZIP and list source separately"
+          },
+          "_ww-text_color": "var(--e133e327-b4a1-439d-be88-d91207b49f9d,#334155)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500",
+          "_ww-text_lineHeight": "1.45"
+        }
+      },
+      "name": "Marketing Side Rule 2",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1684
+    },
+    "b186102f-655c-49b7-9b9e-0818406e46d9": {
+      "uid": "b186102f-655c-49b7-9b9e-0818406e46d9",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "8px 16px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "• Marketing → lead → contract → assignment fee attribution"
+          },
+          "_ww-text_color": "var(--e133e327-b4a1-439d-be88-d91207b49f9d,#334155)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500",
+          "_ww-text_lineHeight": "1.45"
+        }
+      },
+      "name": "Marketing Side Rule 3",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1685
+    },
+    "f24b4e09-5b67-4541-84c7-639e45aac60e": {
+      "uid": "f24b4e09-5b67-4541-84c7-639e45aac60e",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "8px 16px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "• Direct Mail and Facebook have dedicated HushHawk Intelligence modules"
+          },
+          "_ww-text_color": "var(--e133e327-b4a1-439d-be88-d91207b49f9d,#334155)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500",
+          "_ww-text_lineHeight": "1.45"
+        }
+      },
+      "name": "Marketing Side Rule 4",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1686
+    },
+    "73427fe9-8d52-42a7-a3b5-d02109fc351d": {
+      "uid": "73427fe9-8d52-42a7-a3b5-d02109fc351d",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "12px 16px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "LIVE DATA: activates when Podio / provider connectors are authorized."
+          },
+          "_ww-text_color": "#92400E",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "0.5px"
+        }
+      },
+      "name": "Marketing Data Ready Note",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1687
+    },
+    "be992368-bf06-49fb-bf5e-ea60337a681d": {
+      "uid": "be992368-bf06-49fb-bf5e-ea60337a681d",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "display": "flex",
+            "overflow": "hidden",
+            "borderRadius": "12px",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "2634d012-a90a-4c58-8221-79d1175aee9f",
+              "isWwObject": true
+            },
+            {
+              "uid": "d4d2a2fd-c2f7-4df8-a97a-24cbc6096e3e",
+              "isWwObject": true
+            },
+            {
+              "uid": "2a6708d8-aa9e-4577-964f-1fb982e169cd",
+              "isWwObject": true
+            },
+            {
+              "uid": "b186102f-655c-49b7-9b9e-0818406e46d9",
+              "isWwObject": true
+            },
+            {
+              "uid": "f24b4e09-5b67-4541-84c7-639e45aac60e",
+              "isWwObject": true
+            },
+            {
+              "uid": "73427fe9-8d52-42a7-a3b5-d02109fc351d",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Marketing Secondary Panel",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1688
+    },
+    "93de1a8b-e461-4143-96d3-4ca726ebba54": {
+      "uid": "93de1a8b-e461-4143-96d3-4ca726ebba54",
+      "_state": {
+        "style": {
+          "mobile": {},
+          "tablet": {},
+          "default": {
+            "display": "grid",
+            "flexDirection": "column",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "mobile": {
+          "_ww-grid_columns": [
+            "1fr"
+          ]
+        },
+        "tablet": {
+          "_ww-grid_columns": [
+            "1fr"
+          ]
+        },
+        "default": {
+          "children": [
+            {
+              "uid": "560e4d5c-3e6a-4883-b2c3-f2f12dd3d0c5",
+              "isWwObject": true
+            },
+            {
+              "uid": "be992368-bf06-49fb-bf5e-ea60337a681d",
+              "isWwObject": true
+            }
+          ],
+          "_ww-grid_rowGap": "16px",
+          "_ww-grid_columns": [
+            "1.7fr",
+            "1fr"
+          ],
+          "_ww-grid_columnGap": "16px"
+        }
+      },
+      "name": "Marketing Content Grid",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1689
+    },
+    "e6315a85-9b0f-42ad-9301-1764af762900": {
+      "uid": "e6315a85-9b0f-42ad-9301-1764af762900",
+      "_state": {
+        "style": {
+          "mobile": {
+            "padding": "16px"
+          },
+          "default": {
+            "flex": "1",
+            "display": "flex",
+            "padding": "22px 28px",
+            "customCss": {
+              "overflowY": "auto"
+            },
+            "backgroundColor": "var(--dacf6d89-481f-4709-a2ec-c8b13d22e0af,#F8FAFC)",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "hh-cmd-marketing",
+              "isWwObject": true
+            },
+            {
+              "uid": "6b03cef0-b7f9-433f-b252-087f52a4209c",
+              "isWwObject": true
+            },
+            {
+              "uid": "93de1a8b-e461-4143-96d3-4ca726ebba54",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_rowGap": "18px",
+          "_ww-layout_columnGap": "18px",
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Marketing Main Panel",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1690
+    },
+    "70b35bf2-9549-42a1-aa33-05b593b3343f": {
+      "uid": "70b35bf2-9549-42a1-aa33-05b593b3343f",
+      "_state": {
+        "style": {
+          "default": {
+            "flex": "1",
+            "height": "auto",
+            "display": "flex",
+            "minWidth": "0px",
+            "minHeight": "100vh",
+            "backgroundColor": "var(--dacf6d89-481f-4709-a2ec-c8b13d22e0af,#F8FAFC)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "10e9e7e1-8c69-4917-a537-a6924d77912d",
+              "isWwObject": true
+            },
+            {
+              "uid": "e6315a85-9b0f-42ad-9301-1764af762900",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Marketing Main",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 1691
+    },
+    "hh-cmd-marketing": {
+      "uid": "hh-cmd-marketing",
+      "_state": {
+        "style": {
+          "default": {
+            "width": "100%",
+            "display": "block",
+            "minWidth": "0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "workspacePage": "marketing",
+          "skyline": "https://u.realgeeks.media/nuviewrealty/Jacksonville_Skyline_Sunset_2.jpeg"
+        }
+      },
+      "name": "Marketing Command Center Workspace",
+      "wwObjectBaseId": "f1b67d54-2716-43a4-a414-ab7f505c2ace",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "8385542e-3bad-49ce-a4e8-1858e0d46d98",
+      "_si": 9999
+    }
+  },
+  "collections": [],
+  "variables": [],
+  "workflows": [],
+  "formulas": [],
+  "libraryComponents": []
+}

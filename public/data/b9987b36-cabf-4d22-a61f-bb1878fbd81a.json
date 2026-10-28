@@ -1,0 +1,3659 @@
+{
+  "cacheVersion": "2",
+  "page": {
+    "id": "b9987b36-cabf-4d22-a61f-bb1878fbd81a",
+    "paths": {
+      "en": "cash-buyers",
+      "default": "cash-buyers"
+    },
+    "cmsDataSetPath": null,
+    "workflows": [],
+    "_sm": [
+      2,
+      [],
+      [
+        [
+          2,
+          "ww-a-ah5kXiW44wImNtcA",
+          [
+            0
+          ]
+        ],
+        [
+          3,
+          "ww-a-0VjvCJ39bZQIpenG",
+          [
+            0
+          ]
+        ],
+        [
+          0,
+          "ww-a-GfbQibRQPgXgCmyn",
+          [
+            1,
+            2,
+            4,
+            6,
+            8,
+            10,
+            12,
+            14,
+            16,
+            18,
+            20,
+            22,
+            24,
+            27,
+            30,
+            32,
+            34,
+            36,
+            41,
+            43,
+            46,
+            48,
+            52,
+            56,
+            60,
+            66,
+            69,
+            72,
+            75,
+            78,
+            81
+          ]
+        ],
+        [
+          0,
+          "ww-a-YRfn88Fc_a_pUrQN",
+          [
+            3,
+            5,
+            7,
+            9,
+            11,
+            13,
+            15,
+            17,
+            19,
+            21,
+            23,
+            25,
+            26,
+            28,
+            31,
+            33,
+            35
+          ]
+        ],
+        [
+          0,
+          "ww-a-xcvtKf9v4YXjru0H",
+          [
+            29,
+            37,
+            38,
+            44,
+            49,
+            50,
+            53,
+            54,
+            57,
+            58,
+            61,
+            62,
+            67,
+            70,
+            73,
+            76,
+            79,
+            82
+          ]
+        ],
+        [
+          0,
+          "ww-a-YF0k00I-Mi8zOhMt",
+          [
+            39,
+            40,
+            42,
+            47,
+            51,
+            55,
+            59,
+            63,
+            68,
+            71,
+            74,
+            77,
+            80,
+            83,
+            93,
+            96
+          ]
+        ],
+        [
+          0,
+          "ww-a-wepO1Mjw7DgHz3WK",
+          [
+            45,
+            64,
+            84,
+            91,
+            92
+          ]
+        ],
+        [
+          0,
+          "ww-a-jmcmduGw2BpHZ9RI",
+          [
+            65,
+            85,
+            86,
+            87,
+            88,
+            89,
+            90
+          ]
+        ],
+        [
+          0,
+          "ww-a-HxcMchISmn4k8l9c",
+          [
+            94
+          ]
+        ],
+        [
+          0,
+          "ww-a-JNYYuTsbWRUNLvfX",
+          [
+            95
+          ]
+        ],
+        [
+          0,
+          "ww-a-8BdkzjVNbpKFMJuw",
+          [
+            97
+          ]
+        ]
+      ]
+    ]
+  },
+  "sections": {
+    "2a35d707-c659-4a5d-8210-664fa535a8a5": {
+      "uid": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "linkId": "e48804ef-5047-48e5-8272-d68bccc988e8",
+      "_state": {
+        "style": {
+          "default": {
+            "width": "100%",
+            "display": "flex",
+            "maxWidth": "100%",
+            "customCss": {
+              "boxSizing": "border-box"
+            },
+            "minHeight": "100vh",
+            "fontFamily": "Plus Jakarta Sans",
+            "backgroundColor": "#041427"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "wwObjects": [
+            {
+              "uid": "hh-cmd-cash-buyers",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "sectionBaseId": "99586bd3-2b15-4d6b-a025-6a50d07ca845",
+      "sectionTitle": "Cash Buyers Page Shell",
+      "_si": 2
+    }
+  },
+  "wwObjects": {
+    "5d016aeb-f83d-423c-a3c5-204dea61996f": {
+      "uid": "5d016aeb-f83d-423c-a3c5-204dea61996f",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Teams"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Cash Buyers Nav Team Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2721
+    },
+    "5258dd0d-2ada-4171-a44c-8458b9abf441": {
+      "uid": "5258dd0d-2ada-4171-a44c-8458b9abf441",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Dashboard"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Cash Buyers Nav Dashboard Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2875
+    },
+    "08daa81a-1aa3-4159-b15a-024b0bdc09d8": {
+      "uid": "08daa81a-1aa3-4159-b15a-024b0bdc09d8",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "64b6f7f3-21a2-4e15-a6d3-80c2f4216ed2",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "5258dd0d-2ada-4171-a44c-8458b9abf441",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Cash Buyers Nav Dashboard",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2877
+    },
+    "2eed47e8-9352-4187-bd56-95e5f09486cf": {
+      "uid": "2eed47e8-9352-4187-bd56-95e5f09486cf",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Seller Leads"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Cash Buyers Nav Seller Leads Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2878
+    },
+    "2dea8566-115a-4e96-ba02-5dfa4f9cd910": {
+      "uid": "2dea8566-115a-4e96-ba02-5dfa4f9cd910",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "5ac8292b-4a7d-4552-ae7e-c099f194016f",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "2eed47e8-9352-4187-bd56-95e5f09486cf",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Cash Buyers Nav Seller Leads",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2879
+    },
+    "6e0dd25c-fd72-44ae-ba98-282c18f43391": {
+      "uid": "6e0dd25c-fd72-44ae-ba98-282c18f43391",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Acquisitions"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Cash Buyers Nav Acquisitions Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2880
+    },
+    "e098ef13-7756-4566-a09b-869e211a56ea": {
+      "uid": "e098ef13-7756-4566-a09b-869e211a56ea",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "f405dfa0-cbe5-4a9e-b76a-205819446a89",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "6e0dd25c-fd72-44ae-ba98-282c18f43391",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Cash Buyers Nav Acquisitions",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2881
+    },
+    "9f66f577-7b56-47c6-ac44-778ea47756d9": {
+      "uid": "9f66f577-7b56-47c6-ac44-778ea47756d9",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Dispositions"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Cash Buyers Nav Dispositions Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2882
+    },
+    "3b996cd8-17f7-4768-8814-9340dbd2816e": {
+      "uid": "3b996cd8-17f7-4768-8814-9340dbd2816e",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "a17a6122-e36c-4582-aa7d-a33451821a3f",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "9f66f577-7b56-47c6-ac44-778ea47756d9",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Cash Buyers Nav Dispositions",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2883
+    },
+    "56628848-2c4a-405f-9d9b-2b85f838c9d4": {
+      "uid": "56628848-2c4a-405f-9d9b-2b85f838c9d4",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Cash Buyers"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Cash Buyers Nav Cash Buyers Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2884
+    },
+    "cdf10bda-3de6-467a-a0ea-1f065a8a1623": {
+      "uid": "cdf10bda-3de6-467a-a0ea-1f065a8a1623",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "b9987b36-cabf-4d22-a61f-bb1878fbd81a",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "56628848-2c4a-405f-9d9b-2b85f838c9d4",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Cash Buyers Nav Cash Buyers",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2885
+    },
+    "1f8c354e-49b9-4e3e-990e-d29414d9f412": {
+      "uid": "1f8c354e-49b9-4e3e-990e-d29414d9f412",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Communications"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Cash Buyers Nav Communications Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2886
+    },
+    "3c220930-5054-4a71-ba89-de5bad2c5332": {
+      "uid": "3c220930-5054-4a71-ba89-de5bad2c5332",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "9d4b26e3-28a9-43e6-9b22-66f11b94aa1c",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "1f8c354e-49b9-4e3e-990e-d29414d9f412",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Cash Buyers Nav Communications",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2887
+    },
+    "a340bbec-47da-46c1-9f28-7fc2eb6eea8b": {
+      "uid": "a340bbec-47da-46c1-9f28-7fc2eb6eea8b",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Marketing"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Cash Buyers Nav Marketing Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2888
+    },
+    "1dbf45ac-de3f-4e15-89fb-442157195f2c": {
+      "uid": "1dbf45ac-de3f-4e15-89fb-442157195f2c",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "a2d0d91c-0e12-4dc0-b922-5858c7917ee3",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "a340bbec-47da-46c1-9f28-7fc2eb6eea8b",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Cash Buyers Nav Marketing",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2889
+    },
+    "909b060a-ed86-4b6b-bae6-c4535fe689ec": {
+      "uid": "909b060a-ed86-4b6b-bae6-c4535fe689ec",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "County Data"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Cash Buyers Nav County Data Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2890
+    },
+    "2908c2b3-211f-4d39-abce-26f05a4d301b": {
+      "uid": "2908c2b3-211f-4d39-abce-26f05a4d301b",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "87b38826-b41a-4950-95c2-afa18dec2b38",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "909b060a-ed86-4b6b-bae6-c4535fe689ec",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Cash Buyers Nav County Data",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2891
+    },
+    "d7cdaeac-ac40-4b22-8d51-6507a0fd3ec7": {
+      "uid": "d7cdaeac-ac40-4b22-8d51-6507a0fd3ec7",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Skip Tracing"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Cash Buyers Nav Skip Tracing Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2892
+    },
+    "8d8b902f-36d2-4758-a175-facffc880b10": {
+      "uid": "8d8b902f-36d2-4758-a175-facffc880b10",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "4ad6b22e-4151-4bf7-bc63-7dec86f377a2",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "d7cdaeac-ac40-4b22-8d51-6507a0fd3ec7",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Cash Buyers Nav Skip Tracing",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2893
+    },
+    "f6a2c4ab-a8f8-48b0-b58b-25052fbe88dd": {
+      "uid": "f6a2c4ab-a8f8-48b0-b58b-25052fbe88dd",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Contracts"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Cash Buyers Nav Contracts Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2894
+    },
+    "0537fa6b-8d86-454f-b6ca-abca8ce53e58": {
+      "uid": "0537fa6b-8d86-454f-b6ca-abca8ce53e58",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "d588127b-5b3e-4f99-a6dc-7a22ef7c128b",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "f6a2c4ab-a8f8-48b0-b58b-25052fbe88dd",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Cash Buyers Nav Contracts",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2895
+    },
+    "c69cc17a-cb94-41bf-96d8-d461d076f167": {
+      "uid": "c69cc17a-cb94-41bf-96d8-d461d076f167",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Follow Ups"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Cash Buyers Nav Follow Ups Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2896
+    },
+    "9329f462-cf8f-4952-82ed-972b3abfa18c": {
+      "uid": "9329f462-cf8f-4952-82ed-972b3abfa18c",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "e01977a5-5afc-427b-a25d-39b555fa3b0d",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "c69cc17a-cb94-41bf-96d8-d461d076f167",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Cash Buyers Nav Follow Ups",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2897
+    },
+    "eb8a1316-87be-4e03-ba41-54fd7eb4cd5f": {
+      "uid": "eb8a1316-87be-4e03-ba41-54fd7eb4cd5f",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Analytics"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Cash Buyers Nav Analytics Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2898
+    },
+    "772263cc-49de-4a49-8c76-d34a8550ff37": {
+      "uid": "772263cc-49de-4a49-8c76-d34a8550ff37",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "dba9b37a-872b-4425-9993-79f3ceaadb92",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "eb8a1316-87be-4e03-ba41-54fd7eb4cd5f",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Cash Buyers Nav Analytics",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2899
+    },
+    "4e74d543-318e-4bf1-8d68-9f5cd2ded284": {
+      "uid": "4e74d543-318e-4bf1-8d68-9f5cd2ded284",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "0921099a-dc1e-4897-809d-bd39a527558d",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "5d016aeb-f83d-423c-a3c5-204dea61996f",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Cash Buyers Nav Team",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2900
+    },
+    "cfac7876-ed05-47b3-8182-713ed4a458b8": {
+      "uid": "cfac7876-ed05-47b3-8182-713ed4a458b8",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Settings"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Cash Buyers Nav Settings Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2901
+    },
+    "2bec73b7-e115-40ad-8196-22708e51d853": {
+      "uid": "2bec73b7-e115-40ad-8196-22708e51d853",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "e2af833d-5f07-4ee1-a59b-5a41b3502933",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "cfac7876-ed05-47b3-8182-713ed4a458b8",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Cash Buyers Nav Settings",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2902
+    },
+    "3ad93bd5-0a0d-4646-9baf-43b398e605d6": {
+      "uid": "3ad93bd5-0a0d-4646-9baf-43b398e605d6",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "12px 12px 6px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "SPECIALIZED TOOLS"
+          },
+          "_ww-text_color": "#64748B",
+          "_ww-text_fontSize": "9px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "1px"
+        }
+      },
+      "name": "Cash Buyers Tools Label",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2903
+    },
+    "adf9a567-98e5-4f55-8ced-d66e3c68bf24": {
+      "uid": "adf9a567-98e5-4f55-8ced-d66e3c68bf24",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Facebook Leads"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Cash Buyers Nav Facebook Leads Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2904
+    },
+    "8219ffb4-5afd-48b1-bbb8-aacf60cd0f38": {
+      "uid": "8219ffb4-5afd-48b1-bbb8-aacf60cd0f38",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "c6707652-6174-47b7-84a7-042a2dee960f",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "8px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "adf9a567-98e5-4f55-8ced-d66e3c68bf24",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Cash Buyers Nav Facebook Leads",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2905
+    },
+    "cc2d5419-2ed2-427c-b748-d1e08b72a12c": {
+      "uid": "cc2d5419-2ed2-427c-b748-d1e08b72a12c",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Direct Mail"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Cash Buyers Nav Direct Mail Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2906
+    },
+    "29283064-f6aa-4ec6-94fb-cbd9d77d7b0d": {
+      "uid": "29283064-f6aa-4ec6-94fb-cbd9d77d7b0d",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "72fa8746-8396-4460-890f-36d72912cf95",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "8px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "cc2d5419-2ed2-427c-b748-d1e08b72a12c",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Cash Buyers Nav Direct Mail",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2907
+    },
+    "d6660c69-27b0-4626-9582-5674fbb7e901": {
+      "uid": "d6660c69-27b0-4626-9582-5674fbb7e901",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Deal Analyzer"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Cash Buyers Nav Deal Analyzer Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2908
+    },
+    "05246c19-5b08-463a-85bc-04d4d2ba696e": {
+      "uid": "05246c19-5b08-463a-85bc-04d4d2ba696e",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "964e5528-8760-4680-938d-5b201255047c",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "8px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "d6660c69-27b0-4626-9582-5674fbb7e901",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Cash Buyers Nav Deal Analyzer",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2909
+    },
+    "9368fccd-4a3e-4876-9b74-8cba0bee61a9": {
+      "uid": "9368fccd-4a3e-4876-9b74-8cba0bee61a9",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "HUSHHAWK INTELLIGENCE"
+          },
+          "_ww-text_color": "#94A3B8",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "700",
+          "_ww-text_letterSpacing": "1.2px"
+        }
+      },
+      "name": "Cash Buyers Brand Eyebrow",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2910
+    },
+    "53d5d7e5-26cb-4583-85a0-7047796a4df0": {
+      "uid": "53d5d7e5-26cb-4583-85a0-7047796a4df0",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "2px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "HUSHHAWK"
+          },
+          "_ww-text_color": "#FFFFFF",
+          "_ww-text_fontSize": "24px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Cash Buyers Brand Title",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2911
+    },
+    "d7b602a2-1433-4d71-9928-db56c529b24c": {
+      "uid": "d7b602a2-1433-4d71-9928-db56c529b24c",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "2px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Wholesale Command Center"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Cash Buyers Brand Sub",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2912
+    },
+    "f0935c0a-2ea6-4b29-9923-f5c164666622": {
+      "uid": "f0935c0a-2ea6-4b29-9923-f5c164666622",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "20px 18px 16px",
+            "borderBottom": "1px solid #1E293B",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "9368fccd-4a3e-4876-9b74-8cba0bee61a9",
+              "isWwObject": true
+            },
+            {
+              "uid": "53d5d7e5-26cb-4583-85a0-7047796a4df0",
+              "isWwObject": true
+            },
+            {
+              "uid": "d7b602a2-1433-4d71-9928-db56c529b24c",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Cash Buyers Sidebar Brand",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2913
+    },
+    "1fb33e49-c173-410b-ab74-96506c826be4": {
+      "uid": "1fb33e49-c173-410b-ab74-96506c826be4",
+      "_state": {
+        "style": {
+          "default": {
+            "flex": "1",
+            "display": "flex",
+            "padding": "10px 12px",
+            "customCss": {
+              "overflowY": "auto"
+            },
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "08daa81a-1aa3-4159-b15a-024b0bdc09d8",
+              "isWwObject": true
+            },
+            {
+              "uid": "2dea8566-115a-4e96-ba02-5dfa4f9cd910",
+              "isWwObject": true
+            },
+            {
+              "uid": "e098ef13-7756-4566-a09b-869e211a56ea",
+              "isWwObject": true
+            },
+            {
+              "uid": "3b996cd8-17f7-4768-8814-9340dbd2816e",
+              "isWwObject": true
+            },
+            {
+              "uid": "cdf10bda-3de6-467a-a0ea-1f065a8a1623",
+              "isWwObject": true
+            },
+            {
+              "uid": "3c220930-5054-4a71-ba89-de5bad2c5332",
+              "isWwObject": true
+            },
+            {
+              "uid": "1dbf45ac-de3f-4e15-89fb-442157195f2c",
+              "isWwObject": true
+            },
+            {
+              "uid": "2908c2b3-211f-4d39-abce-26f05a4d301b",
+              "isWwObject": true
+            },
+            {
+              "uid": "8d8b902f-36d2-4758-a175-facffc880b10",
+              "isWwObject": true
+            },
+            {
+              "uid": "0537fa6b-8d86-454f-b6ca-abca8ce53e58",
+              "isWwObject": true
+            },
+            {
+              "uid": "9329f462-cf8f-4952-82ed-972b3abfa18c",
+              "isWwObject": true
+            },
+            {
+              "uid": "772263cc-49de-4a49-8c76-d34a8550ff37",
+              "isWwObject": true
+            },
+            {
+              "uid": "4e74d543-318e-4bf1-8d68-9f5cd2ded284",
+              "isWwObject": true
+            },
+            {
+              "uid": "2bec73b7-e115-40ad-8196-22708e51d853",
+              "isWwObject": true
+            },
+            {
+              "uid": "3ad93bd5-0a0d-4646-9baf-43b398e605d6",
+              "isWwObject": true
+            },
+            {
+              "uid": "8219ffb4-5afd-48b1-bbb8-aacf60cd0f38",
+              "isWwObject": true
+            },
+            {
+              "uid": "29283064-f6aa-4ec6-94fb-cbd9d77d7b0d",
+              "isWwObject": true
+            },
+            {
+              "uid": "05246c19-5b08-463a-85bc-04d4d2ba696e",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Cash Buyers Sidebar Navigation",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2914
+    },
+    "6c774e73-460e-418f-9e13-21e34adc8ec1": {
+      "uid": "6c774e73-460e-418f-9e13-21e34adc8ec1",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "●  Podio sync pending"
+          },
+          "_ww-text_color": "#F59E0B",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Cash Buyers Podio Status",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2915
+    },
+    "bca71f20-e82b-4c5e-b399-b21fc66b274e": {
+      "uid": "bca71f20-e82b-4c5e-b399-b21fc66b274e",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "13px 16px",
+            "borderTop": "1px solid #1E293B",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "6c774e73-460e-418f-9e13-21e34adc8ec1",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Cash Buyers Sidebar Footer",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2916
+    },
+    "1790cb0b-9f14-4d4e-8110-2800ae3356e5": {
+      "uid": "1790cb0b-9f14-4d4e-8110-2800ae3356e5",
+      "_state": {
+        "style": {
+          "default": {
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Cash Buyers"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "27px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Cash Buyers Page Title",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2917
+    },
+    "c2c00e79-3e9d-4380-838f-1b0bf1125e8f": {
+      "uid": "c2c00e79-3e9d-4380-838f-1b0bf1125e8f",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "4px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Buyer profiles, buy boxes, ZIP targets and deal-match readiness."
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Cash Buyers Page Subtitle",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2918
+    },
+    "de5febab-0f27-4330-b0e1-ccf222e95b42": {
+      "uid": "de5febab-0f27-4330-b0e1-ccf222e95b42",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "1790cb0b-9f14-4d4e-8110-2800ae3356e5",
+              "isWwObject": true
+            },
+            {
+              "uid": "c2c00e79-3e9d-4380-838f-1b0bf1125e8f",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Cash Buyers Title Wrap",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2919
+    },
+    "0f2e3b29-a263-4c05-b4af-d05f1ce9131a": {
+      "uid": "0f2e3b29-a263-4c05-b4af-d05f1ce9131a",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "HUSHHAWK • FRONT END READY"
+          },
+          "_ww-text_color": "#92400E",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "0.7px"
+        }
+      },
+      "name": "Cash Buyers Badge Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2920
+    },
+    "2c41f90e-e785-4f2c-bf18-35bb9fa94ea3": {
+      "uid": "2c41f90e-e785-4f2c-bf18-35bb9fa94ea3",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid #FDE68A",
+            "display": "flex",
+            "padding": "6px 9px",
+            "borderRadius": "999px",
+            "backgroundColor": "#FFFBEB"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "0f2e3b29-a263-4c05-b4af-d05f1ce9131a",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Cash Buyers Environment Badge",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2921
+    },
+    "711082e4-8905-496b-9725-60a58acbfbc8": {
+      "uid": "711082e4-8905-496b-9725-60a58acbfbc8",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "ACTIVE BUYERS"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "0.7px"
+        }
+      },
+      "name": "Cash Buyers KPI 1 Label",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2922
+    },
+    "5d3c6fbd-20ad-4816-86d8-d3a29d795ec8": {
+      "uid": "5d3c6fbd-20ad-4816-86d8-d3a29d795ec8",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "8px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "412"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "24px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Cash Buyers KPI 1 Value",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2923
+    },
+    "bc2f20ea-b9dd-4fa4-9cf8-ac38ebdaf27a": {
+      "uid": "bc2f20ea-b9dd-4fa4-9cf8-ac38ebdaf27a",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "6px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Verified and marketable"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Cash Buyers KPI 1 Sub",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2924
+    },
+    "383b35ab-a5e9-43ae-b46d-18b3c9ecae02": {
+      "uid": "383b35ab-a5e9-43ae-b46d-18b3c9ecae02",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "display": "flex",
+            "padding": "17px",
+            "borderTop": "3px solid var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)",
+            "borderRadius": "12px",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "711082e4-8905-496b-9725-60a58acbfbc8",
+              "isWwObject": true
+            },
+            {
+              "uid": "5d3c6fbd-20ad-4816-86d8-d3a29d795ec8",
+              "isWwObject": true
+            },
+            {
+              "uid": "bc2f20ea-b9dd-4fa4-9cf8-ac38ebdaf27a",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Cash Buyers KPI 1",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2925
+    },
+    "23c8f394-e522-4218-b42f-28e9f98301a2": {
+      "uid": "23c8f394-e522-4218-b42f-28e9f98301a2",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "HOT BUYERS"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "0.7px"
+        }
+      },
+      "name": "Cash Buyers KPI 2 Label",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2926
+    },
+    "95ce860f-c137-4f2f-97ec-138e0b26b31f": {
+      "uid": "95ce860f-c137-4f2f-97ec-138e0b26b31f",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "8px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "68"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "24px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Cash Buyers KPI 2 Value",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2927
+    },
+    "82e286a5-fcf9-45d4-88ff-49ceb8dffc7f": {
+      "uid": "82e286a5-fcf9-45d4-88ff-49ceb8dffc7f",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "6px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Recently active / responsive"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Cash Buyers KPI 2 Sub",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2928
+    },
+    "4e0e15bf-d7f2-49a3-8fe3-a1b47a44bbfc": {
+      "uid": "4e0e15bf-d7f2-49a3-8fe3-a1b47a44bbfc",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "display": "flex",
+            "padding": "17px",
+            "borderTop": "3px solid var(--b563c8ea-b5cd-4950-ac34-983a20eacf71,#DC2626)",
+            "borderRadius": "12px",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "23c8f394-e522-4218-b42f-28e9f98301a2",
+              "isWwObject": true
+            },
+            {
+              "uid": "95ce860f-c137-4f2f-97ec-138e0b26b31f",
+              "isWwObject": true
+            },
+            {
+              "uid": "82e286a5-fcf9-45d4-88ff-49ceb8dffc7f",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Cash Buyers KPI 2",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2929
+    },
+    "ff5df209-36eb-4dea-bb9e-aa381fec0bda": {
+      "uid": "ff5df209-36eb-4dea-bb9e-aa381fec0bda",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "BUY BOXES"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "0.7px"
+        }
+      },
+      "name": "Cash Buyers KPI 3 Label",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2930
+    },
+    "0b47a08f-03e8-4028-b2a8-1400305ef527": {
+      "uid": "0b47a08f-03e8-4028-b2a8-1400305ef527",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "8px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "24"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "24px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Cash Buyers KPI 3 Value",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2931
+    },
+    "e144c1c6-911c-4113-8502-ca8dbec5059f": {
+      "uid": "e144c1c6-911c-4113-8502-ca8dbec5059f",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "6px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Saved acquisition criteria"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Cash Buyers KPI 3 Sub",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2932
+    },
+    "3587cf70-fe51-422b-8791-9e12d19a59ba": {
+      "uid": "3587cf70-fe51-422b-8791-9e12d19a59ba",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "display": "flex",
+            "padding": "17px",
+            "borderTop": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "borderRadius": "12px",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "ff5df209-36eb-4dea-bb9e-aa381fec0bda",
+              "isWwObject": true
+            },
+            {
+              "uid": "0b47a08f-03e8-4028-b2a8-1400305ef527",
+              "isWwObject": true
+            },
+            {
+              "uid": "e144c1c6-911c-4113-8502-ca8dbec5059f",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Cash Buyers KPI 3",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2933
+    },
+    "449b06bc-3289-40b6-ad04-4e54e25fce8e": {
+      "uid": "449b06bc-3289-40b6-ad04-4e54e25fce8e",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "MATCHES TODAY"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "0.7px"
+        }
+      },
+      "name": "Cash Buyers KPI 4 Label",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2934
+    },
+    "6a943d7c-59cc-4c5b-be90-5f05f0b3cb32": {
+      "uid": "6a943d7c-59cc-4c5b-be90-5f05f0b3cb32",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "8px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "14"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "24px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Cash Buyers KPI 4 Value",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2935
+    },
+    "6c8c4c64-6f72-4f6f-b6db-8b61cd585b9a": {
+      "uid": "6c8c4c64-6f72-4f6f-b6db-8b61cd585b9a",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "6px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Deals matching buyer demand"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Cash Buyers KPI 4 Sub",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2936
+    },
+    "92762410-e6bb-487c-9533-e444a384a032": {
+      "uid": "92762410-e6bb-487c-9533-e444a384a032",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "display": "flex",
+            "padding": "17px",
+            "borderTop": "3px solid var(--f325d1d5-41bf-4fea-bdc4-e18a2d9c68c6,#16A34A)",
+            "borderRadius": "12px",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "449b06bc-3289-40b6-ad04-4e54e25fce8e",
+              "isWwObject": true
+            },
+            {
+              "uid": "6a943d7c-59cc-4c5b-be90-5f05f0b3cb32",
+              "isWwObject": true
+            },
+            {
+              "uid": "6c8c4c64-6f72-4f6f-b6db-8b61cd585b9a",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Cash Buyers KPI 4",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2937
+    },
+    "e1cf88b5-ba0a-4667-a0fd-e35dc6248568": {
+      "uid": "e1cf88b5-ba0a-4667-a0fd-e35dc6248568",
+      "_state": {
+        "style": {
+          "mobile": {},
+          "tablet": {},
+          "default": {
+            "display": "grid",
+            "flexDirection": "column",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "mobile": {
+          "_ww-grid_columns": [
+            "1fr"
+          ]
+        },
+        "tablet": {
+          "_ww-grid_columns": [
+            "1fr",
+            "1fr"
+          ]
+        },
+        "default": {
+          "children": [
+            {
+              "uid": "383b35ab-a5e9-43ae-b46d-18b3c9ecae02",
+              "isWwObject": true
+            },
+            {
+              "uid": "4e0e15bf-d7f2-49a3-8fe3-a1b47a44bbfc",
+              "isWwObject": true
+            },
+            {
+              "uid": "3587cf70-fe51-422b-8791-9e12d19a59ba",
+              "isWwObject": true
+            },
+            {
+              "uid": "92762410-e6bb-487c-9533-e444a384a032",
+              "isWwObject": true
+            }
+          ],
+          "_ww-grid_rowGap": "14px",
+          "_ww-grid_columns": [
+            "1fr",
+            "1fr",
+            "1fr",
+            "1fr"
+          ],
+          "_ww-grid_columnGap": "14px"
+        }
+      },
+      "name": "Cash Buyers KPI Grid",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2938
+    },
+    "af52d545-499f-4314-899e-db3741541487": {
+      "uid": "af52d545-499f-4314-899e-db3741541487",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "16px 16px 10px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Buyer Database Fields"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "16px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Cash Buyers Primary Panel Title",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2939
+    },
+    "563890d9-d835-473d-8723-16972717e881": {
+      "uid": "563890d9-d835-473d-8723-16972717e881",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Identity"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Cash Buyers Item 1 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2940
+    },
+    "a41093b3-00fa-4a04-9a1f-7cbe95fc4c5e": {
+      "uid": "a41093b3-00fa-4a04-9a1f-7cbe95fc4c5e",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Name, entity, phone, email"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Cash Buyers Item 1 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2941
+    },
+    "f33a5589-05c0-4869-8e68-1d039b97bf0d": {
+      "uid": "f33a5589-05c0-4869-8e68-1d039b97bf0d",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "563890d9-d835-473d-8723-16972717e881",
+              "isWwObject": true
+            },
+            {
+              "uid": "a41093b3-00fa-4a04-9a1f-7cbe95fc4c5e",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Cash Buyers Workflow Item 1",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2942
+    },
+    "08eaf5be-a361-4653-98bb-f4f578bbc48e": {
+      "uid": "08eaf5be-a361-4653-98bb-f4f578bbc48e",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Market"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Cash Buyers Item 2 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2943
+    },
+    "1e193f52-4bd1-4d6c-b1cf-e67859c4f172": {
+      "uid": "1e193f52-4bd1-4d6c-b1cf-e67859c4f172",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Jacksonville / Duval ZIP targets"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Cash Buyers Item 2 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2944
+    },
+    "e54ab915-76aa-448b-b696-b4afcf4dc6d0": {
+      "uid": "e54ab915-76aa-448b-b696-b4afcf4dc6d0",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "08eaf5be-a361-4653-98bb-f4f578bbc48e",
+              "isWwObject": true
+            },
+            {
+              "uid": "1e193f52-4bd1-4d6c-b1cf-e67859c4f172",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Cash Buyers Workflow Item 2",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2945
+    },
+    "625552eb-644d-4096-8953-90a42601913a": {
+      "uid": "625552eb-644d-4096-8953-90a42601913a",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Buy Box"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Cash Buyers Item 3 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2946
+    },
+    "a5815a16-5eca-466d-9f66-9ff2aa8aa983": {
+      "uid": "a5815a16-5eca-466d-9f66-9ff2aa8aa983",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Price, beds/baths, property type, rehab tolerance"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Cash Buyers Item 3 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2947
+    },
+    "c687413a-e66e-459e-8535-6cfd2565549a": {
+      "uid": "c687413a-e66e-459e-8535-6cfd2565549a",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "625552eb-644d-4096-8953-90a42601913a",
+              "isWwObject": true
+            },
+            {
+              "uid": "a5815a16-5eca-466d-9f66-9ff2aa8aa983",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Cash Buyers Workflow Item 3",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2948
+    },
+    "61bcaac7-e2fa-4aa5-ba5d-cacb6dd586c9": {
+      "uid": "61bcaac7-e2fa-4aa5-ba5d-cacb6dd586c9",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Strategy"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Cash Buyers Item 4 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2949
+    },
+    "f96a6f54-407f-4fb2-bef9-c320d6937023": {
+      "uid": "f96a6f54-407f-4fb2-bef9-c320d6937023",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Flip, rental, BRRRR, infill / development"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Cash Buyers Item 4 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2950
+    },
+    "21deb26e-aee3-4017-8662-d929f42bbf9d": {
+      "uid": "21deb26e-aee3-4017-8662-d929f42bbf9d",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "61bcaac7-e2fa-4aa5-ba5d-cacb6dd586c9",
+              "isWwObject": true
+            },
+            {
+              "uid": "f96a6f54-407f-4fb2-bef9-c320d6937023",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Cash Buyers Workflow Item 4",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2951
+    },
+    "c0a5e7cf-0ac2-4851-8b5a-6eb78213a4c8": {
+      "uid": "c0a5e7cf-0ac2-4851-8b5a-6eb78213a4c8",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Proof of Funds"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Cash Buyers Item 5 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2952
+    },
+    "bc375753-bf9a-441c-bd8e-e4d658a1b5ca": {
+      "uid": "bc375753-bf9a-441c-bd8e-e4d658a1b5ca",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Status and expiration"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Cash Buyers Item 5 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2953
+    },
+    "09215e7d-58cb-4cec-9015-f3fb88bb11e4": {
+      "uid": "09215e7d-58cb-4cec-9015-f3fb88bb11e4",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "c0a5e7cf-0ac2-4851-8b5a-6eb78213a4c8",
+              "isWwObject": true
+            },
+            {
+              "uid": "bc375753-bf9a-441c-bd8e-e4d658a1b5ca",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Cash Buyers Workflow Item 5",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2954
+    },
+    "4853d9cb-548d-40b7-b246-d8dc192f7f53": {
+      "uid": "4853d9cb-548d-40b7-b246-d8dc192f7f53",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Activity"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Cash Buyers Item 6 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2955
+    },
+    "832755d0-0590-4b8f-8154-eac9f78c0891": {
+      "uid": "832755d0-0590-4b8f-8154-eac9f78c0891",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Deals viewed, offers, contracts and closes"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Cash Buyers Item 6 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2956
+    },
+    "de0632e5-6880-4d47-bb67-fd704d14c30e": {
+      "uid": "de0632e5-6880-4d47-bb67-fd704d14c30e",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "4853d9cb-548d-40b7-b246-d8dc192f7f53",
+              "isWwObject": true
+            },
+            {
+              "uid": "832755d0-0590-4b8f-8154-eac9f78c0891",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Cash Buyers Workflow Item 6",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2957
+    },
+    "40bb8b45-f5aa-412d-86d8-8ccf69073bd7": {
+      "uid": "40bb8b45-f5aa-412d-86d8-8ccf69073bd7",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "display": "flex",
+            "overflow": "hidden",
+            "borderRadius": "12px",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "af52d545-499f-4314-899e-db3741541487",
+              "isWwObject": true
+            },
+            {
+              "uid": "f33a5589-05c0-4869-8e68-1d039b97bf0d",
+              "isWwObject": true
+            },
+            {
+              "uid": "e54ab915-76aa-448b-b696-b4afcf4dc6d0",
+              "isWwObject": true
+            },
+            {
+              "uid": "c687413a-e66e-459e-8535-6cfd2565549a",
+              "isWwObject": true
+            },
+            {
+              "uid": "21deb26e-aee3-4017-8662-d929f42bbf9d",
+              "isWwObject": true
+            },
+            {
+              "uid": "09215e7d-58cb-4cec-9015-f3fb88bb11e4",
+              "isWwObject": true
+            },
+            {
+              "uid": "de0632e5-6880-4d47-bb67-fd704d14c30e",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Cash Buyers Primary Panel",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2958
+    },
+    "247394d3-d667-403f-a3d4-9a6fdc6babd4": {
+      "uid": "247394d3-d667-403f-a3d4-9a6fdc6babd4",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "16px 16px 8px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Disposition Priority"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "16px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Cash Buyers Secondary Panel Title",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2959
+    },
+    "7c2c43cc-e6f6-40cd-8599-c0ffd2aeb04f": {
+      "uid": "7c2c43cc-e6f6-40cd-8599-c0ffd2aeb04f",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "8px 16px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "• Prioritize buyers who purchased in the last 60 days"
+          },
+          "_ww-text_color": "var(--e133e327-b4a1-439d-be88-d91207b49f9d,#334155)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500",
+          "_ww-text_lineHeight": "1.45"
+        }
+      },
+      "name": "Cash Buyers Side Rule 1",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2960
+    },
+    "948b8152-26ca-4ffc-a0b6-e414fef5d322": {
+      "uid": "948b8152-26ca-4ffc-a0b6-e414fef5d322",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "8px 16px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "• Track responsiveness and close history"
+          },
+          "_ww-text_color": "var(--e133e327-b4a1-439d-be88-d91207b49f9d,#334155)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500",
+          "_ww-text_lineHeight": "1.45"
+        }
+      },
+      "name": "Cash Buyers Side Rule 2",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2961
+    },
+    "44587260-2365-46ed-895a-20c84c57258a": {
+      "uid": "44587260-2365-46ed-895a-20c84c57258a",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "8px 16px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "• Create one reusable buyer profile instead of duplicate lists"
+          },
+          "_ww-text_color": "var(--e133e327-b4a1-439d-be88-d91207b49f9d,#334155)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500",
+          "_ww-text_lineHeight": "1.45"
+        }
+      },
+      "name": "Cash Buyers Side Rule 3",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2962
+    },
+    "891e6db0-a1b3-4344-a8d1-643031e34d01": {
+      "uid": "891e6db0-a1b3-4344-a8d1-643031e34d01",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "8px 16px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "• Podio remains source of truth once connected"
+          },
+          "_ww-text_color": "var(--e133e327-b4a1-439d-be88-d91207b49f9d,#334155)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500",
+          "_ww-text_lineHeight": "1.45"
+        }
+      },
+      "name": "Cash Buyers Side Rule 4",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2963
+    },
+    "20f7d302-073e-469d-9c7d-cbe58247b121": {
+      "uid": "20f7d302-073e-469d-9c7d-cbe58247b121",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "12px 16px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "LIVE DATA: activates when Podio / provider connectors are authorized."
+          },
+          "_ww-text_color": "#92400E",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "0.5px"
+        }
+      },
+      "name": "Cash Buyers Data Ready Note",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2964
+    },
+    "581ea5e1-839d-412f-8105-9424aef86f32": {
+      "uid": "581ea5e1-839d-412f-8105-9424aef86f32",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "display": "flex",
+            "overflow": "hidden",
+            "borderRadius": "12px",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "247394d3-d667-403f-a3d4-9a6fdc6babd4",
+              "isWwObject": true
+            },
+            {
+              "uid": "7c2c43cc-e6f6-40cd-8599-c0ffd2aeb04f",
+              "isWwObject": true
+            },
+            {
+              "uid": "948b8152-26ca-4ffc-a0b6-e414fef5d322",
+              "isWwObject": true
+            },
+            {
+              "uid": "44587260-2365-46ed-895a-20c84c57258a",
+              "isWwObject": true
+            },
+            {
+              "uid": "891e6db0-a1b3-4344-a8d1-643031e34d01",
+              "isWwObject": true
+            },
+            {
+              "uid": "20f7d302-073e-469d-9c7d-cbe58247b121",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Cash Buyers Secondary Panel",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2965
+    },
+    "9863ea21-5af9-41ed-bbc0-fa01b4b678c2": {
+      "uid": "9863ea21-5af9-41ed-bbc0-fa01b4b678c2",
+      "_state": {
+        "style": {
+          "mobile": {},
+          "tablet": {},
+          "default": {
+            "display": "grid",
+            "flexDirection": "column",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "mobile": {
+          "_ww-grid_columns": [
+            "1fr"
+          ]
+        },
+        "tablet": {
+          "_ww-grid_columns": [
+            "1fr"
+          ]
+        },
+        "default": {
+          "children": [
+            {
+              "uid": "40bb8b45-f5aa-412d-86d8-8ccf69073bd7",
+              "isWwObject": true
+            },
+            {
+              "uid": "581ea5e1-839d-412f-8105-9424aef86f32",
+              "isWwObject": true
+            }
+          ],
+          "_ww-grid_rowGap": "16px",
+          "_ww-grid_columns": [
+            "1.7fr",
+            "1fr"
+          ],
+          "_ww-grid_columnGap": "16px"
+        }
+      },
+      "name": "Cash Buyers Content Grid",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2966
+    },
+    "1696a78e-7a84-4292-bc64-ceec738ae5c3": {
+      "uid": "1696a78e-7a84-4292-bc64-ceec738ae5c3",
+      "_state": {
+        "style": {
+          "mobile": {
+            "padding": "16px"
+          },
+          "default": {
+            "flex": "1",
+            "display": "flex",
+            "padding": "22px 28px",
+            "customCss": {
+              "overflowY": "auto"
+            },
+            "backgroundColor": "var(--dacf6d89-481f-4709-a2ec-c8b13d22e0af,#F8FAFC)",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "e1cf88b5-ba0a-4667-a0fd-e35dc6248568",
+              "isWwObject": true
+            },
+            {
+              "uid": "9863ea21-5af9-41ed-bbc0-fa01b4b678c2",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_rowGap": "18px",
+          "_ww-layout_columnGap": "18px",
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Cash Buyers Main Panel",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 2967
+    },
+    "66485f2c-c555-4d95-a955-0f17dd031796": {
+      "uid": "66485f2c-c555-4d95-a955-0f17dd031796",
+      "_state": {
+        "style": {
+          "default": {
+            "width": "100%",
+            "display": "block",
+            "minWidth": "0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "pinIcon": "lucide/map-pin",
+          "skyline": "https://u.realgeeks.media/nuviewrealty/Jacksonville_Skyline_Sunset_2.jpeg",
+          "tagIcon": "lucide/tag",
+          "bellIcon": "lucide/bell",
+          "fileIcon": "lucide/file-text",
+          "leftIcon": "lucide/chevron-left",
+          "logoIcon": "brand/elite-house-emblem",
+          "mailIcon": "lucide/mail",
+          "moreIcon": "lucide/ellipsis",
+          "plusIcon": "lucide/plus",
+          "sendIcon": "lucide/send",
+          "textIcon": "lucide/message-square",
+          "userIcon": "lucide/user",
+          "chartIcon": "lucide/chart-no-axes-combined",
+          "coinsIcon": "lucide/coins",
+          "crownIcon": "lucide/crown",
+          "houseIcon": "lucide/house",
+          "phoneIcon": "lucide/phone",
+          "rightIcon": "lucide/chevron-right",
+          "tasksIcon": "lucide/list-checks",
+          "usersIcon": "lucide/users",
+          "dollarIcon": "lucide/badge-dollar-sign",
+          "filterIcon": "lucide/filter",
+          "searchIcon": "lucide/search",
+          "calendarIcon": "lucide/calendar-days",
+          "databaseIcon": "lucide/database",
+          "settingsIcon": "lucide/settings",
+          "briefcaseIcon": "lucide/briefcase-business",
+          "buyerPortrait": "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=240&h=240&q=85",
+          "handshakeIcon": "lucide/handshake",
+          "megaphoneIcon": "lucide/megaphone",
+          "workspacePage": "cash-buyers"
+        }
+      },
+      "name": "Cash Buyers Reference Workspace",
+      "wwObjectBaseId": "f1b67d54-2716-43a4-a414-ab7f505c2ace",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 3270
+    },
+    "b8548e96-7c2f-43ee-82e5-a0aac7d96704": {
+      "uid": "b8548e96-7c2f-43ee-82e5-a0aac7d96704",
+      "_state": {
+        "style": {
+          "mobile": {
+            "display": "none"
+          },
+          "default": {
+            "top": "0px",
+            "width": "240px",
+            "height": "100vh",
+            "display": "flex",
+            "minWidth": "240px",
+            "position": "sticky",
+            "backgroundColor": "var(--606b9809-8abd-44ce-b314-0b0ba43271b7,#070B14)",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "f0935c0a-2ea6-4b29-9923-f5c164666622",
+              "isWwObject": true
+            },
+            {
+              "uid": "1fb33e49-c173-410b-ab74-96506c826be4",
+              "isWwObject": true
+            },
+            {
+              "uid": "bca71f20-e82b-4c5e-b399-b21fc66b274e",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Cash Buyers Sidebar",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 3271
+    },
+    "a39a55c1-d53d-4769-9ceb-2543337236a5": {
+      "uid": "a39a55c1-d53d-4769-9ceb-2543337236a5",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "22px 28px",
+            "borderBottom": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "de5febab-0f27-4330-b0e1-ccf222e95b42",
+              "isWwObject": true
+            },
+            {
+              "uid": "2c41f90e-e785-4f2c-bf18-35bb9fa94ea3",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row",
+          "_ww-layout_justifyContent": "space-between"
+        }
+      },
+      "name": "Cash Buyers Header",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 3272
+    },
+    "aabc452f-8e37-4c70-9bae-586481919e52": {
+      "uid": "aabc452f-8e37-4c70-9bae-586481919e52",
+      "_state": {
+        "style": {
+          "default": {
+            "flex": "1",
+            "height": "auto",
+            "display": "flex",
+            "minWidth": "0px",
+            "minHeight": "100vh",
+            "backgroundColor": "var(--702de9b1-4d57-47c9-8102-295901b861fa,#0A1128)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "66485f2c-c555-4d95-a955-0f17dd031796",
+              "isWwObject": true
+            },
+            {
+              "uid": "a39a55c1-d53d-4769-9ceb-2543337236a5",
+              "isWwObject": true
+            },
+            {
+              "uid": "1696a78e-7a84-4292-bc64-ceec738ae5c3",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Cash Buyers Main",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 3273
+    },
+    "hh-cmd-cash-buyers": {
+      "uid": "hh-cmd-cash-buyers",
+      "_state": {
+        "style": {
+          "default": {
+            "width": "100%",
+            "display": "block",
+            "minWidth": "0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "workspacePage": "cash-buyers",
+          "skyline": "https://u.realgeeks.media/nuviewrealty/Jacksonville_Skyline_Sunset_2.jpeg"
+        }
+      },
+      "name": "Cash Buyers Command Center Workspace",
+      "wwObjectBaseId": "f1b67d54-2716-43a4-a414-ab7f505c2ace",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "2a35d707-c659-4a5d-8210-664fa535a8a5",
+      "_si": 9999
+    }
+  },
+  "collections": [],
+  "variables": [],
+  "workflows": [],
+  "formulas": [],
+  "libraryComponents": []
+}

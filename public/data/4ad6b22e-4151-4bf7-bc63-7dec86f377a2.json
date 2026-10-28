@@ -1,0 +1,3599 @@
+{
+  "cacheVersion": "2",
+  "page": {
+    "id": "4ad6b22e-4151-4bf7-bc63-7dec86f377a2",
+    "paths": {
+      "en": "skip-tracing",
+      "default": "skip-tracing"
+    },
+    "cmsDataSetPath": null,
+    "workflows": [],
+    "_sm": [
+      2,
+      [],
+      [
+        [
+          2,
+          "ww-a-ah5kXiW44wImNtcA",
+          [
+            0
+          ]
+        ],
+        [
+          3,
+          "ww-a-0VjvCJ39bZQIpenG",
+          [
+            0
+          ]
+        ],
+        [
+          0,
+          "ww-a-GfbQibRQPgXgCmyn",
+          [
+            1,
+            4,
+            6,
+            8,
+            10,
+            12,
+            14,
+            16,
+            18,
+            20,
+            22,
+            24,
+            26,
+            28,
+            31,
+            33,
+            35,
+            37,
+            42,
+            48,
+            50,
+            53,
+            57,
+            58,
+            62,
+            68,
+            71,
+            74,
+            77,
+            80,
+            83
+          ]
+        ],
+        [
+          0,
+          "ww-a-YRfn88Fc_a_pUrQN",
+          [
+            2,
+            5,
+            7,
+            9,
+            11,
+            13,
+            15,
+            17,
+            19,
+            21,
+            23,
+            25,
+            27,
+            29,
+            32,
+            34,
+            36
+          ]
+        ],
+        [
+          0,
+          "ww-a-YF0k00I-Mi8zOhMt",
+          [
+            3,
+            40,
+            41,
+            46,
+            51,
+            52,
+            56,
+            61,
+            65,
+            70,
+            73,
+            76,
+            79,
+            82,
+            85,
+            95
+          ]
+        ],
+        [
+          0,
+          "ww-a-xcvtKf9v4YXjru0H",
+          [
+            30,
+            38,
+            39,
+            43,
+            44,
+            45,
+            54,
+            55,
+            59,
+            60,
+            63,
+            64,
+            69,
+            72,
+            75,
+            78,
+            81,
+            84
+          ]
+        ],
+        [
+          0,
+          "ww-a-JNYYuTsbWRUNLvfX",
+          [
+            47
+          ]
+        ],
+        [
+          0,
+          "ww-a-wepO1Mjw7DgHz3WK",
+          [
+            49,
+            66,
+            86,
+            93,
+            94
+          ]
+        ],
+        [
+          0,
+          "ww-a-jmcmduGw2BpHZ9RI",
+          [
+            67,
+            87,
+            88,
+            89,
+            90,
+            91,
+            92
+          ]
+        ],
+        [
+          0,
+          "ww-a-8BdkzjVNbpKFMJuw",
+          [
+            96
+          ]
+        ]
+      ]
+    ]
+  },
+  "sections": {
+    "86373344-f89d-47b0-9265-b6881c360eef": {
+      "uid": "86373344-f89d-47b0-9265-b6881c360eef",
+      "linkId": "a7c94379-3d75-4574-b40b-4a237743c3e5",
+      "_state": {
+        "style": {
+          "default": {
+            "width": "100%",
+            "display": "flex",
+            "maxWidth": "100%",
+            "customCss": {
+              "boxSizing": "border-box"
+            },
+            "minHeight": "100vh",
+            "fontFamily": "Plus Jakarta Sans",
+            "backgroundColor": "#041427"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "wwObjects": [
+            {
+              "uid": "hh-cmd-skip-tracing",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "sectionBaseId": "99586bd3-2b15-4d6b-a025-6a50d07ca845",
+      "sectionTitle": "Skip Tracing Page Shell",
+      "_si": 14
+    }
+  },
+  "wwObjects": {
+    "bb8bbf73-7e41-4ffb-abd2-542f4aa7159c": {
+      "uid": "bb8bbf73-7e41-4ffb-abd2-542f4aa7159c",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Dashboard"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Skip Tracing Nav Dashboard Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 1996
+    },
+    "4fc7099d-a5b7-4b22-8bd7-6ebc826290c9": {
+      "uid": "4fc7099d-a5b7-4b22-8bd7-6ebc826290c9",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "64b6f7f3-21a2-4e15-a6d3-80c2f4216ed2",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "bb8bbf73-7e41-4ffb-abd2-542f4aa7159c",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Skip Tracing Nav Dashboard",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 1997
+    },
+    "c3572283-371a-4817-9f20-cbdae2fe3e47": {
+      "uid": "c3572283-371a-4817-9f20-cbdae2fe3e47",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "13px 16px",
+            "borderTop": "1px solid #1E293B",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "9bea373f-965e-4779-a9d8-2ec114e03a91",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Skip Tracing Sidebar Footer",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 1998
+    },
+    "fe05676c-92bd-4d90-8ed9-3ba802596cfe": {
+      "uid": "fe05676c-92bd-4d90-8ed9-3ba802596cfe",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Seller Leads"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Skip Tracing Nav Seller Leads Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 1999
+    },
+    "a3a541d8-7f9f-4784-9298-06932f6fcd74": {
+      "uid": "a3a541d8-7f9f-4784-9298-06932f6fcd74",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "5ac8292b-4a7d-4552-ae7e-c099f194016f",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "fe05676c-92bd-4d90-8ed9-3ba802596cfe",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Skip Tracing Nav Seller Leads",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2000
+    },
+    "d14177d8-65a0-48a0-b1bc-38f45ada4658": {
+      "uid": "d14177d8-65a0-48a0-b1bc-38f45ada4658",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Acquisitions"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Skip Tracing Nav Acquisitions Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2001
+    },
+    "f5110da5-c8e0-4947-9113-80b5b4bf42d1": {
+      "uid": "f5110da5-c8e0-4947-9113-80b5b4bf42d1",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "f405dfa0-cbe5-4a9e-b76a-205819446a89",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "d14177d8-65a0-48a0-b1bc-38f45ada4658",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Skip Tracing Nav Acquisitions",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2002
+    },
+    "f1f3857d-1030-4c04-9453-22ca1c039aaf": {
+      "uid": "f1f3857d-1030-4c04-9453-22ca1c039aaf",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Dispositions"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Skip Tracing Nav Dispositions Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2003
+    },
+    "aef14626-cc50-4920-b0f1-a8bed3536f83": {
+      "uid": "aef14626-cc50-4920-b0f1-a8bed3536f83",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "a17a6122-e36c-4582-aa7d-a33451821a3f",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "f1f3857d-1030-4c04-9453-22ca1c039aaf",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Skip Tracing Nav Dispositions",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2004
+    },
+    "0a7736b7-c223-4f8d-aa88-500f0e800ca5": {
+      "uid": "0a7736b7-c223-4f8d-aa88-500f0e800ca5",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Cash Buyers"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Skip Tracing Nav Cash Buyers Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2005
+    },
+    "1ca57ddc-5443-4794-8a4d-1549fe5ab2d9": {
+      "uid": "1ca57ddc-5443-4794-8a4d-1549fe5ab2d9",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "b9987b36-cabf-4d22-a61f-bb1878fbd81a",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "0a7736b7-c223-4f8d-aa88-500f0e800ca5",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Skip Tracing Nav Cash Buyers",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2006
+    },
+    "ca4a6fb3-da57-4152-80f3-18ebfbfdb5f7": {
+      "uid": "ca4a6fb3-da57-4152-80f3-18ebfbfdb5f7",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Communications"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Skip Tracing Nav Communications Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2007
+    },
+    "7ae981ba-aa4f-4cf5-882f-adcc2b95d5fe": {
+      "uid": "7ae981ba-aa4f-4cf5-882f-adcc2b95d5fe",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "9d4b26e3-28a9-43e6-9b22-66f11b94aa1c",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "ca4a6fb3-da57-4152-80f3-18ebfbfdb5f7",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Skip Tracing Nav Communications",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2008
+    },
+    "3ec18a0a-db44-4951-b5bf-e7c3aba3d355": {
+      "uid": "3ec18a0a-db44-4951-b5bf-e7c3aba3d355",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Marketing"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Skip Tracing Nav Marketing Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2009
+    },
+    "a3bf42ec-f3a9-417e-b972-5f7cfa190513": {
+      "uid": "a3bf42ec-f3a9-417e-b972-5f7cfa190513",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "a2d0d91c-0e12-4dc0-b922-5858c7917ee3",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "3ec18a0a-db44-4951-b5bf-e7c3aba3d355",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Skip Tracing Nav Marketing",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2010
+    },
+    "c82c7763-4bb4-4220-a6c5-b3c5fcf4c6cf": {
+      "uid": "c82c7763-4bb4-4220-a6c5-b3c5fcf4c6cf",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "County Data"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Skip Tracing Nav County Data Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2011
+    },
+    "c6cb1317-8f60-4b7f-8eff-72918a50e3a5": {
+      "uid": "c6cb1317-8f60-4b7f-8eff-72918a50e3a5",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "87b38826-b41a-4950-95c2-afa18dec2b38",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "c82c7763-4bb4-4220-a6c5-b3c5fcf4c6cf",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Skip Tracing Nav County Data",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2012
+    },
+    "10cd69e9-a92e-4cbc-9b7b-1754afdef6ed": {
+      "uid": "10cd69e9-a92e-4cbc-9b7b-1754afdef6ed",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Skip Tracing"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Skip Tracing Nav Skip Tracing Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2013
+    },
+    "daa6a7bc-712a-4937-be5c-9812ccf3c557": {
+      "uid": "daa6a7bc-712a-4937-be5c-9812ccf3c557",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "4ad6b22e-4151-4bf7-bc63-7dec86f377a2",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "10cd69e9-a92e-4cbc-9b7b-1754afdef6ed",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Skip Tracing Nav Skip Tracing",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2014
+    },
+    "f6cbe233-e509-4bd5-b99e-c03d8916159f": {
+      "uid": "f6cbe233-e509-4bd5-b99e-c03d8916159f",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Contracts"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Skip Tracing Nav Contracts Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2015
+    },
+    "c57ba5c4-cbb6-4754-901b-e27b81eabb27": {
+      "uid": "c57ba5c4-cbb6-4754-901b-e27b81eabb27",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "d588127b-5b3e-4f99-a6dc-7a22ef7c128b",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "f6cbe233-e509-4bd5-b99e-c03d8916159f",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Skip Tracing Nav Contracts",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2016
+    },
+    "4a62a4fd-418d-4c81-9d4a-5142d7a43edb": {
+      "uid": "4a62a4fd-418d-4c81-9d4a-5142d7a43edb",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Follow Ups"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Skip Tracing Nav Follow Ups Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2017
+    },
+    "41abc752-5e97-4aa6-8386-77e34479eede": {
+      "uid": "41abc752-5e97-4aa6-8386-77e34479eede",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "e01977a5-5afc-427b-a25d-39b555fa3b0d",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "4a62a4fd-418d-4c81-9d4a-5142d7a43edb",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Skip Tracing Nav Follow Ups",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2018
+    },
+    "8b712f80-77b2-4284-950b-d1a51b1f5c30": {
+      "uid": "8b712f80-77b2-4284-950b-d1a51b1f5c30",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Analytics"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Skip Tracing Nav Analytics Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2019
+    },
+    "5ff64167-0ddd-4dac-9978-a619772bc996": {
+      "uid": "5ff64167-0ddd-4dac-9978-a619772bc996",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "dba9b37a-872b-4425-9993-79f3ceaadb92",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "8b712f80-77b2-4284-950b-d1a51b1f5c30",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Skip Tracing Nav Analytics",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2020
+    },
+    "430435fa-a9d4-43ce-aeec-687e0c2723c5": {
+      "uid": "430435fa-a9d4-43ce-aeec-687e0c2723c5",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Teams"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Skip Tracing Nav Team Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2021
+    },
+    "e1144161-aaff-43cf-8016-4360cdc98f24": {
+      "uid": "e1144161-aaff-43cf-8016-4360cdc98f24",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "0921099a-dc1e-4897-809d-bd39a527558d",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "430435fa-a9d4-43ce-aeec-687e0c2723c5",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Skip Tracing Nav Team",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2022
+    },
+    "1bc54357-f53d-42ed-9697-f6cf74f449bc": {
+      "uid": "1bc54357-f53d-42ed-9697-f6cf74f449bc",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Settings"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Skip Tracing Nav Settings Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2023
+    },
+    "7d8b2318-6c4a-40b4-a54d-72c478a01e06": {
+      "uid": "7d8b2318-6c4a-40b4-a54d-72c478a01e06",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "e2af833d-5f07-4ee1-a59b-5a41b3502933",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "1bc54357-f53d-42ed-9697-f6cf74f449bc",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Skip Tracing Nav Settings",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2024
+    },
+    "8227a3d4-f82c-4217-b1d7-353e6d889453": {
+      "uid": "8227a3d4-f82c-4217-b1d7-353e6d889453",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "12px 12px 6px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "SPECIALIZED TOOLS"
+          },
+          "_ww-text_color": "#64748B",
+          "_ww-text_fontSize": "9px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "1px"
+        }
+      },
+      "name": "Skip Tracing Tools Label",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2025
+    },
+    "8bd34f84-df3f-4ee3-a813-dbd3d87c6015": {
+      "uid": "8bd34f84-df3f-4ee3-a813-dbd3d87c6015",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Facebook Leads"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Skip Tracing Nav Facebook Leads Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2026
+    },
+    "e5d7877c-6b2c-40ea-8264-86fa5997a909": {
+      "uid": "e5d7877c-6b2c-40ea-8264-86fa5997a909",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "c6707652-6174-47b7-84a7-042a2dee960f",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "8px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "8bd34f84-df3f-4ee3-a813-dbd3d87c6015",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Skip Tracing Nav Facebook Leads",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2027
+    },
+    "70f8de25-2daa-4cd8-a817-d5b966026fc0": {
+      "uid": "70f8de25-2daa-4cd8-a817-d5b966026fc0",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Direct Mail"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Skip Tracing Nav Direct Mail Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2028
+    },
+    "f80b77c7-43f6-4cc9-b89d-a751f5a5fa49": {
+      "uid": "f80b77c7-43f6-4cc9-b89d-a751f5a5fa49",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "72fa8746-8396-4460-890f-36d72912cf95",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "8px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "70f8de25-2daa-4cd8-a817-d5b966026fc0",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Skip Tracing Nav Direct Mail",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2029
+    },
+    "a66de754-84ea-4ab3-8187-146f801f2ad9": {
+      "uid": "a66de754-84ea-4ab3-8187-146f801f2ad9",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Deal Analyzer"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Skip Tracing Nav Deal Analyzer Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2030
+    },
+    "1fbc3809-7b89-4e11-8971-56f955914bf9": {
+      "uid": "1fbc3809-7b89-4e11-8971-56f955914bf9",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "964e5528-8760-4680-938d-5b201255047c",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "8px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "a66de754-84ea-4ab3-8187-146f801f2ad9",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Skip Tracing Nav Deal Analyzer",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2031
+    },
+    "6063b24f-efc6-4c7a-88b8-bf9a05597050": {
+      "uid": "6063b24f-efc6-4c7a-88b8-bf9a05597050",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "HUSHHAWK INTELLIGENCE"
+          },
+          "_ww-text_color": "#94A3B8",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "700",
+          "_ww-text_letterSpacing": "1.2px"
+        }
+      },
+      "name": "Skip Tracing Brand Eyebrow",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2032
+    },
+    "ac2a2ae2-dd56-42f1-a4e3-4025adf12ee5": {
+      "uid": "ac2a2ae2-dd56-42f1-a4e3-4025adf12ee5",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "2px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "HUSHHAWK"
+          },
+          "_ww-text_color": "#FFFFFF",
+          "_ww-text_fontSize": "24px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Skip Tracing Brand Title",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2033
+    },
+    "3333f8f7-2739-4141-9c80-476e3c9125f9": {
+      "uid": "3333f8f7-2739-4141-9c80-476e3c9125f9",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "2px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Wholesale Command Center"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Skip Tracing Brand Sub",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2034
+    },
+    "95d7ee12-7057-4ff5-8aaf-6074d63adde3": {
+      "uid": "95d7ee12-7057-4ff5-8aaf-6074d63adde3",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "20px 18px 16px",
+            "borderBottom": "1px solid #1E293B",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "6063b24f-efc6-4c7a-88b8-bf9a05597050",
+              "isWwObject": true
+            },
+            {
+              "uid": "ac2a2ae2-dd56-42f1-a4e3-4025adf12ee5",
+              "isWwObject": true
+            },
+            {
+              "uid": "3333f8f7-2739-4141-9c80-476e3c9125f9",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Skip Tracing Sidebar Brand",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2035
+    },
+    "911fe7fe-4c34-4dd5-9193-e303ededfb5b": {
+      "uid": "911fe7fe-4c34-4dd5-9193-e303ededfb5b",
+      "_state": {
+        "style": {
+          "default": {
+            "flex": "1",
+            "display": "flex",
+            "padding": "10px 12px",
+            "customCss": {
+              "overflowY": "auto"
+            },
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "4fc7099d-a5b7-4b22-8bd7-6ebc826290c9",
+              "isWwObject": true
+            },
+            {
+              "uid": "a3a541d8-7f9f-4784-9298-06932f6fcd74",
+              "isWwObject": true
+            },
+            {
+              "uid": "f5110da5-c8e0-4947-9113-80b5b4bf42d1",
+              "isWwObject": true
+            },
+            {
+              "uid": "aef14626-cc50-4920-b0f1-a8bed3536f83",
+              "isWwObject": true
+            },
+            {
+              "uid": "1ca57ddc-5443-4794-8a4d-1549fe5ab2d9",
+              "isWwObject": true
+            },
+            {
+              "uid": "7ae981ba-aa4f-4cf5-882f-adcc2b95d5fe",
+              "isWwObject": true
+            },
+            {
+              "uid": "a3bf42ec-f3a9-417e-b972-5f7cfa190513",
+              "isWwObject": true
+            },
+            {
+              "uid": "c6cb1317-8f60-4b7f-8eff-72918a50e3a5",
+              "isWwObject": true
+            },
+            {
+              "uid": "daa6a7bc-712a-4937-be5c-9812ccf3c557",
+              "isWwObject": true
+            },
+            {
+              "uid": "c57ba5c4-cbb6-4754-901b-e27b81eabb27",
+              "isWwObject": true
+            },
+            {
+              "uid": "41abc752-5e97-4aa6-8386-77e34479eede",
+              "isWwObject": true
+            },
+            {
+              "uid": "5ff64167-0ddd-4dac-9978-a619772bc996",
+              "isWwObject": true
+            },
+            {
+              "uid": "e1144161-aaff-43cf-8016-4360cdc98f24",
+              "isWwObject": true
+            },
+            {
+              "uid": "7d8b2318-6c4a-40b4-a54d-72c478a01e06",
+              "isWwObject": true
+            },
+            {
+              "uid": "8227a3d4-f82c-4217-b1d7-353e6d889453",
+              "isWwObject": true
+            },
+            {
+              "uid": "e5d7877c-6b2c-40ea-8264-86fa5997a909",
+              "isWwObject": true
+            },
+            {
+              "uid": "f80b77c7-43f6-4cc9-b89d-a751f5a5fa49",
+              "isWwObject": true
+            },
+            {
+              "uid": "1fbc3809-7b89-4e11-8971-56f955914bf9",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Skip Tracing Sidebar Navigation",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2036
+    },
+    "9bea373f-965e-4779-a9d8-2ec114e03a91": {
+      "uid": "9bea373f-965e-4779-a9d8-2ec114e03a91",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "●  Podio sync pending"
+          },
+          "_ww-text_color": "#F59E0B",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Skip Tracing Podio Status",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2037
+    },
+    "129a75ae-a2ce-40ec-928a-d7c05cd18c33": {
+      "uid": "129a75ae-a2ce-40ec-928a-d7c05cd18c33",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "4px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Enrich records while tracking confidence, validation and data completeness."
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Skip Tracing Page Subtitle",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2038
+    },
+    "e0cbf302-a219-43ff-a9b8-0b74bc715e42": {
+      "uid": "e0cbf302-a219-43ff-a9b8-0b74bc715e42",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "8px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "88.4%"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "24px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Skip Tracing KPI 2 Value",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2039
+    },
+    "44dd1aae-30b0-4576-930a-475f7f2f241e": {
+      "uid": "44dd1aae-30b0-4576-930a-475f7f2f241e",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "6px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Validated phone results"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Skip Tracing KPI 2 Sub",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2040
+    },
+    "fb0c0324-6538-4150-9e7f-3f2316fb642e": {
+      "uid": "fb0c0324-6538-4150-9e7f-3f2316fb642e",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "display": "flex",
+            "padding": "17px",
+            "borderTop": "3px solid var(--b563c8ea-b5cd-4950-ac34-983a20eacf71,#DC2626)",
+            "borderRadius": "12px",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "03cbcb0b-f92b-4b89-963e-b9da867fd81d",
+              "isWwObject": true
+            },
+            {
+              "uid": "e0cbf302-a219-43ff-a9b8-0b74bc715e42",
+              "isWwObject": true
+            },
+            {
+              "uid": "44dd1aae-30b0-4576-930a-475f7f2f241e",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Skip Tracing KPI 2",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2041
+    },
+    "4e078a81-5c55-47fc-8f3e-b2c7b5339425": {
+      "uid": "4e078a81-5c55-47fc-8f3e-b2c7b5339425",
+      "_state": {
+        "style": {
+          "mobile": {
+            "display": "none"
+          },
+          "default": {
+            "top": "0px",
+            "width": "240px",
+            "height": "100vh",
+            "display": "flex",
+            "minWidth": "240px",
+            "position": "sticky",
+            "backgroundColor": "var(--606b9809-8abd-44ce-b314-0b0ba43271b7,#070B14)",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "95d7ee12-7057-4ff5-8aaf-6074d63adde3",
+              "isWwObject": true
+            },
+            {
+              "uid": "911fe7fe-4c34-4dd5-9193-e303ededfb5b",
+              "isWwObject": true
+            },
+            {
+              "uid": "c3572283-371a-4817-9f20-cbdae2fe3e47",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Skip Tracing Sidebar",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2042
+    },
+    "69a9aa22-2775-4be1-9265-abd83140f55f": {
+      "uid": "69a9aa22-2775-4be1-9265-abd83140f55f",
+      "_state": {
+        "style": {
+          "default": {
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Skip Tracing"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "27px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Skip Tracing Page Title",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2043
+    },
+    "8cfa1cbb-186f-47de-bb6b-712c8e35a5d4": {
+      "uid": "8cfa1cbb-186f-47de-bb6b-712c8e35a5d4",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "69a9aa22-2775-4be1-9265-abd83140f55f",
+              "isWwObject": true
+            },
+            {
+              "uid": "129a75ae-a2ce-40ec-928a-d7c05cd18c33",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Skip Tracing Title Wrap",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2044
+    },
+    "1074b335-a472-4243-9095-2c5ac28ed0be": {
+      "uid": "1074b335-a472-4243-9095-2c5ac28ed0be",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "HUSHHAWK • FRONT END READY"
+          },
+          "_ww-text_color": "#92400E",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "0.7px"
+        }
+      },
+      "name": "Skip Tracing Badge Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2045
+    },
+    "b32e3ae6-a12d-4980-b5e3-01be391127a4": {
+      "uid": "b32e3ae6-a12d-4980-b5e3-01be391127a4",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid #FDE68A",
+            "display": "flex",
+            "padding": "6px 9px",
+            "borderRadius": "999px",
+            "backgroundColor": "#FFFBEB"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "1074b335-a472-4243-9095-2c5ac28ed0be",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Skip Tracing Environment Badge",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2046
+    },
+    "32b13494-ff2d-402e-85de-ed8563124973": {
+      "uid": "32b13494-ff2d-402e-85de-ed8563124973",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "22px 28px",
+            "borderBottom": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "8cfa1cbb-186f-47de-bb6b-712c8e35a5d4",
+              "isWwObject": true
+            },
+            {
+              "uid": "b32e3ae6-a12d-4980-b5e3-01be391127a4",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row",
+          "_ww-layout_justifyContent": "space-between"
+        }
+      },
+      "name": "Skip Tracing Header",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2047
+    },
+    "f33704a9-20dd-41d4-ab32-9c14c79a2287": {
+      "uid": "f33704a9-20dd-41d4-ab32-9c14c79a2287",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "RECORDS IN"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "0.7px"
+        }
+      },
+      "name": "Skip Tracing KPI 1 Label",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2048
+    },
+    "c9eb8337-0976-41fc-979c-c609c74ac8ec": {
+      "uid": "c9eb8337-0976-41fc-979c-c609c74ac8ec",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "8px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "1,842"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "24px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Skip Tracing KPI 1 Value",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2049
+    },
+    "23602421-dcbd-459e-aa23-edc1ac2c8733": {
+      "uid": "23602421-dcbd-459e-aa23-edc1ac2c8733",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "6px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Owners / leads needing enrichment"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Skip Tracing KPI 1 Sub",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2050
+    },
+    "a858380d-9f58-4a36-ba64-ff0fce4b128e": {
+      "uid": "a858380d-9f58-4a36-ba64-ff0fce4b128e",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "display": "flex",
+            "padding": "17px",
+            "borderTop": "3px solid var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)",
+            "borderRadius": "12px",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "f33704a9-20dd-41d4-ab32-9c14c79a2287",
+              "isWwObject": true
+            },
+            {
+              "uid": "c9eb8337-0976-41fc-979c-c609c74ac8ec",
+              "isWwObject": true
+            },
+            {
+              "uid": "23602421-dcbd-459e-aa23-edc1ac2c8733",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Skip Tracing KPI 1",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2051
+    },
+    "03cbcb0b-f92b-4b89-963e-b9da867fd81d": {
+      "uid": "03cbcb0b-f92b-4b89-963e-b9da867fd81d",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "PHONE MATCH"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "0.7px"
+        }
+      },
+      "name": "Skip Tracing KPI 2 Label",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2052
+    },
+    "089eb413-7e82-4351-a862-63c3d3b546b3": {
+      "uid": "089eb413-7e82-4351-a862-63c3d3b546b3",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "EMAIL MATCH"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "0.7px"
+        }
+      },
+      "name": "Skip Tracing KPI 3 Label",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2053
+    },
+    "6fd5b20e-3b1e-4920-af9b-93e3aaa9ac15": {
+      "uid": "6fd5b20e-3b1e-4920-af9b-93e3aaa9ac15",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "8px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "74.2%"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "24px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Skip Tracing KPI 3 Value",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2054
+    },
+    "619edde0-4e6a-43ba-994a-1ca28ca740e7": {
+      "uid": "619edde0-4e6a-43ba-994a-1ca28ca740e7",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "6px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Validated email results"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Skip Tracing KPI 3 Sub",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2055
+    },
+    "53f58e84-9430-4369-9205-93d6e27dc7f9": {
+      "uid": "53f58e84-9430-4369-9205-93d6e27dc7f9",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "display": "flex",
+            "padding": "17px",
+            "borderTop": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "borderRadius": "12px",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "089eb413-7e82-4351-a862-63c3d3b546b3",
+              "isWwObject": true
+            },
+            {
+              "uid": "6fd5b20e-3b1e-4920-af9b-93e3aaa9ac15",
+              "isWwObject": true
+            },
+            {
+              "uid": "619edde0-4e6a-43ba-994a-1ca28ca740e7",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Skip Tracing KPI 3",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2056
+    },
+    "4726a6b2-876e-4f97-8b3e-918355498306": {
+      "uid": "4726a6b2-876e-4f97-8b3e-918355498306",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "COMPLETE RECORDS"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "0.7px"
+        }
+      },
+      "name": "Skip Tracing KPI 4 Label",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2057
+    },
+    "432ad1d2-b8cc-48f7-9556-eed9a5e8f4b4": {
+      "uid": "432ad1d2-b8cc-48f7-9556-eed9a5e8f4b4",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "8px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "1,320"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "24px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Skip Tracing KPI 4 Value",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2058
+    },
+    "f7e3d67c-0edf-4d5a-966f-337c9a132531": {
+      "uid": "f7e3d67c-0edf-4d5a-966f-337c9a132531",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "6px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Phone + email + address"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Skip Tracing KPI 4 Sub",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2059
+    },
+    "69efdb33-6eaa-4007-984e-09868a1a8037": {
+      "uid": "69efdb33-6eaa-4007-984e-09868a1a8037",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "display": "flex",
+            "padding": "17px",
+            "borderTop": "3px solid var(--f325d1d5-41bf-4fea-bdc4-e18a2d9c68c6,#16A34A)",
+            "borderRadius": "12px",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "4726a6b2-876e-4f97-8b3e-918355498306",
+              "isWwObject": true
+            },
+            {
+              "uid": "432ad1d2-b8cc-48f7-9556-eed9a5e8f4b4",
+              "isWwObject": true
+            },
+            {
+              "uid": "f7e3d67c-0edf-4d5a-966f-337c9a132531",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Skip Tracing KPI 4",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2060
+    },
+    "a196272a-8ed4-42e9-b870-f49a56ecc725": {
+      "uid": "a196272a-8ed4-42e9-b870-f49a56ecc725",
+      "_state": {
+        "style": {
+          "mobile": {},
+          "tablet": {},
+          "default": {
+            "display": "grid",
+            "flexDirection": "column",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "mobile": {
+          "_ww-grid_columns": [
+            "1fr"
+          ]
+        },
+        "tablet": {
+          "_ww-grid_columns": [
+            "1fr",
+            "1fr"
+          ]
+        },
+        "default": {
+          "children": [
+            {
+              "uid": "a858380d-9f58-4a36-ba64-ff0fce4b128e",
+              "isWwObject": true
+            },
+            {
+              "uid": "fb0c0324-6538-4150-9e7f-3f2316fb642e",
+              "isWwObject": true
+            },
+            {
+              "uid": "53f58e84-9430-4369-9205-93d6e27dc7f9",
+              "isWwObject": true
+            },
+            {
+              "uid": "69efdb33-6eaa-4007-984e-09868a1a8037",
+              "isWwObject": true
+            }
+          ],
+          "_ww-grid_rowGap": "14px",
+          "_ww-grid_columns": [
+            "1fr",
+            "1fr",
+            "1fr",
+            "1fr"
+          ],
+          "_ww-grid_columnGap": "14px"
+        }
+      },
+      "name": "Skip Tracing KPI Grid",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2061
+    },
+    "eb368010-6047-4e44-9330-5627a1c6cb66": {
+      "uid": "eb368010-6047-4e44-9330-5627a1c6cb66",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "16px 16px 10px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Enrichment Pipeline"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "16px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Skip Tracing Primary Panel Title",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2062
+    },
+    "99a30671-1e19-4f0b-bc63-51c4e83c7792": {
+      "uid": "99a30671-1e19-4f0b-bc63-51c4e83c7792",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Normalize"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Skip Tracing Item 1 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2063
+    },
+    "b24fd161-69e6-4d1a-9e0d-ea3f7ca854fd": {
+      "uid": "b24fd161-69e6-4d1a-9e0d-ea3f7ca854fd",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Standardize names, entities and addresses"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Skip Tracing Item 1 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2064
+    },
+    "24687329-88b5-48fc-bb13-d8dfbde4dfdd": {
+      "uid": "24687329-88b5-48fc-bb13-d8dfbde4dfdd",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "99a30671-1e19-4f0b-bc63-51c4e83c7792",
+              "isWwObject": true
+            },
+            {
+              "uid": "b24fd161-69e6-4d1a-9e0d-ea3f7ca854fd",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Skip Tracing Workflow Item 1",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2065
+    },
+    "ad52a1d6-8769-4e2b-b84e-860316bd8ffd": {
+      "uid": "ad52a1d6-8769-4e2b-b84e-860316bd8ffd",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Match"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Skip Tracing Item 2 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2066
+    },
+    "39694108-10e9-4eac-b474-99dea992f98b": {
+      "uid": "39694108-10e9-4eac-b474-99dea992f98b",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Resolve owner/person to contact candidates"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Skip Tracing Item 2 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2067
+    },
+    "4a8eed68-b4fd-4dd7-8baa-0de0cff8b4ac": {
+      "uid": "4a8eed68-b4fd-4dd7-8baa-0de0cff8b4ac",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "ad52a1d6-8769-4e2b-b84e-860316bd8ffd",
+              "isWwObject": true
+            },
+            {
+              "uid": "39694108-10e9-4eac-b474-99dea992f98b",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Skip Tracing Workflow Item 2",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2068
+    },
+    "69ffb72f-fc38-4d21-9689-7a54627f2868": {
+      "uid": "69ffb72f-fc38-4d21-9689-7a54627f2868",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Validate Phone"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Skip Tracing Item 3 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2069
+    },
+    "0c4569f0-0bc9-4b20-9acb-5146063dad71": {
+      "uid": "0c4569f0-0bc9-4b20-9acb-5146063dad71",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Line type, status and confidence"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Skip Tracing Item 3 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2070
+    },
+    "189ea234-aff0-4bbf-99aa-5db553999fb4": {
+      "uid": "189ea234-aff0-4bbf-99aa-5db553999fb4",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "69ffb72f-fc38-4d21-9689-7a54627f2868",
+              "isWwObject": true
+            },
+            {
+              "uid": "0c4569f0-0bc9-4b20-9acb-5146063dad71",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Skip Tracing Workflow Item 3",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2071
+    },
+    "b9e4e4f9-d663-4c91-bc80-ef156a85a099": {
+      "uid": "b9e4e4f9-d663-4c91-bc80-ef156a85a099",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Validate Email"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Skip Tracing Item 4 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2072
+    },
+    "cd491623-e6bf-45eb-bfe7-b7587911047c": {
+      "uid": "cd491623-e6bf-45eb-bfe7-b7587911047c",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Deliverability and identity confidence"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Skip Tracing Item 4 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2073
+    },
+    "10d096d3-1a3f-44e0-b232-458e7391c328": {
+      "uid": "10d096d3-1a3f-44e0-b232-458e7391c328",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "b9e4e4f9-d663-4c91-bc80-ef156a85a099",
+              "isWwObject": true
+            },
+            {
+              "uid": "cd491623-e6bf-45eb-bfe7-b7587911047c",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Skip Tracing Workflow Item 4",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2074
+    },
+    "a26b7fd5-675c-4be1-af4e-61c9bd9b7274": {
+      "uid": "a26b7fd5-675c-4be1-af4e-61c9bd9b7274",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Property Confirm"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Skip Tracing Item 5 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2075
+    },
+    "1dcbe551-efca-4f1f-9b75-3ea875b9fcde": {
+      "uid": "1dcbe551-efca-4f1f-9b75-3ea875b9fcde",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Ensure contact belongs to target owner/property"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Skip Tracing Item 5 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2076
+    },
+    "aecd94f5-40d1-4601-b630-8ac0701b861f": {
+      "uid": "aecd94f5-40d1-4601-b630-8ac0701b861f",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "a26b7fd5-675c-4be1-af4e-61c9bd9b7274",
+              "isWwObject": true
+            },
+            {
+              "uid": "1dcbe551-efca-4f1f-9b75-3ea875b9fcde",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Skip Tracing Workflow Item 5",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2077
+    },
+    "00d9b17e-69e0-443d-90a1-dd6b6063f80f": {
+      "uid": "00d9b17e-69e0-443d-90a1-dd6b6063f80f",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Score Completeness"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Skip Tracing Item 6 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2078
+    },
+    "5ea7cf83-42df-4b72-b873-0e8f907a094b": {
+      "uid": "5ea7cf83-42df-4b72-b873-0e8f907a094b",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Feed the 30% Data Completeness portion of lead score"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Skip Tracing Item 6 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2079
+    },
+    "66f7fe00-9636-408c-bfa4-18492933bdaf": {
+      "uid": "66f7fe00-9636-408c-bfa4-18492933bdaf",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "00d9b17e-69e0-443d-90a1-dd6b6063f80f",
+              "isWwObject": true
+            },
+            {
+              "uid": "5ea7cf83-42df-4b72-b873-0e8f907a094b",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Skip Tracing Workflow Item 6",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2080
+    },
+    "e572143c-a6ce-4f0c-84bb-16b23549ada4": {
+      "uid": "e572143c-a6ce-4f0c-84bb-16b23549ada4",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "display": "flex",
+            "overflow": "hidden",
+            "borderRadius": "12px",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "eb368010-6047-4e44-9330-5627a1c6cb66",
+              "isWwObject": true
+            },
+            {
+              "uid": "24687329-88b5-48fc-bb13-d8dfbde4dfdd",
+              "isWwObject": true
+            },
+            {
+              "uid": "4a8eed68-b4fd-4dd7-8baa-0de0cff8b4ac",
+              "isWwObject": true
+            },
+            {
+              "uid": "189ea234-aff0-4bbf-99aa-5db553999fb4",
+              "isWwObject": true
+            },
+            {
+              "uid": "10d096d3-1a3f-44e0-b232-458e7391c328",
+              "isWwObject": true
+            },
+            {
+              "uid": "aecd94f5-40d1-4601-b630-8ac0701b861f",
+              "isWwObject": true
+            },
+            {
+              "uid": "66f7fe00-9636-408c-bfa4-18492933bdaf",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Skip Tracing Primary Panel",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2081
+    },
+    "3ea02a18-5f04-4a8d-8820-0bd4184d17a1": {
+      "uid": "3ea02a18-5f04-4a8d-8820-0bd4184d17a1",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "16px 16px 8px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Data Quality Rules"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "16px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Skip Tracing Secondary Panel Title",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2082
+    },
+    "48ce8c3a-27f2-4ba2-b9fd-9bffcefbfa72": {
+      "uid": "48ce8c3a-27f2-4ba2-b9fd-9bffcefbfa72",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "8px 16px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "• Do not overwrite source data; append normalized/enriched values"
+          },
+          "_ww-text_color": "var(--e133e327-b4a1-439d-be88-d91207b49f9d,#334155)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500",
+          "_ww-text_lineHeight": "1.45"
+        }
+      },
+      "name": "Skip Tracing Side Rule 1",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2083
+    },
+    "b5c6581e-64bb-45e7-be7e-eca54db2b04f": {
+      "uid": "b5c6581e-64bb-45e7-be7e-eca54db2b04f",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "8px 16px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "• Keep provider and timestamp for every returned contact"
+          },
+          "_ww-text_color": "var(--e133e327-b4a1-439d-be88-d91207b49f9d,#334155)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500",
+          "_ww-text_lineHeight": "1.45"
+        }
+      },
+      "name": "Skip Tracing Side Rule 2",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2084
+    },
+    "ab45e640-d0ec-4408-9212-e524a464d5b3": {
+      "uid": "ab45e640-d0ec-4408-9212-e524a464d5b3",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "8px 16px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "• Deduplicate phone/email across repeated sources"
+          },
+          "_ww-text_color": "var(--e133e327-b4a1-439d-be88-d91207b49f9d,#334155)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500",
+          "_ww-text_lineHeight": "1.45"
+        }
+      },
+      "name": "Skip Tracing Side Rule 3",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2085
+    },
+    "43946029-0e99-4c4b-8a5f-92dcd104b4b6": {
+      "uid": "43946029-0e99-4c4b-8a5f-92dcd104b4b6",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "8px 16px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "• Flag low-confidence matches for manual review"
+          },
+          "_ww-text_color": "var(--e133e327-b4a1-439d-be88-d91207b49f9d,#334155)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500",
+          "_ww-text_lineHeight": "1.45"
+        }
+      },
+      "name": "Skip Tracing Side Rule 4",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2086
+    },
+    "bb6d4685-c12e-4047-a457-ef7311b7c33c": {
+      "uid": "bb6d4685-c12e-4047-a457-ef7311b7c33c",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "12px 16px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "LIVE DATA: activates when Podio / provider connectors are authorized."
+          },
+          "_ww-text_color": "#92400E",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "0.5px"
+        }
+      },
+      "name": "Skip Tracing Data Ready Note",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2087
+    },
+    "7f234101-5625-44e9-80e9-e11982013d90": {
+      "uid": "7f234101-5625-44e9-80e9-e11982013d90",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "display": "flex",
+            "overflow": "hidden",
+            "borderRadius": "12px",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "3ea02a18-5f04-4a8d-8820-0bd4184d17a1",
+              "isWwObject": true
+            },
+            {
+              "uid": "48ce8c3a-27f2-4ba2-b9fd-9bffcefbfa72",
+              "isWwObject": true
+            },
+            {
+              "uid": "b5c6581e-64bb-45e7-be7e-eca54db2b04f",
+              "isWwObject": true
+            },
+            {
+              "uid": "ab45e640-d0ec-4408-9212-e524a464d5b3",
+              "isWwObject": true
+            },
+            {
+              "uid": "43946029-0e99-4c4b-8a5f-92dcd104b4b6",
+              "isWwObject": true
+            },
+            {
+              "uid": "bb6d4685-c12e-4047-a457-ef7311b7c33c",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Skip Tracing Secondary Panel",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2088
+    },
+    "04a59647-7fdb-4b5f-8fe1-662068bc238d": {
+      "uid": "04a59647-7fdb-4b5f-8fe1-662068bc238d",
+      "_state": {
+        "style": {
+          "mobile": {},
+          "tablet": {},
+          "default": {
+            "display": "grid",
+            "flexDirection": "column",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "mobile": {
+          "_ww-grid_columns": [
+            "1fr"
+          ]
+        },
+        "tablet": {
+          "_ww-grid_columns": [
+            "1fr"
+          ]
+        },
+        "default": {
+          "children": [
+            {
+              "uid": "e572143c-a6ce-4f0c-84bb-16b23549ada4",
+              "isWwObject": true
+            },
+            {
+              "uid": "7f234101-5625-44e9-80e9-e11982013d90",
+              "isWwObject": true
+            }
+          ],
+          "_ww-grid_rowGap": "16px",
+          "_ww-grid_columns": [
+            "1.7fr",
+            "1fr"
+          ],
+          "_ww-grid_columnGap": "16px"
+        }
+      },
+      "name": "Skip Tracing Content Grid",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2089
+    },
+    "0f93d562-fd26-4c69-877c-5616c250d7ab": {
+      "uid": "0f93d562-fd26-4c69-877c-5616c250d7ab",
+      "_state": {
+        "style": {
+          "mobile": {
+            "padding": "16px"
+          },
+          "default": {
+            "flex": "1",
+            "display": "flex",
+            "padding": "22px 28px",
+            "customCss": {
+              "overflowY": "auto"
+            },
+            "backgroundColor": "var(--dacf6d89-481f-4709-a2ec-c8b13d22e0af,#F8FAFC)",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "hh-cmd-skip-tracing",
+              "isWwObject": true
+            },
+            {
+              "uid": "a196272a-8ed4-42e9-b870-f49a56ecc725",
+              "isWwObject": true
+            },
+            {
+              "uid": "04a59647-7fdb-4b5f-8fe1-662068bc238d",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_rowGap": "18px",
+          "_ww-layout_columnGap": "18px",
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Skip Tracing Main Panel",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 2090
+    },
+    "58523823-6925-4491-a8f8-467ddf9f8767": {
+      "uid": "58523823-6925-4491-a8f8-467ddf9f8767",
+      "_state": {
+        "style": {
+          "default": {
+            "flex": "1",
+            "height": "auto",
+            "display": "flex",
+            "minWidth": "0px",
+            "minHeight": "100vh",
+            "backgroundColor": "var(--dacf6d89-481f-4709-a2ec-c8b13d22e0af,#F8FAFC)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "32b13494-ff2d-402e-85de-ed8563124973",
+              "isWwObject": true
+            },
+            {
+              "uid": "0f93d562-fd26-4c69-877c-5616c250d7ab",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Skip Tracing Main",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 3263
+    },
+    "hh-cmd-skip-tracing": {
+      "uid": "hh-cmd-skip-tracing",
+      "_state": {
+        "style": {
+          "default": {
+            "width": "100%",
+            "display": "block",
+            "minWidth": "0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "workspacePage": "skip-tracing",
+          "skyline": "https://u.realgeeks.media/nuviewrealty/Jacksonville_Skyline_Sunset_2.jpeg"
+        }
+      },
+      "name": "Skip Tracing Command Center Workspace",
+      "wwObjectBaseId": "f1b67d54-2716-43a4-a414-ab7f505c2ace",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "86373344-f89d-47b0-9265-b6881c360eef",
+      "_si": 9999
+    }
+  },
+  "collections": [],
+  "variables": [],
+  "workflows": [],
+  "formulas": [],
+  "libraryComponents": []
+}

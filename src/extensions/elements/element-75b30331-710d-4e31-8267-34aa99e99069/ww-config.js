@@ -1,0 +1,1 @@
+export default {editor:{label:{en:'Elite County ZIP Maps'},icon:'map'},staticRendering:true,properties:{title:{label:{en:'Heading'},type:'Text',section:'settings',bindable:true,defaultValue:'Explore your markets',}},triggerEvents:[{name:'zipSelect',label:{en:'ZIP selected'},event:{zip:'',county:''}}]};

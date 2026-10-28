@@ -1,0 +1,3783 @@
+{
+  "cacheVersion": "2",
+  "page": {
+    "id": "72fa8746-8396-4460-890f-36d72912cf95",
+    "paths": {
+      "en": "direct-mail",
+      "default": "direct-mail"
+    },
+    "cmsDataSetPath": null,
+    "workflows": [],
+    "_sm": [
+      2,
+      [],
+      [
+        [
+          2,
+          "ww-a-ah5kXiW44wImNtcA",
+          [
+            0
+          ]
+        ],
+        [
+          3,
+          "ww-a-0VjvCJ39bZQIpenG",
+          [
+            0
+          ]
+        ],
+        [
+          0,
+          "ww-a-GfbQibRQPgXgCmyn",
+          [
+            1,
+            3,
+            5,
+            7,
+            9,
+            11,
+            13,
+            15,
+            17,
+            19,
+            21,
+            23,
+            25,
+            27,
+            30,
+            32,
+            34,
+            36,
+            41,
+            44,
+            47,
+            50,
+            54,
+            58,
+            62,
+            68,
+            71,
+            74,
+            77,
+            80,
+            83,
+            86,
+            89
+          ]
+        ],
+        [
+          0,
+          "ww-a-YRfn88Fc_a_pUrQN",
+          [
+            2,
+            4,
+            6,
+            8,
+            10,
+            12,
+            14,
+            16,
+            18,
+            20,
+            22,
+            24,
+            26,
+            28,
+            31,
+            33,
+            35
+          ]
+        ],
+        [
+          0,
+          "ww-a-xcvtKf9v4YXjru0H",
+          [
+            29,
+            37,
+            38,
+            45,
+            51,
+            52,
+            55,
+            56,
+            59,
+            60,
+            63,
+            64,
+            69,
+            72,
+            75,
+            78,
+            81,
+            84,
+            87,
+            90
+          ]
+        ],
+        [
+          0,
+          "ww-a-YF0k00I-Mi8zOhMt",
+          [
+            39,
+            40,
+            42,
+            48,
+            49,
+            53,
+            57,
+            61,
+            65,
+            70,
+            73,
+            76,
+            79,
+            82,
+            85,
+            88,
+            91,
+            101
+          ]
+        ],
+        [
+          0,
+          "ww-a-JNYYuTsbWRUNLvfX",
+          [
+            43
+          ]
+        ],
+        [
+          0,
+          "ww-a-wepO1Mjw7DgHz3WK",
+          [
+            46,
+            66,
+            92,
+            99,
+            100
+          ]
+        ],
+        [
+          0,
+          "ww-a-jmcmduGw2BpHZ9RI",
+          [
+            67,
+            93,
+            94,
+            95,
+            96,
+            97,
+            98
+          ]
+        ],
+        [
+          0,
+          "ww-a-8BdkzjVNbpKFMJuw",
+          [
+            102
+          ]
+        ]
+      ]
+    ]
+  },
+  "sections": {
+    "71a0e324-9688-4c10-831b-e8a2d5c112b0": {
+      "uid": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "linkId": "bbcd3f98-ebf4-49f7-b17e-a791525bf7e7",
+      "_state": {
+        "style": {
+          "default": {
+            "width": "100%",
+            "display": "flex",
+            "maxWidth": "100%",
+            "customCss": {
+              "boxSizing": "border-box"
+            },
+            "minHeight": "100vh",
+            "fontFamily": "Plus Jakarta Sans",
+            "backgroundColor": "#041427"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "wwObjects": [
+            {
+              "uid": "hh-cmd-direct-mail",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "sectionBaseId": "99586bd3-2b15-4d6b-a025-6a50d07ca845",
+      "sectionTitle": "Direct Mail Page Shell",
+      "_si": 9
+    }
+  },
+  "wwObjects": {
+    "e2bcf2b1-9f4b-4b2f-a894-801833f78095": {
+      "uid": "e2bcf2b1-9f4b-4b2f-a894-801833f78095",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Dashboard"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Direct Mail Nav Dashboard Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1793
+    },
+    "4328e9f5-fd54-4a84-87ce-c48c3c9d7781": {
+      "uid": "4328e9f5-fd54-4a84-87ce-c48c3c9d7781",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "64b6f7f3-21a2-4e15-a6d3-80c2f4216ed2",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "e2bcf2b1-9f4b-4b2f-a894-801833f78095",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Direct Mail Nav Dashboard",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1794
+    },
+    "86f23615-343b-4f86-a95e-baf6d86fb5c6": {
+      "uid": "86f23615-343b-4f86-a95e-baf6d86fb5c6",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Seller Leads"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Direct Mail Nav Seller Leads Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1795
+    },
+    "8934f520-7c52-460b-a0a8-780e8d3c1081": {
+      "uid": "8934f520-7c52-460b-a0a8-780e8d3c1081",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "5ac8292b-4a7d-4552-ae7e-c099f194016f",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "86f23615-343b-4f86-a95e-baf6d86fb5c6",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Direct Mail Nav Seller Leads",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1796
+    },
+    "45a65c4f-cfcd-42f7-acb9-a76fce2ed5e2": {
+      "uid": "45a65c4f-cfcd-42f7-acb9-a76fce2ed5e2",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Acquisitions"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Direct Mail Nav Acquisitions Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1797
+    },
+    "02d0cfc9-5a9f-494d-af70-75520098e16f": {
+      "uid": "02d0cfc9-5a9f-494d-af70-75520098e16f",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "f405dfa0-cbe5-4a9e-b76a-205819446a89",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "45a65c4f-cfcd-42f7-acb9-a76fce2ed5e2",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Direct Mail Nav Acquisitions",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1798
+    },
+    "c043f333-646b-4374-b245-cb5dfc8fc1c5": {
+      "uid": "c043f333-646b-4374-b245-cb5dfc8fc1c5",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Dispositions"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Direct Mail Nav Dispositions Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1799
+    },
+    "c355c0f1-b37d-4ed3-bf70-c45443ff531b": {
+      "uid": "c355c0f1-b37d-4ed3-bf70-c45443ff531b",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "a17a6122-e36c-4582-aa7d-a33451821a3f",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "c043f333-646b-4374-b245-cb5dfc8fc1c5",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Direct Mail Nav Dispositions",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1800
+    },
+    "807a861c-c5bb-49f1-ad51-a936b29a5a0f": {
+      "uid": "807a861c-c5bb-49f1-ad51-a936b29a5a0f",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Cash Buyers"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Direct Mail Nav Cash Buyers Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1801
+    },
+    "34296fb8-b212-4ef3-a0ff-162b100eef6c": {
+      "uid": "34296fb8-b212-4ef3-a0ff-162b100eef6c",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "b9987b36-cabf-4d22-a61f-bb1878fbd81a",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "807a861c-c5bb-49f1-ad51-a936b29a5a0f",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Direct Mail Nav Cash Buyers",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1805
+    },
+    "1a3af826-3f4e-491f-9870-0e2668eba2bd": {
+      "uid": "1a3af826-3f4e-491f-9870-0e2668eba2bd",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Communications"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Direct Mail Nav Communications Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1806
+    },
+    "85e16145-6f61-432e-9b42-09e2fdbd6c5c": {
+      "uid": "85e16145-6f61-432e-9b42-09e2fdbd6c5c",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "9d4b26e3-28a9-43e6-9b22-66f11b94aa1c",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "1a3af826-3f4e-491f-9870-0e2668eba2bd",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Direct Mail Nav Communications",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1807
+    },
+    "f81ce892-f939-4b63-984e-99438a305451": {
+      "uid": "f81ce892-f939-4b63-984e-99438a305451",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Marketing"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Direct Mail Nav Marketing Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1808
+    },
+    "de1112d1-3348-4b9c-8e22-c0403f47c3bc": {
+      "uid": "de1112d1-3348-4b9c-8e22-c0403f47c3bc",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "a2d0d91c-0e12-4dc0-b922-5858c7917ee3",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "f81ce892-f939-4b63-984e-99438a305451",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Direct Mail Nav Marketing",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1809
+    },
+    "61931852-547d-41d3-9af2-beab8428d141": {
+      "uid": "61931852-547d-41d3-9af2-beab8428d141",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "County Data"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Direct Mail Nav County Data Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1810
+    },
+    "afe9c5cf-e767-45ce-951c-6ad9e30c6ce5": {
+      "uid": "afe9c5cf-e767-45ce-951c-6ad9e30c6ce5",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "87b38826-b41a-4950-95c2-afa18dec2b38",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "61931852-547d-41d3-9af2-beab8428d141",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Direct Mail Nav County Data",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1811
+    },
+    "58cb430c-c532-470b-874d-a79eccd54778": {
+      "uid": "58cb430c-c532-470b-874d-a79eccd54778",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Skip Tracing"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Direct Mail Nav Skip Tracing Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1812
+    },
+    "aed225ba-77ef-4860-bd19-78f302176eeb": {
+      "uid": "aed225ba-77ef-4860-bd19-78f302176eeb",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "4ad6b22e-4151-4bf7-bc63-7dec86f377a2",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "58cb430c-c532-470b-874d-a79eccd54778",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Direct Mail Nav Skip Tracing",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1813
+    },
+    "859e0de3-9053-47db-9176-83c3c4ebcc24": {
+      "uid": "859e0de3-9053-47db-9176-83c3c4ebcc24",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Contracts"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Direct Mail Nav Contracts Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1814
+    },
+    "914f9ff7-f08d-4c13-a3ca-02ed4b667fc0": {
+      "uid": "914f9ff7-f08d-4c13-a3ca-02ed4b667fc0",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "d588127b-5b3e-4f99-a6dc-7a22ef7c128b",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "859e0de3-9053-47db-9176-83c3c4ebcc24",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Direct Mail Nav Contracts",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1815
+    },
+    "15c6cdaf-4124-4c49-b8a8-21f11a6c4753": {
+      "uid": "15c6cdaf-4124-4c49-b8a8-21f11a6c4753",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Follow Ups"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Direct Mail Nav Follow Ups Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1816
+    },
+    "a26c10fc-1fd9-4ca1-b0ad-2442631e90af": {
+      "uid": "a26c10fc-1fd9-4ca1-b0ad-2442631e90af",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "e01977a5-5afc-427b-a25d-39b555fa3b0d",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "15c6cdaf-4124-4c49-b8a8-21f11a6c4753",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Direct Mail Nav Follow Ups",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1817
+    },
+    "6a322bf4-3cae-4cbe-ab53-160e5d87aa16": {
+      "uid": "6a322bf4-3cae-4cbe-ab53-160e5d87aa16",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Analytics"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Direct Mail Nav Analytics Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1818
+    },
+    "4d032ea3-e81f-4220-95fc-2e2781bc3e29": {
+      "uid": "4d032ea3-e81f-4220-95fc-2e2781bc3e29",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "dba9b37a-872b-4425-9993-79f3ceaadb92",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "6a322bf4-3cae-4cbe-ab53-160e5d87aa16",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Direct Mail Nav Analytics",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1819
+    },
+    "9797e2ef-7a6d-4919-bcc4-3ad4a552552f": {
+      "uid": "9797e2ef-7a6d-4919-bcc4-3ad4a552552f",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Team"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Direct Mail Nav Team Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1820
+    },
+    "b7db4032-edd6-4ce1-bee9-f5f6483b3048": {
+      "uid": "b7db4032-edd6-4ce1-bee9-f5f6483b3048",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "0921099a-dc1e-4897-809d-bd39a527558d",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "9797e2ef-7a6d-4919-bcc4-3ad4a552552f",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Direct Mail Nav Team",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1821
+    },
+    "b9ceda94-944d-4d4e-bced-335998988663": {
+      "uid": "b9ceda94-944d-4d4e-bced-335998988663",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Settings"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Direct Mail Nav Settings Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1822
+    },
+    "7d19ad49-9dfb-410b-99a3-7652bb6e915e": {
+      "uid": "7d19ad49-9dfb-410b-99a3-7652bb6e915e",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "e2af833d-5f07-4ee1-a59b-5a41b3502933",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "b9ceda94-944d-4d4e-bced-335998988663",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Direct Mail Nav Settings",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1823
+    },
+    "4d9f79fe-51ce-4976-86b9-1070cd6a2aa9": {
+      "uid": "4d9f79fe-51ce-4976-86b9-1070cd6a2aa9",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "12px 12px 6px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "SPECIALIZED TOOLS"
+          },
+          "_ww-text_color": "#64748B",
+          "_ww-text_fontSize": "9px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "1px"
+        }
+      },
+      "name": "Direct Mail Tools Label",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1824
+    },
+    "652f05d7-da86-4eca-9684-55b8314f6fcc": {
+      "uid": "652f05d7-da86-4eca-9684-55b8314f6fcc",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Facebook Leads"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Direct Mail Nav Facebook Leads Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1825
+    },
+    "3bae296e-f0c7-42ef-94cc-1e7c5e87c230": {
+      "uid": "3bae296e-f0c7-42ef-94cc-1e7c5e87c230",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "c6707652-6174-47b7-84a7-042a2dee960f",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "8px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "652f05d7-da86-4eca-9684-55b8314f6fcc",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Direct Mail Nav Facebook Leads",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1826
+    },
+    "4e1869d1-215d-4ae1-b2c9-a33253fa8e40": {
+      "uid": "4e1869d1-215d-4ae1-b2c9-a33253fa8e40",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Direct Mail"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Direct Mail Nav Direct Mail Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1827
+    },
+    "688c31b7-64b0-4ced-8f4f-3d43b4cd8542": {
+      "uid": "688c31b7-64b0-4ced-8f4f-3d43b4cd8542",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "72fa8746-8396-4460-890f-36d72912cf95",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "8px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "4e1869d1-215d-4ae1-b2c9-a33253fa8e40",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Direct Mail Nav Direct Mail",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1828
+    },
+    "b51cc286-667c-4b0b-8ba8-6b527e7c583c": {
+      "uid": "b51cc286-667c-4b0b-8ba8-6b527e7c583c",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Deal Analyzer"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Direct Mail Nav Deal Analyzer Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1829
+    },
+    "d1b4153b-23d8-4c3f-886d-d9fbb95b6aec": {
+      "uid": "d1b4153b-23d8-4c3f-886d-d9fbb95b6aec",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "964e5528-8760-4680-938d-5b201255047c",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "8px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "b51cc286-667c-4b0b-8ba8-6b527e7c583c",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Direct Mail Nav Deal Analyzer",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1830
+    },
+    "7b65e9a7-7261-456e-a273-5008a92512a1": {
+      "uid": "7b65e9a7-7261-456e-a273-5008a92512a1",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "HUSHHAWK INTELLIGENCE"
+          },
+          "_ww-text_color": "#94A3B8",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "700",
+          "_ww-text_letterSpacing": "1.2px"
+        }
+      },
+      "name": "Direct Mail Brand Eyebrow",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1831
+    },
+    "18013c8a-67eb-4749-8400-15a45464a097": {
+      "uid": "18013c8a-67eb-4749-8400-15a45464a097",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "2px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "HUSHHAWK"
+          },
+          "_ww-text_color": "#FFFFFF",
+          "_ww-text_fontSize": "24px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Direct Mail Brand Title",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1832
+    },
+    "875ffccf-56ab-46a8-8273-88318d076958": {
+      "uid": "875ffccf-56ab-46a8-8273-88318d076958",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "2px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Wholesale Command Center"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Direct Mail Brand Sub",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1833
+    },
+    "b448df70-1d94-4a62-b148-3d1447b9350a": {
+      "uid": "b448df70-1d94-4a62-b148-3d1447b9350a",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "20px 18px 16px",
+            "borderBottom": "1px solid #1E293B",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "7b65e9a7-7261-456e-a273-5008a92512a1",
+              "isWwObject": true
+            },
+            {
+              "uid": "18013c8a-67eb-4749-8400-15a45464a097",
+              "isWwObject": true
+            },
+            {
+              "uid": "875ffccf-56ab-46a8-8273-88318d076958",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Direct Mail Sidebar Brand",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1834
+    },
+    "3e1bf95a-be20-4705-92a5-4a7637f80c2f": {
+      "uid": "3e1bf95a-be20-4705-92a5-4a7637f80c2f",
+      "_state": {
+        "style": {
+          "default": {
+            "flex": "1",
+            "display": "flex",
+            "padding": "10px 12px",
+            "customCss": {
+              "overflowY": "auto"
+            },
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "4328e9f5-fd54-4a84-87ce-c48c3c9d7781",
+              "isWwObject": true
+            },
+            {
+              "uid": "8934f520-7c52-460b-a0a8-780e8d3c1081",
+              "isWwObject": true
+            },
+            {
+              "uid": "02d0cfc9-5a9f-494d-af70-75520098e16f",
+              "isWwObject": true
+            },
+            {
+              "uid": "c355c0f1-b37d-4ed3-bf70-c45443ff531b",
+              "isWwObject": true
+            },
+            {
+              "uid": "34296fb8-b212-4ef3-a0ff-162b100eef6c",
+              "isWwObject": true
+            },
+            {
+              "uid": "85e16145-6f61-432e-9b42-09e2fdbd6c5c",
+              "isWwObject": true
+            },
+            {
+              "uid": "de1112d1-3348-4b9c-8e22-c0403f47c3bc",
+              "isWwObject": true
+            },
+            {
+              "uid": "afe9c5cf-e767-45ce-951c-6ad9e30c6ce5",
+              "isWwObject": true
+            },
+            {
+              "uid": "aed225ba-77ef-4860-bd19-78f302176eeb",
+              "isWwObject": true
+            },
+            {
+              "uid": "914f9ff7-f08d-4c13-a3ca-02ed4b667fc0",
+              "isWwObject": true
+            },
+            {
+              "uid": "a26c10fc-1fd9-4ca1-b0ad-2442631e90af",
+              "isWwObject": true
+            },
+            {
+              "uid": "4d032ea3-e81f-4220-95fc-2e2781bc3e29",
+              "isWwObject": true
+            },
+            {
+              "uid": "b7db4032-edd6-4ce1-bee9-f5f6483b3048",
+              "isWwObject": true
+            },
+            {
+              "uid": "7d19ad49-9dfb-410b-99a3-7652bb6e915e",
+              "isWwObject": true
+            },
+            {
+              "uid": "4d9f79fe-51ce-4976-86b9-1070cd6a2aa9",
+              "isWwObject": true
+            },
+            {
+              "uid": "3bae296e-f0c7-42ef-94cc-1e7c5e87c230",
+              "isWwObject": true
+            },
+            {
+              "uid": "688c31b7-64b0-4ced-8f4f-3d43b4cd8542",
+              "isWwObject": true
+            },
+            {
+              "uid": "d1b4153b-23d8-4c3f-886d-d9fbb95b6aec",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Direct Mail Sidebar Navigation",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1835
+    },
+    "11b67a95-9f65-42c6-b51d-e0dfe3cf174d": {
+      "uid": "11b67a95-9f65-42c6-b51d-e0dfe3cf174d",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "●  Podio sync pending"
+          },
+          "_ww-text_color": "#F59E0B",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Direct Mail Podio Status",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1836
+    },
+    "90fd967a-8ce2-482b-b2de-72e1815b07fc": {
+      "uid": "90fd967a-8ce2-482b-b2de-72e1815b07fc",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "13px 16px",
+            "borderTop": "1px solid #1E293B",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "11b67a95-9f65-42c6-b51d-e0dfe3cf174d",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Direct Mail Sidebar Footer",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1837
+    },
+    "799f8ab6-28f8-47cd-9a13-2ab5da1a6797": {
+      "uid": "799f8ab6-28f8-47cd-9a13-2ab5da1a6797",
+      "_state": {
+        "style": {
+          "mobile": {
+            "display": "none"
+          },
+          "default": {
+            "top": "0px",
+            "width": "240px",
+            "height": "100vh",
+            "display": "flex",
+            "minWidth": "240px",
+            "position": "sticky",
+            "backgroundColor": "var(--606b9809-8abd-44ce-b314-0b0ba43271b7,#070B14)",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "b448df70-1d94-4a62-b148-3d1447b9350a",
+              "isWwObject": true
+            },
+            {
+              "uid": "3e1bf95a-be20-4705-92a5-4a7637f80c2f",
+              "isWwObject": true
+            },
+            {
+              "uid": "90fd967a-8ce2-482b-b2de-72e1815b07fc",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Direct Mail Sidebar",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1838
+    },
+    "57b6f8fb-494f-4308-a0a7-6363311e497f": {
+      "uid": "57b6f8fb-494f-4308-a0a7-6363311e497f",
+      "_state": {
+        "style": {
+          "default": {
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Direct Mail Command Center"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "27px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Direct Mail Page Title",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1839
+    },
+    "211bd366-0580-41b1-8138-0df91ba2d4b1": {
+      "uid": "211bd366-0580-41b1-8138-0df91ba2d4b1",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "4px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Control lists, letters, Mail IDs, batches and CRM attribution from source data through response."
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Direct Mail Page Subtitle",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1840
+    },
+    "9a3a7610-cdf4-45af-a081-e997f5aea56a": {
+      "uid": "9a3a7610-cdf4-45af-a081-e997f5aea56a",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "57b6f8fb-494f-4308-a0a7-6363311e497f",
+              "isWwObject": true
+            },
+            {
+              "uid": "211bd366-0580-41b1-8138-0df91ba2d4b1",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Direct Mail Title Wrap",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1841
+    },
+    "068c36dc-f8f5-418f-986f-52c5cf572b65": {
+      "uid": "068c36dc-f8f5-418f-986f-52c5cf572b65",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "HUSHHAWK • FRONT END READY"
+          },
+          "_ww-text_color": "#92400E",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "0.7px"
+        }
+      },
+      "name": "Direct Mail Badge Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1842
+    },
+    "3a0ffb57-c3af-4c6d-8456-7621a6085ab4": {
+      "uid": "3a0ffb57-c3af-4c6d-8456-7621a6085ab4",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid #FDE68A",
+            "display": "flex",
+            "padding": "6px 9px",
+            "borderRadius": "999px",
+            "backgroundColor": "#FFFBEB"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "068c36dc-f8f5-418f-986f-52c5cf572b65",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Direct Mail Environment Badge",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1843
+    },
+    "a286b67f-cc70-4b27-9203-699eafa211cb": {
+      "uid": "a286b67f-cc70-4b27-9203-699eafa211cb",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "22px 28px",
+            "borderBottom": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "9a3a7610-cdf4-45af-a081-e997f5aea56a",
+              "isWwObject": true
+            },
+            {
+              "uid": "3a0ffb57-c3af-4c6d-8456-7621a6085ab4",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row",
+          "_ww-layout_justifyContent": "space-between"
+        }
+      },
+      "name": "Direct Mail Header",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1844
+    },
+    "e016a1cc-1a99-435d-98e0-ca3fd7f8af45": {
+      "uid": "e016a1cc-1a99-435d-98e0-ca3fd7f8af45",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "ACTIVE BATCHES"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "0.7px"
+        }
+      },
+      "name": "Direct Mail KPI 1 Label",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1845
+    },
+    "fb80a9b9-9670-4116-9fdb-c2d293038101": {
+      "uid": "fb80a9b9-9670-4116-9fdb-c2d293038101",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "8px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "6"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "24px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Direct Mail KPI 1 Value",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1846
+    },
+    "df2a97c4-98df-4b33-8c3a-45f500128257": {
+      "uid": "df2a97c4-98df-4b33-8c3a-45f500128257",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "6px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Mail runs in production"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Direct Mail KPI 1 Sub",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1847
+    },
+    "e66492af-8eab-4a48-8496-e855cb324dcf": {
+      "uid": "e66492af-8eab-4a48-8496-e855cb324dcf",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "display": "flex",
+            "padding": "17px",
+            "borderTop": "3px solid var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)",
+            "borderRadius": "12px",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "e016a1cc-1a99-435d-98e0-ca3fd7f8af45",
+              "isWwObject": true
+            },
+            {
+              "uid": "fb80a9b9-9670-4116-9fdb-c2d293038101",
+              "isWwObject": true
+            },
+            {
+              "uid": "df2a97c4-98df-4b33-8c3a-45f500128257",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Direct Mail KPI 1",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1848
+    },
+    "ad9f447e-8fdb-488f-82f0-eed925b2d41a": {
+      "uid": "ad9f447e-8fdb-488f-82f0-eed925b2d41a",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "RECORDS QUEUED"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "0.7px"
+        }
+      },
+      "name": "Direct Mail KPI 2 Label",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1849
+    },
+    "acc9e246-41cf-452d-ae2c-361fbe0b61cf": {
+      "uid": "acc9e246-41cf-452d-ae2c-361fbe0b61cf",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "8px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "4,850"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "24px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Direct Mail KPI 2 Value",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1850
+    },
+    "49bf8cc9-30a8-4baa-947b-facdd00f6622": {
+      "uid": "49bf8cc9-30a8-4baa-947b-facdd00f6622",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "6px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Validated owners to mail"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Direct Mail KPI 2 Sub",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1851
+    },
+    "70f8d381-fd1b-44c6-b4d3-e030ad5418ce": {
+      "uid": "70f8d381-fd1b-44c6-b4d3-e030ad5418ce",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "display": "flex",
+            "padding": "17px",
+            "borderTop": "3px solid var(--b563c8ea-b5cd-4950-ac34-983a20eacf71,#DC2626)",
+            "borderRadius": "12px",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "ad9f447e-8fdb-488f-82f0-eed925b2d41a",
+              "isWwObject": true
+            },
+            {
+              "uid": "acc9e246-41cf-452d-ae2c-361fbe0b61cf",
+              "isWwObject": true
+            },
+            {
+              "uid": "49bf8cc9-30a8-4baa-947b-facdd00f6622",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Direct Mail KPI 2",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1852
+    },
+    "9df1485c-9d6d-4675-aaf6-ec8f8dc216c6": {
+      "uid": "9df1485c-9d6d-4675-aaf6-ec8f8dc216c6",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "RESPONSES"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "0.7px"
+        }
+      },
+      "name": "Direct Mail KPI 3 Label",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1853
+    },
+    "619827a7-63e9-408d-bc32-d48e88389ca9": {
+      "uid": "619827a7-63e9-408d-bc32-d48e88389ca9",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "8px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "142"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "24px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Direct Mail KPI 3 Value",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1854
+    },
+    "8d658cd2-6aa3-4985-a3bc-af7a37f208e9": {
+      "uid": "8d658cd2-6aa3-4985-a3bc-af7a37f208e9",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "6px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Calls/forms matched to Mail IDs"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Direct Mail KPI 3 Sub",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1855
+    },
+    "196cb26a-2a59-4a16-958f-beb582aa9bbd": {
+      "uid": "196cb26a-2a59-4a16-958f-beb582aa9bbd",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "display": "flex",
+            "padding": "17px",
+            "borderTop": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "borderRadius": "12px",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "9df1485c-9d6d-4675-aaf6-ec8f8dc216c6",
+              "isWwObject": true
+            },
+            {
+              "uid": "619827a7-63e9-408d-bc32-d48e88389ca9",
+              "isWwObject": true
+            },
+            {
+              "uid": "8d658cd2-6aa3-4985-a3bc-af7a37f208e9",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Direct Mail KPI 3",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1856
+    },
+    "f7729946-35ee-437e-8528-7611a6d80ed1": {
+      "uid": "f7729946-35ee-437e-8528-7611a6d80ed1",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "CONTRACTS"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "0.7px"
+        }
+      },
+      "name": "Direct Mail KPI 4 Label",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1857
+    },
+    "aded784b-2b1b-4a04-9523-b22ff30663fd": {
+      "uid": "aded784b-2b1b-4a04-9523-b22ff30663fd",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "8px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "14"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "24px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Direct Mail KPI 4 Value",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1858
+    },
+    "8d9ec597-370d-4cdf-aa04-cd5b8b6c5f8c": {
+      "uid": "8d9ec597-370d-4cdf-aa04-cd5b8b6c5f8c",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "6px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Deals attributed to mail"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Direct Mail KPI 4 Sub",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1859
+    },
+    "36b06769-5009-490f-9a84-9491f246100e": {
+      "uid": "36b06769-5009-490f-9a84-9491f246100e",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "display": "flex",
+            "padding": "17px",
+            "borderTop": "3px solid var(--f325d1d5-41bf-4fea-bdc4-e18a2d9c68c6,#16A34A)",
+            "borderRadius": "12px",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "f7729946-35ee-437e-8528-7611a6d80ed1",
+              "isWwObject": true
+            },
+            {
+              "uid": "aded784b-2b1b-4a04-9523-b22ff30663fd",
+              "isWwObject": true
+            },
+            {
+              "uid": "8d9ec597-370d-4cdf-aa04-cd5b8b6c5f8c",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Direct Mail KPI 4",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1860
+    },
+    "035ad18c-5d0f-4252-872a-169b070702e0": {
+      "uid": "035ad18c-5d0f-4252-872a-169b070702e0",
+      "_state": {
+        "style": {
+          "mobile": {},
+          "tablet": {},
+          "default": {
+            "display": "grid",
+            "flexDirection": "column",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "mobile": {
+          "_ww-grid_columns": [
+            "1fr"
+          ]
+        },
+        "tablet": {
+          "_ww-grid_columns": [
+            "1fr",
+            "1fr"
+          ]
+        },
+        "default": {
+          "children": [
+            {
+              "uid": "e66492af-8eab-4a48-8496-e855cb324dcf",
+              "isWwObject": true
+            },
+            {
+              "uid": "70f8d381-fd1b-44c6-b4d3-e030ad5418ce",
+              "isWwObject": true
+            },
+            {
+              "uid": "196cb26a-2a59-4a16-958f-beb582aa9bbd",
+              "isWwObject": true
+            },
+            {
+              "uid": "36b06769-5009-490f-9a84-9491f246100e",
+              "isWwObject": true
+            }
+          ],
+          "_ww-grid_rowGap": "14px",
+          "_ww-grid_columns": [
+            "1fr",
+            "1fr",
+            "1fr",
+            "1fr"
+          ],
+          "_ww-grid_columnGap": "14px"
+        }
+      },
+      "name": "Direct Mail KPI Grid",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1861
+    },
+    "5acacd6c-c984-4628-bbc6-affcc1e924f9": {
+      "uid": "5acacd6c-c984-4628-bbc6-affcc1e924f9",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "16px 16px 10px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Owned Direct-Mail Workflow"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "16px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Direct Mail Primary Panel Title",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1862
+    },
+    "643d1ff1-7831-4c89-992d-54fd62420c4b": {
+      "uid": "643d1ff1-7831-4c89-992d-54fd62420c4b",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Source Data"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Direct Mail Item 1 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1863
+    },
+    "5819ae3c-0ba0-4ffe-a14d-7a63a7d9de32": {
+      "uid": "5819ae3c-0ba0-4ffe-a14d-7a63a7d9de32",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Duval Property Appraiser / targeted CSV"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Direct Mail Item 1 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1864
+    },
+    "5ea1c817-7d1e-4b72-8bde-10e7f5b49f02": {
+      "uid": "5ea1c817-7d1e-4b72-8bde-10e7f5b49f02",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "643d1ff1-7831-4c89-992d-54fd62420c4b",
+              "isWwObject": true
+            },
+            {
+              "uid": "5819ae3c-0ba0-4ffe-a14d-7a63a7d9de32",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Direct Mail Workflow Item 1",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1865
+    },
+    "545e602c-b8ab-4e17-b82f-1424d99aff55": {
+      "uid": "545e602c-b8ab-4e17-b82f-1424d99aff55",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Python Clean"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Direct Mail Item 2 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1866
+    },
+    "b1bfda07-2d3b-4207-9343-b5029da7eadc": {
+      "uid": "b1bfda07-2d3b-4207-9343-b5029da7eadc",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Normalize, deduplicate and validate owner/property/mailing fields"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Direct Mail Item 2 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1867
+    },
+    "04238063-8197-45b2-981c-5b6cbf91e5d2": {
+      "uid": "04238063-8197-45b2-981c-5b6cbf91e5d2",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "545e602c-b8ab-4e17-b82f-1424d99aff55",
+              "isWwObject": true
+            },
+            {
+              "uid": "b1bfda07-2d3b-4207-9343-b5029da7eadc",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Direct Mail Workflow Item 2",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1868
+    },
+    "9dad2f4b-140c-4695-b9bc-e4cc6d5e8c84": {
+      "uid": "9dad2f4b-140c-4695-b9bc-e4cc6d5e8c84",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Permanent IDs"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Direct Mail Item 3 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1869
+    },
+    "95223218-01cc-4e71-aee1-65807b2b75ee": {
+      "uid": "95223218-01cc-4e71-aee1-65807b2b75ee",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Generate Mail_ID and Batch_ID"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Direct Mail Item 3 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1870
+    },
+    "2fb865b6-301d-421e-a6c8-660219153335": {
+      "uid": "2fb865b6-301d-421e-a6c8-660219153335",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "9dad2f4b-140c-4695-b9bc-e4cc6d5e8c84",
+              "isWwObject": true
+            },
+            {
+              "uid": "95223218-01cc-4e71-aee1-65807b2b75ee",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Direct Mail Workflow Item 3",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1871
+    },
+    "6d24d93a-1ca8-44ea-8a31-9ae06342f650": {
+      "uid": "6d24d93a-1ca8-44ea-8a31-9ae06342f650",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Document Build"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Direct Mail Item 4 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1872
+    },
+    "d52b9bb6-ca60-4038-a4e0-ffb3a9f83c5d": {
+      "uid": "d52b9bb6-ca60-4038-a4e0-ffb3a9f83c5d",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Editable Word/PDF templates"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Direct Mail Item 4 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1873
+    },
+    "494c6ae7-520c-4af2-8d07-83cc30aae238": {
+      "uid": "494c6ae7-520c-4af2-8d07-83cc30aae238",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "6d24d93a-1ca8-44ea-8a31-9ae06342f650",
+              "isWwObject": true
+            },
+            {
+              "uid": "d52b9bb6-ca60-4038-a4e0-ffb3a9f83c5d",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Direct Mail Workflow Item 4",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1874
+    },
+    "53eb0dbf-348c-4f91-b3cd-ae95e84c35c7": {
+      "uid": "53eb0dbf-348c-4f91-b3cd-ae95e84c35c7",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Formax Output"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Direct Mail Item 5 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1875
+    },
+    "0984cbdf-5cfb-436a-b42b-7ca78343630a": {
+      "uid": "0984cbdf-5cfb-436a-b42b-7ca78343630a",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Window-envelope ready grouping and inserter profile"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Direct Mail Item 5 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1876
+    },
+    "37a7dede-792c-430e-a58d-0ae62107c46c": {
+      "uid": "37a7dede-792c-430e-a58d-0ae62107c46c",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "53eb0dbf-348c-4f91-b3cd-ae95e84c35c7",
+              "isWwObject": true
+            },
+            {
+              "uid": "0984cbdf-5cfb-436a-b42b-7ca78343630a",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Direct Mail Workflow Item 5",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1877
+    },
+    "4ee2e398-b658-4c9d-8539-b228c2cd5b85": {
+      "uid": "4ee2e398-b658-4c9d-8539-b228c2cd5b85",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "CRM Push"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Direct Mail Item 6 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1878
+    },
+    "32183d5e-e875-407c-b2f3-4a5502421ed6": {
+      "uid": "32183d5e-e875-407c-b2f3-4a5502421ed6",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Podio item ID, campaign, sequence and status"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Direct Mail Item 6 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1879
+    },
+    "2c189fb3-e1d1-4be5-87c9-46e5b11b9e61": {
+      "uid": "2c189fb3-e1d1-4be5-87c9-46e5b11b9e61",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "4ee2e398-b658-4c9d-8539-b228c2cd5b85",
+              "isWwObject": true
+            },
+            {
+              "uid": "32183d5e-e875-407c-b2f3-4a5502421ed6",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Direct Mail Workflow Item 6",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1880
+    },
+    "1705e42c-321f-49e6-a985-45a33563f4dd": {
+      "uid": "1705e42c-321f-49e6-a985-45a33563f4dd",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Response Match"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Direct Mail Item 7 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1881
+    },
+    "2fbff382-aa22-4338-ba16-d6c5a355409a": {
+      "uid": "2fbff382-aa22-4338-ba16-d6c5a355409a",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Tie inbound lead back to Mail_ID"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Direct Mail Item 7 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1882
+    },
+    "c574f627-0158-4089-8bb6-59bf98d9c74a": {
+      "uid": "c574f627-0158-4089-8bb6-59bf98d9c74a",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "1705e42c-321f-49e6-a985-45a33563f4dd",
+              "isWwObject": true
+            },
+            {
+              "uid": "2fbff382-aa22-4338-ba16-d6c5a355409a",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Direct Mail Workflow Item 7",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1883
+    },
+    "5c77de03-b9db-47a0-a35f-33227ab64959": {
+      "uid": "5c77de03-b9db-47a0-a35f-33227ab64959",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "History"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Direct Mail Item 8 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1884
+    },
+    "ad2c3e02-e091-42b9-b2cd-4fe14889fc5e": {
+      "uid": "ad2c3e02-e091-42b9-b2cd-4fe14889fc5e",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Reprint, error report, batch manifest and backups"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Direct Mail Item 8 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1885
+    },
+    "d94ec49a-8177-4798-ad18-1816849fa64a": {
+      "uid": "d94ec49a-8177-4798-ad18-1816849fa64a",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "5c77de03-b9db-47a0-a35f-33227ab64959",
+              "isWwObject": true
+            },
+            {
+              "uid": "ad2c3e02-e091-42b9-b2cd-4fe14889fc5e",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Direct Mail Workflow Item 8",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1886
+    },
+    "e35956be-4b1b-4ad3-ae10-493b10b81594": {
+      "uid": "e35956be-4b1b-4ad3-ae10-493b10b81594",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "display": "flex",
+            "overflow": "hidden",
+            "borderRadius": "12px",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "5acacd6c-c984-4628-bbc6-affcc1e924f9",
+              "isWwObject": true
+            },
+            {
+              "uid": "5ea1c817-7d1e-4b72-8bde-10e7f5b49f02",
+              "isWwObject": true
+            },
+            {
+              "uid": "04238063-8197-45b2-981c-5b6cbf91e5d2",
+              "isWwObject": true
+            },
+            {
+              "uid": "2fb865b6-301d-421e-a6c8-660219153335",
+              "isWwObject": true
+            },
+            {
+              "uid": "494c6ae7-520c-4af2-8d07-83cc30aae238",
+              "isWwObject": true
+            },
+            {
+              "uid": "37a7dede-792c-430e-a58d-0ae62107c46c",
+              "isWwObject": true
+            },
+            {
+              "uid": "2c189fb3-e1d1-4be5-87c9-46e5b11b9e61",
+              "isWwObject": true
+            },
+            {
+              "uid": "c574f627-0158-4089-8bb6-59bf98d9c74a",
+              "isWwObject": true
+            },
+            {
+              "uid": "d94ec49a-8177-4798-ad18-1816849fa64a",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Direct Mail Primary Panel",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1887
+    },
+    "e7f6d808-6b6b-4557-b276-0b850cd0ea2e": {
+      "uid": "e7f6d808-6b6b-4557-b276-0b850cd0ea2e",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "16px 16px 8px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Ownership Controls"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "16px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Direct Mail Secondary Panel Title",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1888
+    },
+    "d52c8e54-23d9-41e8-9eb9-b18944755146": {
+      "uid": "d52c8e54-23d9-41e8-9eb9-b18944755146",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "8px 16px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "• HushHawk Intelligence owns source code, credentials, templates and data"
+          },
+          "_ww-text_color": "var(--e133e327-b4a1-439d-be88-d91207b49f9d,#334155)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500",
+          "_ww-text_lineHeight": "1.45"
+        }
+      },
+      "name": "Direct Mail Side Rule 1",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1889
+    },
+    "8271ba24-44b2-44d7-b2e3-25eb268bbc2b": {
+      "uid": "8271ba24-44b2-44d7-b2e3-25eb268bbc2b",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "8px 16px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "• Keep a master SQLite/CSV history independent of any vendor"
+          },
+          "_ww-text_color": "var(--e133e327-b4a1-439d-be88-d91207b49f9d,#334155)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500",
+          "_ww-text_lineHeight": "1.45"
+        }
+      },
+      "name": "Direct Mail Side Rule 2",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1890
+    },
+    "788341f5-0c21-4499-af44-d12b8b5af616": {
+      "uid": "788341f5-0c21-4499-af44-d12b8b5af616",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "8px 16px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "• Field-mapping screen must stay configurable"
+          },
+          "_ww-text_color": "var(--e133e327-b4a1-439d-be88-d91207b49f9d,#334155)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500",
+          "_ww-text_lineHeight": "1.45"
+        }
+      },
+      "name": "Direct Mail Side Rule 3",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1891
+    },
+    "0a627278-7518-4131-ac0b-78facbe49783": {
+      "uid": "0a627278-7518-4131-ac0b-78facbe49783",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "8px 16px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "• No developer lock-in"
+          },
+          "_ww-text_color": "var(--e133e327-b4a1-439d-be88-d91207b49f9d,#334155)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500",
+          "_ww-text_lineHeight": "1.45"
+        }
+      },
+      "name": "Direct Mail Side Rule 4",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1892
+    },
+    "67a24c6e-2b90-450b-999c-4a1eb645f224": {
+      "uid": "67a24c6e-2b90-450b-999c-4a1eb645f224",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "12px 16px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "LIVE DATA: activates when Podio / provider connectors are authorized."
+          },
+          "_ww-text_color": "#92400E",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "0.5px"
+        }
+      },
+      "name": "Direct Mail Data Ready Note",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1893
+    },
+    "f7ad1ca9-b67a-4668-813b-11f978c341c8": {
+      "uid": "f7ad1ca9-b67a-4668-813b-11f978c341c8",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "display": "flex",
+            "overflow": "hidden",
+            "borderRadius": "12px",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "e7f6d808-6b6b-4557-b276-0b850cd0ea2e",
+              "isWwObject": true
+            },
+            {
+              "uid": "d52c8e54-23d9-41e8-9eb9-b18944755146",
+              "isWwObject": true
+            },
+            {
+              "uid": "8271ba24-44b2-44d7-b2e3-25eb268bbc2b",
+              "isWwObject": true
+            },
+            {
+              "uid": "788341f5-0c21-4499-af44-d12b8b5af616",
+              "isWwObject": true
+            },
+            {
+              "uid": "0a627278-7518-4131-ac0b-78facbe49783",
+              "isWwObject": true
+            },
+            {
+              "uid": "67a24c6e-2b90-450b-999c-4a1eb645f224",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Direct Mail Secondary Panel",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1894
+    },
+    "466e4312-43bf-4a1c-8164-1ae33e210998": {
+      "uid": "466e4312-43bf-4a1c-8164-1ae33e210998",
+      "_state": {
+        "style": {
+          "mobile": {},
+          "tablet": {},
+          "default": {
+            "display": "grid",
+            "flexDirection": "column",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "mobile": {
+          "_ww-grid_columns": [
+            "1fr"
+          ]
+        },
+        "tablet": {
+          "_ww-grid_columns": [
+            "1fr"
+          ]
+        },
+        "default": {
+          "children": [
+            {
+              "uid": "e35956be-4b1b-4ad3-ae10-493b10b81594",
+              "isWwObject": true
+            },
+            {
+              "uid": "f7ad1ca9-b67a-4668-813b-11f978c341c8",
+              "isWwObject": true
+            }
+          ],
+          "_ww-grid_rowGap": "16px",
+          "_ww-grid_columns": [
+            "1.7fr",
+            "1fr"
+          ],
+          "_ww-grid_columnGap": "16px"
+        }
+      },
+      "name": "Direct Mail Content Grid",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1895
+    },
+    "0767ffb1-776d-460b-b4a5-e29c366d8336": {
+      "uid": "0767ffb1-776d-460b-b4a5-e29c366d8336",
+      "_state": {
+        "style": {
+          "mobile": {
+            "padding": "16px"
+          },
+          "default": {
+            "flex": "1",
+            "display": "flex",
+            "padding": "22px 28px",
+            "customCss": {
+              "overflowY": "auto"
+            },
+            "backgroundColor": "var(--dacf6d89-481f-4709-a2ec-c8b13d22e0af,#F8FAFC)",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "hh-cmd-direct-mail",
+              "isWwObject": true
+            },
+            {
+              "uid": "035ad18c-5d0f-4252-872a-169b070702e0",
+              "isWwObject": true
+            },
+            {
+              "uid": "466e4312-43bf-4a1c-8164-1ae33e210998",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_rowGap": "18px",
+          "_ww-layout_columnGap": "18px",
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Direct Mail Main Panel",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 1896
+    },
+    "a071ffc7-cf8e-4baf-83a0-848971532b35": {
+      "uid": "a071ffc7-cf8e-4baf-83a0-848971532b35",
+      "_state": {
+        "style": {
+          "default": {
+            "flex": "1",
+            "height": "auto",
+            "display": "flex",
+            "minWidth": "0px",
+            "minHeight": "100vh",
+            "backgroundColor": "var(--dacf6d89-481f-4709-a2ec-c8b13d22e0af,#F8FAFC)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "a286b67f-cc70-4b27-9203-699eafa211cb",
+              "isWwObject": true
+            },
+            {
+              "uid": "0767ffb1-776d-460b-b4a5-e29c366d8336",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Direct Mail Main",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 3266
+    },
+    "hh-cmd-direct-mail": {
+      "uid": "hh-cmd-direct-mail",
+      "_state": {
+        "style": {
+          "default": {
+            "width": "100%",
+            "display": "block",
+            "minWidth": "0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "workspacePage": "direct-mail",
+          "skyline": "https://u.realgeeks.media/nuviewrealty/Jacksonville_Skyline_Sunset_2.jpeg"
+        }
+      },
+      "name": "Direct Mail Command Center Workspace",
+      "wwObjectBaseId": "f1b67d54-2716-43a4-a414-ab7f505c2ace",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "71a0e324-9688-4c10-831b-e8a2d5c112b0",
+      "_si": 9999
+    }
+  },
+  "collections": [],
+  "variables": [],
+  "workflows": [],
+  "formulas": [],
+  "libraryComponents": []
+}

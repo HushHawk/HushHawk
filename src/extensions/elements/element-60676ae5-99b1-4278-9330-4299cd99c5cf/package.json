@@ -1,0 +1,19 @@
+{
+  "name": "@weweb-internal/ext-element-60676ae5-99b1-4278-9330-4299cd99c5cf",
+  "version": "1.2.0",
+  "dependencies": {
+    "@fullcalendar/core": "6.1.17",
+    "@fullcalendar/daygrid": "6.1.17",
+    "@fullcalendar/interaction": "6.1.17",
+    "@fullcalendar/list": "6.1.17",
+    "@fullcalendar/luxon3": "6.1.17",
+    "@fullcalendar/multimonth": "6.1.17",
+    "@fullcalendar/timegrid": "6.1.17",
+    "@fullcalendar/vue3": "6.1.17"
+  },
+  "private": true,
+  "exports": {
+    ".": "./src/wwElement.vue",
+    "./config": "./ww-config.js"
+  }
+}

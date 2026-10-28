@@ -1,0 +1,1 @@
+export default {editor:{label:{en:'Elite Command Dashboard'},icon:'chart-bar'},staticRendering:true,properties:{skyline:{label:{en:'Jacksonville skyline'},type:'Image',section:'settings',bindable:true,defaultValue:'https://u.realgeeks.media/nuviewrealty/Jacksonville_Skyline_Sunset_2.jpeg',}}};
