@@ -712,15 +712,16 @@ export default {
 .topbar {
   position: relative;
   z-index: 1000;
-  height: 54px;
+  height: 56px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-left: 5px solid #0066cc;
   padding: 0 1.5rem;
-  background: rgba(4, 24, 45, 0.85);
-  backdrop-filter: blur(8px);
+  background: #04182d;
+  box-sizing: border-box;
 }
 
 .mobile-menu {
