@@ -153,32 +153,77 @@ apiRouter.get('/properties', async (req, res) => {
     }
 });
 
-apiRouter.get('/properties/:id', (req, res) => {
-    const prop = db.data.core.properties.find(p => p.property_id === req.params.id);
-    if (!prop) return res.status(404).json({ error: 'Property not found' });
+apiRouter.get('/properties/:id', async (req, res) => {
+    try {
+        const { rows } = await pool.query(
+            `SELECT p.*, c.county_code FROM core.properties p
+             LEFT JOIN ref.counties c ON p.county_id = c.county_id
+             WHERE p.property_id = $1`,
+            [req.params.id]
+        );
+        if (!rows.length) return res.status(404).json({ error: 'Property not found' });
+        const enriched = CrownKeyService.enrichProperty({ ...rows[0], county_code: rows[0].county_code || 'DUV' });
+        res.json({ property: enriched, ownership: [], events: [], source_records: [], tasks: [] });
+    } catch (err) {
+        console.error('[Property GET by ID Error]', err.message);
+        const prop = db.data.core.properties.find(p => p.property_id === req.params.id);
+        if (!prop) return res.status(404).json({ error: 'Property not found' });
+        res.json({ property: CrownKeyService.enrichProperty(prop), ownership: [], events: [], source_records: [], tasks: [] });
+    }
+});
 
-    const enriched = CrownKeyService.enrichProperty(prop);
-    const ownership = db.data.rel.entity_relationships
-        .filter(r => r.to_entity_id === prop.property_id && r.relationship_type === 'OWNS')
-        .map(r => {
-            const person = db.data.core.people.find(p => p.person_id === r.from_entity_id);
-            const biz = db.data.core.businesses.find(b => b.business_id === r.from_entity_id);
-            return { relationship: r, owner: person || biz };
-        });
+// ============================================================================
+// 4b. Property Photos
+// ============================================================================
+apiRouter.get('/properties/:propertyId/photos', async (req, res) => {
+    const { propertyId } = req.params;
+    try {
+        const { rows } = await pool.query(
+            `SELECT * FROM core.property_photos WHERE property_id = $1 ORDER BY photo_date DESC, created_at DESC`,
+            [propertyId]
+        );
+        res.json({ total: rows.length, photos: rows });
+    } catch (err) {
+        console.error('[Photos GET Error]', err.message);
+        res.json({ total: 0, photos: [] });
+    }
+});
 
-    const events = db.data.core.pillar_events.filter(e => e.property_id === prop.property_id);
-    const sourceRecords = db.data.raw.source_records.filter(s => {
-        return s.payload && (s.payload.parcelNumber === prop.parcel_raw || s.payload.parcel === prop.parcel_raw || s.payload.taxAccount === prop.parcel_raw);
-    });
-    const tasks = db.data.core.tasks.filter(t => t.linked_entity_id === prop.property_id);
+apiRouter.post('/properties/:propertyId/photos', async (req, res) => {
+    const { propertyId } = req.params;
+    const { filename, original_filename, file_size_bytes, mime_type, tag, caption, photo_date, data_url } = req.body;
+    if (!filename) return res.status(400).json({ error: 'filename is required' });
+    try {
+        const { rows } = await pool.query(
+            `INSERT INTO core.property_photos
+              (property_id, filename, original_filename, file_size_bytes, mime_type, tag, caption, photo_date, data_url)
+             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+             RETURNING *`,
+            [propertyId, filename, original_filename || filename,
+             file_size_bytes || 0, mime_type || 'image/jpeg',
+             tag || 'General', caption || null,
+             photo_date || new Date().toISOString().split('T')[0],
+             data_url || null]
+        );
+        res.status(201).json(rows[0]);
+    } catch (err) {
+        console.error('[Photos POST Error]', err.message);
+        res.status(500).json({ error: err.message });
+    }
+});
 
-    res.json({
-        property: enriched,
-        ownership,
-        events,
-        source_records: sourceRecords,
-        tasks,
-    });
+apiRouter.delete('/properties/:propertyId/photos/:photoId', async (req, res) => {
+    const { propertyId, photoId } = req.params;
+    try {
+        await pool.query(
+            `DELETE FROM core.property_photos WHERE id = $1 AND property_id = $2`,
+            [photoId, propertyId]
+        );
+        res.json({ success: true });
+    } catch (err) {
+        console.error('[Photos DELETE Error]', err.message);
+        res.status(500).json({ error: err.message });
+    }
 });
 
 apiRouter.post('/properties', (req, res) => {

@@ -26,6 +26,9 @@
           <span class="caret-icon" v-html="icons.chevronDown"></span>
         </button>
         <div v-if="isQuickAddOpen" class="quick-add-menu" @click.stop>
+          <a href="/properties" @click="guard">
+            <span class="qa-icon" v-html="icons.building || icons.users"></span> View Properties &amp; Photos
+          </a>
           <a href="/dispositions" @click="guard">
             <span class="qa-icon" v-html="icons.badgeDollar"></span> Add Contract to Dispo
           </a>

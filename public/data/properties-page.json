@@ -1,0 +1,3662 @@
+{
+  "cacheVersion": "2",
+  "page": {
+    "id": "properties-page",
+    "paths": {
+      "en": "properties",
+      "default": "properties"
+    },
+    "cmsDataSetPath": null,
+    "workflows": [],
+    "_sm": [
+      2,
+      [],
+      [
+        [
+          2,
+          "ww-a-ah5kXiW44wImNtcA",
+          [
+            0
+          ]
+        ],
+        [
+          3,
+          "ww-a-0VjvCJ39bZQIpenG",
+          [
+            0
+          ]
+        ],
+        [
+          0,
+          "ww-a-GfbQibRQPgXgCmyn",
+          [
+            1,
+            3,
+            5,
+            7,
+            9,
+            11,
+            13,
+            15,
+            17,
+            19,
+            21,
+            23,
+            26,
+            29,
+            31,
+            33,
+            35,
+            40,
+            42,
+            45,
+            47,
+            51,
+            55,
+            59,
+            65,
+            68,
+            71,
+            74,
+            77,
+            80,
+            93
+          ]
+        ],
+        [
+          0,
+          "ww-a-YRfn88Fc_a_pUrQN",
+          [
+            2,
+            4,
+            6,
+            8,
+            10,
+            12,
+            14,
+            16,
+            18,
+            20,
+            22,
+            24,
+            25,
+            27,
+            30,
+            32,
+            34
+          ]
+        ],
+        [
+          0,
+          "ww-a-xcvtKf9v4YXjru0H",
+          [
+            28,
+            36,
+            37,
+            43,
+            48,
+            49,
+            52,
+            53,
+            56,
+            57,
+            60,
+            61,
+            66,
+            69,
+            72,
+            75,
+            78,
+            81
+          ]
+        ],
+        [
+          0,
+          "ww-a-YF0k00I-Mi8zOhMt",
+          [
+            38,
+            39,
+            41,
+            46,
+            50,
+            54,
+            58,
+            62,
+            67,
+            70,
+            73,
+            76,
+            79,
+            82,
+            94,
+            97
+          ]
+        ],
+        [
+          0,
+          "ww-a-wepO1Mjw7DgHz3WK",
+          [
+            44,
+            63,
+            83,
+            90,
+            91
+          ]
+        ],
+        [
+          0,
+          "ww-a-jmcmduGw2BpHZ9RI",
+          [
+            64,
+            84,
+            85,
+            86,
+            87,
+            88,
+            89
+          ]
+        ],
+        [
+          0,
+          "ww-a-8BdkzjVNbpKFMJuw",
+          [
+            92
+          ]
+        ],
+        [
+          0,
+          "ww-a-HxcMchISmn4k8l9c",
+          [
+            95
+          ]
+        ],
+        [
+          0,
+          "ww-a-JNYYuTsbWRUNLvfX",
+          [
+            96
+          ]
+        ]
+      ]
+    ],
+    "title": {
+      "en": "Properties & Photos | HUSHHAWK"
+    }
+  },
+  "sections": {
+    "89e7916b-7361-47a2-b48f-497459c4630d": {
+      "uid": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "linkId": "e4f37413-3f37-456b-803a-4139960f6736",
+      "_state": {
+        "style": {
+          "default": {
+            "width": "100%",
+            "display": "flex",
+            "maxWidth": "100%",
+            "customCss": {
+              "boxSizing": "border-box"
+            },
+            "minHeight": "100vh",
+            "fontFamily": "Plus Jakarta Sans",
+            "backgroundColor": "#041427"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "wwObjects": [
+            {
+              "uid": "hh-cmd-dispositions",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "sectionBaseId": "99586bd3-2b15-4d6b-a025-6a50d07ca845",
+      "sectionTitle": "Dispositions Page Shell",
+      "_si": 15
+    }
+  },
+  "wwObjects": {
+    "95045212-c1ea-476d-bb19-c0ef8dc96844": {
+      "uid": "95045212-c1ea-476d-bb19-c0ef8dc96844",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Dashboard"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Dispositions Nav Dashboard Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2773
+    },
+    "074b2ec4-d506-458c-b02b-279f63b02fd0": {
+      "uid": "074b2ec4-d506-458c-b02b-279f63b02fd0",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "64b6f7f3-21a2-4e15-a6d3-80c2f4216ed2",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "95045212-c1ea-476d-bb19-c0ef8dc96844",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Dispositions Nav Dashboard",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2774
+    },
+    "0382a120-366b-418b-92d1-7ecb87e0bc59": {
+      "uid": "0382a120-366b-418b-92d1-7ecb87e0bc59",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Seller Leads"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Dispositions Nav Seller Leads Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2775
+    },
+    "c751a58b-1da7-425f-b276-b7ce8e910b93": {
+      "uid": "c751a58b-1da7-425f-b276-b7ce8e910b93",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "5ac8292b-4a7d-4552-ae7e-c099f194016f",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "0382a120-366b-418b-92d1-7ecb87e0bc59",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Dispositions Nav Seller Leads",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2777
+    },
+    "425c3aea-3684-431d-b199-ee95fa3a8a24": {
+      "uid": "425c3aea-3684-431d-b199-ee95fa3a8a24",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Acquisitions"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Dispositions Nav Acquisitions Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2778
+    },
+    "49ad260f-fe84-489a-9091-0068d4eec227": {
+      "uid": "49ad260f-fe84-489a-9091-0068d4eec227",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "f405dfa0-cbe5-4a9e-b76a-205819446a89",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "425c3aea-3684-431d-b199-ee95fa3a8a24",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Dispositions Nav Acquisitions",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2779
+    },
+    "9979680f-aa2a-4a43-8536-672acb9e5231": {
+      "uid": "9979680f-aa2a-4a43-8536-672acb9e5231",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Dispositions"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Dispositions Nav Dispositions Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2780
+    },
+    "8809c6df-785a-4990-9d91-79f8b50c4ced": {
+      "uid": "8809c6df-785a-4990-9d91-79f8b50c4ced",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "a17a6122-e36c-4582-aa7d-a33451821a3f",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "9979680f-aa2a-4a43-8536-672acb9e5231",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Dispositions Nav Dispositions",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2781
+    },
+    "8fdb70e4-3c8a-4cf4-bb98-8591f40ecb89": {
+      "uid": "8fdb70e4-3c8a-4cf4-bb98-8591f40ecb89",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Cash Buyers"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Dispositions Nav Cash Buyers Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2782
+    },
+    "ab8aef24-bc8d-4162-8709-2e7e9122ec30": {
+      "uid": "ab8aef24-bc8d-4162-8709-2e7e9122ec30",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "b9987b36-cabf-4d22-a61f-bb1878fbd81a",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "8fdb70e4-3c8a-4cf4-bb98-8591f40ecb89",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Dispositions Nav Cash Buyers",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2783
+    },
+    "a882c76b-2ee1-4ac0-9c71-69b59e5aa93d": {
+      "uid": "a882c76b-2ee1-4ac0-9c71-69b59e5aa93d",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Communications"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Dispositions Nav Communications Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2784
+    },
+    "18fa824f-b22d-4f12-969a-7059c6120afa": {
+      "uid": "18fa824f-b22d-4f12-969a-7059c6120afa",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "9d4b26e3-28a9-43e6-9b22-66f11b94aa1c",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "a882c76b-2ee1-4ac0-9c71-69b59e5aa93d",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Dispositions Nav Communications",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2785
+    },
+    "32f09b09-feac-406e-8215-436daf8f1a02": {
+      "uid": "32f09b09-feac-406e-8215-436daf8f1a02",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Marketing"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Dispositions Nav Marketing Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2786
+    },
+    "c9fe5846-c796-4bf8-b611-07f5375db924": {
+      "uid": "c9fe5846-c796-4bf8-b611-07f5375db924",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "a2d0d91c-0e12-4dc0-b922-5858c7917ee3",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "32f09b09-feac-406e-8215-436daf8f1a02",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Dispositions Nav Marketing",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2787
+    },
+    "b5ac8b8e-ddff-496a-9bce-f60f50d53c7e": {
+      "uid": "b5ac8b8e-ddff-496a-9bce-f60f50d53c7e",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "County Data"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Dispositions Nav County Data Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2788
+    },
+    "5b241ead-f974-47bf-9b78-2f8dec5fad8e": {
+      "uid": "5b241ead-f974-47bf-9b78-2f8dec5fad8e",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "87b38826-b41a-4950-95c2-afa18dec2b38",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "b5ac8b8e-ddff-496a-9bce-f60f50d53c7e",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Dispositions Nav County Data",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2789
+    },
+    "bd046d23-8a2f-49cd-a000-e8d336b4917e": {
+      "uid": "bd046d23-8a2f-49cd-a000-e8d336b4917e",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Skip Tracing"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Dispositions Nav Skip Tracing Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2790
+    },
+    "3d3c775b-26e0-4c37-96c5-e525793ec75a": {
+      "uid": "3d3c775b-26e0-4c37-96c5-e525793ec75a",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "4ad6b22e-4151-4bf7-bc63-7dec86f377a2",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "bd046d23-8a2f-49cd-a000-e8d336b4917e",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Dispositions Nav Skip Tracing",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2791
+    },
+    "92bc81b8-ed5a-465f-b5dc-cde3e1563a92": {
+      "uid": "92bc81b8-ed5a-465f-b5dc-cde3e1563a92",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Contracts"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Dispositions Nav Contracts Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2792
+    },
+    "1b26a683-8582-4645-a7d0-233ecbb12102": {
+      "uid": "1b26a683-8582-4645-a7d0-233ecbb12102",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "d588127b-5b3e-4f99-a6dc-7a22ef7c128b",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "92bc81b8-ed5a-465f-b5dc-cde3e1563a92",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Dispositions Nav Contracts",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2793
+    },
+    "a0c2fe38-deb4-403d-ab9b-19dda6fe9abc": {
+      "uid": "a0c2fe38-deb4-403d-ab9b-19dda6fe9abc",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Follow Ups"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Dispositions Nav Follow Ups Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2794
+    },
+    "428d876d-cc0e-48fb-8340-73f3493e3175": {
+      "uid": "428d876d-cc0e-48fb-8340-73f3493e3175",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "e01977a5-5afc-427b-a25d-39b555fa3b0d",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "a0c2fe38-deb4-403d-ab9b-19dda6fe9abc",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Dispositions Nav Follow Ups",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2795
+    },
+    "6ca25bd0-d669-4473-8ff7-d596d43a629d": {
+      "uid": "6ca25bd0-d669-4473-8ff7-d596d43a629d",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Analytics"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Dispositions Nav Analytics Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2796
+    },
+    "5e13a063-8baa-4316-a47b-300077bbefda": {
+      "uid": "5e13a063-8baa-4316-a47b-300077bbefda",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "dba9b37a-872b-4425-9993-79f3ceaadb92",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "6ca25bd0-d669-4473-8ff7-d596d43a629d",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Dispositions Nav Analytics",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2797
+    },
+    "c1e78433-1b02-4b24-a80a-56db60b4a068": {
+      "uid": "c1e78433-1b02-4b24-a80a-56db60b4a068",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "0921099a-dc1e-4897-809d-bd39a527558d",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "21a891d7-b6f6-41b2-be1b-f133bdf843e9",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Dispositions Nav Team",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2798
+    },
+    "cc151e27-2932-4ec5-a2e8-53daca4be8b4": {
+      "uid": "cc151e27-2932-4ec5-a2e8-53daca4be8b4",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Settings"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Dispositions Nav Settings Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2799
+    },
+    "985346e6-2092-4502-900b-43e421bc8957": {
+      "uid": "985346e6-2092-4502-900b-43e421bc8957",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "e2af833d-5f07-4ee1-a59b-5a41b3502933",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "cc151e27-2932-4ec5-a2e8-53daca4be8b4",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Dispositions Nav Settings",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2800
+    },
+    "f9a8e950-29b3-41a7-9b86-87a9afb7e449": {
+      "uid": "f9a8e950-29b3-41a7-9b86-87a9afb7e449",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "12px 12px 6px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "SPECIALIZED TOOLS"
+          },
+          "_ww-text_color": "#64748B",
+          "_ww-text_fontSize": "9px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "1px"
+        }
+      },
+      "name": "Dispositions Tools Label",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2801
+    },
+    "4f8597af-3e90-419a-a9ba-90e7a2ad2250": {
+      "uid": "4f8597af-3e90-419a-a9ba-90e7a2ad2250",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Facebook Leads"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Dispositions Nav Facebook Leads Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2802
+    },
+    "287a7bd0-5fae-4b0b-b9c1-06bffe070c92": {
+      "uid": "287a7bd0-5fae-4b0b-b9c1-06bffe070c92",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "c6707652-6174-47b7-84a7-042a2dee960f",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "8px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "4f8597af-3e90-419a-a9ba-90e7a2ad2250",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Dispositions Nav Facebook Leads",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2804
+    },
+    "31494326-9fb2-45ca-a1f3-d590094165cd": {
+      "uid": "31494326-9fb2-45ca-a1f3-d590094165cd",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Direct Mail"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Dispositions Nav Direct Mail Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2805
+    },
+    "a9207a3d-c236-4690-ae52-80e836689c01": {
+      "uid": "a9207a3d-c236-4690-ae52-80e836689c01",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "72fa8746-8396-4460-890f-36d72912cf95",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "8px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "31494326-9fb2-45ca-a1f3-d590094165cd",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Dispositions Nav Direct Mail",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2806
+    },
+    "cd63c45a-0c8f-4d9f-b5df-77e404472e09": {
+      "uid": "cd63c45a-0c8f-4d9f-b5df-77e404472e09",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Deal Analyzer"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Dispositions Nav Deal Analyzer Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2807
+    },
+    "48613a54-9f04-4b5e-81be-8064be9e935b": {
+      "uid": "48613a54-9f04-4b5e-81be-8064be9e935b",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "964e5528-8760-4680-938d-5b201255047c",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "8px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "cd63c45a-0c8f-4d9f-b5df-77e404472e09",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Dispositions Nav Deal Analyzer",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2808
+    },
+    "dc4f425a-f9f4-4133-bf06-da1cafa01a8b": {
+      "uid": "dc4f425a-f9f4-4133-bf06-da1cafa01a8b",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "HUSHHAWK INTELLIGENCE"
+          },
+          "_ww-text_color": "#94A3B8",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "700",
+          "_ww-text_letterSpacing": "1.2px"
+        }
+      },
+      "name": "Dispositions Brand Eyebrow",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2809
+    },
+    "b7097b36-4155-4796-b200-829c1b59d9fe": {
+      "uid": "b7097b36-4155-4796-b200-829c1b59d9fe",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "2px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "HUSHHAWK"
+          },
+          "_ww-text_color": "#FFFFFF",
+          "_ww-text_fontSize": "24px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Dispositions Brand Title",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2810
+    },
+    "029733c2-7a8b-44cc-99e5-579c7dac9157": {
+      "uid": "029733c2-7a8b-44cc-99e5-579c7dac9157",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "2px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Wholesale Command Center"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Dispositions Brand Sub",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2811
+    },
+    "fd263f0b-e130-40ec-9232-b09df3999f76": {
+      "uid": "fd263f0b-e130-40ec-9232-b09df3999f76",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "20px 18px 16px",
+            "borderBottom": "1px solid #1E293B",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "dc4f425a-f9f4-4133-bf06-da1cafa01a8b",
+              "isWwObject": true
+            },
+            {
+              "uid": "b7097b36-4155-4796-b200-829c1b59d9fe",
+              "isWwObject": true
+            },
+            {
+              "uid": "029733c2-7a8b-44cc-99e5-579c7dac9157",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Dispositions Sidebar Brand",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2812
+    },
+    "dd25ed36-152c-41a5-96cb-ed01611edd3f": {
+      "uid": "dd25ed36-152c-41a5-96cb-ed01611edd3f",
+      "_state": {
+        "style": {
+          "default": {
+            "flex": "1",
+            "display": "flex",
+            "padding": "10px 12px",
+            "customCss": {
+              "overflowY": "auto"
+            },
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "074b2ec4-d506-458c-b02b-279f63b02fd0",
+              "isWwObject": true
+            },
+            {
+              "uid": "c751a58b-1da7-425f-b276-b7ce8e910b93",
+              "isWwObject": true
+            },
+            {
+              "uid": "49ad260f-fe84-489a-9091-0068d4eec227",
+              "isWwObject": true
+            },
+            {
+              "uid": "8809c6df-785a-4990-9d91-79f8b50c4ced",
+              "isWwObject": true
+            },
+            {
+              "uid": "ab8aef24-bc8d-4162-8709-2e7e9122ec30",
+              "isWwObject": true
+            },
+            {
+              "uid": "18fa824f-b22d-4f12-969a-7059c6120afa",
+              "isWwObject": true
+            },
+            {
+              "uid": "c9fe5846-c796-4bf8-b611-07f5375db924",
+              "isWwObject": true
+            },
+            {
+              "uid": "5b241ead-f974-47bf-9b78-2f8dec5fad8e",
+              "isWwObject": true
+            },
+            {
+              "uid": "3d3c775b-26e0-4c37-96c5-e525793ec75a",
+              "isWwObject": true
+            },
+            {
+              "uid": "1b26a683-8582-4645-a7d0-233ecbb12102",
+              "isWwObject": true
+            },
+            {
+              "uid": "428d876d-cc0e-48fb-8340-73f3493e3175",
+              "isWwObject": true
+            },
+            {
+              "uid": "5e13a063-8baa-4316-a47b-300077bbefda",
+              "isWwObject": true
+            },
+            {
+              "uid": "c1e78433-1b02-4b24-a80a-56db60b4a068",
+              "isWwObject": true
+            },
+            {
+              "uid": "985346e6-2092-4502-900b-43e421bc8957",
+              "isWwObject": true
+            },
+            {
+              "uid": "f9a8e950-29b3-41a7-9b86-87a9afb7e449",
+              "isWwObject": true
+            },
+            {
+              "uid": "287a7bd0-5fae-4b0b-b9c1-06bffe070c92",
+              "isWwObject": true
+            },
+            {
+              "uid": "a9207a3d-c236-4690-ae52-80e836689c01",
+              "isWwObject": true
+            },
+            {
+              "uid": "48613a54-9f04-4b5e-81be-8064be9e935b",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Dispositions Sidebar Navigation",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2813
+    },
+    "30d64407-facb-4f3f-8c1f-00f1b099a7f6": {
+      "uid": "30d64407-facb-4f3f-8c1f-00f1b099a7f6",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "●  Podio sync pending"
+          },
+          "_ww-text_color": "#F59E0B",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Dispositions Podio Status",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2814
+    },
+    "fbbaa1c7-57e4-4e23-a4ca-a530bd470bc0": {
+      "uid": "fbbaa1c7-57e4-4e23-a4ca-a530bd470bc0",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "13px 16px",
+            "borderTop": "1px solid #1E293B",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "30d64407-facb-4f3f-8c1f-00f1b099a7f6",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Dispositions Sidebar Footer",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2815
+    },
+    "f07a5ba0-ca85-4989-963d-d1b72ecdbbda": {
+      "uid": "f07a5ba0-ca85-4989-963d-d1b72ecdbbda",
+      "_state": {
+        "style": {
+          "default": {
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Dispositions Command Center"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "27px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Dispositions Page Title",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2816
+    },
+    "85e3660a-9c6d-4df5-898d-3773efede076": {
+      "uid": "85e3660a-9c6d-4df5-898d-3773efede076",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "4px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Track contracted inventory, buyer demand, assignments and closing readiness."
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Dispositions Page Subtitle",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2817
+    },
+    "f7640c50-aa63-46a7-9e9b-257db9524e73": {
+      "uid": "f7640c50-aa63-46a7-9e9b-257db9524e73",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "f07a5ba0-ca85-4989-963d-d1b72ecdbbda",
+              "isWwObject": true
+            },
+            {
+              "uid": "85e3660a-9c6d-4df5-898d-3773efede076",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Dispositions Title Wrap",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2818
+    },
+    "2062a72e-d956-43a6-aec2-9dbfc9a4977c": {
+      "uid": "2062a72e-d956-43a6-aec2-9dbfc9a4977c",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "HUSHHAWK • FRONT END READY"
+          },
+          "_ww-text_color": "#92400E",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "0.7px"
+        }
+      },
+      "name": "Dispositions Badge Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2819
+    },
+    "20e6d06a-0353-4eee-aa58-2d7bfef7d3e9": {
+      "uid": "20e6d06a-0353-4eee-aa58-2d7bfef7d3e9",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid #FDE68A",
+            "display": "flex",
+            "padding": "6px 9px",
+            "borderRadius": "999px",
+            "backgroundColor": "#FFFBEB"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "2062a72e-d956-43a6-aec2-9dbfc9a4977c",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Dispositions Environment Badge",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2820
+    },
+    "48af684b-c471-4046-bbbc-43bc507bbe01": {
+      "uid": "48af684b-c471-4046-bbbc-43bc507bbe01",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "ACTIVE CONTRACTS"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "0.7px"
+        }
+      },
+      "name": "Dispositions KPI 1 Label",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2821
+    },
+    "8c76107b-e949-4ec6-b8e8-06e7be775a1a": {
+      "uid": "8c76107b-e949-4ec6-b8e8-06e7be775a1a",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "8px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "28"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "24px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Dispositions KPI 1 Value",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2822
+    },
+    "369a7f46-c780-4ee4-87af-d82fe6baa10b": {
+      "uid": "369a7f46-c780-4ee4-87af-d82fe6baa10b",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "6px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Deals available to disposition"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Dispositions KPI 1 Sub",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2823
+    },
+    "e533335b-0714-435f-ac67-fc82e4ca3202": {
+      "uid": "e533335b-0714-435f-ac67-fc82e4ca3202",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "display": "flex",
+            "padding": "17px",
+            "borderTop": "3px solid var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)",
+            "borderRadius": "12px",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "48af684b-c471-4046-bbbc-43bc507bbe01",
+              "isWwObject": true
+            },
+            {
+              "uid": "8c76107b-e949-4ec6-b8e8-06e7be775a1a",
+              "isWwObject": true
+            },
+            {
+              "uid": "369a7f46-c780-4ee4-87af-d82fe6baa10b",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Dispositions KPI 1",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2824
+    },
+    "d6d55939-9216-4b7b-a386-ab85d32d739f": {
+      "uid": "d6d55939-9216-4b7b-a386-ab85d32d739f",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "BUYER MATCHES"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "0.7px"
+        }
+      },
+      "name": "Dispositions KPI 2 Label",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2825
+    },
+    "54132a34-2cba-4b7e-8899-5c775aba58fc": {
+      "uid": "54132a34-2cba-4b7e-8899-5c775aba58fc",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "8px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "412"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "24px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Dispositions KPI 2 Value",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2826
+    },
+    "f5ba2918-5f27-4319-8729-12ff6d230e1c": {
+      "uid": "f5ba2918-5f27-4319-8729-12ff6d230e1c",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "6px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Qualified buy-box matches"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Dispositions KPI 2 Sub",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2827
+    },
+    "fe92b081-2256-4be9-b4fb-2eb7be9792b8": {
+      "uid": "fe92b081-2256-4be9-b4fb-2eb7be9792b8",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "display": "flex",
+            "padding": "17px",
+            "borderTop": "3px solid var(--b563c8ea-b5cd-4950-ac34-983a20eacf71,#DC2626)",
+            "borderRadius": "12px",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "d6d55939-9216-4b7b-a386-ab85d32d739f",
+              "isWwObject": true
+            },
+            {
+              "uid": "54132a34-2cba-4b7e-8899-5c775aba58fc",
+              "isWwObject": true
+            },
+            {
+              "uid": "f5ba2918-5f27-4319-8729-12ff6d230e1c",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Dispositions KPI 2",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2828
+    },
+    "8eaeb8a1-1ade-4ceb-b01a-6f640537750c": {
+      "uid": "8eaeb8a1-1ade-4ceb-b01a-6f640537750c",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "ASSIGNMENTS OUT"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "0.7px"
+        }
+      },
+      "name": "Dispositions KPI 3 Label",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2829
+    },
+    "9d18f54f-04c0-4216-b2f4-046f1e5371fe": {
+      "uid": "9d18f54f-04c0-4216-b2f4-046f1e5371fe",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "8px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "18"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "24px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Dispositions KPI 3 Value",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2830
+    },
+    "68c95a7a-ea71-4c99-b70b-6b7ac19892df": {
+      "uid": "68c95a7a-ea71-4c99-b70b-6b7ac19892df",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "6px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Pending buyer execution"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Dispositions KPI 3 Sub",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2831
+    },
+    "3f6ca451-7a02-4d63-af17-8cffc6a6f422": {
+      "uid": "3f6ca451-7a02-4d63-af17-8cffc6a6f422",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "display": "flex",
+            "padding": "17px",
+            "borderTop": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "borderRadius": "12px",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "8eaeb8a1-1ade-4ceb-b01a-6f640537750c",
+              "isWwObject": true
+            },
+            {
+              "uid": "9d18f54f-04c0-4216-b2f4-046f1e5371fe",
+              "isWwObject": true
+            },
+            {
+              "uid": "68c95a7a-ea71-4c99-b70b-6b7ac19892df",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Dispositions KPI 3",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2832
+    },
+    "73fa45b9-ff5f-451a-99af-18c9819d8c25": {
+      "uid": "73fa45b9-ff5f-451a-99af-18c9819d8c25",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "FEES PIPELINE"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "0.7px"
+        }
+      },
+      "name": "Dispositions KPI 4 Label",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2833
+    },
+    "f50420cd-a989-4b29-8407-96f6776fb10e": {
+      "uid": "f50420cd-a989-4b29-8407-96f6776fb10e",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "8px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "$286,400"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "24px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Dispositions KPI 4 Value",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2834
+    },
+    "744e1563-1020-4054-a74f-08233c19ff02": {
+      "uid": "744e1563-1020-4054-a74f-08233c19ff02",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "6px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Projected assignment revenue"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Dispositions KPI 4 Sub",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2835
+    },
+    "79069087-237f-4003-8667-85b33d6c7621": {
+      "uid": "79069087-237f-4003-8667-85b33d6c7621",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "display": "flex",
+            "padding": "17px",
+            "borderTop": "3px solid var(--f325d1d5-41bf-4fea-bdc4-e18a2d9c68c6,#16A34A)",
+            "borderRadius": "12px",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "73fa45b9-ff5f-451a-99af-18c9819d8c25",
+              "isWwObject": true
+            },
+            {
+              "uid": "f50420cd-a989-4b29-8407-96f6776fb10e",
+              "isWwObject": true
+            },
+            {
+              "uid": "744e1563-1020-4054-a74f-08233c19ff02",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Dispositions KPI 4",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2836
+    },
+    "2c8b4d11-ae7c-47c1-8b0d-c5e039b0dfd2": {
+      "uid": "2c8b4d11-ae7c-47c1-8b0d-c5e039b0dfd2",
+      "_state": {
+        "style": {
+          "mobile": {},
+          "tablet": {},
+          "default": {
+            "display": "grid",
+            "flexDirection": "column",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "mobile": {
+          "_ww-grid_columns": [
+            "1fr"
+          ]
+        },
+        "tablet": {
+          "_ww-grid_columns": [
+            "1fr",
+            "1fr"
+          ]
+        },
+        "default": {
+          "children": [
+            {
+              "uid": "e533335b-0714-435f-ac67-fc82e4ca3202",
+              "isWwObject": true
+            },
+            {
+              "uid": "fe92b081-2256-4be9-b4fb-2eb7be9792b8",
+              "isWwObject": true
+            },
+            {
+              "uid": "3f6ca451-7a02-4d63-af17-8cffc6a6f422",
+              "isWwObject": true
+            },
+            {
+              "uid": "79069087-237f-4003-8667-85b33d6c7621",
+              "isWwObject": true
+            }
+          ],
+          "_ww-grid_rowGap": "14px",
+          "_ww-grid_columns": [
+            "1fr",
+            "1fr",
+            "1fr",
+            "1fr"
+          ],
+          "_ww-grid_columnGap": "14px"
+        }
+      },
+      "name": "Dispositions KPI Grid",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2837
+    },
+    "8296d95e-301e-491d-a976-5c0445c4236a": {
+      "uid": "8296d95e-301e-491d-a976-5c0445c4236a",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "16px 16px 10px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Disposition Workflow"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "16px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Dispositions Primary Panel Title",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2838
+    },
+    "78d4ebdb-9018-4060-b508-35d460ae36d5": {
+      "uid": "78d4ebdb-9018-4060-b508-35d460ae36d5",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Contract Intake"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Dispositions Item 1 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2839
+    },
+    "5e7a8771-152c-443e-9efb-0c4f9435491a": {
+      "uid": "5e7a8771-152c-443e-9efb-0c4f9435491a",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Verify executed seller agreement and assignability"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Dispositions Item 1 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2840
+    },
+    "1087fbf4-1215-45f2-97bf-9adb88419fc3": {
+      "uid": "1087fbf4-1215-45f2-97bf-9adb88419fc3",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "78d4ebdb-9018-4060-b508-35d460ae36d5",
+              "isWwObject": true
+            },
+            {
+              "uid": "5e7a8771-152c-443e-9efb-0c4f9435491a",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Dispositions Workflow Item 1",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2841
+    },
+    "c0981be0-103a-4cc1-9099-87cd41ef1f58": {
+      "uid": "c0981be0-103a-4cc1-9099-87cd41ef1f58",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Package Deal"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Dispositions Item 2 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2842
+    },
+    "e233e271-1746-4a15-8dab-f8503c2f8c5a": {
+      "uid": "e233e271-1746-4a15-8dab-f8503c2f8c5a",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Photos, ARV, rehab, price, access instructions"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Dispositions Item 2 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2843
+    },
+    "c98bc6d1-2f6a-44b3-afdd-c85a4c9cda5e": {
+      "uid": "c98bc6d1-2f6a-44b3-afdd-c85a4c9cda5e",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "c0981be0-103a-4cc1-9099-87cd41ef1f58",
+              "isWwObject": true
+            },
+            {
+              "uid": "e233e271-1746-4a15-8dab-f8503c2f8c5a",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Dispositions Workflow Item 2",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2844
+    },
+    "e02347f1-2225-491c-b3a2-ca22d7e1796b": {
+      "uid": "e02347f1-2225-491c-b3a2-ca22d7e1796b",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Match Buyers"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Dispositions Item 3 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2845
+    },
+    "bc17c125-04f1-44a6-aa7e-99e5f1996025": {
+      "uid": "bc17c125-04f1-44a6-aa7e-99e5f1996025",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "ZIP + asset type + price + strategy"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Dispositions Item 3 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2846
+    },
+    "74ae0252-caf4-4040-86a9-4ef74e4e5b0d": {
+      "uid": "74ae0252-caf4-4040-86a9-4ef74e4e5b0d",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "e02347f1-2225-491c-b3a2-ca22d7e1796b",
+              "isWwObject": true
+            },
+            {
+              "uid": "bc17c125-04f1-44a6-aa7e-99e5f1996025",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Dispositions Workflow Item 3",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2847
+    },
+    "cb42d68e-cc50-4ca6-b148-5532c471339e": {
+      "uid": "cb42d68e-cc50-4ca6-b148-5532c471339e",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Buyer Follow-Up"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Dispositions Item 4 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2848
+    },
+    "dcdbccb1-89a3-4caa-b723-424bf5e2adda": {
+      "uid": "dcdbccb1-89a3-4caa-b723-424bf5e2adda",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Track opens, calls, showings and offers"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Dispositions Item 4 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2849
+    },
+    "db79bc5d-e916-49a7-962b-6af48d496c41": {
+      "uid": "db79bc5d-e916-49a7-962b-6af48d496c41",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "cb42d68e-cc50-4ca6-b148-5532c471339e",
+              "isWwObject": true
+            },
+            {
+              "uid": "dcdbccb1-89a3-4caa-b723-424bf5e2adda",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Dispositions Workflow Item 4",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2850
+    },
+    "761e04f5-b41b-4b8b-9d77-46e38e8b785a": {
+      "uid": "761e04f5-b41b-4b8b-9d77-46e38e8b785a",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Assignment"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Dispositions Item 5 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2851
+    },
+    "b2a7ae78-cf82-46f8-aadf-72c46fbc3ec3": {
+      "uid": "b2a7ae78-cf82-46f8-aadf-72c46fbc3ec3",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Execute buyer assignment / deposit"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Dispositions Item 5 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2852
+    },
+    "6e2aa517-8823-4ec9-a175-4a936744a0d4": {
+      "uid": "6e2aa517-8823-4ec9-a175-4a936744a0d4",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "761e04f5-b41b-4b8b-9d77-46e38e8b785a",
+              "isWwObject": true
+            },
+            {
+              "uid": "b2a7ae78-cf82-46f8-aadf-72c46fbc3ec3",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Dispositions Workflow Item 5",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2853
+    },
+    "df3dcf78-4339-4639-81c8-f97365e129f7": {
+      "uid": "df3dcf78-4339-4639-81c8-f97365e129f7",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Closing Ready"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Dispositions Item 6 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2854
+    },
+    "36cc9953-f002-4224-b04d-85f143f31237": {
+      "uid": "36cc9953-f002-4224-b04d-85f143f31237",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Title, buyer funds and documents confirmed"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Dispositions Item 6 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2855
+    },
+    "74aa2343-b4d7-42de-a470-634a85b4c1c7": {
+      "uid": "74aa2343-b4d7-42de-a470-634a85b4c1c7",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "df3dcf78-4339-4639-81c8-f97365e129f7",
+              "isWwObject": true
+            },
+            {
+              "uid": "36cc9953-f002-4224-b04d-85f143f31237",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Dispositions Workflow Item 6",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2856
+    },
+    "5c69ca21-7852-4e53-a671-1d2211f0764b": {
+      "uid": "5c69ca21-7852-4e53-a671-1d2211f0764b",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "display": "flex",
+            "overflow": "hidden",
+            "borderRadius": "12px",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "8296d95e-301e-491d-a976-5c0445c4236a",
+              "isWwObject": true
+            },
+            {
+              "uid": "1087fbf4-1215-45f2-97bf-9adb88419fc3",
+              "isWwObject": true
+            },
+            {
+              "uid": "c98bc6d1-2f6a-44b3-afdd-c85a4c9cda5e",
+              "isWwObject": true
+            },
+            {
+              "uid": "74ae0252-caf4-4040-86a9-4ef74e4e5b0d",
+              "isWwObject": true
+            },
+            {
+              "uid": "db79bc5d-e916-49a7-962b-6af48d496c41",
+              "isWwObject": true
+            },
+            {
+              "uid": "6e2aa517-8823-4ec9-a175-4a936744a0d4",
+              "isWwObject": true
+            },
+            {
+              "uid": "74aa2343-b4d7-42de-a470-634a85b4c1c7",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Dispositions Primary Panel",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2857
+    },
+    "04c29d40-7b3b-4a37-87c7-195ea54c1e71": {
+      "uid": "04c29d40-7b3b-4a37-87c7-195ea54c1e71",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "16px 16px 8px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Buyer Match Logic"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "16px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "Dispositions Secondary Panel Title",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2858
+    },
+    "87cb8b1e-6d1c-46e2-a08d-67331fdfad2b": {
+      "uid": "87cb8b1e-6d1c-46e2-a08d-67331fdfad2b",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "8px 16px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "• Match by ZIP, property type, price range and target strategy"
+          },
+          "_ww-text_color": "var(--e133e327-b4a1-439d-be88-d91207b49f9d,#334155)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500",
+          "_ww-text_lineHeight": "1.45"
+        }
+      },
+      "name": "Dispositions Side Rule 1",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2859
+    },
+    "f444d236-9e39-4919-b929-f1748474023d": {
+      "uid": "f444d236-9e39-4919-b929-f1748474023d",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "8px 16px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "• Rank repeat buyers and recent Jacksonville purchasers"
+          },
+          "_ww-text_color": "var(--e133e327-b4a1-439d-be88-d91207b49f9d,#334155)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500",
+          "_ww-text_lineHeight": "1.45"
+        }
+      },
+      "name": "Dispositions Side Rule 2",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2860
+    },
+    "45327b87-2a35-4fa7-84fc-9c3030d15309": {
+      "uid": "45327b87-2a35-4fa7-84fc-9c3030d15309",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "8px 16px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "• Keep acquisition and disposition activity tied to the same property record"
+          },
+          "_ww-text_color": "var(--e133e327-b4a1-439d-be88-d91207b49f9d,#334155)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500",
+          "_ww-text_lineHeight": "1.45"
+        }
+      },
+      "name": "Dispositions Side Rule 3",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2861
+    },
+    "bae746cc-f8a2-4ecb-b001-ad1fa397ff5e": {
+      "uid": "bae746cc-f8a2-4ecb-b001-ad1fa397ff5e",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "8px 16px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "• Track assignment fee and expected close date on every deal"
+          },
+          "_ww-text_color": "var(--e133e327-b4a1-439d-be88-d91207b49f9d,#334155)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500",
+          "_ww-text_lineHeight": "1.45"
+        }
+      },
+      "name": "Dispositions Side Rule 4",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2862
+    },
+    "6db708e5-bb19-48aa-8e91-720051880b23": {
+      "uid": "6db708e5-bb19-48aa-8e91-720051880b23",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "12px 16px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "LIVE DATA: activates when Podio / provider connectors are authorized."
+          },
+          "_ww-text_color": "#92400E",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "0.5px"
+        }
+      },
+      "name": "Dispositions Data Ready Note",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2863
+    },
+    "367ee9ab-543e-4969-b291-c2acd53d7cfc": {
+      "uid": "367ee9ab-543e-4969-b291-c2acd53d7cfc",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "display": "flex",
+            "overflow": "hidden",
+            "borderRadius": "12px",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "04c29d40-7b3b-4a37-87c7-195ea54c1e71",
+              "isWwObject": true
+            },
+            {
+              "uid": "87cb8b1e-6d1c-46e2-a08d-67331fdfad2b",
+              "isWwObject": true
+            },
+            {
+              "uid": "f444d236-9e39-4919-b929-f1748474023d",
+              "isWwObject": true
+            },
+            {
+              "uid": "45327b87-2a35-4fa7-84fc-9c3030d15309",
+              "isWwObject": true
+            },
+            {
+              "uid": "bae746cc-f8a2-4ecb-b001-ad1fa397ff5e",
+              "isWwObject": true
+            },
+            {
+              "uid": "6db708e5-bb19-48aa-8e91-720051880b23",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Dispositions Secondary Panel",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2864
+    },
+    "4205df26-90e4-4f8e-a295-969df1f7b315": {
+      "uid": "4205df26-90e4-4f8e-a295-969df1f7b315",
+      "_state": {
+        "style": {
+          "mobile": {},
+          "tablet": {},
+          "default": {
+            "display": "grid",
+            "flexDirection": "column",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "mobile": {
+          "_ww-grid_columns": [
+            "1fr"
+          ]
+        },
+        "tablet": {
+          "_ww-grid_columns": [
+            "1fr"
+          ]
+        },
+        "default": {
+          "children": [
+            {
+              "uid": "5c69ca21-7852-4e53-a671-1d2211f0764b",
+              "isWwObject": true
+            },
+            {
+              "uid": "367ee9ab-543e-4969-b291-c2acd53d7cfc",
+              "isWwObject": true
+            }
+          ],
+          "_ww-grid_rowGap": "16px",
+          "_ww-grid_columns": [
+            "1.7fr",
+            "1fr"
+          ],
+          "_ww-grid_columnGap": "16px"
+        }
+      },
+      "name": "Dispositions Content Grid",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2865
+    },
+    "f2dffd70-aece-4662-97db-4e48975b5f77": {
+      "uid": "f2dffd70-aece-4662-97db-4e48975b5f77",
+      "_state": {
+        "style": {
+          "default": {
+            "flex": "1",
+            "height": "auto",
+            "display": "flex",
+            "minWidth": "0px",
+            "minHeight": "100vh",
+            "backgroundColor": "var(--702de9b1-4d57-47c9-8102-295901b861fa,#0A1128)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "71d7e957-2a94-48de-9a8d-62d05357aa69",
+              "isWwObject": true
+            },
+            {
+              "uid": "29429135-324a-4387-9275-8db6e9704412",
+              "isWwObject": true
+            },
+            {
+              "uid": "12eff345-d66d-4781-b1d7-58c55367aa43",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Dispositions Main",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 2866
+    },
+    "21a891d7-b6f6-41b2-be1b-f133bdf843e9": {
+      "uid": "21a891d7-b6f6-41b2-be1b-f133bdf843e9",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Teams"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "Dispositions Nav Team Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 3222
+    },
+    "29429135-324a-4387-9275-8db6e9704412": {
+      "uid": "29429135-324a-4387-9275-8db6e9704412",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "22px 28px",
+            "borderBottom": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "f7640c50-aa63-46a7-9e9b-257db9524e73",
+              "isWwObject": true
+            },
+            {
+              "uid": "20e6d06a-0353-4eee-aa58-2d7bfef7d3e9",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row",
+          "_ww-layout_justifyContent": "space-between"
+        }
+      },
+      "name": "Dispositions Header",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 3255
+    },
+    "71d7e957-2a94-48de-9a8d-62d05357aa69": {
+      "uid": "71d7e957-2a94-48de-9a8d-62d05357aa69",
+      "_state": {
+        "style": {
+          "default": {
+            "width": "100%",
+            "display": "block",
+            "minWidth": "0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "pinIcon": "lucide/map-pin",
+          "skyline": "https://u.realgeeks.media/nuviewrealty/Jacksonville_Skyline_Sunset_2.jpeg",
+          "tagIcon": "lucide/tag",
+          "bellIcon": "lucide/bell",
+          "fileIcon": "lucide/file-text",
+          "leftIcon": "lucide/chevron-left",
+          "logoIcon": "brand/elite-house-emblem",
+          "mailIcon": "lucide/mail",
+          "moreIcon": "lucide/ellipsis",
+          "plusIcon": "lucide/plus",
+          "sendIcon": "lucide/send",
+          "textIcon": "lucide/message-square",
+          "userIcon": "lucide/user",
+          "chartIcon": "lucide/chart-no-axes-combined",
+          "coinsIcon": "lucide/coins",
+          "crownIcon": "lucide/crown",
+          "houseIcon": "lucide/house",
+          "phoneIcon": "lucide/phone",
+          "rightIcon": "lucide/chevron-right",
+          "tasksIcon": "lucide/list-checks",
+          "usersIcon": "lucide/users",
+          "dollarIcon": "lucide/badge-dollar-sign",
+          "filterIcon": "lucide/filter",
+          "searchIcon": "lucide/search",
+          "calendarIcon": "lucide/calendar-days",
+          "databaseIcon": "lucide/database",
+          "settingsIcon": "lucide/settings",
+          "briefcaseIcon": "lucide/briefcase-business",
+          "buyerPortrait": "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=240&h=240&q=85",
+          "handshakeIcon": "lucide/handshake",
+          "megaphoneIcon": "lucide/megaphone",
+          "workspacePage": "dispositions"
+        }
+      },
+      "name": "Dispositions Cash Buyers Reference Workspace",
+      "wwObjectBaseId": "f1b67d54-2716-43a4-a414-ab7f505c2ace",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 3256
+    },
+    "22d9db33-d692-4171-889f-a2792855e991": {
+      "uid": "22d9db33-d692-4171-889f-a2792855e991",
+      "_state": {
+        "style": {
+          "mobile": {
+            "display": "none"
+          },
+          "default": {
+            "top": "0px",
+            "width": "240px",
+            "height": "100vh",
+            "display": "flex",
+            "minWidth": "240px",
+            "position": "sticky",
+            "backgroundColor": "var(--606b9809-8abd-44ce-b314-0b0ba43271b7,#070B14)",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "fd263f0b-e130-40ec-9232-b09df3999f76",
+              "isWwObject": true
+            },
+            {
+              "uid": "dd25ed36-152c-41a5-96cb-ed01611edd3f",
+              "isWwObject": true
+            },
+            {
+              "uid": "fbbaa1c7-57e4-4e23-a4ca-a530bd470bc0",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Dispositions Sidebar",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 3257
+    },
+    "12eff345-d66d-4781-b1d7-58c55367aa43": {
+      "uid": "12eff345-d66d-4781-b1d7-58c55367aa43",
+      "_state": {
+        "style": {
+          "mobile": {
+            "padding": "16px"
+          },
+          "default": {
+            "flex": "1",
+            "display": "flex",
+            "padding": "22px 28px",
+            "customCss": {
+              "overflowY": "auto"
+            },
+            "backgroundColor": "var(--dacf6d89-481f-4709-a2ec-c8b13d22e0af,#F8FAFC)",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "2c8b4d11-ae7c-47c1-8b0d-c5e039b0dfd2",
+              "isWwObject": true
+            },
+            {
+              "uid": "4205df26-90e4-4f8e-a295-969df1f7b315",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_rowGap": "18px",
+          "_ww-layout_columnGap": "18px",
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "Dispositions Main Panel",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 3258
+    },
+    "hh-cmd-dispositions": {
+      "uid": "hh-cmd-dispositions",
+      "_state": {
+        "style": {
+          "default": {
+            "width": "100%",
+            "display": "block",
+            "minWidth": "0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "workspacePage": "dispositions",
+          "skyline": "https://u.realgeeks.media/nuviewrealty/Jacksonville_Skyline_Sunset_2.jpeg"
+        }
+      },
+      "name": "Dispositions Command Center Workspace",
+      "wwObjectBaseId": "f1b67d54-2716-43a4-a414-ab7f505c2ace",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
+      "_si": 9999
+    }
+  },
+  "collections": [],
+  "variables": [],
+  "workflows": [],
+  "formulas": [],
+  "libraryComponents": []
+}

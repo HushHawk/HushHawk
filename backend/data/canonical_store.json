@@ -596,6 +596,19 @@
     ],
     "leads": [
       {
+        "lead_id": "32665a29-3760-443e-aff8-8d32e83bcb5c",
+        "first_source_code": "MAIL",
+        "source_detail": "Batch 10 Postcard",
+        "property_id": "p1000000-0000-0000-0000-000000000001",
+        "person_id": null,
+        "pillar_code": null,
+        "status": "NEW",
+        "priority_score": 50,
+        "assigned_user_id": "u3333333-3333-3333-3333-333333333333",
+        "created_at": "2026-10-28T13:52:05.163Z",
+        "updated_at": "2026-10-28T13:52:05.163Z"
+      },
+      {
         "lead_id": "f8586eb5-138a-4ae0-a8ba-f7a5ef3051a0",
         "first_source_code": "MAIL",
         "source_detail": "Batch 10 Postcard",
@@ -1220,10 +1233,47 @@
         "event_date": "2026-10-28",
         "filing_amount": 0,
         "created_at": "2026-10-28T07:21:19.826Z"
+      },
+      {
+        "event_id": "b40c686d-44bc-4894-b5f8-9b2bb27f5e6e",
+        "property_id": "p1000000-0000-0000-0000-000000000001",
+        "pillar_code": "FC",
+        "event_number": 23,
+        "external_event_id": "16-2026-CA-1793195525159",
+        "case_reference": "16-2026-CA-1793195525159",
+        "event_status": "OPEN",
+        "verification_status": "CONFIRMED",
+        "event_date": "2026-10-28",
+        "filing_amount": 0,
+        "created_at": "2026-10-28T13:52:05.160Z"
       }
     ],
     "campaigns": [],
     "interactions": [
+      {
+        "interaction_id": "0f21354b-d259-4311-b520-02dfc4757f60",
+        "lead_id": "32665a29-3760-443e-aff8-8d32e83bcb5c",
+        "person_id": null,
+        "property_id": "p1000000-0000-0000-0000-000000000001",
+        "method": "EMAIL",
+        "direction": "OUTBOUND",
+        "actor_id": "Elena Rostova",
+        "result": "SENT",
+        "notes": "Follow-up estimate sent",
+        "occurred_at": "2026-10-28T13:52:05.166Z"
+      },
+      {
+        "interaction_id": "2519378e-3438-429f-8d4e-14ae01ea5e15",
+        "lead_id": "32665a29-3760-443e-aff8-8d32e83bcb5c",
+        "person_id": null,
+        "property_id": "p1000000-0000-0000-0000-000000000001",
+        "method": "CALL",
+        "direction": "INBOUND",
+        "actor_id": "Elena Rostova",
+        "result": "CONNECTED",
+        "notes": "Seller called in response to postcard",
+        "occurred_at": "2026-10-28T13:52:05.165Z"
+      },
       {
         "interaction_id": "78744b57-17a8-4580-aafc-6489f06ea7d9",
         "lead_id": "f8586eb5-138a-4ae0-a8ba-f7a5ef3051a0",
@@ -2071,6 +2121,14 @@
         "verification_status": "CONFIRMED",
         "observed_at": "2026-10-28T07:21:19.826Z",
         "notes": "New foreclosure docket"
+      },
+      {
+        "evidence_id": "9f56a611-51b6-4e8c-916c-92c58ca46cdd",
+        "event_id": "b40c686d-44bc-4894-b5f8-9b2bb27f5e6e",
+        "source_record_id": "sr-feed-2",
+        "verification_status": "CONFIRMED",
+        "observed_at": "2026-10-28T13:52:05.160Z",
+        "notes": "New foreclosure docket"
       }
     ],
     "identity_candidates": [
@@ -2426,17 +2484,44 @@
         "last_sync_at": "2026-10-28T07:21:19.829Z",
         "version_hash": "0936c5c7",
         "status": "SYNCED"
+      },
+      {
+        "sync_id": "d8255b7e-739b-4072-b336-50f6c7e5a624",
+        "internal_entity_type": "LEAD",
+        "internal_uuid": "32665a29-3760-443e-aff8-8d32e83bcb5c",
+        "external_system": "PODIO",
+        "external_app_id": "29481023",
+        "external_item_id": "podio-525163",
+        "last_sync_at": "2026-10-28T13:52:05.163Z",
+        "version_hash": "08fe6213",
+        "status": "SYNCED"
       }
     ]
   },
   "ops": {
     "event_counters": {
-      "p1000000-0000-0000-0000-000000000001:FC": 22,
+      "p1000000-0000-0000-0000-000000000001:FC": 23,
       "p2000000-0000-0000-0000-000000000002:TAX": 1,
       "p3000000-0000-0000-0000-000000000003:ML": 1,
-      "p1000000-0000-0000-0000-000000000001:TAX": 44
+      "p1000000-0000-0000-0000-000000000001:TAX": 46
     },
     "outbox_events": [
+      {
+        "outbox_id": "15d3229f-7a9d-47d0-b1e7-f4f306bcf325",
+        "aggregate_type": "PILLAR_EVENT",
+        "aggregate_id": "b40c686d-44bc-4894-b5f8-9b2bb27f5e6e",
+        "payload": {
+          "property_id": "p1000000-0000-0000-0000-000000000001",
+          "pillar_code": "FC",
+          "event_number": 23,
+          "case_reference": "16-2026-CA-1793195525159",
+          "verification_status": "CONFIRMED"
+        },
+        "created_at": "2026-10-28T13:52:05.160Z",
+        "published_at": null,
+        "attempts": 0,
+        "last_error": null
+      },
       {
         "outbox_id": "61c1c0a3-0c97-4ada-ac99-15d5c2676ae3",
         "aggregate_type": "PILLAR_EVENT",
@@ -2794,6 +2879,181 @@
   },
   "audit": {
     "audit_events": [
+      {
+        "audit_id": "1bbe0c93-8447-406a-9292-00b5cb0f1540",
+        "actor": "Elena Rostova",
+        "action": "COMPLIANCE_GATE_PASSED",
+        "entity_type": "OUTBOUND_DISPATCH",
+        "entity_id": "f054e363-b4d8-42cb-a951-0fc0f63cc00b",
+        "request_id": "510572c2-bf35-4698-8e58-264e7c4b9ba0",
+        "redacted_diff": {
+          "channel": "CALL",
+          "recipient": "(904) 555-0182",
+          "checks": [
+            {
+              "step": 1,
+              "name": "Suppression & DNC Check",
+              "passed": true,
+              "reason": "Clean on internal & federal DNC list"
+            },
+            {
+              "step": 2,
+              "name": "Consent & Legal Basis",
+              "passed": true,
+              "reason": "Public record or affirmative seller inquiry verified"
+            },
+            {
+              "step": 3,
+              "name": "Campaign Rules & Template",
+              "passed": true,
+              "reason": "Template 'tmpl-cash-offer-v1' is approved"
+            },
+            {
+              "step": 4,
+              "name": "User Permission",
+              "passed": true,
+              "reason": "Actor 'Elena Rostova' holds authorized role for outbound dispatch"
+            },
+            {
+              "step": 5,
+              "name": "Rate Limit & Cadence",
+              "passed": true,
+              "reason": "Within safe carrier & 10DLC frequency limits"
+            },
+            {
+              "step": 6,
+              "name": "Jurisdiction Rules",
+              "passed": true,
+              "reason": "Compliant with Florida telemarketing & solicitation statutes"
+            }
+          ],
+          "status": "APPROVED"
+        },
+        "created_at": "2026-10-28T13:52:05.169Z"
+      },
+      {
+        "audit_id": "4b58c320-ce28-4468-a052-e14f56b43783",
+        "actor": "Elena Rostova",
+        "action": "COMPLIANCE_GATE_BLOCKED",
+        "entity_type": "OUTBOUND_DISPATCH",
+        "entity_id": "ee7cd75b-c78f-4cc5-9ca8-f885b47fa5bf",
+        "request_id": "9c6c601f-80dc-4021-9b43-9df5597dd1c8",
+        "redacted_diff": {
+          "channel": "CALL",
+          "recipient": "(904) 555-0744",
+          "checks": [
+            {
+              "step": 1,
+              "name": "Suppression & DNC Check",
+              "passed": false,
+              "reason": "BLOCKED: Recipient phone is on the Suppression/DNC list (Federal DNC Registry and direct owner opt-out request)"
+            },
+            {
+              "step": 2,
+              "name": "Consent & Legal Basis",
+              "passed": true,
+              "reason": "Public record or affirmative seller inquiry verified"
+            },
+            {
+              "step": 3,
+              "name": "Campaign Rules & Template",
+              "passed": true,
+              "reason": "Template 'tmpl-cash-offer-v1' is approved"
+            },
+            {
+              "step": 4,
+              "name": "User Permission",
+              "passed": true,
+              "reason": "Actor 'Elena Rostova' holds authorized role for outbound dispatch"
+            },
+            {
+              "step": 5,
+              "name": "Rate Limit & Cadence",
+              "passed": true,
+              "reason": "Within safe carrier & 10DLC frequency limits"
+            },
+            {
+              "step": 6,
+              "name": "Jurisdiction Rules",
+              "passed": true,
+              "reason": "Compliant with Florida telemarketing & solicitation statutes"
+            }
+          ],
+          "status": "BLOCKED"
+        },
+        "created_at": "2026-10-28T13:52:05.169Z"
+      },
+      {
+        "audit_id": "5466d3cd-c25d-483f-bc25-9934fe6384fa",
+        "actor": "Elena Rostova",
+        "action": "INTERACTION_LOGGED",
+        "entity_type": "INTERACTION",
+        "entity_id": "0f21354b-d259-4311-b520-02dfc4757f60",
+        "request_id": "76619c13-89e0-4dfe-8333-c562f9de3734",
+        "redacted_diff": {
+          "method": "EMAIL",
+          "direction": "OUTBOUND",
+          "leadId": "32665a29-3760-443e-aff8-8d32e83bcb5c",
+          "result": "SENT"
+        },
+        "created_at": "2026-10-28T13:52:05.166Z"
+      },
+      {
+        "audit_id": "0c7805b7-af8c-4247-8cd2-131f460a85c9",
+        "actor": "Elena Rostova",
+        "action": "INTERACTION_LOGGED",
+        "entity_type": "INTERACTION",
+        "entity_id": "2519378e-3438-429f-8d4e-14ae01ea5e15",
+        "request_id": "31ab4797-d141-4c0b-968d-d1bf0a4f1ccf",
+        "redacted_diff": {
+          "method": "CALL",
+          "direction": "INBOUND",
+          "leadId": "32665a29-3760-443e-aff8-8d32e83bcb5c",
+          "result": "CONNECTED"
+        },
+        "created_at": "2026-10-28T13:52:05.165Z"
+      },
+      {
+        "audit_id": "bb192795-d6a9-4628-9fb5-40bf184467a5",
+        "actor": "Marcus Vance",
+        "action": "LEAD_CREATED",
+        "entity_type": "LEAD",
+        "entity_id": "32665a29-3760-443e-aff8-8d32e83bcb5c",
+        "request_id": "76d71f50-5d73-4982-8619-f07b9d0a0af8",
+        "redacted_diff": {
+          "first_source_code": "MAIL",
+          "propertyId": "p1000000-0000-0000-0000-000000000001",
+          "status": "NEW"
+        },
+        "created_at": "2026-10-28T13:52:05.164Z"
+      },
+      {
+        "audit_id": "1ebd8b76-a26d-4af4-81b9-7a7c12a76af8",
+        "actor": "SYSTEM_CONNECTOR",
+        "action": "EVENT_CREATED",
+        "entity_type": "PILLAR_EVENT",
+        "entity_id": "b40c686d-44bc-4894-b5f8-9b2bb27f5e6e",
+        "request_id": "1b4ace0d-ce60-49a5-9e16-aeac41d9c26c",
+        "redacted_diff": {
+          "pillar_code": "FC",
+          "event_number": 23,
+          "caseReference": "16-2026-CA-1793195525159"
+        },
+        "created_at": "2026-10-28T13:52:05.161Z"
+      },
+      {
+        "audit_id": "6a4a57a4-d1bd-471d-9449-d791c55c463a",
+        "actor": "SYSTEM_CONNECTOR",
+        "action": "EVENT_EVIDENCE_ATTACHED",
+        "entity_type": "PILLAR_EVENT",
+        "entity_id": "ev100000-0000-0000-0000-000000000001",
+        "request_id": "08bed54a-c2fc-4e7f-baa5-1a3aec7be4dd",
+        "redacted_diff": {
+          "sourceRecordId": "sr-feed-1",
+          "notes": "Court clerk feed"
+        },
+        "created_at": "2026-10-28T13:52:05.159Z"
+      },
       {
         "audit_id": "204940f4-5020-4789-9973-c996a1da19d6",
         "actor": "Elena Rostova",
