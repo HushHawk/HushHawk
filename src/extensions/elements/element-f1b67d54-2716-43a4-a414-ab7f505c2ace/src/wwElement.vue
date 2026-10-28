@@ -287,13 +287,7 @@ export default {
         return this.selectedSection;
       }
 
-      // 1. Explicit prop check
-      const prop = this.content?.workspacePage;
-      if (prop) {
-        return prop;
-      }
-
-      // 2. Browser path detection
+      // 1. Browser path detection (takes precedence over default content props)
       if (typeof window !== 'undefined' && window.location) {
         const path = window.location.pathname.toLowerCase().replace(/\/$/, '');
         if (path.includes('properties')) return 'properties';
@@ -317,7 +311,13 @@ export default {
         if (path.includes('dispositions')) return 'dispositions';
       }
 
-      return 'dispositions';
+      // 2. Explicit prop check fallback
+      const prop = this.content?.workspacePage;
+      if (prop) {
+        return prop;
+      }
+
+      return 'properties';
     },
     activePath() {
       return '/' + this.activeSectionKey;
