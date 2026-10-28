@@ -29,6 +29,11 @@
         <strong class="font-mono">{{ currentTime }}</strong>
       </div>
 
+      <a href="/properties" class="btn-topbar-properties" @click="guard" title="Manage Properties &amp; Field Photos">
+        <span class="icon" v-html="icons.house"></span>
+        Properties
+      </a>
+
       <div class="quick-add-wrap">
         <button class="btn-gold" @click.stop="isQuickAddOpen = !isQuickAddOpen" :aria-expanded="isQuickAddOpen">
           <span class="icon" v-html="icons.plus"></span>
@@ -36,6 +41,9 @@
           <span class="caret-icon" v-html="icons.chevronDown"></span>
         </button>
         <div v-if="isQuickAddOpen" class="quick-add-menu" @click.stop>
+          <a href="/properties" @click="guard">
+            <span class="qa-icon" v-html="icons.building || icons.users"></span> View Properties &amp; Photos
+          </a>
           <a href="/dispositions" @click="guard">
             <span class="qa-icon" v-html="icons.badgeDollar"></span> Add Contract to Dispo
           </a>
@@ -185,87 +193,6 @@ export default {
    });
  }
  onMounted(()=>{
-   // Auto-inject Properties nav link into sidebar
-   const injectPropertiesNav = () => {
-     if (typeof document === 'undefined') return;
-     if (document.querySelector('.hh-injected-properties-link')) return;
-     const allEls = Array.from(document.querySelectorAll('*'));
-     let dashboardEl = null;
-     let sellerLeadsEl = null;
-     for (const el of allEls) {
-       if (el.children.length === 0 || (el.tagName === 'P' && el.textContent.trim())) {
-         const text = el.textContent ? el.textContent.trim() : '';
-         if (text === 'Dashboard' && !dashboardEl) {
-           dashboardEl = el.closest('[data-ww-object]') || el.closest('a') || el.closest('[style*="cursor"]') || el.parentElement;
-         }
-         if (text === 'Seller Leads' && !sellerLeadsEl) {
-           sellerLeadsEl = el.closest('[data-ww-object]') || el.closest('a') || el.closest('[style*="cursor"]') || el.parentElement;
-         }
-       }
-     }
-     const target = sellerLeadsEl || dashboardEl;
-     if (!target || !target.parentElement) return;
-
-     const a = document.createElement('a');
-     a.href = '/properties';
-     a.className = 'hh-injected-properties-link';
-     const isAct = window.location.pathname.includes('/properties');
-     a.style.cssText = `
-       display: flex !important;
-       align-items: center !important;
-       gap: 10px !important;
-       padding: 7px 9px !important;
-       margin: 2px 0 !important;
-       border-radius: 8px !important;
-       cursor: pointer !important;
-       text-decoration: none !important;
-       font-family: 'Plus Jakarta Sans', sans-serif !important;
-       font-size: 13px !important;
-       font-weight: ${isAct ? '700' : '500'} !important;
-       color: ${isAct ? '#070B14' : '#CBD5E1'} !important;
-       background: ${isAct ? 'linear-gradient(135deg, #f3d98c, #a47e2d)' : 'transparent'} !important;
-       box-shadow: ${isAct ? '0 2px 10px rgba(212,175,55,0.35)' : 'none'} !important;
-       transition: background-color 0.2s ease, color 0.2s ease !important;
-       order: 1 !important;
-       width: 100% !important;
-       box-sizing: border-box !important;
-     `;
-     a.innerHTML = `
-       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="${isAct ? '#070B14' : '#EDCF7C'}" stroke-width="2">
-         <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-         <polyline points="9 22 9 12 15 12 15 22"></polyline>
-       </svg>
-       <span>Properties</span>
-     `;
-     a.onmouseenter = () => {
-       if (!window.location.pathname.includes('/properties')) {
-         a.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
-         a.style.color = '#EDCF7C';
-       }
-     };
-     a.onmouseleave = () => {
-       if (!window.location.pathname.includes('/properties')) {
-         a.style.backgroundColor = 'transparent';
-         a.style.color = '#CBD5E1';
-       }
-     };
-
-     if (sellerLeadsEl && sellerLeadsEl.parentElement) {
-       sellerLeadsEl.parentElement.insertBefore(a, sellerLeadsEl);
-     } else if (dashboardEl && dashboardEl.nextSibling) {
-       dashboardEl.parentElement.insertBefore(a, dashboardEl.nextSibling);
-     } else if (dashboardEl && dashboardEl.parentElement) {
-       dashboardEl.parentElement.appendChild(a);
-     }
-   };
-
-   injectPropertiesNav();
-   [150, 400, 800, 1500].forEach(ms => setTimeout(injectPropertiesNav, ms));
-   if (typeof MutationObserver !== 'undefined') {
-     const obs = new MutationObserver(injectPropertiesNav);
-     obs.observe(document.body, { childList: true, subtree: true });
-   }
-
    updateClock();
    timeInterval=setInterval(updateClock,30000);
    clickOutsideHandler=(e)=>{
@@ -409,6 +336,34 @@ export default {
 
 .clock-label {
   color: #64748b;
+}
+
+.btn-topbar-properties {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: #0a1e35;
+  border: 1px solid #205789;
+  border-radius: 6px;
+  color: #edcf7c;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+.btn-topbar-properties:hover {
+  background: #103862;
+  border-color: #edcf7c;
+  color: #fff;
+  box-shadow: 0 0 10px rgba(237, 207, 124, 0.25);
+}
+.btn-topbar-properties .icon {
+  width: 14px;
+  height: 14px;
+  display: inline-flex;
 }
 
 .btn-gold {
