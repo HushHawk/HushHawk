@@ -172,6 +172,96 @@ apiRouter.get('/properties/:id', async (req, res) => {
     }
 });
 
+apiRouter.put('/properties/:id', async (req, res) => {
+    const { id } = req.params;
+    const {
+        address_line1,
+        city,
+        state_code,
+        postal_code,
+        county_code,
+        parcel_raw,
+        assessed_value,
+        property_type,
+        legal_description,
+    } = req.body;
+
+    const parcel_match = parcel_raw ? normalizeParcelMatch(parcel_raw) : undefined;
+
+    try {
+        let updatedRow = null;
+        try {
+            const { rows } = await pool.query(
+                `UPDATE core.properties
+                 SET address_line1 = COALESCE($1, address_line1),
+                     city = COALESCE($2, city),
+                     state_code = COALESCE($3, state_code),
+                     postal_code = COALESCE($4, postal_code),
+                     property_type = COALESCE($5, property_type),
+                     legal_description = COALESCE($6, legal_description),
+                     assessed_value = COALESCE($7, assessed_value),
+                     parcel_raw = COALESCE($8, parcel_raw),
+                     parcel_match = COALESCE($9, parcel_match),
+                     updated_at = NOW()
+                 WHERE property_id = $10
+                 RETURNING *`,
+                [
+                    address_line1 || null,
+                    city || null,
+                    state_code || null,
+                    postal_code || null,
+                    property_type || null,
+                    legal_description || null,
+                    assessed_value ? Number(assessed_value) : null,
+                    parcel_raw || null,
+                    parcel_match || null,
+                    id
+                ]
+            );
+            if (rows.length) {
+                updatedRow = rows[0];
+            }
+        } catch (dbErr) {
+            console.error('[PostgreSQL Property Update Error]', dbErr.message);
+        }
+
+        // Also update memory db
+        const memoryProp = db.data.core.properties.find(p => p.property_id === id);
+        if (memoryProp) {
+            if (address_line1 !== undefined) memoryProp.address_line1 = address_line1;
+            if (city !== undefined) memoryProp.city = city;
+            if (state_code !== undefined) memoryProp.state_code = state_code;
+            if (postal_code !== undefined) memoryProp.postal_code = postal_code;
+            if (county_code !== undefined) memoryProp.county_code = county_code;
+            if (property_type !== undefined) memoryProp.property_type = property_type;
+            if (legal_description !== undefined) memoryProp.legal_description = legal_description;
+            if (assessed_value !== undefined) memoryProp.assessed_value = Number(assessed_value);
+            if (parcel_raw !== undefined) {
+                memoryProp.parcel_raw = parcel_raw;
+                memoryProp.parcel_match = normalizeParcelMatch(parcel_raw);
+            }
+            memoryProp.updated_at = new Date().toISOString();
+            db.logAudit({
+                actor: req.body.actor || 'USER_WEB',
+                action: 'PROPERTY_UPDATED',
+                entityType: 'PROPERTY',
+                entityId: id,
+                redactedDiff: req.body,
+            });
+            db.persist();
+        }
+
+        const result = updatedRow || memoryProp;
+        if (!result) return res.status(404).json({ error: 'Property not found' });
+        res.json(CrownKeyService.enrichProperty({
+            ...result,
+            county_code: county_code || result.county_code || 'DUV'
+        }));
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // ============================================================================
 // 4b. Property Photos
 // ============================================================================
@@ -223,6 +313,321 @@ apiRouter.delete('/properties/:propertyId/photos/:photoId', async (req, res) => 
     } catch (err) {
         console.error('[Photos DELETE Error]', err.message);
         res.status(500).json({ error: err.message });
+    }
+});
+
+// ============================================================================
+// 4c. Property Documents
+// ============================================================================
+apiRouter.get('/properties/:propertyId/documents', async (req, res) => {
+    const { propertyId } = req.params;
+    try {
+        const { rows } = await pool.query(
+            `SELECT * FROM core.property_documents WHERE property_id = $1 ORDER BY created_at DESC`,
+            [propertyId]
+        );
+        res.json({ total: rows.length, documents: rows });
+    } catch (err) {
+        console.error('[Documents GET Error]', err.message);
+        res.json({ total: 0, documents: [] });
+    }
+});
+
+apiRouter.post('/properties/:propertyId/documents', async (req, res) => {
+    const { propertyId } = req.params;
+    const { title, category, filename, file_size_bytes, data_url } = req.body;
+    if (!title && !filename) return res.status(400).json({ error: 'Title or filename is required' });
+    try {
+        const { rows } = await pool.query(
+            `INSERT INTO core.property_documents
+              (property_id, title, category, filename, file_size_bytes, data_url)
+             VALUES ($1, $2, $3, $4, $5, $6)
+             RETURNING *`,
+            [
+                propertyId,
+                title || filename,
+                category || 'Other',
+                filename || title || 'document.pdf',
+                file_size_bytes || 0,
+                data_url || null
+            ]
+        );
+        res.status(201).json(rows[0]);
+    } catch (err) {
+        console.error('[Documents POST Error]', err.message);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+apiRouter.delete('/properties/:propertyId/documents/:docId', async (req, res) => {
+    const { propertyId, docId } = req.params;
+    try {
+        await pool.query(
+            `DELETE FROM core.property_documents WHERE id = $1 AND property_id = $2`,
+            [docId, propertyId]
+        );
+        res.json({ success: true });
+    } catch (err) {
+        console.error('[Documents DELETE Error]', err.message);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// ============================================================================
+// 4d. Property Expenses
+// ============================================================================
+apiRouter.get('/properties/:propertyId/expenses', async (req, res) => {
+    const { propertyId } = req.params;
+    try {
+        const { rows } = await pool.query(
+            `SELECT * FROM core.property_expenses WHERE property_id = $1 ORDER BY expense_date DESC, created_at DESC`,
+            [propertyId]
+        );
+        res.json({ total: rows.length, expenses: rows });
+    } catch (err) {
+        console.error('[Expenses GET Error]', err.message);
+        res.json({ total: 0, expenses: [] });
+    }
+});
+
+apiRouter.post('/properties/:propertyId/expenses', async (req, res) => {
+    const { propertyId } = req.params;
+    const { category, description, amount, expense_date, vendor } = req.body;
+    if (!category || !amount) return res.status(400).json({ error: 'Category and amount are required' });
+    try {
+        const { rows } = await pool.query(
+            `INSERT INTO core.property_expenses
+              (property_id, category, description, amount, expense_date, vendor)
+             VALUES ($1, $2, $3, $4, $5, $6)
+             RETURNING *`,
+            [
+                propertyId,
+                category,
+                description || '',
+                Number(amount) || 0,
+                expense_date || new Date().toISOString().split('T')[0],
+                vendor || 'Unknown Vendor'
+            ]
+        );
+        res.status(201).json(rows[0]);
+    } catch (err) {
+        console.error('[Expenses POST Error]', err.message);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+apiRouter.delete('/properties/:propertyId/expenses/:expenseId', async (req, res) => {
+    const { propertyId, expenseId } = req.params;
+    try {
+        await pool.query(
+            `DELETE FROM core.property_expenses WHERE id = $1 AND property_id = $2`,
+            [expenseId, propertyId]
+        );
+        res.json({ success: true });
+    } catch (err) {
+        console.error('[Expenses DELETE Error]', err.message);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// ============================================================================
+// 4e. Property Contractors
+// ============================================================================
+apiRouter.get('/properties/:propertyId/contractors', async (req, res) => {
+    const { propertyId } = req.params;
+    try {
+        const { rows } = await pool.query(
+            `SELECT * FROM core.property_contractors WHERE property_id = $1 ORDER BY created_at DESC`,
+            [propertyId]
+        );
+        res.json({ total: rows.length, contractors: rows });
+    } catch (err) {
+        console.error('[Contractors GET Error]', err.message);
+        res.json({ total: 0, contractors: [] });
+    }
+});
+
+apiRouter.post('/properties/:propertyId/contractors', async (req, res) => {
+    const { propertyId } = req.params;
+    const { name, trade, phone, status } = req.body;
+    if (!name || !trade) return res.status(400).json({ error: 'Name and trade are required' });
+    try {
+        const { rows } = await pool.query(
+            `INSERT INTO core.property_contractors
+              (property_id, name, trade, phone, status)
+             VALUES ($1, $2, $3, $4, $5)
+             RETURNING *`,
+            [
+                propertyId,
+                name,
+                trade,
+                phone || '',
+                status || 'Active On Site'
+            ]
+        );
+        res.status(201).json(rows[0]);
+    } catch (err) {
+        console.error('[Contractors POST Error]', err.message);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+apiRouter.delete('/properties/:propertyId/contractors/:contractorId', async (req, res) => {
+    const { propertyId, contractorId } = req.params;
+    try {
+        await pool.query(
+            `DELETE FROM core.property_contractors WHERE id = $1 AND property_id = $2`,
+            [contractorId, propertyId]
+        );
+        res.json({ success: true });
+    } catch (err) {
+        console.error('[Contractors DELETE Error]', err.message);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// ============================================================================
+// 4f. Property Tasks & Timeline
+// ============================================================================
+apiRouter.get('/properties/:propertyId/tasks', async (req, res) => {
+    const { propertyId } = req.params;
+    try {
+        const { rows } = await pool.query(
+            `SELECT * FROM core.tasks WHERE linked_entity_id = $1 ORDER BY created_at DESC`,
+            [propertyId]
+        );
+        res.json({ total: rows.length, tasks: rows });
+    } catch (err) {
+        console.error('[Property Tasks GET Error]', err.message);
+        const memTasks = db.data.core.tasks.filter(t => t.linked_entity_id === propertyId);
+        res.json({ total: memTasks.length, tasks: memTasks });
+    }
+});
+
+apiRouter.post('/properties/:propertyId/tasks', async (req, res) => {
+    const { propertyId } = req.params;
+    const { title, priority = 'Medium', due_date, due_time, category = 'General' } = req.body;
+    if (!title) return res.status(400).json({ error: 'Title is required' });
+    try {
+        const taskId = crypto.randomUUID();
+        let created = null;
+        try {
+            const { rows } = await pool.query(
+                `INSERT INTO core.tasks
+                  (task_id, title, priority, due_date, due_time, category, status, is_completed, linked_entity_id, linked_entity_type)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+                 RETURNING *`,
+                [
+                    taskId,
+                    title,
+                    priority,
+                    due_date ? new Date(due_date) : new Date(),
+                    due_time || '05:00 PM',
+                    category,
+                    'PENDING',
+                    false,
+                    propertyId,
+                    'PROPERTY'
+                ]
+            );
+            created = rows[0];
+        } catch (dbErr) {
+            console.error('[Task RDS Insert Error]', dbErr.message);
+        }
+
+        const memTask = {
+            task_id: taskId,
+            title,
+            priority,
+            due_date: due_date || new Date().toISOString(),
+            due_time: due_time || '05:00 PM',
+            category,
+            status: 'PENDING',
+            is_completed: false,
+            linked_entity_id: propertyId,
+            linked_entity_type: 'PROPERTY',
+            created_at: new Date().toISOString(),
+        };
+        db.data.core.tasks.unshift(memTask);
+        db.persist();
+
+        res.status(201).json(created || memTask);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+apiRouter.get('/properties/:propertyId/timeline', async (req, res) => {
+    const { propertyId } = req.params;
+    try {
+        const timeline = [];
+        // Fetch property details
+        const propRes = await pool.query('SELECT * FROM core.properties WHERE property_id = $1', [propertyId]);
+        if (propRes.rows.length) {
+            const p = propRes.rows[0];
+            timeline.push({
+                type: 'CREATED',
+                title: 'Property Record Created',
+                description: `${p.address_line1} entered into HushHawk database.`,
+                timestamp: p.created_at || new Date().toISOString(),
+                badge: 'System',
+                icon: 'home'
+            });
+        }
+        // Photos
+        const photoRes = await pool.query('SELECT count(*) as count, max(created_at) as latest FROM core.property_photos WHERE property_id = $1', [propertyId]);
+        if (photoRes.rows[0]?.count > 0) {
+            timeline.push({
+                type: 'PHOTOS',
+                title: `${photoRes.rows[0].count} Photos Uploaded`,
+                description: `High-resolution site photos securely stored in S3/RDS.`,
+                timestamp: photoRes.rows[0].latest,
+                badge: 'Media',
+                icon: 'camera'
+            });
+        }
+        // Docs
+        const docRes = await pool.query('SELECT * FROM core.property_documents WHERE property_id = $1 ORDER BY created_at DESC LIMIT 5', [propertyId]);
+        for (const doc of docRes.rows) {
+            timeline.push({
+                type: 'DOCUMENT',
+                title: `Document Uploaded: ${doc.title}`,
+                description: `Category: ${doc.category} (${doc.filename})`,
+                timestamp: doc.created_at,
+                badge: 'Docs',
+                icon: 'file'
+            });
+        }
+        // Contractors
+        const contRes = await pool.query('SELECT * FROM core.property_contractors WHERE property_id = $1 ORDER BY created_at DESC LIMIT 5', [propertyId]);
+        for (const c of contRes.rows) {
+            timeline.push({
+                type: 'CONTRACTOR',
+                title: `Contractor Assigned: ${c.name}`,
+                description: `Trade: ${c.trade} • Status: ${c.status}`,
+                timestamp: c.created_at,
+                badge: 'Field',
+                icon: 'user'
+            });
+        }
+        // Expenses
+        const expRes = await pool.query('SELECT sum(amount) as total, count(*) as count, max(created_at) as latest FROM core.property_expenses WHERE property_id = $1', [propertyId]);
+        if (expRes.rows[0]?.count > 0) {
+            timeline.push({
+                type: 'EXPENSE',
+                title: `Renovation Budget Tracked`,
+                description: `${expRes.rows[0].count} expenses logged totaling $${Number(expRes.rows[0].total).toLocaleString()}.`,
+                timestamp: expRes.rows[0].latest,
+                badge: 'Finance',
+                icon: 'dollar'
+            });
+        }
+
+        timeline.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        res.json({ total: timeline.length, timeline });
+    } catch (err) {
+        console.error('[Timeline Error]', err.message);
+        res.json({ total: 0, timeline: [] });
     }
 });
 
@@ -394,10 +799,29 @@ apiRouter.post('/tasks', (req, res) => {
     }
 });
 
-apiRouter.patch('/tasks/:id', (req, res) => {
+apiRouter.patch('/tasks/:id', async (req, res) => {
     try {
-        const task = CrmService.updateTaskStatus(req.params.id, req.body.status, req.body.actor);
-        res.json(task);
+        const { id } = req.params;
+        const { status, is_completed, actor } = req.body;
+        const finalStatus = status || (is_completed ? 'DONE' : 'PENDING');
+        const finalCompleted = is_completed !== undefined ? is_completed : (finalStatus === 'DONE');
+
+        try {
+            await pool.query(
+                `UPDATE core.tasks
+                 SET status = $1, is_completed = $2, updated_at = NOW()
+                 WHERE task_id = $3`,
+                [finalStatus, finalCompleted, id]
+            );
+        } catch (dbErr) {
+            console.error('[RDS Task PATCH Error]', dbErr.message);
+        }
+
+        const task = CrmService.updateTaskStatus(id, finalStatus, actor);
+        if (task) {
+            task.is_completed = finalCompleted;
+        }
+        res.json(task || { task_id: id, status: finalStatus, is_completed: finalCompleted });
     } catch (err) {
         res.status(400).json({ error: err.message });
     }
