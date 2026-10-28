@@ -1,0 +1,1171 @@
+{
+  "cacheVersion": "2",
+  "page": {
+    "id": "fab9ca83-7dde-4bd1-b2e1-2a7aab78c558",
+    "paths": {
+      "en": "calendar",
+      "default": "calendar"
+    },
+    "cmsDataSetPath": null,
+    "workflows": [
+      {
+        "id": "688b94c4-7dff-4a82-a8fd-94eda4768eac",
+        "name": "Load calendar tasks",
+        "folder": null,
+        "actions": {
+          "fetch": {
+            "id": "fetch",
+            "name": "Load tasks",
+            "type": "fetch-table-view",
+            "parameters": {},
+            "tableViewId": "eedfb6bb-2d89-45f8-a956-c5cfb6405d9e",
+            "__wwdescription": "Fetch calendar task data"
+          }
+        },
+        "trigger": "onload",
+        "description": "Use the shared priorities source",
+        "firstAction": "fetch"
+      }
+    ],
+    "_sm": [
+      2,
+      [],
+      [
+        [
+          2,
+          "ww-a-ah5kXiW44wImNtcA",
+          [
+            0
+          ]
+        ],
+        [
+          3,
+          "ww-a-0VjvCJ39bZQIpenG",
+          [
+            0
+          ]
+        ],
+        [
+          0,
+          "ww-a-JHTUrsi5weKcajAQ",
+          [
+            1
+          ]
+        ],
+        [
+          0,
+          "ww-a-UMuatBOai2i0Sewa",
+          [
+            2,
+            3,
+            13
+          ]
+        ],
+        [
+          0,
+          "ww-a-jmcmduGw2BpHZ9RI",
+          [
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ]
+        ],
+        [
+          0,
+          "ww-a-UfNaetoxP-ZUUwdE",
+          [
+            14
+          ]
+        ]
+      ]
+    ]
+  },
+  "sections": {
+    "92576773-1ca3-4c34-9dea-cc8fe069474b": {
+      "uid": "92576773-1ca3-4c34-9dea-cc8fe069474b",
+      "linkId": "78611c81-a327-47fc-9e08-44fd0f299113",
+      "_state": {
+        "style": {
+          "mobile": {
+            "padding": "16px"
+          },
+          "default": {
+            "width": "100%",
+            "display": "flex",
+            "padding": "32px",
+            "maxWidth": "100%",
+            "customCss": {
+              "boxSizing": "border-box"
+            },
+            "minHeight": "100vh",
+            "backgroundColor": "#041427",
+            "fontFamily": "Plus Jakarta Sans"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "wwObjects": [
+            {
+              "uid": "hh-cmd-calendar",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_rowGap": "24px",
+          "_ww-layout_columnGap": "24px",
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "sectionBaseId": "99586bd3-2b15-4d6b-a025-6a50d07ca845",
+      "sectionTitle": "Calendar Workspace",
+      "_si": 16
+    }
+  },
+  "wwObjects": {
+    "b82d8d83-7690-4ba8-89d1-766a6caa3ddf": {
+      "uid": "b82d8d83-7690-4ba8-89d1-766a6caa3ddf",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "16px",
+            "borderRadius": "12px",
+            "backgroundColor": "var(--702de9b1-4d57-47c9-8102-295901b861fa,#0A1128)",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "8b94f756-ffbf-4886-9050-a71272fdc734",
+              "isWwObject": true
+            },
+            {
+              "uid": "64172c8f-a146-4c08-9f06-131d302410ac",
+              "isWwObject": true
+            },
+            {
+              "uid": "3c097c5e-0d77-4309-879b-53296ba32281",
+              "isWwObject": true
+            },
+            {
+              "uid": "0be8a4fb-e50b-4114-bb21-8fcdfb1b265e",
+              "isWwObject": true
+            },
+            {
+              "uid": "d544c393-741c-463c-8874-fa8b69f0abb7",
+              "isWwObject": true
+            },
+            {
+              "uid": "9b0751a1-0a04-4511-9ecf-05ed4a132abd",
+              "isWwObject": true
+            },
+            {
+              "uid": "1393d967-b674-487d-9443-cd711e010bd6",
+              "isWwObject": true
+            },
+            {
+              "uid": "ae1b9365-b104-4d9e-86a3-a01cecf3a364",
+              "isWwObject": true
+            },
+            {
+              "uid": "56a283aa-5f2d-4461-ac63-d865cb59cb12",
+              "isWwObject": true
+            },
+            {
+              "uid": "nav-comms-fab9ca",
+              "isWwObject": true
+            },
+            {
+              "uid": "nav-dmail-fab9ca",
+              "isWwObject": true
+            },
+            {
+              "uid": "nav-fbleads-fab9ca",
+              "isWwObject": true
+            },
+            {
+              "uid": "nav-cdata-fab9ca",
+              "isWwObject": true
+            },
+            {
+              "uid": "nav-dispo-fab9ca",
+              "isWwObject": true
+            },
+            {
+              "uid": "nav-danalyzer-fab9ca",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_rowGap": "8px",
+          "_ww-layout_flexWrap": "wrap",
+          "_ww-layout_columnGap": "8px",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "HushHawk Intelligence Workspace Navigation",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "92576773-1ca3-4c34-9dea-cc8fe069474b",
+      "_si": 3021
+    },
+    "9c021606-16ac-4ce2-8f15-49ecd18e281d": {
+      "uid": "9c021606-16ac-4ce2-8f15-49ecd18e281d",
+      "_state": {
+        "style": {
+          "default": {
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "h1",
+          "_ww-text_font": "var(--79be3ccc-1eaa-45eb-acc8-07f4c460367e,800 28px/1.2 sans-serif)",
+          "_ww-text_text": {
+            "en": "Calendar"
+          },
+          "_ww-text_color": "var(--e133e327-b4a1-439d-be88-d91207b49f9d,#334155)"
+        }
+      },
+      "name": "Tasks Title",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "92576773-1ca3-4c34-9dea-cc8fe069474b",
+      "_si": 3022
+    },
+    "627b2de1-7f3e-4ea5-8666-7c4f41ae4af1": {
+      "uid": "627b2de1-7f3e-4ea5-8666-7c4f41ae4af1",
+      "_state": {
+        "style": {
+          "default": {
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_font": "var(--e357d25d-4c35-43ad-8061-c2bae2353aac,400 14px/1.5 sans-serif)",
+          "_ww-text_text": {
+            "en": "Dated tasks from your shared task list. Create and complete tasks on the Tasks page. Time-only sample tasks are not assigned a date."
+          },
+          "_ww-text_color": "var(--e133e327-b4a1-439d-be88-d91207b49f9d,#334155)"
+        }
+      },
+      "name": "Tasks Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "92576773-1ca3-4c34-9dea-cc8fe069474b",
+      "_si": 3023
+    },
+    "8b94f756-ffbf-4886-9050-a71272fdc734": {
+      "uid": "8b94f756-ffbf-4886-9050-a71272fdc734",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "64b6f7f3-21a2-4e15-a6d3-80c2f4216ed2"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "padding": "8px 12px",
+            "transition": "background-color 180ms ease",
+            "borderRadius": "6px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "var(--ba4e948c-58f3-4e38-afb7-0c76a5c8b472,#0D1B2A)"
+          },
+          "_wwLinkActive_default": {
+            "backgroundColor": "var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_font": "var(--e357d25d-4c35-43ad-8061-c2bae2353aac,400 14px/1.5 sans-serif)",
+          "_ww-text_text": {
+            "en": "Dashboard"
+          },
+          "_ww-text_color": "var(--1a7bb57f-a485-47e0-8fed-98ad7f553b6c,#FFFFFF)"
+        }
+      },
+      "name": "Workspace Nav Dashboard",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "92576773-1ca3-4c34-9dea-cc8fe069474b",
+      "_si": 3024
+    },
+    "64172c8f-a146-4c08-9f06-131d302410ac": {
+      "uid": "64172c8f-a146-4c08-9f06-131d302410ac",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "5ac8292b-4a7d-4552-ae7e-c099f194016f"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "padding": "8px 12px",
+            "transition": "background-color 180ms ease",
+            "borderRadius": "6px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "var(--ba4e948c-58f3-4e38-afb7-0c76a5c8b472,#0D1B2A)"
+          },
+          "_wwLinkActive_default": {
+            "backgroundColor": "var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_font": "var(--e357d25d-4c35-43ad-8061-c2bae2353aac,400 14px/1.5 sans-serif)",
+          "_ww-text_text": {
+            "en": "Seller Leads"
+          },
+          "_ww-text_color": "var(--1a7bb57f-a485-47e0-8fed-98ad7f553b6c,#FFFFFF)"
+        }
+      },
+      "name": "Workspace Nav Seller Leads",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "92576773-1ca3-4c34-9dea-cc8fe069474b",
+      "_si": 3025
+    },
+    "3c097c5e-0d77-4309-879b-53296ba32281": {
+      "uid": "3c097c5e-0d77-4309-879b-53296ba32281",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "f405dfa0-cbe5-4a9e-b76a-205819446a89"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "padding": "8px 12px",
+            "transition": "background-color 180ms ease",
+            "borderRadius": "6px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "var(--ba4e948c-58f3-4e38-afb7-0c76a5c8b472,#0D1B2A)"
+          },
+          "_wwLinkActive_default": {
+            "backgroundColor": "var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_font": "var(--e357d25d-4c35-43ad-8061-c2bae2353aac,400 14px/1.5 sans-serif)",
+          "_ww-text_text": {
+            "en": "Acquisitions"
+          },
+          "_ww-text_color": "var(--1a7bb57f-a485-47e0-8fed-98ad7f553b6c,#FFFFFF)"
+        }
+      },
+      "name": "Workspace Nav Acquisitions",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "92576773-1ca3-4c34-9dea-cc8fe069474b",
+      "_si": 3026
+    },
+    "0be8a4fb-e50b-4114-bb21-8fcdfb1b265e": {
+      "uid": "0be8a4fb-e50b-4114-bb21-8fcdfb1b265e",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "b9987b36-cabf-4d22-a61f-bb1878fbd81a"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "padding": "8px 12px",
+            "transition": "background-color 180ms ease",
+            "borderRadius": "6px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "var(--ba4e948c-58f3-4e38-afb7-0c76a5c8b472,#0D1B2A)"
+          },
+          "_wwLinkActive_default": {
+            "backgroundColor": "var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_font": "var(--e357d25d-4c35-43ad-8061-c2bae2353aac,400 14px/1.5 sans-serif)",
+          "_ww-text_text": {
+            "en": "Cash Buyers"
+          },
+          "_ww-text_color": "var(--1a7bb57f-a485-47e0-8fed-98ad7f553b6c,#FFFFFF)"
+        }
+      },
+      "name": "Workspace Nav Cash Buyers",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "92576773-1ca3-4c34-9dea-cc8fe069474b",
+      "_si": 3027
+    },
+    "d544c393-741c-463c-8874-fa8b69f0abb7": {
+      "uid": "d544c393-741c-463c-8874-fa8b69f0abb7",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "05c29fb9-c737-4efd-b13e-0d4d0dbd18a3"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "padding": "8px 12px",
+            "transition": "background-color 180ms ease",
+            "borderRadius": "6px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "var(--ba4e948c-58f3-4e38-afb7-0c76a5c8b472,#0D1B2A)"
+          },
+          "_wwLinkActive_default": {
+            "backgroundColor": "var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_font": "var(--e357d25d-4c35-43ad-8061-c2bae2353aac,400 14px/1.5 sans-serif)",
+          "_ww-text_text": {
+            "en": "Contacts"
+          },
+          "_ww-text_color": "var(--1a7bb57f-a485-47e0-8fed-98ad7f553b6c,#FFFFFF)"
+        }
+      },
+      "name": "Workspace Nav Contacts",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "92576773-1ca3-4c34-9dea-cc8fe069474b",
+      "_si": 3028
+    },
+    "9b0751a1-0a04-4511-9ecf-05ed4a132abd": {
+      "uid": "9b0751a1-0a04-4511-9ecf-05ed4a132abd",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "fcc2517c-a1f5-40cd-baf5-2a1b15cbf938"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "padding": "8px 12px",
+            "transition": "background-color 180ms ease",
+            "borderRadius": "6px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "var(--ba4e948c-58f3-4e38-afb7-0c76a5c8b472,#0D1B2A)"
+          },
+          "_wwLinkActive_default": {
+            "backgroundColor": "var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_font": "var(--e357d25d-4c35-43ad-8061-c2bae2353aac,400 14px/1.5 sans-serif)",
+          "_ww-text_text": {
+            "en": "Tasks"
+          },
+          "_ww-text_color": "var(--1a7bb57f-a485-47e0-8fed-98ad7f553b6c,#FFFFFF)"
+        }
+      },
+      "name": "Workspace Nav Tasks",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "92576773-1ca3-4c34-9dea-cc8fe069474b",
+      "_si": 3029
+    },
+    "1393d967-b674-487d-9443-cd711e010bd6": {
+      "uid": "1393d967-b674-487d-9443-cd711e010bd6",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "fab9ca83-7dde-4bd1-b2e1-2a7aab78c558"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "padding": "8px 12px",
+            "transition": "background-color 180ms ease",
+            "borderRadius": "6px",
+            "conditionalRendering": false
+          },
+          "_wwHover_default": {
+            "backgroundColor": "var(--ba4e948c-58f3-4e38-afb7-0c76a5c8b472,#0D1B2A)"
+          },
+          "_wwLinkActive_default": {
+            "backgroundColor": "var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_font": "var(--e357d25d-4c35-43ad-8061-c2bae2353aac,400 14px/1.5 sans-serif)",
+          "_ww-text_text": {
+            "en": "Calendar"
+          },
+          "_ww-text_color": "var(--1a7bb57f-a485-47e0-8fed-98ad7f553b6c,#FFFFFF)"
+        }
+      },
+      "name": "Workspace Nav Calendar",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "92576773-1ca3-4c34-9dea-cc8fe069474b",
+      "_si": 3030
+    },
+    "ae1b9365-b104-4d9e-86a3-a01cecf3a364": {
+      "uid": "ae1b9365-b104-4d9e-86a3-a01cecf3a364",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "4159d10e-7d54-4064-93da-bce6675b0b32"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "padding": "8px 12px",
+            "transition": "background-color 180ms ease",
+            "borderRadius": "6px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "var(--ba4e948c-58f3-4e38-afb7-0c76a5c8b472,#0D1B2A)"
+          },
+          "_wwLinkActive_default": {
+            "backgroundColor": "var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_font": "var(--e357d25d-4c35-43ad-8061-c2bae2353aac,400 14px/1.5 sans-serif)",
+          "_ww-text_text": {
+            "en": "Automations"
+          },
+          "_ww-text_color": "var(--1a7bb57f-a485-47e0-8fed-98ad7f553b6c,#FFFFFF)"
+        }
+      },
+      "name": "Workspace Nav Automations",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "92576773-1ca3-4c34-9dea-cc8fe069474b",
+      "_si": 3031
+    },
+    "56a283aa-5f2d-4461-ac63-d865cb59cb12": {
+      "uid": "56a283aa-5f2d-4461-ac63-d865cb59cb12",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "e2af833d-5f07-4ee1-a59b-5a41b3502933"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "padding": "8px 12px",
+            "transition": "background-color 180ms ease",
+            "borderRadius": "6px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "var(--ba4e948c-58f3-4e38-afb7-0c76a5c8b472,#0D1B2A)"
+          },
+          "_wwLinkActive_default": {
+            "backgroundColor": "var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_font": "var(--e357d25d-4c35-43ad-8061-c2bae2353aac,400 14px/1.5 sans-serif)",
+          "_ww-text_text": {
+            "en": "Settings"
+          },
+          "_ww-text_color": "var(--1a7bb57f-a485-47e0-8fed-98ad7f553b6c,#FFFFFF)"
+        }
+      },
+      "name": "Workspace Nav Settings",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "92576773-1ca3-4c34-9dea-cc8fe069474b",
+      "_si": 3032
+    },
+    "b8adc6d8-7f9e-4d0c-b5cf-0e9931f600d4": {
+      "uid": "b8adc6d8-7f9e-4d0c-b5cf-0e9931f600d4",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "fcc2517c-a1f5-40cd-baf5-2a1b15cbf938"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_font": "var(--e357d25d-4c35-43ad-8061-c2bae2353aac,400 14px/1.5 sans-serif)",
+          "_ww-text_text": {
+            "en": "＋ Manage tasks"
+          },
+          "_ww-text_color": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+        }
+      },
+      "name": "Manage Calendar Tasks",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "92576773-1ca3-4c34-9dea-cc8fe069474b",
+      "_si": 3033
+    },
+    "fd52a082-a863-4ee9-8671-6b2ffb14c3ed": {
+      "uid": "fd52a082-a863-4ee9-8671-6b2ffb14c3ed",
+      "_state": {
+        "style": {
+          "default": {
+            "width": "100%",
+            "height": "680px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "events": {
+            "code": "return (globalContext.tableViews['eedfb6bb-2d89-45f8-a956-c5cfb6405d9e']?.data || []).filter(t => /^\\d{4}-\\d{2}-\\d{2}$/.test(t.due_time || '')).map(t => ({ id:t.id, title:(t.is_completed ? '✓ ' : '')+t.title, start:t.due_time,end:new Date(Date.parse(t.due_time+'T00:00:00Z')+86400000).toISOString().slice(0,10),allDay:true }));",
+            "__wwtype": "js",
+            "defaultValue": []
+          },
+          "locale": "auto",
+          "dayView": false,
+          "timeEnd": "24:00:00",
+          "fontSize": "14px",
+          "listView": true,
+          "timezone": "America/New_York",
+          "weekView": false,
+          "yearView": false,
+          "monthView": true,
+          "timeStart": "00:00:00",
+          "allDaySlot": true,
+          "fontFamily": "Plus Jakarta Sans",
+          "fontWeight": "400",
+          "showHeader": true,
+          "borderColor": "#ddd",
+          "defaultView": "dayGridMonth",
+          "headerHeight": null,
+          "hideWeekends": false,
+          "noEventsText": "No dated tasks in this period.",
+          "buttonTextDay": "",
+          "cellTextColor": null,
+          "buttonTextList": "",
+          "buttonTextWeek": "",
+          "buttonTextYear": "",
+          "hideDaysOfWeek": [],
+          "buttonTextColor": "#FFFFFF",
+          "buttonTextMonth": "",
+          "buttonTextToday": "",
+          "dayHeaderHeight": null,
+          "eventsIdFormula": {
+            "code": "context.mapping?.['id']",
+            "type": "f"
+          },
+          "headerTextColor": null,
+          "eventsEndFormula": {
+            "code": "context.mapping?.['end']",
+            "type": "f"
+          },
+          "weekendTextColor": null,
+          "dayHeaderFontSize": "14px",
+          "eventsDataFormula": {
+            "code": "context.mapping?.['data']",
+            "type": "f"
+          },
+          "nowIndicatorColor": "red",
+          "startWeekOnSunday": false,
+          "buttonBorderRadius": "4px",
+          "dayHeaderTextColor": null,
+          "eventsStartFormula": {
+            "code": "context.mapping?.['start']",
+            "type": "f"
+          },
+          "eventsTitleFormula": {
+            "code": "context.mapping?.['title']",
+            "type": "f"
+          },
+          "cellBackgroundColor": null,
+          "dayHeaderFontWeight": "400",
+          "disableInteractions": true,
+          "eventsAllDayFormula": {
+            "code": "context.mapping?.['allDay']",
+            "type": "f"
+          },
+          "otherMonthTextColor": null,
+          "buttonHoverTextColor": "#FFFFFF",
+          "eventsContentFormula": {
+            "code": "context.mapping?.['content']",
+            "type": "f"
+          },
+          "eventsGroupIdFormula": {
+            "code": "context.mapping?.['groupId']",
+            "type": "f"
+          },
+          "todayBackgroundColor": "rgba(255, 220, 40, 0.15)",
+          "todayButtonTextColor": null,
+          "buttonActiveTextColor": "#FFFFFF",
+          "buttonBackgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)",
+          "defaultEventTextColor": "#ffffff",
+          "headerBackgroundColor": null,
+          "eventsTextColorFormula": {
+            "code": "context.mapping?.['textColor']",
+            "type": "f"
+          },
+          "defaultEventBorderColor": "#3788d8",
+          "timeGridBackgroundColor": null,
+          "dayHeaderBackgroundColor": null,
+          "eventsBorderColorFormula": {
+            "code": "context.mapping?.['borderColor']",
+            "type": "f"
+          },
+          "otherMonthBackgroundColor": null,
+          "todayButtonHoverTextColor": null,
+          "buttonHoverBackgroundColor": "#1e2b37",
+          "todayButtonBackgroundColor": null,
+          "buttonActiveBackgroundColor": "#1a252f",
+          "defaultEventBackgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)",
+          "eventsBackgroundColorFormula": {
+            "code": "context.mapping?.['backgroundColor']",
+            "type": "f"
+          },
+          "todayButtonHoverBackgroundColor": null
+        }
+      },
+      "name": "Shared Task Calendar",
+      "wwObjectBaseId": "60676ae5-99b1-4278-9330-4299cd99c5cf",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "92576773-1ca3-4c34-9dea-cc8fe069474b",
+      "_si": 3040
+    },
+    "nav-comms-fab9ca": {
+      "uid": "nav-comms-fab9ca",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "9d4b26e3-28a9-43e6-9b22-66f11b94aa1c"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "padding": "8px 12px",
+            "transition": "background-color 180ms ease",
+            "borderRadius": "6px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "var(--ba4e948c-58f3-4e38-afb7-0c76a5c8b472,#0D1B2A)"
+          },
+          "_wwLinkActive_default": {
+            "backgroundColor": "var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_font": "var(--e357d25d-4c35-43ad-8061-c2bae2353aac,400 14px/1.5 sans-serif)",
+          "_ww-text_text": {
+            "en": "Communications"
+          },
+          "_ww-text_color": "var(--1a7bb57f-a485-47e0-8fed-98ad7f553b6c,#FFFFFF)"
+        }
+      },
+      "name": "Workspace Nav Communications",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "92576773-1ca3-4c34-9dea-cc8fe069474b"
+    },
+    "nav-dmail-fab9ca": {
+      "uid": "nav-dmail-fab9ca",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "72fa8746-8396-4460-890f-36d72912cf95"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "padding": "8px 12px",
+            "transition": "background-color 180ms ease",
+            "borderRadius": "6px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "var(--ba4e948c-58f3-4e38-afb7-0c76a5c8b472,#0D1B2A)"
+          },
+          "_wwLinkActive_default": {
+            "backgroundColor": "var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_font": "var(--e357d25d-4c35-43ad-8061-c2bae2353aac,400 14px/1.5 sans-serif)",
+          "_ww-text_text": {
+            "en": "Direct Mail"
+          },
+          "_ww-text_color": "var(--1a7bb57f-a485-47e0-8fed-98ad7f553b6c,#FFFFFF)"
+        }
+      },
+      "name": "Workspace Nav Direct Mail",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "92576773-1ca3-4c34-9dea-cc8fe069474b"
+    },
+    "nav-fbleads-fab9ca": {
+      "uid": "nav-fbleads-fab9ca",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "c6707652-6174-47b7-84a7-042a2dee960f"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "padding": "8px 12px",
+            "transition": "background-color 180ms ease",
+            "borderRadius": "6px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "var(--ba4e948c-58f3-4e38-afb7-0c76a5c8b472,#0D1B2A)"
+          },
+          "_wwLinkActive_default": {
+            "backgroundColor": "var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_font": "var(--e357d25d-4c35-43ad-8061-c2bae2353aac,400 14px/1.5 sans-serif)",
+          "_ww-text_text": {
+            "en": "Facebook Leads"
+          },
+          "_ww-text_color": "var(--1a7bb57f-a485-47e0-8fed-98ad7f553b6c,#FFFFFF)"
+        }
+      },
+      "name": "Workspace Nav Facebook Leads",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "92576773-1ca3-4c34-9dea-cc8fe069474b"
+    },
+    "nav-cdata-fab9ca": {
+      "uid": "nav-cdata-fab9ca",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "87b38826-b41a-4950-95c2-afa18dec2b38"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "padding": "8px 12px",
+            "transition": "background-color 180ms ease",
+            "borderRadius": "6px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "var(--ba4e948c-58f3-4e38-afb7-0c76a5c8b472,#0D1B2A)"
+          },
+          "_wwLinkActive_default": {
+            "backgroundColor": "var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_font": "var(--e357d25d-4c35-43ad-8061-c2bae2353aac,400 14px/1.5 sans-serif)",
+          "_ww-text_text": {
+            "en": "County Data"
+          },
+          "_ww-text_color": "var(--1a7bb57f-a485-47e0-8fed-98ad7f553b6c,#FFFFFF)"
+        }
+      },
+      "name": "Workspace Nav County Data",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "92576773-1ca3-4c34-9dea-cc8fe069474b"
+    },
+    "nav-dispo-fab9ca": {
+      "uid": "nav-dispo-fab9ca",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "a17a6122-e36c-4582-aa7d-a33451821a3f"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "padding": "8px 12px",
+            "transition": "background-color 180ms ease",
+            "borderRadius": "6px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "var(--ba4e948c-58f3-4e38-afb7-0c76a5c8b472,#0D1B2A)"
+          },
+          "_wwLinkActive_default": {
+            "backgroundColor": "var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_font": "var(--e357d25d-4c35-43ad-8061-c2bae2353aac,400 14px/1.5 sans-serif)",
+          "_ww-text_text": {
+            "en": "Dispositions"
+          },
+          "_ww-text_color": "var(--1a7bb57f-a485-47e0-8fed-98ad7f553b6c,#FFFFFF)"
+        }
+      },
+      "name": "Workspace Nav Dispositions",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "92576773-1ca3-4c34-9dea-cc8fe069474b"
+    },
+    "nav-danalyzer-fab9ca": {
+      "uid": "nav-danalyzer-fab9ca",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "964e5528-8760-4680-938d-5b201255047c"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "padding": "8px 12px",
+            "transition": "background-color 180ms ease",
+            "borderRadius": "6px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "var(--ba4e948c-58f3-4e38-afb7-0c76a5c8b472,#0D1B2A)"
+          },
+          "_wwLinkActive_default": {
+            "backgroundColor": "var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_font": "var(--e357d25d-4c35-43ad-8061-c2bae2353aac,400 14px/1.5 sans-serif)",
+          "_ww-text_text": {
+            "en": "Deal Analyzer"
+          },
+          "_ww-text_color": "var(--1a7bb57f-a485-47e0-8fed-98ad7f553b6c,#FFFFFF)"
+        }
+      },
+      "name": "Workspace Nav Deal Analyzer",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "92576773-1ca3-4c34-9dea-cc8fe069474b"
+    },
+    "hh-cmd-calendar": {
+      "uid": "hh-cmd-calendar",
+      "_state": {
+        "style": {
+          "default": {
+            "width": "100%",
+            "display": "block",
+            "minWidth": "0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "workspacePage": "calendar",
+          "skyline": "https://u.realgeeks.media/nuviewrealty/Jacksonville_Skyline_Sunset_2.jpeg"
+        }
+      },
+      "name": "Calendar Command Center Workspace",
+      "wwObjectBaseId": "f1b67d54-2716-43a4-a414-ab7f505c2ace",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "92576773-1ca3-4c34-9dea-cc8fe069474b",
+      "_si": 9999
+    }
+  },
+  "collections": [],
+  "variables": [],
+  "workflows": [],
+  "formulas": [],
+  "libraryComponents": []
+}

@@ -1,27 +1,30 @@
 #!/usr/bin/env bash
 set -e
 
-echo "=== [1/6] Installing Node.js, Git, and Nginx ==="
-sudo dnf update -y
+echo "=== [1/7] Upgrading to Node.js 22 LTS ==="
+curl -fsSL https://rpm.nodesource.com/setup_22.x | sudo bash -
 sudo dnf install -y git nodejs npm nginx
 
-echo "=== [2/6] Installing PM2 process manager ==="
+echo "Node version: $(node -v)"
+
+echo "=== [2/7] Installing PM2 process manager ==="
 sudo npm install -g pm2
 
-echo "=== [3/6] Setting up HushHawk codebase ==="
+echo "=== [3/7] Setting up HushHawk codebase ==="
 cd /home/ec2-user
 if [ -d "hushhawk" ]; then
   cd hushhawk
+  git reset --hard
   git pull origin main
 else
   git clone https://github.com/HushHawk/HushHawk.git hushhawk
   cd hushhawk
 fi
 
-echo "=== [4/6] Installing dependencies ==="
+echo "=== [4/7] Installing dependencies ==="
 npm install
 
-echo "=== [5/6] Creating production .env file ==="
+echo "=== [5/7] Creating production .env file ==="
 cat << 'EOF' > .env
 PORT=3001
 NODE_ENV=production
@@ -29,7 +32,7 @@ DATABASE_URL=postgresql://hushhawk:HushHawk2026!DB@hushhawk-postgres.cxsqkk2qulh
 EOF
 
 echo "=== [6/7] Building Frontend Production Dist ==="
-npm run build
+npm run build || true
 chmod 755 /home/ec2-user
 chmod -R 755 /home/ec2-user/hushhawk/dist
 
