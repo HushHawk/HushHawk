@@ -1,6 +1,8 @@
 {
-  "buildCommand": "npm run build",
+  "buildCommand": "echo 'Pre-built dist ready'",
+  "installCommand": "echo 'Skipping npm install'",
   "outputDirectory": "dist",
+  "cleanUrls": true,
   "rewrites": [
     {
       "source": "/api/:path*",
@@ -9,10 +11,6 @@
     {
       "source": "/ww/:path*",
       "destination": "http://3.148.218.118/ww/:path*"
-    },
-    {
-      "source": "/:path*",
-      "destination": "/index.html"
     }
   ]
 }
