@@ -76,6 +76,9 @@
               <span class="caret-icon" v-html="icons.chevronDown"></span>
             </button>
             <div v-if="isQuickAddOpen" class="quick-add-menu" @click.stop>
+              <a href="/properties" @click="handleNav('/properties', $event)">
+                <span class="qa-icon" v-html="icons.house"></span> View Properties &amp; Photos
+              </a>
               <a href="/dispositions" @click="handleNav('/dispositions', $event)">
                 <span class="qa-icon" v-html="icons.badgeDollar"></span> Add Contract to Dispo
               </a>
@@ -149,7 +152,7 @@
       </div>
 
       <!-- Hero Header Banner with Jacksonville Skyline -->
-      <header class="hero" :style="heroStyle">
+      <header v-if="activeSectionKey !== 'properties'" class="hero" :style="heroStyle">
         <div class="hero-copy">
           <div class="breadcrumbs">
             <span>HushHawk Command Center</span>
@@ -209,6 +212,7 @@ import { icons } from './icons.js';
 import { navigation } from './navigation.js';
 
 // Dedicated Views
+import PropertiesView from './views/PropertiesView.vue';
 import DispositionsView from './views/DispositionsView.vue';
 import CashBuyersView from './views/CashBuyersView.vue';
 import MarketingView from './views/MarketingView.vue';
@@ -231,6 +235,7 @@ import TeamView from './views/TeamView.vue';
 export default {
   name: 'HushHawkMasterShell',
   components: {
+    PropertiesView,
     DispositionsView,
     CashBuyersView,
     MarketingView,
@@ -291,6 +296,7 @@ export default {
       // 2. Browser path detection
       if (typeof window !== 'undefined' && window.location) {
         const path = window.location.pathname.toLowerCase().replace(/\/$/, '');
+        if (path.includes('properties')) return 'properties';
         if (path.includes('cash-buyers')) return 'cash-buyers';
         if (path.includes('marketing')) return 'marketing';
         if (path.includes('county-data')) return 'county-data';
@@ -318,6 +324,7 @@ export default {
     },
     currentViewComponent() {
       const map = {
+        'properties': 'PropertiesView',
         'dispositions': 'DispositionsView',
         'cash-buyers': 'CashBuyersView',
         'marketing': 'MarketingView',
@@ -341,6 +348,11 @@ export default {
     },
     currentSectionMeta() {
       const metas = {
+        'properties': {
+          title: 'Properties',
+          subtitle: 'Property Portfolio & Photo Management',
+          tagline: 'Comprehensive Property Records, S3 Encrypted Field Photos & Renovation Tracking.'
+        },
         'team': {
           title: 'Team & Operations',
           subtitle: 'Institutional Wholesale Roster & Production',
@@ -498,7 +510,7 @@ export default {
       this.navOpen = false;
       const section = path.replace(/^\//, '');
       const validSections = [
-        'dispositions', 'cash-buyers', 'marketing', 'county-data',
+        'properties', 'dispositions', 'cash-buyers', 'marketing', 'county-data',
         'skip-tracing', 'contracts', 'follow-ups', 'analytics',
         'team', 'settings', 'communications', 'tasks', 'calendar',
         'contacts', 'automations', 'facebook-leads', 'direct-mail', 'deal-analyzer'
