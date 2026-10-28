@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { db } from '../store/database.js';
-import { checkDatabaseHealth } from '../store/pgClient.js';
+import { pool, checkDatabaseHealth } from '../store/pgClient.js';
 import { CrownKeyService } from '../services/crownkeyService.js';
 import { EventService } from '../services/eventService.js';
 import { IdentityService } from '../services/identityService.js';
@@ -133,9 +133,24 @@ apiRouter.post('/crownkey/validate', (req, res) => {
 // ============================================================================
 // 4. Properties (Property 360)
 // ============================================================================
-apiRouter.get('/properties', (req, res) => {
-    const enriched = db.data.core.properties.map(p => CrownKeyService.enrichProperty(p));
-    res.json({ total: enriched.length, properties: enriched });
+apiRouter.get('/properties', async (req, res) => {
+    try {
+        const { rows } = await pool.query(`
+            SELECT p.*, c.county_code
+            FROM core.properties p
+            LEFT JOIN ref.counties c ON p.county_id = c.county_id
+            ORDER BY p.created_at DESC;
+        `);
+        const enriched = rows.map(p => CrownKeyService.enrichProperty({
+            ...p,
+            county_code: p.county_code || 'DUV',
+        }));
+        res.json({ total: enriched.length, properties: enriched });
+    } catch (err) {
+        console.error('[PostgreSQL Properties Fetch Error]', err.message);
+        const enriched = db.data.core.properties.map(p => CrownKeyService.enrichProperty(p));
+        res.json({ total: enriched.length, properties: enriched });
+    }
 });
 
 apiRouter.get('/properties/:id', (req, res) => {
@@ -312,8 +327,17 @@ apiRouter.post('/interactions', (req, res) => {
 });
 
 // Tasks
-apiRouter.get('/tasks', (req, res) => {
-    res.json({ tasks: db.data.core.tasks });
+apiRouter.get('/tasks', async (req, res) => {
+    try {
+        const { rows } = await pool.query(`
+            SELECT task_id, title, category, due_time, priority, is_completed, status, created_at
+            FROM core.tasks
+            ORDER BY created_at DESC;
+        `);
+        res.json({ total: rows.length, tasks: rows });
+    } catch (err) {
+        res.json({ tasks: db.data.core.tasks });
+    }
 });
 
 apiRouter.post('/tasks', (req, res) => {
@@ -421,16 +445,31 @@ apiRouter.post('/compliance/suppression', (req, res) => {
 // ============================================================================
 // 12. Reference Dictionaries & Audit Log (Admin)
 // ============================================================================
-apiRouter.get('/admin/pillars', (req, res) => {
-    res.json({ pillars: db.data.ref.pillars });
+apiRouter.get('/admin/pillars', async (req, res) => {
+    try {
+        const { rows } = await pool.query('SELECT * FROM ref.pillars ORDER BY pillar_code ASC;');
+        res.json({ total: rows.length, pillars: rows });
+    } catch (err) {
+        res.json({ pillars: db.data.ref.pillars });
+    }
 });
 
-apiRouter.get('/admin/counties', (req, res) => {
-    res.json({ counties: db.data.ref.counties });
+apiRouter.get('/admin/counties', async (req, res) => {
+    try {
+        const { rows } = await pool.query('SELECT * FROM ref.counties ORDER BY county_code ASC;');
+        res.json({ total: rows.length, counties: rows });
+    } catch (err) {
+        res.json({ counties: db.data.ref.counties });
+    }
 });
 
-apiRouter.get('/admin/lead-sources', (req, res) => {
-    res.json({ lead_sources: db.data.ref.lead_sources });
+apiRouter.get('/admin/lead-sources', async (req, res) => {
+    try {
+        const { rows } = await pool.query('SELECT * FROM ref.lead_sources ORDER BY source_code ASC;');
+        res.json({ total: rows.length, lead_sources: rows });
+    } catch (err) {
+        res.json({ lead_sources: db.data.ref.lead_sources });
+    }
 });
 
 apiRouter.get('/admin/audit-log', (req, res) => {
