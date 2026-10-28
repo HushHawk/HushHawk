@@ -206,7 +206,7 @@
         "default": {
           "wwObjects": [
             {
-              "uid": "hh-cmd-dispositions",
+              "uid": "hh-cmd-properties",
               "isWwObject": true
             }
           ],
@@ -1867,7 +1867,7 @@
         "default": {
           "tag": "p",
           "_ww-text_text": {
-            "en": "Dispositions Command Center"
+            "en": "Properties & Photos Management"
           },
           "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
           "_ww-text_fontSize": "27px",
@@ -3535,7 +3535,7 @@
           "buyerPortrait": "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=240&h=240&q=85",
           "handshakeIcon": "lucide/handshake",
           "megaphoneIcon": "lucide/megaphone",
-          "workspacePage": "dispositions"
+          "workspacePage": "properties"
         }
       },
       "name": "Dispositions Cash Buyers Reference Workspace",
@@ -3630,8 +3630,8 @@
       "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
       "_si": 3258
     },
-    "hh-cmd-dispositions": {
-      "uid": "hh-cmd-dispositions",
+    "hh-cmd-properties": {
+      "uid": "hh-cmd-properties",
       "_state": {
         "style": {
           "default": {
@@ -3643,11 +3643,11 @@
       },
       "content": {
         "default": {
-          "workspacePage": "dispositions",
+          "workspacePage": "properties",
           "skyline": "https://u.realgeeks.media/nuviewrealty/Jacksonville_Skyline_Sunset_2.jpeg"
         }
       },
-      "name": "Dispositions Command Center Workspace",
+      "name": "Properties & Photos Management Workspace",
       "wwObjectBaseId": "f1b67d54-2716-43a4-a414-ab7f505c2ace",
       "libraryComponentBaseId": null,
       "parentSectionId": "89e7916b-7361-47a2-b48f-497459c4630d",
