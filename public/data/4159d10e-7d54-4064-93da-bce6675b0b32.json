@@ -1,0 +1,1129 @@
+{
+  "cacheVersion": "2",
+  "page": {
+    "id": "4159d10e-7d54-4064-93da-bce6675b0b32",
+    "paths": {
+      "en": "automations",
+      "default": "automations"
+    },
+    "cmsDataSetPath": null,
+    "workflows": [],
+    "_sm": [
+      2,
+      [],
+      [
+        [
+          2,
+          "ww-a-ah5kXiW44wImNtcA",
+          [
+            0
+          ]
+        ],
+        [
+          3,
+          "ww-a-0VjvCJ39bZQIpenG",
+          [
+            0
+          ]
+        ],
+        [
+          0,
+          "ww-a-JHTUrsi5weKcajAQ",
+          [
+            1
+          ]
+        ],
+        [
+          0,
+          "ww-a-UMuatBOai2i0Sewa",
+          [
+            2,
+            5,
+            13
+          ]
+        ],
+        [
+          0,
+          "ww-a-jmcmduGw2BpHZ9RI",
+          [
+            3,
+            4,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ]
+        ]
+      ]
+    ]
+  },
+  "sections": {
+    "cc040a24-c152-4afd-af4e-757019666b07": {
+      "uid": "cc040a24-c152-4afd-af4e-757019666b07",
+      "linkId": "f57828f4-c67b-4e00-8ee5-e982e7ecdcb4",
+      "_state": {
+        "style": {
+          "mobile": {
+            "padding": "16px"
+          },
+          "default": {
+            "width": "100%",
+            "display": "flex",
+            "padding": "32px",
+            "maxWidth": "100%",
+            "customCss": {
+              "boxSizing": "border-box"
+            },
+            "minHeight": "100vh",
+            "backgroundColor": "#041427",
+            "fontFamily": "Plus Jakarta Sans"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "wwObjects": [
+            {
+              "uid": "hh-cmd-automations",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_rowGap": "24px",
+          "_ww-layout_columnGap": "24px",
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "sectionBaseId": "99586bd3-2b15-4d6b-a025-6a50d07ca845",
+      "sectionTitle": "Automation Readiness Workspace",
+      "_si": 22
+    }
+  },
+  "wwObjects": {
+    "e4a1d715-b898-42d0-bd4d-81f8c1793358": {
+      "uid": "e4a1d715-b898-42d0-bd4d-81f8c1793358",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "16px",
+            "borderRadius": "12px",
+            "backgroundColor": "var(--702de9b1-4d57-47c9-8102-295901b861fa,#0A1128)",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "6118b228-0bc4-4c10-ba85-77ea0db311c9",
+              "isWwObject": true
+            },
+            {
+              "uid": "28dff8a0-74dc-4f63-9dd0-79d89b226b47",
+              "isWwObject": true
+            },
+            {
+              "uid": "b70ee3ec-2737-4072-a314-d5590917ce4c",
+              "isWwObject": true
+            },
+            {
+              "uid": "457d651c-d5da-41cd-b1cc-f36f582ee180",
+              "isWwObject": true
+            },
+            {
+              "uid": "8eb3e1e4-0259-4844-b4ab-db2ff71c4b22",
+              "isWwObject": true
+            },
+            {
+              "uid": "0ba329e5-7d19-4f1e-bc67-6e04880eddb2",
+              "isWwObject": true
+            },
+            {
+              "uid": "687cfc5e-5cf9-45c4-9013-2538a70b5909",
+              "isWwObject": true
+            },
+            {
+              "uid": "b8f37d29-7ea5-478c-868c-330d97887f4d",
+              "isWwObject": true
+            },
+            {
+              "uid": "0cfa3eae-0c7c-4822-a586-4f17d8dfd214",
+              "isWwObject": true
+            },
+            {
+              "uid": "nav-comms-4159d1",
+              "isWwObject": true
+            },
+            {
+              "uid": "nav-dmail-4159d1",
+              "isWwObject": true
+            },
+            {
+              "uid": "nav-fbleads-4159d1",
+              "isWwObject": true
+            },
+            {
+              "uid": "nav-cdata-4159d1",
+              "isWwObject": true
+            },
+            {
+              "uid": "nav-dispo-4159d1",
+              "isWwObject": true
+            },
+            {
+              "uid": "nav-danalyzer-4159d1",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_rowGap": "8px",
+          "_ww-layout_flexWrap": "wrap",
+          "_ww-layout_columnGap": "8px",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "HushHawk Intelligence Workspace Navigation",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "cc040a24-c152-4afd-af4e-757019666b07",
+      "_si": 3051
+    },
+    "64fcf549-1543-4f00-842b-499e2a64cbe0": {
+      "uid": "64fcf549-1543-4f00-842b-499e2a64cbe0",
+      "_state": {
+        "style": {
+          "default": {
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "h1",
+          "_ww-text_font": "var(--79be3ccc-1eaa-45eb-acc8-07f4c460367e,800 28px/1.2 sans-serif)",
+          "_ww-text_text": {
+            "en": "Automations"
+          },
+          "_ww-text_color": "var(--e133e327-b4a1-439d-be88-d91207b49f9d,#334155)"
+        }
+      },
+      "name": "Tasks Title",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "cc040a24-c152-4afd-af4e-757019666b07",
+      "_si": 3052
+    },
+    "28dff8a0-74dc-4f63-9dd0-79d89b226b47": {
+      "uid": "28dff8a0-74dc-4f63-9dd0-79d89b226b47",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "5ac8292b-4a7d-4552-ae7e-c099f194016f"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "padding": "8px 12px",
+            "transition": "background-color 180ms ease",
+            "borderRadius": "6px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "var(--ba4e948c-58f3-4e38-afb7-0c76a5c8b472,#0D1B2A)"
+          },
+          "_wwLinkActive_default": {
+            "backgroundColor": "var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_font": "var(--e357d25d-4c35-43ad-8061-c2bae2353aac,400 14px/1.5 sans-serif)",
+          "_ww-text_text": {
+            "en": "Seller Leads"
+          },
+          "_ww-text_color": "var(--1a7bb57f-a485-47e0-8fed-98ad7f553b6c,#FFFFFF)"
+        }
+      },
+      "name": "Workspace Nav Seller Leads",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "cc040a24-c152-4afd-af4e-757019666b07",
+      "_si": 3055
+    },
+    "b70ee3ec-2737-4072-a314-d5590917ce4c": {
+      "uid": "b70ee3ec-2737-4072-a314-d5590917ce4c",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "f405dfa0-cbe5-4a9e-b76a-205819446a89"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "padding": "8px 12px",
+            "transition": "background-color 180ms ease",
+            "borderRadius": "6px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "var(--ba4e948c-58f3-4e38-afb7-0c76a5c8b472,#0D1B2A)"
+          },
+          "_wwLinkActive_default": {
+            "backgroundColor": "var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_font": "var(--e357d25d-4c35-43ad-8061-c2bae2353aac,400 14px/1.5 sans-serif)",
+          "_ww-text_text": {
+            "en": "Acquisitions"
+          },
+          "_ww-text_color": "var(--1a7bb57f-a485-47e0-8fed-98ad7f553b6c,#FFFFFF)"
+        }
+      },
+      "name": "Workspace Nav Acquisitions",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "cc040a24-c152-4afd-af4e-757019666b07",
+      "_si": 3056
+    },
+    "88f3452f-324f-44ce-93f2-1a74a72938bc": {
+      "uid": "88f3452f-324f-44ce-93f2-1a74a72938bc",
+      "_state": {
+        "style": {
+          "default": {
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_font": "var(--e357d25d-4c35-43ad-8061-c2bae2353aac,400 14px/1.5 sans-serif)",
+          "_ww-text_text": {
+            "en": "Connection readiness. External automations remain inactive until their provider and secure server-side credentials are configured."
+          },
+          "_ww-text_color": "var(--e133e327-b4a1-439d-be88-d91207b49f9d,#334155)"
+        }
+      },
+      "name": "Tasks Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "cc040a24-c152-4afd-af4e-757019666b07",
+      "_si": 3057
+    },
+    "6118b228-0bc4-4c10-ba85-77ea0db311c9": {
+      "uid": "6118b228-0bc4-4c10-ba85-77ea0db311c9",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "64b6f7f3-21a2-4e15-a6d3-80c2f4216ed2"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "padding": "8px 12px",
+            "transition": "background-color 180ms ease",
+            "borderRadius": "6px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "var(--ba4e948c-58f3-4e38-afb7-0c76a5c8b472,#0D1B2A)"
+          },
+          "_wwLinkActive_default": {
+            "backgroundColor": "var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_font": "var(--e357d25d-4c35-43ad-8061-c2bae2353aac,400 14px/1.5 sans-serif)",
+          "_ww-text_text": {
+            "en": "Dashboard"
+          },
+          "_ww-text_color": "var(--1a7bb57f-a485-47e0-8fed-98ad7f553b6c,#FFFFFF)"
+        }
+      },
+      "name": "Workspace Nav Dashboard",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "cc040a24-c152-4afd-af4e-757019666b07",
+      "_si": 3058
+    },
+    "457d651c-d5da-41cd-b1cc-f36f582ee180": {
+      "uid": "457d651c-d5da-41cd-b1cc-f36f582ee180",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "b9987b36-cabf-4d22-a61f-bb1878fbd81a"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "padding": "8px 12px",
+            "transition": "background-color 180ms ease",
+            "borderRadius": "6px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "var(--ba4e948c-58f3-4e38-afb7-0c76a5c8b472,#0D1B2A)"
+          },
+          "_wwLinkActive_default": {
+            "backgroundColor": "var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_font": "var(--e357d25d-4c35-43ad-8061-c2bae2353aac,400 14px/1.5 sans-serif)",
+          "_ww-text_text": {
+            "en": "Cash Buyers"
+          },
+          "_ww-text_color": "var(--1a7bb57f-a485-47e0-8fed-98ad7f553b6c,#FFFFFF)"
+        }
+      },
+      "name": "Workspace Nav Cash Buyers",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "cc040a24-c152-4afd-af4e-757019666b07",
+      "_si": 3059
+    },
+    "8eb3e1e4-0259-4844-b4ab-db2ff71c4b22": {
+      "uid": "8eb3e1e4-0259-4844-b4ab-db2ff71c4b22",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "05c29fb9-c737-4efd-b13e-0d4d0dbd18a3"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "padding": "8px 12px",
+            "transition": "background-color 180ms ease",
+            "borderRadius": "6px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "var(--ba4e948c-58f3-4e38-afb7-0c76a5c8b472,#0D1B2A)"
+          },
+          "_wwLinkActive_default": {
+            "backgroundColor": "var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_font": "var(--e357d25d-4c35-43ad-8061-c2bae2353aac,400 14px/1.5 sans-serif)",
+          "_ww-text_text": {
+            "en": "Contacts"
+          },
+          "_ww-text_color": "var(--1a7bb57f-a485-47e0-8fed-98ad7f553b6c,#FFFFFF)"
+        }
+      },
+      "name": "Workspace Nav Contacts",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "cc040a24-c152-4afd-af4e-757019666b07",
+      "_si": 3060
+    },
+    "0ba329e5-7d19-4f1e-bc67-6e04880eddb2": {
+      "uid": "0ba329e5-7d19-4f1e-bc67-6e04880eddb2",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "fcc2517c-a1f5-40cd-baf5-2a1b15cbf938"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "padding": "8px 12px",
+            "transition": "background-color 180ms ease",
+            "borderRadius": "6px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "var(--ba4e948c-58f3-4e38-afb7-0c76a5c8b472,#0D1B2A)"
+          },
+          "_wwLinkActive_default": {
+            "backgroundColor": "var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_font": "var(--e357d25d-4c35-43ad-8061-c2bae2353aac,400 14px/1.5 sans-serif)",
+          "_ww-text_text": {
+            "en": "Tasks"
+          },
+          "_ww-text_color": "var(--1a7bb57f-a485-47e0-8fed-98ad7f553b6c,#FFFFFF)"
+        }
+      },
+      "name": "Workspace Nav Tasks",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "cc040a24-c152-4afd-af4e-757019666b07",
+      "_si": 3061
+    },
+    "687cfc5e-5cf9-45c4-9013-2538a70b5909": {
+      "uid": "687cfc5e-5cf9-45c4-9013-2538a70b5909",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "fab9ca83-7dde-4bd1-b2e1-2a7aab78c558"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "padding": "8px 12px",
+            "transition": "background-color 180ms ease",
+            "borderRadius": "6px",
+            "conditionalRendering": false
+          },
+          "_wwHover_default": {
+            "backgroundColor": "var(--ba4e948c-58f3-4e38-afb7-0c76a5c8b472,#0D1B2A)"
+          },
+          "_wwLinkActive_default": {
+            "backgroundColor": "var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_font": "var(--e357d25d-4c35-43ad-8061-c2bae2353aac,400 14px/1.5 sans-serif)",
+          "_ww-text_text": {
+            "en": "Calendar"
+          },
+          "_ww-text_color": "var(--1a7bb57f-a485-47e0-8fed-98ad7f553b6c,#FFFFFF)"
+        }
+      },
+      "name": "Workspace Nav Calendar",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "cc040a24-c152-4afd-af4e-757019666b07",
+      "_si": 3062
+    },
+    "b8f37d29-7ea5-478c-868c-330d97887f4d": {
+      "uid": "b8f37d29-7ea5-478c-868c-330d97887f4d",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "4159d10e-7d54-4064-93da-bce6675b0b32"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "padding": "8px 12px",
+            "transition": "background-color 180ms ease",
+            "borderRadius": "6px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "var(--ba4e948c-58f3-4e38-afb7-0c76a5c8b472,#0D1B2A)"
+          },
+          "_wwLinkActive_default": {
+            "backgroundColor": "var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_font": "var(--e357d25d-4c35-43ad-8061-c2bae2353aac,400 14px/1.5 sans-serif)",
+          "_ww-text_text": {
+            "en": "Automations"
+          },
+          "_ww-text_color": "var(--1a7bb57f-a485-47e0-8fed-98ad7f553b6c,#FFFFFF)"
+        }
+      },
+      "name": "Workspace Nav Automations",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "cc040a24-c152-4afd-af4e-757019666b07",
+      "_si": 3063
+    },
+    "0cfa3eae-0c7c-4822-a586-4f17d8dfd214": {
+      "uid": "0cfa3eae-0c7c-4822-a586-4f17d8dfd214",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "e2af833d-5f07-4ee1-a59b-5a41b3502933"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "padding": "8px 12px",
+            "transition": "background-color 180ms ease",
+            "borderRadius": "6px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "var(--ba4e948c-58f3-4e38-afb7-0c76a5c8b472,#0D1B2A)"
+          },
+          "_wwLinkActive_default": {
+            "backgroundColor": "var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_font": "var(--e357d25d-4c35-43ad-8061-c2bae2353aac,400 14px/1.5 sans-serif)",
+          "_ww-text_text": {
+            "en": "Settings"
+          },
+          "_ww-text_color": "var(--1a7bb57f-a485-47e0-8fed-98ad7f553b6c,#FFFFFF)"
+        }
+      },
+      "name": "Workspace Nav Settings",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "cc040a24-c152-4afd-af4e-757019666b07",
+      "_si": 3064
+    },
+    "c0758e72-345c-494a-9c86-703056e88e7c": {
+      "uid": "c0758e72-345c-494a-9c86-703056e88e7c",
+      "_state": {
+        "style": {
+          "default": {
+            "width": "100%",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "lang": "en",
+          "height": "460px",
+          "layout": "fixed",
+          "columns": [
+            {
+              "flex": 1,
+              "field": "name",
+              "filter": true,
+              "editable": false,
+              "minWidth": "180px",
+              "sortable": true,
+              "widthAlgo": "flex",
+              "headerName": "Workflow",
+              "cellDataType": "text"
+            },
+            {
+              "flex": 1,
+              "field": "status",
+              "filter": true,
+              "editable": false,
+              "minWidth": "180px",
+              "sortable": true,
+              "widthAlgo": "flex",
+              "headerName": "Status",
+              "cellDataType": "text"
+            },
+            {
+              "flex": 2,
+              "field": "nextStep",
+              "filter": true,
+              "editable": false,
+              "minWidth": "180px",
+              "sortable": true,
+              "widthAlgo": "flex",
+              "headerName": "Required connection",
+              "cellDataType": "text"
+            }
+          ],
+          "rowData": [
+            {
+              "id": "tasks-cal",
+              "name": "Tasks → Calendar Sync",
+              "status": "Active (Real-time)",
+              "nextStep": "Syncs all dated priorities directly with the interactive Calendar."
+            },
+            {
+              "id": "crownkey",
+              "name": "CrownKey Reference Engine",
+              "status": "Active (Autonomous)",
+              "nextStep": "Generates COUNTY-PARCEL-PILLAR-NNN · SOURCE display strings upon ingestion."
+            },
+            {
+              "id": "identity",
+              "name": "Identity 6-Rung Resolution",
+              "status": "Active (Autonomous)",
+              "nextStep": "Matches incoming records against Canonical Person and Property UUIDs without auto-merging."
+            },
+            {
+              "id": "foreclosure",
+              "name": "Duval County Foreclosure Connector",
+              "status": "Active (Daily Ingestion)",
+              "nextStep": "Scrapes and attaches court docket evidence to property timeline."
+            },
+            {
+              "id": "direct-mail",
+              "name": "Direct Mail Attribution Lock",
+              "status": "Active (Locked Attribution)",
+              "nextStep": "Binds First-Source attribution forever upon initial touch."
+            },
+            {
+              "id": "compliance",
+              "name": "DNC & Outbound Compliance Gate",
+              "status": "Active (Enforced)",
+              "nextStep": "Blocks communications to federal DNC and internal suppression lists."
+            },
+            {
+              "id": "neo4j",
+              "name": "Neo4j Graph Projection",
+              "status": "Active (Transactional Outbox)",
+              "nextStep": "Reconciles properties, owners, and debt edges with 0 drift."
+            },
+            {
+              "id": "podio",
+              "name": "Podio CRM Bidirectional Coexistence",
+              "status": "Active (Coexistence Map)",
+              "nextStep": "Synchronizes items via podio_sync_map with zero duplicate identities."
+            },
+            {
+              "id": "facebook",
+              "name": "Facebook Lead Ingestion",
+              "status": "Active (Live Connector)",
+              "nextStep": "Captures comments, resolves identities, and feeds Seller Leads queue."
+            }
+          ],
+          "cellColor": "var(--e133e327-b4a1-439d-be88-d91207b49f9d,#334155)",
+          "idFormula": {
+            "code": "context.mapping?.id",
+            "type": "f"
+          },
+          "selectAll": "all",
+          "localeText": {},
+          "pagination": true,
+          "rowReorder": false,
+          "borderColor": "var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+          "initialSort": null,
+          "rowSelection": "none",
+          "cellFontFamily": "Plus Jakarta Sans",
+          "initialFilters": null,
+          "movableColumns": true,
+          "headerTextColor": "var(--1a7bb57f-a485-47e0-8fed-98ad7f553b6c,#FFFFFF)",
+          "headerFontFamily": "Plus Jakarta Sans",
+          "resizableColumns": true,
+          "cellAlignmentMode": "inherit",
+          "disableCheckboxes": false,
+          "paginationPageSize": 20,
+          "rowBackgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)",
+          "initialColumnsOrder": null,
+          "wrapperBorderRadius": "12px",
+          "hasPaginationSelector": "single",
+          "headerBackgroundColor": "var(--702de9b1-4d57-47c9-8102-295901b861fa,#0A1128)",
+          "rowVerticalPaddingScale": 1
+        }
+      },
+      "name": "Automation Connection Readiness",
+      "wwObjectBaseId": "d2eeb897-ad95-49e4-8394-fe3f5c9a81fb",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "cc040a24-c152-4afd-af4e-757019666b07",
+      "_si": 3065
+    },
+    "nav-comms-4159d1": {
+      "uid": "nav-comms-4159d1",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "9d4b26e3-28a9-43e6-9b22-66f11b94aa1c"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "padding": "8px 12px",
+            "transition": "background-color 180ms ease",
+            "borderRadius": "6px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "var(--ba4e948c-58f3-4e38-afb7-0c76a5c8b472,#0D1B2A)"
+          },
+          "_wwLinkActive_default": {
+            "backgroundColor": "var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_font": "var(--e357d25d-4c35-43ad-8061-c2bae2353aac,400 14px/1.5 sans-serif)",
+          "_ww-text_text": {
+            "en": "Communications"
+          },
+          "_ww-text_color": "var(--1a7bb57f-a485-47e0-8fed-98ad7f553b6c,#FFFFFF)"
+        }
+      },
+      "name": "Workspace Nav Communications",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "cc040a24-c152-4afd-af4e-757019666b07"
+    },
+    "nav-dmail-4159d1": {
+      "uid": "nav-dmail-4159d1",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "72fa8746-8396-4460-890f-36d72912cf95"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "padding": "8px 12px",
+            "transition": "background-color 180ms ease",
+            "borderRadius": "6px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "var(--ba4e948c-58f3-4e38-afb7-0c76a5c8b472,#0D1B2A)"
+          },
+          "_wwLinkActive_default": {
+            "backgroundColor": "var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_font": "var(--e357d25d-4c35-43ad-8061-c2bae2353aac,400 14px/1.5 sans-serif)",
+          "_ww-text_text": {
+            "en": "Direct Mail"
+          },
+          "_ww-text_color": "var(--1a7bb57f-a485-47e0-8fed-98ad7f553b6c,#FFFFFF)"
+        }
+      },
+      "name": "Workspace Nav Direct Mail",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "cc040a24-c152-4afd-af4e-757019666b07"
+    },
+    "nav-fbleads-4159d1": {
+      "uid": "nav-fbleads-4159d1",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "c6707652-6174-47b7-84a7-042a2dee960f"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "padding": "8px 12px",
+            "transition": "background-color 180ms ease",
+            "borderRadius": "6px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "var(--ba4e948c-58f3-4e38-afb7-0c76a5c8b472,#0D1B2A)"
+          },
+          "_wwLinkActive_default": {
+            "backgroundColor": "var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_font": "var(--e357d25d-4c35-43ad-8061-c2bae2353aac,400 14px/1.5 sans-serif)",
+          "_ww-text_text": {
+            "en": "Facebook Leads"
+          },
+          "_ww-text_color": "var(--1a7bb57f-a485-47e0-8fed-98ad7f553b6c,#FFFFFF)"
+        }
+      },
+      "name": "Workspace Nav Facebook Leads",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "cc040a24-c152-4afd-af4e-757019666b07"
+    },
+    "nav-cdata-4159d1": {
+      "uid": "nav-cdata-4159d1",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "87b38826-b41a-4950-95c2-afa18dec2b38"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "padding": "8px 12px",
+            "transition": "background-color 180ms ease",
+            "borderRadius": "6px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "var(--ba4e948c-58f3-4e38-afb7-0c76a5c8b472,#0D1B2A)"
+          },
+          "_wwLinkActive_default": {
+            "backgroundColor": "var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_font": "var(--e357d25d-4c35-43ad-8061-c2bae2353aac,400 14px/1.5 sans-serif)",
+          "_ww-text_text": {
+            "en": "County Data"
+          },
+          "_ww-text_color": "var(--1a7bb57f-a485-47e0-8fed-98ad7f553b6c,#FFFFFF)"
+        }
+      },
+      "name": "Workspace Nav County Data",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "cc040a24-c152-4afd-af4e-757019666b07"
+    },
+    "nav-dispo-4159d1": {
+      "uid": "nav-dispo-4159d1",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "a17a6122-e36c-4582-aa7d-a33451821a3f"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "padding": "8px 12px",
+            "transition": "background-color 180ms ease",
+            "borderRadius": "6px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "var(--ba4e948c-58f3-4e38-afb7-0c76a5c8b472,#0D1B2A)"
+          },
+          "_wwLinkActive_default": {
+            "backgroundColor": "var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_font": "var(--e357d25d-4c35-43ad-8061-c2bae2353aac,400 14px/1.5 sans-serif)",
+          "_ww-text_text": {
+            "en": "Dispositions"
+          },
+          "_ww-text_color": "var(--1a7bb57f-a485-47e0-8fed-98ad7f553b6c,#FFFFFF)"
+        }
+      },
+      "name": "Workspace Nav Dispositions",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "cc040a24-c152-4afd-af4e-757019666b07"
+    },
+    "nav-danalyzer-4159d1": {
+      "uid": "nav-danalyzer-4159d1",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "964e5528-8760-4680-938d-5b201255047c"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "padding": "8px 12px",
+            "transition": "background-color 180ms ease",
+            "borderRadius": "6px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "var(--ba4e948c-58f3-4e38-afb7-0c76a5c8b472,#0D1B2A)"
+          },
+          "_wwLinkActive_default": {
+            "backgroundColor": "var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_font": "var(--e357d25d-4c35-43ad-8061-c2bae2353aac,400 14px/1.5 sans-serif)",
+          "_ww-text_text": {
+            "en": "Deal Analyzer"
+          },
+          "_ww-text_color": "var(--1a7bb57f-a485-47e0-8fed-98ad7f553b6c,#FFFFFF)"
+        }
+      },
+      "name": "Workspace Nav Deal Analyzer",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "cc040a24-c152-4afd-af4e-757019666b07"
+    },
+    "hh-cmd-automations": {
+      "uid": "hh-cmd-automations",
+      "_state": {
+        "style": {
+          "default": {
+            "width": "100%",
+            "display": "block",
+            "minWidth": "0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "workspacePage": "automations",
+          "skyline": "https://u.realgeeks.media/nuviewrealty/Jacksonville_Skyline_Sunset_2.jpeg"
+        }
+      },
+      "name": "Automations Command Center Workspace",
+      "wwObjectBaseId": "f1b67d54-2716-43a4-a414-ab7f505c2ace",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "cc040a24-c152-4afd-af4e-757019666b07",
+      "_si": 9999
+    }
+  },
+  "collections": [],
+  "variables": [],
+  "workflows": [],
+  "formulas": [],
+  "libraryComponents": []
+}

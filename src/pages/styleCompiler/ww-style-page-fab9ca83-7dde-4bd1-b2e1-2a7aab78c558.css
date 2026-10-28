@@ -1,0 +1,302 @@
+@layer ww-style-library {
+  @layer definition, instance;
+  @layer definition {
+    @layer normal, custom;
+    @layer normal {
+    }
+    @layer custom {
+    }
+  }
+  @layer instance {
+    @layer normal, custom;
+    @layer normal {
+    }
+    @layer custom {
+    }
+  }
+}
+@layer ww-style-section {
+  @layer normal, custom;
+  @layer normal {
+    @layer atomic, ordered;
+    @layer atomic {
+      .ww-a-ah5kXiW44wImNtcA {
+        height: auto;
+        z-index: unset;
+        max-height: unset;
+      }
+      .ww-a-0VjvCJ39bZQIpenG {
+        min-width: unset;
+        max-height: unset;
+      }
+    }
+    @layer ordered {
+      .ww-s-dG {
+        min-height: 100vh;
+        display: flex;
+        background-color: var(--dacf6d89-481f-4709-a2ec-c8b13d22e0af,#F8FAFC);
+      }
+      .ww-s-dG > .ww-section-element {
+        --ww-section-root-auto-align: center;
+        --ww-section-root-auto-width: 100%;
+        width: 100%;
+        padding: 32px;
+        max-width: 100%;
+        min-height: 100vh;
+      }
+      @media (max-width: 767px) {
+        .ww-s-dG > .ww-section-element {
+          padding: 16px;
+        }
+      }
+      .ww-s-dG > .ww-section-element.ww-layout {
+        display: flex;
+        flex-flow: column;
+        gap: 24px;
+      }
+    }
+  }
+  @layer custom {
+    .ww-s-dG {
+      box-sizing: border-box;
+    }
+  }
+}
+@layer ww-style-element {
+  @layer normal, custom;
+  @layer normal {
+    @layer atomic, ordered;
+    @layer atomic {
+      .ww-a-JHTUrsi5weKcajAQ {
+        margin: 0;
+        z-index: unset;
+        align-self: var(--ww-section-root-auto-align, unset);
+        max-width: unset;
+        min-width: unset;
+        height: auto;
+        max-height: unset;
+        min-height: unset;
+      }
+      .ww-a-UMuatBOai2i0Sewa {
+        margin: 0;
+        padding: 0;
+        z-index: unset;
+        align-self: var(--ww-section-root-auto-align, unset);
+        display: block;
+        max-width: unset;
+        min-width: unset;
+        height: auto;
+        max-height: unset;
+        min-height: unset;
+      }
+      .ww-a-jmcmduGw2BpHZ9RI {
+        margin: 0;
+        z-index: unset;
+        align-self: unset;
+        display: block;
+        max-width: unset;
+        min-width: unset;
+        height: auto;
+        max-height: unset;
+        min-height: unset;
+      }
+      .ww-a-UfNaetoxP-ZUUwdE {
+        margin: 0;
+        padding: 0;
+        z-index: unset;
+        align-self: var(--ww-section-root-auto-align, unset);
+        display: block;
+        max-width: unset;
+        min-width: unset;
+        max-height: unset;
+        min-height: unset;
+      }
+    }
+    @layer ordered {
+      .ww-e-dmj {
+        padding: 16px;
+        display: flex;
+        width: var(--ww-section-root-auto-width, revert-layer);
+        background-color: var(--702de9b1-4d57-47c9-8102-295901b861fa,#0A1128);
+        border-radius: 12px;
+      }
+      .ww-e-dmj.ww-layout, .ww-e-dmj [data-ww-ls~="dmj"] {
+        display: flex;
+        flex-flow: wrap;
+        align-content: revert-layer;
+        gap: 8px;
+      }
+      .ww-e-dmk {
+        width: var(--ww-section-root-auto-width, revert-layer);
+        font: var(--79be3ccc-1eaa-45eb-acc8-07f4c460367e,800 28px/1.2 sans-serif);
+        color: var(--e133e327-b4a1-439d-be88-d91207b49f9d,#334155);
+        white-space-collapse: preserve;
+      }
+      .ww-e-dml {
+        width: var(--ww-section-root-auto-width, revert-layer);
+        font: var(--e357d25d-4c35-43ad-8061-c2bae2353aac,400 14px/1.5 sans-serif);
+        color: var(--e133e327-b4a1-439d-be88-d91207b49f9d,#334155);
+        white-space-collapse: preserve;
+      }
+      .ww-e-dmm {
+        padding: 8px 12px;
+        font: var(--e357d25d-4c35-43ad-8061-c2bae2353aac,400 14px/1.5 sans-serif);
+        color: var(--1a7bb57f-a485-47e0-8fed-98ad7f553b6c,#FFFFFF);
+        white-space-collapse: preserve;
+        cursor: pointer;
+        transition: background-color 180ms ease;
+        border-radius: 6px;
+        --ww-element-transition: background-color 180ms ease;
+      }
+      .ww-e-dmm:where(:hover) {
+        background-color: var(--ba4e948c-58f3-4e38-afb7-0c76a5c8b472,#0D1B2A);
+      }
+      .ww-e-dmm:where([data-ww-states~="_wwLinkActive"]) {
+        background-color: var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04);
+      }
+      .ww-e-dmn {
+        padding: 8px 12px;
+        font: var(--e357d25d-4c35-43ad-8061-c2bae2353aac,400 14px/1.5 sans-serif);
+        color: var(--1a7bb57f-a485-47e0-8fed-98ad7f553b6c,#FFFFFF);
+        white-space-collapse: preserve;
+        cursor: pointer;
+        transition: background-color 180ms ease;
+        border-radius: 6px;
+        --ww-element-transition: background-color 180ms ease;
+      }
+      .ww-e-dmn:where(:hover) {
+        background-color: var(--ba4e948c-58f3-4e38-afb7-0c76a5c8b472,#0D1B2A);
+      }
+      .ww-e-dmn:where([data-ww-states~="_wwLinkActive"]) {
+        background-color: var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04);
+      }
+      .ww-e-dmo {
+        padding: 8px 12px;
+        font: var(--e357d25d-4c35-43ad-8061-c2bae2353aac,400 14px/1.5 sans-serif);
+        color: var(--1a7bb57f-a485-47e0-8fed-98ad7f553b6c,#FFFFFF);
+        white-space-collapse: preserve;
+        cursor: pointer;
+        transition: background-color 180ms ease;
+        border-radius: 6px;
+        --ww-element-transition: background-color 180ms ease;
+      }
+      .ww-e-dmo:where(:hover) {
+        background-color: var(--ba4e948c-58f3-4e38-afb7-0c76a5c8b472,#0D1B2A);
+      }
+      .ww-e-dmo:where([data-ww-states~="_wwLinkActive"]) {
+        background-color: var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04);
+      }
+      .ww-e-dmp {
+        padding: 8px 12px;
+        font: var(--e357d25d-4c35-43ad-8061-c2bae2353aac,400 14px/1.5 sans-serif);
+        color: var(--1a7bb57f-a485-47e0-8fed-98ad7f553b6c,#FFFFFF);
+        white-space-collapse: preserve;
+        cursor: pointer;
+        transition: background-color 180ms ease;
+        border-radius: 6px;
+        --ww-element-transition: background-color 180ms ease;
+      }
+      .ww-e-dmp:where(:hover) {
+        background-color: var(--ba4e948c-58f3-4e38-afb7-0c76a5c8b472,#0D1B2A);
+      }
+      .ww-e-dmp:where([data-ww-states~="_wwLinkActive"]) {
+        background-color: var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04);
+      }
+      .ww-e-dmq {
+        padding: 8px 12px;
+        font: var(--e357d25d-4c35-43ad-8061-c2bae2353aac,400 14px/1.5 sans-serif);
+        color: var(--1a7bb57f-a485-47e0-8fed-98ad7f553b6c,#FFFFFF);
+        white-space-collapse: preserve;
+        cursor: pointer;
+        transition: background-color 180ms ease;
+        border-radius: 6px;
+        --ww-element-transition: background-color 180ms ease;
+      }
+      .ww-e-dmq:where(:hover) {
+        background-color: var(--ba4e948c-58f3-4e38-afb7-0c76a5c8b472,#0D1B2A);
+      }
+      .ww-e-dmq:where([data-ww-states~="_wwLinkActive"]) {
+        background-color: var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04);
+      }
+      .ww-e-dmr {
+        padding: 8px 12px;
+        font: var(--e357d25d-4c35-43ad-8061-c2bae2353aac,400 14px/1.5 sans-serif);
+        color: var(--1a7bb57f-a485-47e0-8fed-98ad7f553b6c,#FFFFFF);
+        white-space-collapse: preserve;
+        cursor: pointer;
+        transition: background-color 180ms ease;
+        border-radius: 6px;
+        --ww-element-transition: background-color 180ms ease;
+      }
+      .ww-e-dmr:where(:hover) {
+        background-color: var(--ba4e948c-58f3-4e38-afb7-0c76a5c8b472,#0D1B2A);
+      }
+      .ww-e-dmr:where([data-ww-states~="_wwLinkActive"]) {
+        background-color: var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04);
+      }
+      .ww-e-dms {
+        padding: 8px 12px;
+        font: var(--e357d25d-4c35-43ad-8061-c2bae2353aac,400 14px/1.5 sans-serif);
+        color: var(--1a7bb57f-a485-47e0-8fed-98ad7f553b6c,#FFFFFF);
+        white-space-collapse: preserve;
+        cursor: pointer;
+        transition: background-color 180ms ease;
+        border-radius: 6px;
+        --ww-element-transition: background-color 180ms ease;
+      }
+      .ww-e-dms:where(:hover) {
+        background-color: var(--ba4e948c-58f3-4e38-afb7-0c76a5c8b472,#0D1B2A);
+      }
+      .ww-e-dms:where([data-ww-states~="_wwLinkActive"]) {
+        background-color: var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04);
+      }
+      .ww-e-dmt {
+        padding: 8px 12px;
+        font: var(--e357d25d-4c35-43ad-8061-c2bae2353aac,400 14px/1.5 sans-serif);
+        color: var(--1a7bb57f-a485-47e0-8fed-98ad7f553b6c,#FFFFFF);
+        white-space-collapse: preserve;
+        cursor: pointer;
+        transition: background-color 180ms ease;
+        border-radius: 6px;
+        --ww-element-transition: background-color 180ms ease;
+      }
+      .ww-e-dmt:where(:hover) {
+        background-color: var(--ba4e948c-58f3-4e38-afb7-0c76a5c8b472,#0D1B2A);
+      }
+      .ww-e-dmt:where([data-ww-states~="_wwLinkActive"]) {
+        background-color: var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04);
+      }
+      .ww-e-dmu {
+        padding: 8px 12px;
+        font: var(--e357d25d-4c35-43ad-8061-c2bae2353aac,400 14px/1.5 sans-serif);
+        color: var(--1a7bb57f-a485-47e0-8fed-98ad7f553b6c,#FFFFFF);
+        white-space-collapse: preserve;
+        cursor: pointer;
+        transition: background-color 180ms ease;
+        border-radius: 6px;
+        --ww-element-transition: background-color 180ms ease;
+      }
+      .ww-e-dmu:where(:hover) {
+        background-color: var(--ba4e948c-58f3-4e38-afb7-0c76a5c8b472,#0D1B2A);
+      }
+      .ww-e-dmu:where([data-ww-states~="_wwLinkActive"]) {
+        background-color: var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04);
+      }
+      .ww-e-dmv {
+        width: var(--ww-section-root-auto-width, revert-layer);
+        font: var(--e357d25d-4c35-43ad-8061-c2bae2353aac,400 14px/1.5 sans-serif);
+        color: var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8);
+        white-space-collapse: preserve;
+        cursor: pointer;
+      }
+      .ww-e-dn2 {
+        width: 100%;
+        height: 680px;
+      }
+    }
+  }
+  @layer custom {
+  }
+}
+@layer ww-style-layout-override {
+}

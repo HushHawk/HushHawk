@@ -1,0 +1,14 @@
+{
+  "name": "@weweb-internal/ext-element-0ad8e7c3-e8a4-4122-910a-90b391310b87",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/weweb-assets/ww-paginator"
+  },
+  "version": "3.1.2",
+  "license": "MIT",
+  "private": true,
+  "exports": {
+    ".": "./src/wwElement.vue",
+    "./config": "./ww-config.js"
+  }
+}

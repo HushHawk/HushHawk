@@ -1,0 +1,13 @@
+{
+  "name": "@weweb-internal/ext-element-a1779f3a-4d93-467d-b6a3-e027eb5a5ef5",
+  "version": "1.0.3",
+  "dependencies": {
+    "polygon-clipping": "0.15.7",
+    "polylabel": "1.1.0"
+  },
+  "private": true,
+  "exports": {
+    ".": "./src/wwElement.vue",
+    "./config": "./ww-config.js"
+  }
+}

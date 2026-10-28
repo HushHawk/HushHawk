@@ -1,0 +1,12 @@
+{
+  "name": "@weweb-internal/ext-element-3dd938b6-44b8-4876-9083-925b36f4085c",
+  "version": "1.0.1",
+  "dependencies": {
+    "papaparse": "5.4.1"
+  },
+  "private": true,
+  "exports": {
+    ".": "./src/wwElement.vue",
+    "./config": "./ww-config.js"
+  }
+}

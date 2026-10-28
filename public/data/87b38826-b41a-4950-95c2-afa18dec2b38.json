@@ -1,0 +1,3845 @@
+{
+  "cacheVersion": "2",
+  "page": {
+    "id": "87b38826-b41a-4950-95c2-afa18dec2b38",
+    "paths": {
+      "en": "county-data",
+      "default": "county-data"
+    },
+    "cmsDataSetPath": null,
+    "workflows": [],
+    "_sm": [
+      2,
+      [],
+      [
+        [
+          2,
+          "ww-a-ah5kXiW44wImNtcA",
+          [
+            0
+          ]
+        ],
+        [
+          3,
+          "ww-a-0VjvCJ39bZQIpenG",
+          [
+            0
+          ]
+        ],
+        [
+          0,
+          "ww-a-GfbQibRQPgXgCmyn",
+          [
+            1,
+            3,
+            5,
+            7,
+            9,
+            11,
+            13,
+            15,
+            17,
+            19,
+            21,
+            23,
+            26,
+            27,
+            30,
+            32,
+            34,
+            36,
+            41,
+            43,
+            46,
+            48,
+            52,
+            56,
+            60,
+            66,
+            69,
+            72,
+            75,
+            78,
+            81,
+            84,
+            87
+          ]
+        ],
+        [
+          0,
+          "ww-a-YRfn88Fc_a_pUrQN",
+          [
+            2,
+            4,
+            6,
+            8,
+            10,
+            12,
+            14,
+            16,
+            18,
+            20,
+            22,
+            24,
+            25,
+            28,
+            31,
+            33,
+            35
+          ]
+        ],
+        [
+          0,
+          "ww-a-xcvtKf9v4YXjru0H",
+          [
+            29,
+            37,
+            38,
+            44,
+            49,
+            50,
+            53,
+            54,
+            57,
+            58,
+            61,
+            62,
+            67,
+            70,
+            73,
+            76,
+            79,
+            82,
+            85,
+            88
+          ]
+        ],
+        [
+          0,
+          "ww-a-YF0k00I-Mi8zOhMt",
+          [
+            39,
+            40,
+            42,
+            47,
+            51,
+            55,
+            59,
+            63,
+            68,
+            71,
+            74,
+            77,
+            80,
+            83,
+            86,
+            89,
+            99,
+            103
+          ]
+        ],
+        [
+          0,
+          "ww-a-wepO1Mjw7DgHz3WK",
+          [
+            45,
+            64,
+            90,
+            97,
+            98
+          ]
+        ],
+        [
+          0,
+          "ww-a-jmcmduGw2BpHZ9RI",
+          [
+            65,
+            91,
+            92,
+            93,
+            94,
+            95,
+            96
+          ]
+        ],
+        [
+          0,
+          "ww-a-8BdkzjVNbpKFMJuw",
+          [
+            100
+          ]
+        ],
+        [
+          0,
+          "ww-a-JNYYuTsbWRUNLvfX",
+          [
+            101
+          ]
+        ],
+        [
+          0,
+          "ww-a-HxcMchISmn4k8l9c",
+          [
+            102
+          ]
+        ]
+      ]
+    ]
+  },
+  "sections": {
+    "7660f30c-4257-42b6-b08d-2f047f3e19a0": {
+      "uid": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "linkId": "4ff20f30-581c-43d3-8e89-971e6e152309",
+      "_state": {
+        "style": {
+          "default": {
+            "width": "100%",
+            "display": "flex",
+            "maxWidth": "100%",
+            "customCss": {
+              "boxSizing": "border-box"
+            },
+            "minHeight": "100vh",
+            "fontFamily": "Plus Jakarta Sans",
+            "backgroundColor": "#041427"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "wwObjects": [
+            {
+              "uid": "hh-cmd-county-data",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "sectionBaseId": "99586bd3-2b15-4d6b-a025-6a50d07ca845",
+      "sectionTitle": "County Data Page Shell",
+      "_si": 10
+    }
+  },
+  "wwObjects": {
+    "2471acb3-fafd-4ada-bdb9-11b58775d952": {
+      "uid": "2471acb3-fafd-4ada-bdb9-11b58775d952",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Dashboard"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "County Data Nav Dashboard Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1897
+    },
+    "bc7d9b00-b32b-4545-84c1-4675e8e07bbb": {
+      "uid": "bc7d9b00-b32b-4545-84c1-4675e8e07bbb",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "64b6f7f3-21a2-4e15-a6d3-80c2f4216ed2",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "2471acb3-fafd-4ada-bdb9-11b58775d952",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "County Data Nav Dashboard",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1898
+    },
+    "25490bed-3f09-41fd-8b47-d3e8fdc8a164": {
+      "uid": "25490bed-3f09-41fd-8b47-d3e8fdc8a164",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Seller Leads"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "County Data Nav Seller Leads Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1899
+    },
+    "687cefd8-6918-4578-a8ae-2cdbaaed50df": {
+      "uid": "687cefd8-6918-4578-a8ae-2cdbaaed50df",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "5ac8292b-4a7d-4552-ae7e-c099f194016f",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "25490bed-3f09-41fd-8b47-d3e8fdc8a164",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "County Data Nav Seller Leads",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1900
+    },
+    "3ea9fd74-7ca9-457c-857a-23fa31081e35": {
+      "uid": "3ea9fd74-7ca9-457c-857a-23fa31081e35",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Acquisitions"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "County Data Nav Acquisitions Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1901
+    },
+    "306fe093-d85e-45f9-b101-931ed29993ac": {
+      "uid": "306fe093-d85e-45f9-b101-931ed29993ac",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "f405dfa0-cbe5-4a9e-b76a-205819446a89",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "3ea9fd74-7ca9-457c-857a-23fa31081e35",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "County Data Nav Acquisitions",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1902
+    },
+    "4bf0c097-dda2-4641-b5f6-9940d3feed8e": {
+      "uid": "4bf0c097-dda2-4641-b5f6-9940d3feed8e",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Dispositions"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "County Data Nav Dispositions Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1903
+    },
+    "17081183-d230-4a0a-94bd-cc582e0e9c5e": {
+      "uid": "17081183-d230-4a0a-94bd-cc582e0e9c5e",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "a17a6122-e36c-4582-aa7d-a33451821a3f",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "4bf0c097-dda2-4641-b5f6-9940d3feed8e",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "County Data Nav Dispositions",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1904
+    },
+    "af55a132-04c0-4439-8e67-25f762165cb9": {
+      "uid": "af55a132-04c0-4439-8e67-25f762165cb9",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Cash Buyers"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "County Data Nav Cash Buyers Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1905
+    },
+    "904e0bb4-b36d-40c8-bf9b-36c513e30678": {
+      "uid": "904e0bb4-b36d-40c8-bf9b-36c513e30678",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "b9987b36-cabf-4d22-a61f-bb1878fbd81a",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "af55a132-04c0-4439-8e67-25f762165cb9",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "County Data Nav Cash Buyers",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1906
+    },
+    "2c951513-339a-426d-9d31-32a67f27ca55": {
+      "uid": "2c951513-339a-426d-9d31-32a67f27ca55",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Communications"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "County Data Nav Communications Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1907
+    },
+    "ad769a6f-63e0-497f-a644-ca7b78ea9af7": {
+      "uid": "ad769a6f-63e0-497f-a644-ca7b78ea9af7",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "9d4b26e3-28a9-43e6-9b22-66f11b94aa1c",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "2c951513-339a-426d-9d31-32a67f27ca55",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "County Data Nav Communications",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1908
+    },
+    "f8bafca0-eab1-494c-a7fc-05c7aaafe637": {
+      "uid": "f8bafca0-eab1-494c-a7fc-05c7aaafe637",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Marketing"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "County Data Nav Marketing Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1909
+    },
+    "500cab4e-e380-43ff-a032-1086ec88f9a6": {
+      "uid": "500cab4e-e380-43ff-a032-1086ec88f9a6",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "a2d0d91c-0e12-4dc0-b922-5858c7917ee3",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "f8bafca0-eab1-494c-a7fc-05c7aaafe637",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "County Data Nav Marketing",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1910
+    },
+    "3c567cf7-7843-4efa-a6ae-33ffb3bc47f3": {
+      "uid": "3c567cf7-7843-4efa-a6ae-33ffb3bc47f3",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "County Data"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "County Data Nav County Data Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1911
+    },
+    "43a323ee-521f-428b-b3e3-ec588db66bba": {
+      "uid": "43a323ee-521f-428b-b3e3-ec588db66bba",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "87b38826-b41a-4950-95c2-afa18dec2b38",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "3c567cf7-7843-4efa-a6ae-33ffb3bc47f3",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "County Data Nav County Data",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1912
+    },
+    "a623ca8c-a833-4b9a-981c-5b2e20045889": {
+      "uid": "a623ca8c-a833-4b9a-981c-5b2e20045889",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Skip Tracing"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "County Data Nav Skip Tracing Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1913
+    },
+    "aaff611b-bec6-4544-8714-b38d0029af17": {
+      "uid": "aaff611b-bec6-4544-8714-b38d0029af17",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "4ad6b22e-4151-4bf7-bc63-7dec86f377a2",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "a623ca8c-a833-4b9a-981c-5b2e20045889",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "County Data Nav Skip Tracing",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1914
+    },
+    "6703cb7b-8ce4-4cff-83b5-940b65204fcd": {
+      "uid": "6703cb7b-8ce4-4cff-83b5-940b65204fcd",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Contracts"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "County Data Nav Contracts Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1915
+    },
+    "f6dc64be-36be-4287-a7d8-763c7028436c": {
+      "uid": "f6dc64be-36be-4287-a7d8-763c7028436c",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "d588127b-5b3e-4f99-a6dc-7a22ef7c128b",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "6703cb7b-8ce4-4cff-83b5-940b65204fcd",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "County Data Nav Contracts",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1916
+    },
+    "a52427dc-91e4-40f8-8a7b-3935e83a6406": {
+      "uid": "a52427dc-91e4-40f8-8a7b-3935e83a6406",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Follow Ups"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "County Data Nav Follow Ups Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1917
+    },
+    "39c4f105-7d69-479a-9ae8-61f2586cfa86": {
+      "uid": "39c4f105-7d69-479a-9ae8-61f2586cfa86",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "e01977a5-5afc-427b-a25d-39b555fa3b0d",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "a52427dc-91e4-40f8-8a7b-3935e83a6406",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "County Data Nav Follow Ups",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1918
+    },
+    "10ba8d88-24ec-4e4f-a3da-965c96099e41": {
+      "uid": "10ba8d88-24ec-4e4f-a3da-965c96099e41",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Analytics"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "County Data Nav Analytics Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1919
+    },
+    "8bd25d1a-8460-4cb2-bd72-0db23bed09e2": {
+      "uid": "8bd25d1a-8460-4cb2-bd72-0db23bed09e2",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "dba9b37a-872b-4425-9993-79f3ceaadb92",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "10ba8d88-24ec-4e4f-a3da-965c96099e41",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "County Data Nav Analytics",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1920
+    },
+    "941988ea-fefc-4c4b-8209-d92e1a88b103": {
+      "uid": "941988ea-fefc-4c4b-8209-d92e1a88b103",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "0921099a-dc1e-4897-809d-bd39a527558d",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "25bc6eb2-abcf-4ebb-883a-19a7893cd1e6",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "County Data Nav Team",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1921
+    },
+    "24d10687-2124-498e-85a7-f21ecb44dfa9": {
+      "uid": "24d10687-2124-498e-85a7-f21ecb44dfa9",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Settings"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "County Data Nav Settings Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1922
+    },
+    "25bc6eb2-abcf-4ebb-883a-19a7893cd1e6": {
+      "uid": "25bc6eb2-abcf-4ebb-883a-19a7893cd1e6",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Teams"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "County Data Nav Team Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1923
+    },
+    "04651ad4-e370-4eaf-9220-a1b1170afe52": {
+      "uid": "04651ad4-e370-4eaf-9220-a1b1170afe52",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "e2af833d-5f07-4ee1-a59b-5a41b3502933",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "9px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "24d10687-2124-498e-85a7-f21ecb44dfa9",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "County Data Nav Settings",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1924
+    },
+    "c078c1f8-0e95-4094-98e5-db4c9240e306": {
+      "uid": "c078c1f8-0e95-4094-98e5-db4c9240e306",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "12px 12px 6px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "SPECIALIZED TOOLS"
+          },
+          "_ww-text_color": "#64748B",
+          "_ww-text_fontSize": "9px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "1px"
+        }
+      },
+      "name": "County Data Tools Label",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1925
+    },
+    "c08c9113-afc5-444e-b4a9-85f6726afaa3": {
+      "uid": "c08c9113-afc5-444e-b4a9-85f6726afaa3",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Facebook Leads"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "County Data Nav Facebook Leads Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1926
+    },
+    "a17adc4c-9eeb-4946-8519-d4eb056c2c37": {
+      "uid": "a17adc4c-9eeb-4946-8519-d4eb056c2c37",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "c6707652-6174-47b7-84a7-042a2dee960f",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "8px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "c08c9113-afc5-444e-b4a9-85f6726afaa3",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "County Data Nav Facebook Leads",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1927
+    },
+    "9878cdb6-fd2d-4aee-b767-d23097b719a0": {
+      "uid": "9878cdb6-fd2d-4aee-b767-d23097b719a0",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Direct Mail"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "County Data Nav Direct Mail Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1928
+    },
+    "ddbeac85-4b51-4e61-9005-227990a9aa75": {
+      "uid": "ddbeac85-4b51-4e61-9005-227990a9aa75",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "72fa8746-8396-4460-890f-36d72912cf95",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "8px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "9878cdb6-fd2d-4aee-b767-d23097b719a0",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "County Data Nav Direct Mail",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1929
+    },
+    "a09e44e6-8e18-4590-a7ce-e62349f2801e": {
+      "uid": "a09e44e6-8e18-4590-a7ce-e62349f2801e",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Deal Analyzer"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "County Data Nav Deal Analyzer Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1930
+    },
+    "1dc20a17-a6d5-4a2d-a864-7bdb1e161a16": {
+      "uid": "1dc20a17-a6d5-4a2d-a864-7bdb1e161a16",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "964e5528-8760-4680-938d-5b201255047c",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "cursor": "pointer",
+            "margin": "0px 0px 2px 0px",
+            "display": "flex",
+            "padding": "8px 12px",
+            "borderRadius": "8px"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "#0D1B2A"
+          },
+          "_wwLinkActive_default": {
+            "borderLeft": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "backgroundColor": "var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          },
+          {
+            "id": "_wwLinkActive",
+            "label": "active"
+          }
+        ]
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "a09e44e6-8e18-4590-a7ce-e62349f2801e",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "County Data Nav Deal Analyzer",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1931
+    },
+    "a8d67e84-508f-4c9a-8561-2e27a2d29f4f": {
+      "uid": "a8d67e84-508f-4c9a-8561-2e27a2d29f4f",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "HUSHHAWK INTELLIGENCE"
+          },
+          "_ww-text_color": "#94A3B8",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "700",
+          "_ww-text_letterSpacing": "1.2px"
+        }
+      },
+      "name": "County Data Brand Eyebrow",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1932
+    },
+    "07602f70-1fe8-45fa-9a8a-9cec738e956d": {
+      "uid": "07602f70-1fe8-45fa-9a8a-9cec738e956d",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "2px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "HUSHHAWK"
+          },
+          "_ww-text_color": "#FFFFFF",
+          "_ww-text_fontSize": "24px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "County Data Brand Title",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1933
+    },
+    "2bc11011-0269-4d9a-8041-ff91ee38e496": {
+      "uid": "2bc11011-0269-4d9a-8041-ff91ee38e496",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "2px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Wholesale Command Center"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "County Data Brand Sub",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1934
+    },
+    "4ee359f7-5892-4a15-bcf8-9bd31c0f893a": {
+      "uid": "4ee359f7-5892-4a15-bcf8-9bd31c0f893a",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "20px 18px 16px",
+            "borderBottom": "1px solid #1E293B",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "a8d67e84-508f-4c9a-8561-2e27a2d29f4f",
+              "isWwObject": true
+            },
+            {
+              "uid": "07602f70-1fe8-45fa-9a8a-9cec738e956d",
+              "isWwObject": true
+            },
+            {
+              "uid": "2bc11011-0269-4d9a-8041-ff91ee38e496",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "County Data Sidebar Brand",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1935
+    },
+    "125e737d-2022-44bb-9a42-3dd9febb3f3b": {
+      "uid": "125e737d-2022-44bb-9a42-3dd9febb3f3b",
+      "_state": {
+        "style": {
+          "default": {
+            "flex": "1",
+            "display": "flex",
+            "padding": "10px 12px",
+            "customCss": {
+              "overflowY": "auto"
+            },
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "bc7d9b00-b32b-4545-84c1-4675e8e07bbb",
+              "isWwObject": true
+            },
+            {
+              "uid": "687cefd8-6918-4578-a8ae-2cdbaaed50df",
+              "isWwObject": true
+            },
+            {
+              "uid": "306fe093-d85e-45f9-b101-931ed29993ac",
+              "isWwObject": true
+            },
+            {
+              "uid": "17081183-d230-4a0a-94bd-cc582e0e9c5e",
+              "isWwObject": true
+            },
+            {
+              "uid": "904e0bb4-b36d-40c8-bf9b-36c513e30678",
+              "isWwObject": true
+            },
+            {
+              "uid": "ad769a6f-63e0-497f-a644-ca7b78ea9af7",
+              "isWwObject": true
+            },
+            {
+              "uid": "500cab4e-e380-43ff-a032-1086ec88f9a6",
+              "isWwObject": true
+            },
+            {
+              "uid": "43a323ee-521f-428b-b3e3-ec588db66bba",
+              "isWwObject": true
+            },
+            {
+              "uid": "aaff611b-bec6-4544-8714-b38d0029af17",
+              "isWwObject": true
+            },
+            {
+              "uid": "f6dc64be-36be-4287-a7d8-763c7028436c",
+              "isWwObject": true
+            },
+            {
+              "uid": "39c4f105-7d69-479a-9ae8-61f2586cfa86",
+              "isWwObject": true
+            },
+            {
+              "uid": "8bd25d1a-8460-4cb2-bd72-0db23bed09e2",
+              "isWwObject": true
+            },
+            {
+              "uid": "941988ea-fefc-4c4b-8209-d92e1a88b103",
+              "isWwObject": true
+            },
+            {
+              "uid": "04651ad4-e370-4eaf-9220-a1b1170afe52",
+              "isWwObject": true
+            },
+            {
+              "uid": "c078c1f8-0e95-4094-98e5-db4c9240e306",
+              "isWwObject": true
+            },
+            {
+              "uid": "a17adc4c-9eeb-4946-8519-d4eb056c2c37",
+              "isWwObject": true
+            },
+            {
+              "uid": "ddbeac85-4b51-4e61-9005-227990a9aa75",
+              "isWwObject": true
+            },
+            {
+              "uid": "1dc20a17-a6d5-4a2d-a864-7bdb1e161a16",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "County Data Sidebar Navigation",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1936
+    },
+    "a7dd5447-fa6a-4204-957d-23951c94fe76": {
+      "uid": "a7dd5447-fa6a-4204-957d-23951c94fe76",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "●  Podio sync pending"
+          },
+          "_ww-text_color": "#F59E0B",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "600"
+        }
+      },
+      "name": "County Data Podio Status",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1937
+    },
+    "9a3bbec1-f01a-44d1-9b23-73924ba4496a": {
+      "uid": "9a3bbec1-f01a-44d1-9b23-73924ba4496a",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "13px 16px",
+            "borderTop": "1px solid #1E293B",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "a7dd5447-fa6a-4204-957d-23951c94fe76",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "County Data Sidebar Footer",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1938
+    },
+    "9d2ee552-c3e4-4a78-a2b5-9e48dfde8aaa": {
+      "uid": "9d2ee552-c3e4-4a78-a2b5-9e48dfde8aaa",
+      "_state": {
+        "style": {
+          "default": {
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Duval County Data Intelligence"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "27px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "County Data Page Title",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1939
+    },
+    "56364eec-fa4e-43e1-be93-a005026c867a": {
+      "uid": "56364eec-fa4e-43e1-be93-a005026c867a",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "4px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Track public-record lead pillars and turn local signals into prioritized acquisition lists."
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "County Data Page Subtitle",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1940
+    },
+    "0a8f0875-fdad-4967-9bfa-93513b06287b": {
+      "uid": "0a8f0875-fdad-4967-9bfa-93513b06287b",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "9d2ee552-c3e4-4a78-a2b5-9e48dfde8aaa",
+              "isWwObject": true
+            },
+            {
+              "uid": "56364eec-fa4e-43e1-be93-a005026c867a",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "County Data Title Wrap",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1941
+    },
+    "07d8875b-2845-464f-b261-39d16ae1f23d": {
+      "uid": "07d8875b-2845-464f-b261-39d16ae1f23d",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "HUSHHAWK • FRONT END READY"
+          },
+          "_ww-text_color": "#92400E",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "0.7px"
+        }
+      },
+      "name": "County Data Badge Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1942
+    },
+    "e6e34021-28d6-4c87-a063-1fdcac49fc0b": {
+      "uid": "e6e34021-28d6-4c87-a063-1fdcac49fc0b",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid #FDE68A",
+            "display": "flex",
+            "padding": "6px 9px",
+            "borderRadius": "999px",
+            "backgroundColor": "#FFFBEB"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "07d8875b-2845-464f-b261-39d16ae1f23d",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "County Data Environment Badge",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1943
+    },
+    "ae743922-1e9c-4dd8-a245-1ea57f2265fb": {
+      "uid": "ae743922-1e9c-4dd8-a245-1ea57f2265fb",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "DATA PILLARS"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "0.7px"
+        }
+      },
+      "name": "County Data KPI 1 Label",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1944
+    },
+    "d2afcc5e-0f39-4c35-8ef9-8d2650d9b1ef": {
+      "uid": "d2afcc5e-0f39-4c35-8ef9-8d2650d9b1ef",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "8px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "29"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "24px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "County Data KPI 1 Value",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1945
+    },
+    "6c7ac52b-0413-403b-9d10-766723a3368a": {
+      "uid": "6c7ac52b-0413-403b-9d10-766723a3368a",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "6px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Target lead-source framework"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "County Data KPI 1 Sub",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1946
+    },
+    "03331413-3457-448b-83c5-5f9aea9fd599": {
+      "uid": "03331413-3457-448b-83c5-5f9aea9fd599",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "display": "flex",
+            "padding": "17px",
+            "borderTop": "3px solid var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8)",
+            "borderRadius": "12px",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "ae743922-1e9c-4dd8-a245-1ea57f2265fb",
+              "isWwObject": true
+            },
+            {
+              "uid": "d2afcc5e-0f39-4c35-8ef9-8d2650d9b1ef",
+              "isWwObject": true
+            },
+            {
+              "uid": "6c7ac52b-0413-403b-9d10-766723a3368a",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "County Data KPI 1",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1947
+    },
+    "57971b7d-cbc2-43e7-80bc-d91475a88f4a": {
+      "uid": "57971b7d-cbc2-43e7-80bc-d91475a88f4a",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "NEW RECORDS"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "0.7px"
+        }
+      },
+      "name": "County Data KPI 2 Label",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1948
+    },
+    "5c11657b-b510-4849-ad07-791c27333a43": {
+      "uid": "5c11657b-b510-4849-ad07-791c27333a43",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "8px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "1,247"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "24px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "County Data KPI 2 Value",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1949
+    },
+    "2fc1c588-fa23-4785-9d9b-328e40a8f015": {
+      "uid": "2fc1c588-fa23-4785-9d9b-328e40a8f015",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "6px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Latest imported public records"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "County Data KPI 2 Sub",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1950
+    },
+    "3e751613-8fc5-4e35-9650-9d2a630d1b68": {
+      "uid": "3e751613-8fc5-4e35-9650-9d2a630d1b68",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "display": "flex",
+            "padding": "17px",
+            "borderTop": "3px solid var(--b563c8ea-b5cd-4950-ac34-983a20eacf71,#DC2626)",
+            "borderRadius": "12px",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "57971b7d-cbc2-43e7-80bc-d91475a88f4a",
+              "isWwObject": true
+            },
+            {
+              "uid": "5c11657b-b510-4849-ad07-791c27333a43",
+              "isWwObject": true
+            },
+            {
+              "uid": "2fc1c588-fa23-4785-9d9b-328e40a8f015",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "County Data KPI 2",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1951
+    },
+    "8368fc86-e519-4959-b66b-a36aca763be4": {
+      "uid": "8368fc86-e519-4959-b66b-a36aca763be4",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "MATCHED PROPERTIES"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "0.7px"
+        }
+      },
+      "name": "County Data KPI 3 Label",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1952
+    },
+    "5b04b42e-9606-47a0-8f44-4eb24a294e33": {
+      "uid": "5b04b42e-9606-47a0-8f44-4eb24a294e33",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "8px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "1,180"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "24px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "County Data KPI 3 Value",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1953
+    },
+    "f73c5a05-62f2-4c7e-8ab5-8784c91fb877": {
+      "uid": "f73c5a05-62f2-4c7e-8ab5-8784c91fb877",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "6px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Records tied to parcels"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "County Data KPI 3 Sub",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1954
+    },
+    "7b9165f3-75bc-4605-ab2a-d3c9b8f2fd71": {
+      "uid": "7b9165f3-75bc-4605-ab2a-d3c9b8f2fd71",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "display": "flex",
+            "padding": "17px",
+            "borderTop": "3px solid var(--614c2430-bcf4-4252-b7c2-725a94661f7a,#CA8A04)",
+            "borderRadius": "12px",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "8368fc86-e519-4959-b66b-a36aca763be4",
+              "isWwObject": true
+            },
+            {
+              "uid": "5b04b42e-9606-47a0-8f44-4eb24a294e33",
+              "isWwObject": true
+            },
+            {
+              "uid": "f73c5a05-62f2-4c7e-8ab5-8784c91fb877",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "County Data KPI 3",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1955
+    },
+    "eb61d973-020b-42d3-a497-f3a276b2917b": {
+      "uid": "eb61d973-020b-42d3-a497-f3a276b2917b",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "CRM READY"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "0.7px"
+        }
+      },
+      "name": "County Data KPI 4 Label",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1956
+    },
+    "5ae32c1d-9042-4a2a-9af7-3994b3b11aab": {
+      "uid": "5ae32c1d-9042-4a2a-9af7-3994b3b11aab",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "8px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "892"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "24px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "County Data KPI 4 Value",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1957
+    },
+    "291e96ce-4926-4883-98d7-8823c89b9fdb": {
+      "uid": "291e96ce-4926-4883-98d7-8823c89b9fdb",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "6px 0px 0px 0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Validated leads ready for outreach"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "County Data KPI 4 Sub",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1958
+    },
+    "d8e75d5a-d6a0-4989-be3f-879085efc8e8": {
+      "uid": "d8e75d5a-d6a0-4989-be3f-879085efc8e8",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "display": "flex",
+            "padding": "17px",
+            "borderTop": "3px solid var(--f325d1d5-41bf-4fea-bdc4-e18a2d9c68c6,#16A34A)",
+            "borderRadius": "12px",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "eb61d973-020b-42d3-a497-f3a276b2917b",
+              "isWwObject": true
+            },
+            {
+              "uid": "5ae32c1d-9042-4a2a-9af7-3994b3b11aab",
+              "isWwObject": true
+            },
+            {
+              "uid": "291e96ce-4926-4883-98d7-8823c89b9fdb",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "County Data KPI 4",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1959
+    },
+    "37377215-d84b-43f0-b3ba-0e0e479c090e": {
+      "uid": "37377215-d84b-43f0-b3ba-0e0e479c090e",
+      "_state": {
+        "style": {
+          "mobile": {},
+          "tablet": {},
+          "default": {
+            "display": "grid",
+            "flexDirection": "column",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "mobile": {
+          "_ww-grid_columns": [
+            "1fr"
+          ]
+        },
+        "tablet": {
+          "_ww-grid_columns": [
+            "1fr",
+            "1fr"
+          ]
+        },
+        "default": {
+          "children": [
+            {
+              "uid": "03331413-3457-448b-83c5-5f9aea9fd599",
+              "isWwObject": true
+            },
+            {
+              "uid": "3e751613-8fc5-4e35-9650-9d2a630d1b68",
+              "isWwObject": true
+            },
+            {
+              "uid": "7b9165f3-75bc-4605-ab2a-d3c9b8f2fd71",
+              "isWwObject": true
+            },
+            {
+              "uid": "d8e75d5a-d6a0-4989-be3f-879085efc8e8",
+              "isWwObject": true
+            }
+          ],
+          "_ww-grid_rowGap": "14px",
+          "_ww-grid_columns": [
+            "1fr",
+            "1fr",
+            "1fr",
+            "1fr"
+          ],
+          "_ww-grid_columnGap": "14px"
+        }
+      },
+      "name": "County Data KPI Grid",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1960
+    },
+    "8901fe67-8d9c-46cf-b356-412c175cdae1": {
+      "uid": "8901fe67-8d9c-46cf-b356-412c175cdae1",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "16px 16px 10px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Core Lead Pillars"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "16px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "County Data Primary Panel Title",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1961
+    },
+    "9a1b8db0-b066-49f7-858c-9b6148214e91": {
+      "uid": "9a1b8db0-b066-49f7-858c-9b6148214e91",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Property Appraiser"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "County Data Item 1 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1962
+    },
+    "8cbf46b8-452c-4bd3-9d80-9f1edb937f41": {
+      "uid": "8cbf46b8-452c-4bd3-9d80-9f1edb937f41",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Ownership, parcel, mailing address and property facts"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "County Data Item 1 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1963
+    },
+    "4c99e044-3808-463c-9160-490ff1322eb4": {
+      "uid": "4c99e044-3808-463c-9160-490ff1322eb4",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "9a1b8db0-b066-49f7-858c-9b6148214e91",
+              "isWwObject": true
+            },
+            {
+              "uid": "8cbf46b8-452c-4bd3-9d80-9f1edb937f41",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "County Data Workflow Item 1",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1964
+    },
+    "364bf6bf-8b02-44a4-8a29-9955b49a8ae7": {
+      "uid": "364bf6bf-8b02-44a4-8a29-9955b49a8ae7",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Clerk Official Records"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "County Data Item 2 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1965
+    },
+    "6ce66506-c7b3-451f-ac88-4bfbe4adc406": {
+      "uid": "6ce66506-c7b3-451f-ac88-4bfbe4adc406",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "POA, assignments, liens, notices and recorded instruments"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "County Data Item 2 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1966
+    },
+    "300d0823-2fb2-4cda-867b-2e55fbc21e49": {
+      "uid": "300d0823-2fb2-4cda-867b-2e55fbc21e49",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "364bf6bf-8b02-44a4-8a29-9955b49a8ae7",
+              "isWwObject": true
+            },
+            {
+              "uid": "6ce66506-c7b3-451f-ac88-4bfbe4adc406",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "County Data Workflow Item 2",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1967
+    },
+    "2e368728-8dba-4c6f-ba03-2f271a3fdd19": {
+      "uid": "2e368728-8dba-4c6f-ba03-2f271a3fdd19",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Code Enforcement"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "County Data Item 3 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1968
+    },
+    "02d49f65-a101-45b4-a19f-ddb3eaf768dd": {
+      "uid": "02d49f65-a101-45b4-a19f-ddb3eaf768dd",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Open violations and distressed-property signals"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "County Data Item 3 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1969
+    },
+    "ef022991-7da0-4b6f-b8bb-9c6d6216b03a": {
+      "uid": "ef022991-7da0-4b6f-b8bb-9c6d6216b03a",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "2e368728-8dba-4c6f-ba03-2f271a3fdd19",
+              "isWwObject": true
+            },
+            {
+              "uid": "02d49f65-a101-45b4-a19f-ddb3eaf768dd",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "County Data Workflow Item 3",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1970
+    },
+    "4d656c08-8468-4209-b6a3-cbe60a99b63e": {
+      "uid": "4d656c08-8468-4209-b6a3-cbe60a99b63e",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Probate / Death Indicators"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "County Data Item 4 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1971
+    },
+    "47c14b43-9ad2-46fb-8ebb-4a7c654c2da7": {
+      "uid": "47c14b43-9ad2-46fb-8ebb-4a7c654c2da7",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Estate-related property opportunities"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "County Data Item 4 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1972
+    },
+    "49bef3b1-d4cf-440a-8227-076750de6f0f": {
+      "uid": "49bef3b1-d4cf-440a-8227-076750de6f0f",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "4d656c08-8468-4209-b6a3-cbe60a99b63e",
+              "isWwObject": true
+            },
+            {
+              "uid": "47c14b43-9ad2-46fb-8ebb-4a7c654c2da7",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "County Data Workflow Item 4",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1973
+    },
+    "616fa9ec-5350-4060-8d1d-6a2c19595ce1": {
+      "uid": "616fa9ec-5350-4060-8d1d-6a2c19595ce1",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Tax Delinquent"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "County Data Item 5 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1974
+    },
+    "138b771e-df8b-4991-8fd4-5f104047c06e": {
+      "uid": "138b771e-df8b-4991-8fd4-5f104047c06e",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Certificates and delinquency signals"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "County Data Item 5 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1975
+    },
+    "3984bf7f-822c-4fd6-9187-6f4170861ad2": {
+      "uid": "3984bf7f-822c-4fd6-9187-6f4170861ad2",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "616fa9ec-5350-4060-8d1d-6a2c19595ce1",
+              "isWwObject": true
+            },
+            {
+              "uid": "138b771e-df8b-4991-8fd4-5f104047c06e",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "County Data Workflow Item 5",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1976
+    },
+    "3debb66a-7098-4b2d-ab96-70300852a8d2": {
+      "uid": "3debb66a-7098-4b2d-ab96-70300852a8d2",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Evictions"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "County Data Item 6 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1977
+    },
+    "19739d58-a1ab-46b0-a6a8-1a5bbb731e0d": {
+      "uid": "19739d58-a1ab-46b0-a6a8-1a5bbb731e0d",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Owner/tenant distress and landlord activity"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "County Data Item 6 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1978
+    },
+    "7eed0826-04e8-4d75-8cd9-65fc74301810": {
+      "uid": "7eed0826-04e8-4d75-8cd9-65fc74301810",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "3debb66a-7098-4b2d-ab96-70300852a8d2",
+              "isWwObject": true
+            },
+            {
+              "uid": "19739d58-a1ab-46b0-a6a8-1a5bbb731e0d",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "County Data Workflow Item 6",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1979
+    },
+    "95451b58-a82a-4d43-9537-fa20756ce4d3": {
+      "uid": "95451b58-a82a-4d43-9537-fa20756ce4d3",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Pre-Foreclosure"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "County Data Item 7 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1980
+    },
+    "b4c707f0-3563-4488-bf00-87988ac3ed9d": {
+      "uid": "b4c707f0-3563-4488-bf00-87988ac3ed9d",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Early default signals"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "County Data Item 7 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1981
+    },
+    "a0499c69-5154-46e3-b915-2031ba410cd0": {
+      "uid": "a0499c69-5154-46e3-b915-2031ba410cd0",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "95451b58-a82a-4d43-9537-fa20756ce4d3",
+              "isWwObject": true
+            },
+            {
+              "uid": "b4c707f0-3563-4488-bf00-87988ac3ed9d",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "County Data Workflow Item 7",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1982
+    },
+    "1cc7558c-6002-4cbe-9e2f-d94fca599587": {
+      "uid": "1cc7558c-6002-4cbe-9e2f-d94fca599587",
+      "_state": {
+        "style": {
+          "default": {}
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Vacant / Fire Damage / Inherited"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "12px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "County Data Item 8 Name",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1983
+    },
+    "fa468b8f-e7e6-4706-999d-2a07b8fab0ab": {
+      "uid": "fa468b8f-e7e6-4706-999d-2a07b8fab0ab",
+      "_state": {
+        "style": {
+          "default": {
+            "margin": "3px 0px 0px 0px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "High-motivation list categories"
+          },
+          "_ww-text_color": "var(--5068cb3b-48bc-4dc8-a46f-eb6e0a8d2984,#64748B)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "County Data Item 8 Description",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1984
+    },
+    "2404f1d1-32a9-42a7-af95-c66baa31767e": {
+      "uid": "2404f1d1-32a9-42a7-af95-c66baa31767e",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "12px 14px",
+            "borderTop": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "1cc7558c-6002-4cbe-9e2f-d94fca599587",
+              "isWwObject": true
+            },
+            {
+              "uid": "fa468b8f-e7e6-4706-999d-2a07b8fab0ab",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "County Data Workflow Item 8",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1985
+    },
+    "85f7e7d6-ccb8-4fc1-af9a-287ec003f9e3": {
+      "uid": "85f7e7d6-ccb8-4fc1-af9a-287ec003f9e3",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "display": "flex",
+            "overflow": "hidden",
+            "borderRadius": "12px",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "8901fe67-8d9c-46cf-b356-412c175cdae1",
+              "isWwObject": true
+            },
+            {
+              "uid": "4c99e044-3808-463c-9160-490ff1322eb4",
+              "isWwObject": true
+            },
+            {
+              "uid": "300d0823-2fb2-4cda-867b-2e55fbc21e49",
+              "isWwObject": true
+            },
+            {
+              "uid": "ef022991-7da0-4b6f-b8bb-9c6d6216b03a",
+              "isWwObject": true
+            },
+            {
+              "uid": "49bef3b1-d4cf-440a-8227-076750de6f0f",
+              "isWwObject": true
+            },
+            {
+              "uid": "3984bf7f-822c-4fd6-9187-6f4170861ad2",
+              "isWwObject": true
+            },
+            {
+              "uid": "7eed0826-04e8-4d75-8cd9-65fc74301810",
+              "isWwObject": true
+            },
+            {
+              "uid": "a0499c69-5154-46e3-b915-2031ba410cd0",
+              "isWwObject": true
+            },
+            {
+              "uid": "2404f1d1-32a9-42a7-af95-c66baa31767e",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "County Data Primary Panel",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1986
+    },
+    "cd9a56a6-a185-4886-ab45-18184c93b424": {
+      "uid": "cd9a56a6-a185-4886-ab45-18184c93b424",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "16px 16px 8px",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Jacksonville Intelligence"
+          },
+          "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
+          "_ww-text_fontSize": "16px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800"
+        }
+      },
+      "name": "County Data Secondary Panel Title",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1987
+    },
+    "5ddc2f59-8799-4ee8-bc6c-2ef3abcf85f5": {
+      "uid": "5ddc2f59-8799-4ee8-bc6c-2ef3abcf85f5",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "8px 16px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "• Preserve record date and source document URL"
+          },
+          "_ww-text_color": "var(--e133e327-b4a1-439d-be88-d91207b49f9d,#334155)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500",
+          "_ww-text_lineHeight": "1.45"
+        }
+      },
+      "name": "County Data Side Rule 1",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1988
+    },
+    "d358030f-58f5-4efc-a872-0b874c1bd0a7": {
+      "uid": "d358030f-58f5-4efc-a872-0b874c1bd0a7",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "8px 16px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "• Score records before outreach instead of treating every list equally"
+          },
+          "_ww-text_color": "var(--e133e327-b4a1-439d-be88-d91207b49f9d,#334155)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500",
+          "_ww-text_lineHeight": "1.45"
+        }
+      },
+      "name": "County Data Side Rule 2",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1989
+    },
+    "f9f4cbe6-22e3-4212-a004-589dc54a573a": {
+      "uid": "f9f4cbe6-22e3-4212-a004-589dc54a573a",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "8px 16px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "• Cross-match owner → property → contact → campaign history"
+          },
+          "_ww-text_color": "var(--e133e327-b4a1-439d-be88-d91207b49f9d,#334155)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500",
+          "_ww-text_lineHeight": "1.45"
+        }
+      },
+      "name": "County Data Side Rule 3",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1990
+    },
+    "0bd42b08-a117-405b-aa0b-eb5db44d277b": {
+      "uid": "0bd42b08-a117-405b-aa0b-eb5db44d277b",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "8px 16px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "• Keep ZIP intelligence for 32208, 32209, 32210 and other target areas"
+          },
+          "_ww-text_color": "var(--e133e327-b4a1-439d-be88-d91207b49f9d,#334155)",
+          "_ww-text_fontSize": "11px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "500",
+          "_ww-text_lineHeight": "1.45"
+        }
+      },
+      "name": "County Data Side Rule 4",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1991
+    },
+    "a429d2af-dfca-441c-8119-c5885eb9c3b6": {
+      "uid": "a429d2af-dfca-441c-8119-c5885eb9c3b6",
+      "_state": {
+        "style": {
+          "default": {
+            "padding": "12px 16px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "LIVE DATA: activates when Podio / provider connectors are authorized."
+          },
+          "_ww-text_color": "#92400E",
+          "_ww-text_fontSize": "10px",
+          "_ww-text_fontFamily": "Plus Jakarta Sans",
+          "_ww-text_fontWeight": "800",
+          "_ww-text_letterSpacing": "0.5px"
+        }
+      },
+      "name": "County Data Data Ready Note",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1992
+    },
+    "a2a416cc-75f3-4b3b-aa3a-9d60979d3668": {
+      "uid": "a2a416cc-75f3-4b3b-aa3a-9d60979d3668",
+      "_state": {
+        "style": {
+          "default": {
+            "border": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "display": "flex",
+            "overflow": "hidden",
+            "borderRadius": "12px",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "cd9a56a6-a185-4886-ab45-18184c93b424",
+              "isWwObject": true
+            },
+            {
+              "uid": "5ddc2f59-8799-4ee8-bc6c-2ef3abcf85f5",
+              "isWwObject": true
+            },
+            {
+              "uid": "d358030f-58f5-4efc-a872-0b874c1bd0a7",
+              "isWwObject": true
+            },
+            {
+              "uid": "f9f4cbe6-22e3-4212-a004-589dc54a573a",
+              "isWwObject": true
+            },
+            {
+              "uid": "0bd42b08-a117-405b-aa0b-eb5db44d277b",
+              "isWwObject": true
+            },
+            {
+              "uid": "a429d2af-dfca-441c-8119-c5885eb9c3b6",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "County Data Secondary Panel",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1993
+    },
+    "d2b65b8f-da1c-445b-b2a1-ae2e5c09dda6": {
+      "uid": "d2b65b8f-da1c-445b-b2a1-ae2e5c09dda6",
+      "_state": {
+        "style": {
+          "mobile": {},
+          "tablet": {},
+          "default": {
+            "display": "grid",
+            "flexDirection": "column",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "mobile": {
+          "_ww-grid_columns": [
+            "1fr"
+          ]
+        },
+        "tablet": {
+          "_ww-grid_columns": [
+            "1fr"
+          ]
+        },
+        "default": {
+          "children": [
+            {
+              "uid": "85f7e7d6-ccb8-4fc1-af9a-287ec003f9e3",
+              "isWwObject": true
+            },
+            {
+              "uid": "a2a416cc-75f3-4b3b-aa3a-9d60979d3668",
+              "isWwObject": true
+            }
+          ],
+          "_ww-grid_rowGap": "16px",
+          "_ww-grid_columns": [
+            "1.7fr",
+            "1fr"
+          ],
+          "_ww-grid_columnGap": "16px"
+        }
+      },
+      "name": "County Data Content Grid",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1994
+    },
+    "9bcf71d2-00e2-4335-a240-1d45d326998d": {
+      "uid": "9bcf71d2-00e2-4335-a240-1d45d326998d",
+      "_state": {
+        "style": {
+          "mobile": {
+            "padding": "16px"
+          },
+          "default": {
+            "flex": "1",
+            "display": "flex",
+            "padding": "22px 28px",
+            "customCss": {
+              "overflowY": "auto"
+            },
+            "backgroundColor": "var(--dacf6d89-481f-4709-a2ec-c8b13d22e0af,#F8FAFC)",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "hh-cmd-county-data",
+              "isWwObject": true
+            },
+            {
+              "uid": "37377215-d84b-43f0-b3ba-0e0e479c090e",
+              "isWwObject": true
+            },
+            {
+              "uid": "d2b65b8f-da1c-445b-b2a1-ae2e5c09dda6",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_rowGap": "18px",
+          "_ww-layout_columnGap": "18px",
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "County Data Main Panel",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 1995
+    },
+    "06bc39f8-82d2-423b-8d8e-70bf0e8a0eb1": {
+      "uid": "06bc39f8-82d2-423b-8d8e-70bf0e8a0eb1",
+      "_state": {
+        "style": {
+          "default": {
+            "flex": "1",
+            "height": "auto",
+            "display": "flex",
+            "minWidth": "0px",
+            "minHeight": "100vh",
+            "backgroundColor": "var(--702de9b1-4d57-47c9-8102-295901b861fa,#0A1128)"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "633d4738-3607-400c-84f4-d16ec6219ce8",
+              "isWwObject": true
+            },
+            {
+              "uid": "6f8937c4-db2f-4922-8f3c-5c457394611d",
+              "isWwObject": true
+            },
+            {
+              "uid": "9bcf71d2-00e2-4335-a240-1d45d326998d",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "County Data Main",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 3259
+    },
+    "88589cd4-9fba-4f5b-a3ca-53989d836179": {
+      "uid": "88589cd4-9fba-4f5b-a3ca-53989d836179",
+      "_state": {
+        "style": {
+          "mobile": {
+            "display": "none"
+          },
+          "default": {
+            "top": "0px",
+            "width": "240px",
+            "height": "100vh",
+            "display": "flex",
+            "minWidth": "240px",
+            "position": "sticky",
+            "backgroundColor": "var(--606b9809-8abd-44ce-b314-0b0ba43271b7,#070B14)",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "4ee359f7-5892-4a15-bcf8-9bd31c0f893a",
+              "isWwObject": true
+            },
+            {
+              "uid": "125e737d-2022-44bb-9a42-3dd9febb3f3b",
+              "isWwObject": true
+            },
+            {
+              "uid": "9a3bbec1-f01a-44d1-9b23-73924ba4496a",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_flexDirection": "column"
+        }
+      },
+      "name": "County Data Sidebar",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 3260
+    },
+    "633d4738-3607-400c-84f4-d16ec6219ce8": {
+      "uid": "633d4738-3607-400c-84f4-d16ec6219ce8",
+      "_state": {
+        "style": {
+          "default": {
+            "width": "100%",
+            "display": "block",
+            "minWidth": "0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "pinIcon": "lucide/map-pin",
+          "skyline": "https://u.realgeeks.media/nuviewrealty/Jacksonville_Skyline_Sunset_2.jpeg",
+          "tagIcon": "lucide/tag",
+          "bellIcon": "lucide/bell",
+          "fileIcon": "lucide/file-text",
+          "leftIcon": "lucide/chevron-left",
+          "logoIcon": "brand/elite-house-emblem",
+          "mailIcon": "lucide/mail",
+          "moreIcon": "lucide/ellipsis",
+          "plusIcon": "lucide/plus",
+          "sendIcon": "lucide/send",
+          "textIcon": "lucide/message-square",
+          "userIcon": "lucide/user",
+          "chartIcon": "lucide/chart-no-axes-combined",
+          "coinsIcon": "lucide/coins",
+          "crownIcon": "lucide/crown",
+          "houseIcon": "lucide/house",
+          "phoneIcon": "lucide/phone",
+          "rightIcon": "lucide/chevron-right",
+          "tasksIcon": "lucide/list-checks",
+          "usersIcon": "lucide/users",
+          "dollarIcon": "lucide/badge-dollar-sign",
+          "filterIcon": "lucide/filter",
+          "searchIcon": "lucide/search",
+          "calendarIcon": "lucide/calendar-days",
+          "databaseIcon": "lucide/database",
+          "settingsIcon": "lucide/settings",
+          "briefcaseIcon": "lucide/briefcase-business",
+          "handshakeIcon": "lucide/handshake",
+          "megaphoneIcon": "lucide/megaphone"
+        }
+      },
+      "name": "County Data Reference Workspace",
+      "wwObjectBaseId": "3dd938b6-44b8-4876-9083-925b36f4085c",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 3261
+    },
+    "6f8937c4-db2f-4922-8f3c-5c457394611d": {
+      "uid": "6f8937c4-db2f-4922-8f3c-5c457394611d",
+      "_state": {
+        "style": {
+          "default": {
+            "display": "flex",
+            "padding": "22px 28px",
+            "borderBottom": "1px solid var(--e588e755-a402-48d1-9d28-822854fbe1ce,#E2E8F0)",
+            "backgroundColor": "var(--71e24801-0356-4fdb-ac9c-9484bc84ef7c,#FFFFFF)",
+            "conditionalRendering": false
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "0a8f0875-fdad-4967-9bfa-93513b06287b",
+              "isWwObject": true
+            },
+            {
+              "uid": "e6e34021-28d6-4c87-a063-1fdcac49fc0b",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row",
+          "_ww-layout_justifyContent": "space-between"
+        }
+      },
+      "name": "County Data Header",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 3262
+    },
+    "hh-cmd-county-data": {
+      "uid": "hh-cmd-county-data",
+      "_state": {
+        "style": {
+          "default": {
+            "width": "100%",
+            "display": "block",
+            "minWidth": "0px"
+          }
+        }
+      },
+      "content": {
+        "default": {
+          "workspacePage": "county-data",
+          "skyline": "https://u.realgeeks.media/nuviewrealty/Jacksonville_Skyline_Sunset_2.jpeg"
+        }
+      },
+      "name": "County Data Command Center Workspace",
+      "wwObjectBaseId": "f1b67d54-2716-43a4-a414-ab7f505c2ace",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "7660f30c-4257-42b6-b08d-2f047f3e19a0",
+      "_si": 9999
+    }
+  },
+  "collections": [],
+  "variables": [],
+  "workflows": [],
+  "formulas": [],
+  "libraryComponents": []
+}

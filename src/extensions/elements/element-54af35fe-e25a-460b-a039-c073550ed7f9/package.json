@@ -1,0 +1,9 @@
+{
+  "name": "@weweb-internal/ext-element-54af35fe-e25a-460b-a039-c073550ed7f9",
+  "version": "1.0.2",
+  "private": true,
+  "exports": {
+    ".": "./src/wwElement.vue",
+    "./config": "./ww-config.js"
+  }
+}
