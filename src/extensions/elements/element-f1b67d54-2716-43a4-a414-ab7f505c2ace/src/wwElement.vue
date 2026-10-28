@@ -69,6 +69,11 @@
             <strong class="font-mono">{{ currentTime }}</strong>
           </div>
 
+          <a href="/properties" class="btn-topbar-properties" @click="handleNav('/properties', $event)" title="Manage Properties &amp; Field Photos">
+            <span class="icon" v-html="icons.house"></span>
+            Properties
+          </a>
+
           <div class="quick-add-wrap">
             <button class="btn-gold" @click.stop="isQuickAddOpen = !isQuickAddOpen" :aria-expanded="isQuickAddOpen">
               <span class="icon" v-html="icons.plus"></span>
@@ -799,6 +804,34 @@ export default {
 
 .clock-label {
   color: #64748b;
+}
+
+.btn-topbar-properties {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: #0a1e35;
+  border: 1px solid #205789;
+  border-radius: 6px;
+  color: #edcf7c;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+.btn-topbar-properties:hover {
+  background: #103862;
+  border-color: #edcf7c;
+  color: #fff;
+  box-shadow: 0 0 10px rgba(237, 207, 124, 0.25);
+}
+.btn-topbar-properties .icon {
+  width: 14px;
+  height: 14px;
+  display: inline-flex;
 }
 
 .btn-gold {
