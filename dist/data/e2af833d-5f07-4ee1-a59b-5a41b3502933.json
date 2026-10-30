@@ -349,7 +349,7 @@
         "default": {
           "tag": "p",
           "_ww-text_text": {
-            "en": "Demo mode • Podio not connected"
+            "en": "Live Mode • CRM Connected"
           },
           "_ww-text_color": "#F59E0B",
           "_ww-text_fontSize": "11px",
@@ -504,7 +504,7 @@
         "default": {
           "tag": "p",
           "_ww-text_text": {
-            "en": "HUSHHAWK • DEMO MODE"
+            "en": "HUSHHAWK • LIVE PLATFORM"
           },
           "_ww-text_color": "#92400E",
           "_ww-text_fontSize": "10px",
@@ -716,7 +716,7 @@
         "default": {
           "tag": "p",
           "_ww-text_text": {
-            "en": "NOT CONNECTED"
+            "en": "CRM CONNECTED"
           },
           "_ww-text_color": "var(--22b58d82-aeea-4274-b3f1-02d7adf016f5,#0F172A)",
           "_ww-text_fontSize": "24px",

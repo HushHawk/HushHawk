@@ -276,7 +276,7 @@
           "tag": "p",
           "_ww-text_font": "var(--e357d25d-4c35-43ad-8061-c2bae2353aac,400 14px/1.5 sans-serif)",
           "_ww-text_text": {
-            "en": "Saved team priorities. Add a dated task, filter the list, and mark it complete. Existing sample tasks remain visible."
+            "en": "Saved team priorities. Add a dated task, filter the list, and mark it complete. Active priority tasks synchronized with database."
           },
           "_ww-text_color": "var(--e133e327-b4a1-439d-be88-d91207b49f9d,#334155)"
         }
