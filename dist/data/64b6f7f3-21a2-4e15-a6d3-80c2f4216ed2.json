@@ -27615,7 +27615,7 @@
       "_state": {
         "style": {
           "default": {
-            "display": "flex",
+            "display": "none",
             "padding": "14px 16px",
             "borderTop": "1px solid rgba(255, 255, 255, 0.08)",
             "backgroundColor": "transparent"
@@ -27626,20 +27626,7 @@
       },
       "content": {
         "default": {
-          "children": [
-            {
-              "uid": "5cb89d40-e257-41f2-a334-e7f03951d314",
-              "isWwObject": true
-            },
-            {
-              "uid": "5e47a8de-0094-4cc8-b60d-762e91e020c5",
-              "isWwObject": true
-            },
-            {
-              "uid": "84a487f8-9ac6-4369-9f34-ee9ac82131d1",
-              "isWwObject": true
-            }
-          ],
+          "children": [],
           "_ww-layout_rowGap": "4px",
           "_ww-layout_columnGap": "4px",
           "_ww-layout_flexDirection": "column"
@@ -27734,13 +27721,13 @@
         "default": {
           "tag": "p",
           "_ww-text_text": {
-            "en": "HUSHHAWK INTELLIGENCE LLC"
+            "en": "HUSHHAWK\nINTELLIGENCE"
           },
-          "_ww-text_color": "#FFFFFF",
+          "_ww-text_color": "#e5c274",
           "_ww-text_fontSize": "13px",
           "_ww-text_textAlign": "center",
           "_ww-text_fontFamily": "'Plus Jakarta Sans', sans-serif",
-          "_ww-text_fontWeight": 800,
+          "_ww-text_fontWeight": "800",
           "_ww-text_lineHeight": "1.2",
           "_ww-text_letterSpacing": "0.5px"
         }
@@ -27756,16 +27743,16 @@
       "_state": {
         "style": {
           "default": {
-            "width": "36px",
-            "border": "none",
-            "height": "36px",
+            "width": "46px",
+            "border": "1.5px solid rgba(229, 194, 116, 0.6)",
+            "height": "46px",
             "display": "flex",
-            "minWidth": "36px",
-            "boxShadow": "0 2px 8px rgba(29, 78, 216, 0.4)",
-            "minHeight": "36px",
-            "borderRadius": "8px",
-            "backgroundColor": "transparent",
-            "backgroundGradient": "linear-gradient(135deg, #1D4ED8 0%, #DC2626 100%)"
+            "minWidth": "46px",
+            "boxShadow": "0 3px 12px rgba(229, 194, 116, 0.25)",
+            "minHeight": "46px",
+            "borderRadius": "10px",
+            "backgroundColor": "#07172b",
+            "backgroundGradient": "linear-gradient(135deg, #103358 0%, #06192e 100%)"
           }
         },
         "states": [],
@@ -27805,7 +27792,7 @@
       "content": {
         "default": {
           "icon": "brand/elite-house-emblem",
-          "color": "#FFFFFF"
+          "color": "#e5c274"
         }
       },
       "name": "Brand Flag House Icon",
@@ -44609,6 +44596,10 @@
             {
               "uid": "bb1ac25a-ec63-484e-a9c7-7e8ca2f51efa",
               "isWwObject": true
+            },
+            {
+              "uid": "nav-prop-link-001",
+              "isWwObject": true
             }
           ],
           "_ww-layout_rowGap": "3px",
@@ -50705,6 +50696,119 @@
       "libraryComponentBaseId": null,
       "parentSectionId": "b0a41600-4212-49e0-b3df-cf099ce24a18",
       "_si": 3277
+    },
+    "nav-prop-icon-001": {
+      "uid": "nav-prop-icon-001",
+      "_state": {
+        "style": {
+          "default": {
+            "width": "16px",
+            "height": "16px",
+            "fontSize": "16px"
+          }
+        },
+        "states": [],
+        "classes": {}
+      },
+      "content": {
+        "default": {
+          "icon": "lucide/house",
+          "color": "#94A3B8"
+        }
+      },
+      "name": "Nav Properties Icon",
+      "wwObjectBaseId": "1b1e2173-9b78-42cc-a8ee-a6167caea340",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "b0a41600-4212-49e0-b3df-cf099ce24a18",
+      "_si": 9901
+    },
+    "nav-prop-text-001": {
+      "uid": "nav-prop-text-001",
+      "_state": {
+        "style": {
+          "default": {}
+        },
+        "states": [],
+        "classes": {}
+      },
+      "content": {
+        "default": {
+          "tag": "p",
+          "_ww-text_text": {
+            "en": "Properties"
+          },
+          "_ww-text_color": "#CBD5E1",
+          "_ww-text_fontSize": "13px",
+          "_ww-text_fontFamily": "'Plus Jakarta Sans', sans-serif",
+          "_ww-text_fontWeight": "500"
+        }
+      },
+      "name": "Nav Properties Text",
+      "wwObjectBaseId": "d7904e9d-fc9a-4d80-9e32-728e097879ad",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "b0a41600-4212-49e0-b3df-cf099ce24a18",
+      "_si": 9902
+    },
+    "nav-prop-link-001": {
+      "uid": "nav-prop-link-001",
+      "_state": {
+        "link": {
+          "type": "internal",
+          "pageId": "properties-page",
+          "targetBlank": false,
+          "loadProgress": true,
+          "loadProgressColor": "#D4AF37"
+        },
+        "style": {
+          "default": {
+            "width": "100%",
+            "cursor": "pointer",
+            "display": "flex",
+            "padding": "7px 9px",
+            "boxShadow": "none",
+            "customCss": {
+              "order": 0.5
+            },
+            "transition": "background-color 0.2s ease",
+            "borderRadius": "8px",
+            "backgroundColor": "transparent"
+          },
+          "_wwHover_default": {
+            "backgroundColor": "rgba(255, 255, 255, 0.05)"
+          }
+        },
+        "states": [
+          {
+            "id": "_wwHover",
+            "label": "hover"
+          }
+        ],
+        "classes": {},
+        "interactions": []
+      },
+      "content": {
+        "default": {
+          "children": [
+            {
+              "uid": "nav-prop-icon-001",
+              "isWwObject": true
+            },
+            {
+              "uid": "nav-prop-text-001",
+              "isWwObject": true
+            }
+          ],
+          "_ww-layout_rowGap": "10px",
+          "_ww-layout_columnGap": "10px",
+          "_ww-layout_alignItems": "center",
+          "_ww-layout_flexDirection": "row"
+        }
+      },
+      "name": "Nav Properties",
+      "wwObjectBaseId": "b783dc65-d528-4f74-8c14-e27c934c39b1",
+      "libraryComponentBaseId": null,
+      "parentSectionId": "b0a41600-4212-49e0-b3df-cf099ce24a18",
+      "_si": 9903
     }
   },
   "collections": [],
