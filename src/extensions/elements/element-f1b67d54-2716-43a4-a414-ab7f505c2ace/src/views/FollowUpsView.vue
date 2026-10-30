@@ -589,7 +589,24 @@ export default {
       });
     }
   },
+
+  mounted() {
+    this.loadFollowUps();
+  },
   methods: {
+    async loadFollowUps() {
+      try {
+        const res = await fetch('/api/v1/follow-ups');
+        const data = await res.json();
+        if (data.followUps && data.followUps.length > 0) {
+          this.followUps = data.followUps;
+          if (!this.selectedFollowUp) this.selectedFollowUp = data.followUps[0];
+        }
+      } catch (err) {
+        console.warn('[FollowUps] Using local cache:', err.message);
+      }
+    },
+
     getChannelIcon(ch) {
       if (ch === 'Call') return this.icons.phone;
       if (ch === 'SMS') return this.icons.text;

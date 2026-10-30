@@ -333,7 +333,24 @@ export default {
       this.activeThread = this.threads[0];
     }
   },
+
+  mounted() {
+    this.loadCommunications();
+  },
   methods: {
+    async loadCommunications() {
+      try {
+        const res = await fetch('/api/v1/communications');
+        const data = await res.json();
+        if (data.threads && data.threads.length > 0) {
+          this.threads = data.threads;
+          if (!this.activeThread) this.activeThread = data.threads[0];
+        }
+      } catch (err) {
+        console.warn('[Communications] Using local cache:', err.message);
+      }
+    },
+
     getChannelIcon(type) {
       if (type === 'Calls') return this.icons.phone;
       if (type === 'Email') return this.icons.mail;

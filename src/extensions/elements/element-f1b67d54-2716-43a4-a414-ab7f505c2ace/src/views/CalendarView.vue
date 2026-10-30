@@ -352,7 +352,23 @@ export default {
       return this.events.filter(e => e.type === this.selectedType);
     }
   },
+
+  mounted() {
+    this.loadCalendarEvents();
+  },
   methods: {
+    async loadCalendarEvents() {
+      try {
+        const res = await fetch('/api/v1/calendar');
+        const data = await res.json();
+        if (data.events && data.events.length > 0) {
+          this.events = data.events;
+        }
+      } catch (err) {
+        console.warn('[Calendar] Using local cache:', err.message);
+      }
+    },
+
     getEventsForDay(date) {
       return this.filteredEvents.filter(e => e.date === date);
     },

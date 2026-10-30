@@ -334,7 +334,7 @@
 </template>
 
 <script>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { icons } from '../icons.js';
 
 export default {
@@ -347,6 +347,26 @@ export default {
       { label: 'DNC Clean Recipient', value: '7,210', change: 'Safe', icon: 'shield' },
       { label: 'Avg Cost per Trace', value: '$0.12', change: '-8%', icon: 'badgeDollar' }
     ];
+
+    
+    const API_BASE = '/api/v1';
+
+    async function loadTraces() {
+      try {
+        const res = await fetch(API_BASE + '/skip-tracing');
+        const data = await res.json();
+        if (data.traces && data.traces.length > 0) {
+          traces.value = data.traces;
+          if (!selectedTrace.value) selectedTrace.value = data.traces[0];
+        }
+      } catch (err) {
+        console.warn('[SkipTracing] Using local cache:', err.message);
+      }
+    }
+
+    onMounted(() => {
+      loadTraces();
+    });
 
     const traces = ref([
       {
