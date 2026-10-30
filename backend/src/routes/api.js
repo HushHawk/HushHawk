@@ -890,21 +890,52 @@ apiRouter.post('/interactions', (req, res) => {
 // Tasks
 apiRouter.get('/tasks', async (req, res) => {
     try {
-        const { rows } = await pool.query(`
-            SELECT task_id, title, category, due_time, priority, is_completed, status, created_at
-            FROM core.tasks
-            ORDER BY created_at DESC;
-        `);
-        res.json({ total: rows.length, tasks: rows });
+        const tasks = db.data.core.tasks || [];
+        res.json({ total: tasks.length, tasks });
     } catch (err) {
-        res.json({ tasks: db.data.core.tasks });
+        res.status(500).json({ error: err.message });
     }
 });
 
-apiRouter.post('/tasks', (req, res) => {
+apiRouter.post('/tasks', async (req, res) => {
     try {
-        const task = CrmService.createTask(req.body);
-        res.status(201).json(task);
+        const { title, deal, description, category, dueDate, priority, assignee } = req.body;
+        if (!title) return res.status(400).json({ error: 'Task title is required' });
+
+        const taskId = 'tk-' + Date.now();
+        const initials = assignee ? assignee.split(' ').map(n => n[0]).join('').toUpperCase() : 'HH';
+
+        const newTask = {
+            task_id: taskId,
+            id: Date.now(),
+            title,
+            description: description || '',
+            deal: deal || 'Jacksonville Portfolio',
+            parcel: 'DUV-' + Math.floor(100000 + Math.random() * 900000) + '-0000',
+            category: category || 'Title & Escrow',
+            dueDate: dueDate || 'Today 5:00 PM',
+            dueStatus: 'today',
+            priority: priority || 'High',
+            assignee: assignee || 'Elena Rostova',
+            repInitials: initials,
+            done: false,
+            status: 'PENDING',
+            created_at: new Date().toISOString()
+        };
+
+        if (!db.data.core.tasks) db.data.core.tasks = [];
+        db.data.core.tasks.unshift(newTask);
+
+        db.logAudit({
+            actor: req.body.actor || 'USER_WEB',
+            action: 'TASK_CREATED',
+            entityType: 'TASK',
+            entityId: taskId,
+            redactedDiff: { title, priority, category }
+        });
+        db.persist();
+
+        res.status(201).json(newTask);
     } catch (err) {
         res.status(400).json({ error: err.message });
     }
@@ -913,28 +944,34 @@ apiRouter.post('/tasks', (req, res) => {
 apiRouter.patch('/tasks/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const { status, is_completed, actor } = req.body;
-        const finalStatus = status || (is_completed ? 'DONE' : 'PENDING');
-        const finalCompleted = is_completed !== undefined ? is_completed : (finalStatus === 'DONE');
-
-        try {
-            await pool.query(
-                `UPDATE core.tasks
-                 SET status = $1, is_completed = $2, updated_at = NOW()
-                 WHERE task_id = $3`,
-                [finalStatus, finalCompleted, id]
-            );
-        } catch (dbErr) {
-            console.error('[RDS Task PATCH Error]', dbErr.message);
-        }
-
-        const task = CrmService.updateTaskStatus(id, finalStatus, actor);
+        const { done, status, is_completed } = req.body;
+        const tasks = db.data.core.tasks || [];
+        const task = tasks.find(t => t.task_id === id || t.id === id || t.id === Number(id));
         if (task) {
-            task.is_completed = finalCompleted;
+            if (done !== undefined) task.done = Boolean(done);
+            if (is_completed !== undefined) task.done = Boolean(is_completed);
+            if (status !== undefined) {
+                task.status = status;
+                task.done = status === 'DONE';
+            }
+            db.persist();
+            return res.json(task);
         }
-        res.json(task || { task_id: id, status: finalStatus, is_completed: finalCompleted });
+        res.status(404).json({ error: 'Task not found' });
     } catch (err) {
-        res.status(400).json({ error: err.message });
+        res.status(500).json({ error: err.message });
+    }
+});
+
+apiRouter.delete('/tasks/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        if (!db.data.core.tasks) db.data.core.tasks = [];
+        db.data.core.tasks = db.data.core.tasks.filter(t => t.task_id !== id && t.id !== id && t.id !== Number(id));
+        db.persist();
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
 });
 
@@ -1111,3 +1148,227 @@ apiRouter.get('/reports/overview', (req, res) => {
         generated_at: new Date().toISOString(),
     });
 });
+
+// ============================================================================
+// 15. Operational CRM Workspaces (Buyers, Contracts, Contacts, Tasks)
+// ============================================================================
+
+// --- Cash Buyers ---
+apiRouter.get('/buyers', (req, res) => {
+    try {
+        const buyers = db.data.crm.buyers || [];
+        res.json({ total: buyers.length, buyers });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+apiRouter.post('/buyers', (req, res) => {
+    try {
+        const { name, company, phone, email, location, zips, min, max, types, notes, pofVerified } = req.body;
+        if (!name) return res.status(400).json({ error: 'Name is required' });
+
+        const buyerId = 'b-' + Date.now();
+        const zipList = Array.isArray(zips) ? zips : (typeof zips === 'string' ? zips.split(',').map(s => s.trim()).filter(Boolean) : ['32204']);
+
+        const newBuyer = {
+            id: buyerId,
+            name,
+            company: company || 'Private Investor',
+            phone: phone || '(904) 555-0000',
+            email: email || 'investor@example.com',
+            location: location || 'Jacksonville, FL',
+            zips: zipList,
+            min: Number(min) || 50000,
+            max: Number(max) || 350000,
+            types: types || 'SFR, Cash',
+            pofVerified: pofVerified !== undefined ? Boolean(pofVerified) : true,
+            response: 85,
+            dealsClosed: 0,
+            tier: 'VIP Tier 1',
+            tierClass: 'tier-gold',
+            notes: notes || 'Active cash buyer in Jacksonville area.',
+            created_at: new Date().toISOString()
+        };
+
+        if (!db.data.crm.buyers) db.data.crm.buyers = [];
+        db.data.crm.buyers.unshift(newBuyer);
+        db.logAudit({
+            actor: req.body.actor || 'USER_WEB',
+            action: 'BUYER_CREATED',
+            entityType: 'BUYER',
+            entityId: buyerId,
+            redactedDiff: { name, company, min, max }
+        });
+        db.persist();
+
+        res.status(201).json(newBuyer);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+apiRouter.delete('/buyers/:id', (req, res) => {
+    try {
+        const { id } = req.params;
+        if (!db.data.crm.buyers) db.data.crm.buyers = [];
+        db.data.crm.buyers = db.data.crm.buyers.filter(b => b.id !== id);
+        db.persist();
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// --- Wholesale Contracts ---
+apiRouter.get('/contracts', (req, res) => {
+    try {
+        const contracts = db.data.crm.contracts || [];
+        res.json({ total: contracts.length, contracts });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+apiRouter.post('/contracts', (req, res) => {
+    try {
+        const { address, type, seller, buyer, buyPrice, fee, titleAgency, closingDate, fileNumber } = req.body;
+        if (!address) return res.status(400).json({ error: 'Property address is required' });
+
+        const contractId = 'c-' + Date.now();
+        const contractType = type || 'PSA';
+        const code = `${contractType}-2026-0${Math.floor(88 + Math.random() * 20)}`;
+
+        const newContract = {
+            id: contractId,
+            code,
+            address,
+            zip: '32208',
+            type: contractType,
+            seller: seller || 'Seller of Record',
+            buyer: buyer || '',
+            buyPrice: Number(buyPrice) || 95000,
+            fee: Number(fee) || 28000,
+            titleAgency: titleAgency || 'First American Title Jax',
+            fileNumber: fileNumber || `FAT-2026-${Math.floor(1000 + Math.random() * 9000)}`,
+            closingDate: closingDate || new Date(Date.now() + 14 * 86400000).toISOString().split('T')[0],
+            status: 'In Escrow',
+            statusClass: 'status-escrow',
+            milestones: [
+                { name: 'Purchase & Sale Executed', detail: 'Signed today', completed: true },
+                { name: 'Seller EMD Verified', detail: '$2,000 deposited in escrow', completed: true },
+                { name: 'Title Commitment & Municipal Lien Search', detail: 'Title exam in progress', completed: false },
+                { name: 'Assignment of Contract Executed', detail: 'Ready for assignment', completed: false },
+                { name: 'Buyer EMD Received', detail: 'Pending assignment', completed: false }
+            ],
+            docs: [
+                { name: `Executed_${contractType}_${address.replace(/[^a-zA-Z0-9]/g, '')}.pdf` }
+            ],
+            created_at: new Date().toISOString()
+        };
+
+        if (!db.data.crm.contracts) db.data.crm.contracts = [];
+        db.data.crm.contracts.unshift(newContract);
+        db.logAudit({
+            actor: req.body.actor || 'USER_WEB',
+            action: 'CONTRACT_CREATED',
+            entityType: 'CONTRACT',
+            entityId: contractId,
+            redactedDiff: { address, type: contractType, buyPrice }
+        });
+        db.persist();
+
+        res.status(201).json(newContract);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+apiRouter.patch('/contracts/:id/milestone', (req, res) => {
+    try {
+        const { id } = req.params;
+        const { milestoneIndex, completed } = req.body;
+        const contract = (db.data.crm.contracts || []).find(c => c.id === id);
+        if (!contract) return res.status(404).json({ error: 'Contract not found' });
+
+        if (contract.milestones && contract.milestones[milestoneIndex] !== undefined) {
+            contract.milestones[milestoneIndex].completed = completed;
+            const allDone = contract.milestones.every(m => m.completed);
+            if (allDone) {
+                contract.status = 'Clear to Close';
+                contract.statusClass = 'status-clear';
+            }
+            db.persist();
+        }
+        res.json(contract);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// --- Contacts Rolodex ---
+apiRouter.get('/contacts', (req, res) => {
+    try {
+        const contacts = db.data.crm.contacts || [];
+        res.json({ total: contacts.length, contacts });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+apiRouter.post('/contacts', (req, res) => {
+    try {
+        const { name, company, type, phone, email, tagsInput, notes, property } = req.body;
+        if (!name) return res.status(400).json({ error: 'Name is required' });
+
+        const contactId = 'ct-' + Date.now();
+        const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+        const tags = tagsInput
+            ? (Array.isArray(tagsInput) ? tagsInput : tagsInput.split(',').map(t => t.trim()).filter(Boolean))
+            : ['New Contact'];
+
+        const newContact = {
+            id: contactId,
+            name,
+            company: company || '',
+            type: type || 'Distressed Seller',
+            phone: phone || '(904) 555-0100',
+            email: email || 'contact@example.com',
+            tags,
+            property: property || '',
+            status: 'Active',
+            initials,
+            lastTouch: 'Today ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            notes: notes || 'Contact added to HushHawk Rolodex.',
+            created_at: new Date().toISOString()
+        };
+
+        if (!db.data.crm.contacts) db.data.crm.contacts = [];
+        db.data.crm.contacts.unshift(newContact);
+        db.logAudit({
+            actor: req.body.actor || 'USER_WEB',
+            action: 'CONTACT_CREATED',
+            entityType: 'CONTACT',
+            entityId: contactId,
+            redactedDiff: { name, type, phone }
+        });
+        db.persist();
+
+        res.status(201).json(newContact);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+apiRouter.delete('/contacts/:id', (req, res) => {
+    try {
+        const { id } = req.params;
+        if (!db.data.crm.contacts) db.data.crm.contacts = [];
+        db.data.crm.contacts = db.data.crm.contacts.filter(c => c.id !== id && c.id !== Number(id));
+        db.persist();
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+

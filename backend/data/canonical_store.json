@@ -614,6 +614,19 @@
     ],
     "leads": [
       {
+        "lead_id": "708fc477-7d92-439b-b526-d39246ebc8b2",
+        "first_source_code": "MAIL",
+        "source_detail": "Batch 10 Postcard",
+        "property_id": "p1000000-0000-0000-0000-000000000001",
+        "person_id": null,
+        "pillar_code": null,
+        "status": "NEW",
+        "priority_score": 50,
+        "assigned_user_id": "u3333333-3333-3333-3333-333333333333",
+        "created_at": "2026-10-30T06:25:02.200Z",
+        "updated_at": "2026-10-30T06:25:02.200Z"
+      },
+      {
         "lead_id": "5e70654c-31b4-45c6-9f11-0ecb732d9ec9",
         "first_source_code": "MAIL",
         "source_detail": "Batch 10 Postcard",
@@ -1472,10 +1485,47 @@
         "event_date": "2026-10-28",
         "filing_amount": 0,
         "created_at": "2026-10-28T16:18:04.418Z"
+      },
+      {
+        "event_id": "131577b1-b510-4744-8755-1aa9846545a2",
+        "property_id": "p1000000-0000-0000-0000-000000000001",
+        "pillar_code": "FC",
+        "event_number": 32,
+        "external_event_id": "16-2026-CA-1793341502196",
+        "case_reference": "16-2026-CA-1793341502196",
+        "event_status": "OPEN",
+        "verification_status": "CONFIRMED",
+        "event_date": "2026-10-30",
+        "filing_amount": 0,
+        "created_at": "2026-10-30T06:25:02.196Z"
       }
     ],
     "campaigns": [],
     "interactions": [
+      {
+        "interaction_id": "98d19979-41d5-4d36-8038-356a432e8593",
+        "lead_id": "708fc477-7d92-439b-b526-d39246ebc8b2",
+        "person_id": null,
+        "property_id": "p1000000-0000-0000-0000-000000000001",
+        "method": "EMAIL",
+        "direction": "OUTBOUND",
+        "actor_id": "Elena Rostova",
+        "result": "SENT",
+        "notes": "Follow-up estimate sent",
+        "occurred_at": "2026-10-30T06:25:02.203Z"
+      },
+      {
+        "interaction_id": "3392dc81-5ffa-436f-a718-44c5ab010800",
+        "lead_id": "708fc477-7d92-439b-b526-d39246ebc8b2",
+        "person_id": null,
+        "property_id": "p1000000-0000-0000-0000-000000000001",
+        "method": "CALL",
+        "direction": "INBOUND",
+        "actor_id": "Elena Rostova",
+        "result": "CONNECTED",
+        "notes": "Seller called in response to postcard",
+        "occurred_at": "2026-10-30T06:25:02.202Z"
+      },
       {
         "interaction_id": "d53b5a83-f232-457f-84d4-57c1d69d2642",
         "lead_id": "5e70654c-31b4-45c6-9f11-0ecb732d9ec9",
@@ -2235,37 +2285,100 @@
     ],
     "tasks": [
       {
-        "task_id": "96d56b46-977c-44e6-9434-a2a89e377b61",
-        "title": "Review roof inspection report",
+        "task_id": "tk-1",
+        "id": 1,
+        "title": "Deposit ,500 Earnest Money (EMD) to First American",
+        "description": "Wire confirmation must be uploaded to title portal for PSA-2026-084.",
+        "deal": "4812 Moncrief Rd, Jacksonville, FL 32208",
+        "parcel": "DUV-091823-0001",
+        "category": "Title & Escrow",
+        "dueDate": "Today 2:00 PM",
+        "dueStatus": "urgent",
+        "priority": "Urgent",
+        "assignee": "Sarah Jenkins",
+        "repInitials": "SJ",
+        "done": false,
+        "created_at": "2026-10-30T06:18:41.246Z"
+      },
+      {
+        "task_id": "tk-2",
+        "id": 2,
+        "title": "Verify Cash Buyer Proof of Funds (k liquid)",
+        "description": "River City Flip Fund submitted letter of intent for 23rd St.",
+        "deal": "1540 W 23rd St, Jacksonville, FL 32209",
+        "parcel": "DUV-084721-0034",
+        "category": "Dispositions",
+        "dueDate": "Today 4:30 PM",
+        "dueStatus": "today",
         "priority": "High",
-        "due_date": "2026-10-28T15:25:45.820Z",
-        "due_time": "05:00 PM",
-        "category": "General",
-        "status": "PENDING",
-        "is_completed": false,
-        "linked_entity_id": "a4000000-0000-0000-0000-000000000004",
-        "linked_entity_type": "PROPERTY",
-        "created_at": "2026-10-28T15:25:45.820Z"
+        "assignee": "Sarah Jenkins",
+        "repInitials": "SJ",
+        "done": false,
+        "created_at": "2026-10-30T06:18:41.246Z"
       },
       {
-        "task_id": "tk100000-0000-0000-0000-000000000001",
-        "title": "Draft Purchase Agreement at $205,000 MAO",
-        "due_date": "2026-10-26T13:27:09.992Z",
-        "status": "PENDING",
-        "owner_id": "Elena Rostova",
-        "linked_entity_type": "LEAD",
-        "linked_entity_id": "ld100000-0000-0000-0000-000000000001",
-        "created_at": "2026-10-24T13:27:09.992Z"
+        "task_id": "tk-3",
+        "id": 3,
+        "title": "Contractor Walkthrough & Roof Leak Estimate",
+        "description": "Meet Precision Roofing Jax at property to inspect rear bedroom slope.",
+        "deal": "4218 Commonwealth Ave, Jacksonville, FL 32254",
+        "parcel": "DUV-091822-0001",
+        "category": "Underwriting",
+        "dueDate": "Tomorrow 10:00 AM",
+        "dueStatus": "upcoming",
+        "priority": "High",
+        "assignee": "Marcus Vance",
+        "repInitials": "MV",
+        "done": false,
+        "created_at": "2026-10-30T06:18:41.246Z"
       },
       {
-        "task_id": "tk200000-0000-0000-0000-000000000002",
-        "title": "Review Title Search for Municipal Liens",
-        "due_date": "2026-10-28T13:27:09.992Z",
-        "status": "PENDING",
-        "owner_id": "Marcus Vance",
-        "linked_entity_type": "PROPERTY",
-        "linked_entity_id": "p1000000-0000-0000-0000-000000000001",
-        "created_at": "2026-10-24T13:27:09.992Z"
+        "task_id": "tk-4",
+        "id": 4,
+        "title": "Order Duval County Code Enforcement Estoppel",
+        "description": "Check municipal weed lien status and magistrate fine schedule.",
+        "deal": "1105 Dunn Ave, Jacksonville, FL 32218",
+        "parcel": "DUV-062810-0019",
+        "category": "Title & Escrow",
+        "dueDate": "Overdue 1 day",
+        "dueStatus": "overdue",
+        "priority": "Urgent",
+        "assignee": "Elena Rostova",
+        "repInitials": "ER",
+        "done": false,
+        "created_at": "2026-10-30T06:18:41.246Z"
+      },
+      {
+        "task_id": "tk-5",
+        "id": 5,
+        "title": "Send Assignment Contract for E-Signature to Apex Holdings",
+        "description": ",000 wholesale assignment spread. ,000 non-refundable deposit.",
+        "deal": "1540 W 23rd St, Jacksonville, FL 32209",
+        "parcel": "DUV-084721-0034",
+        "category": "Dispositions",
+        "dueDate": "Today 6:00 PM",
+        "dueStatus": "today",
+        "priority": "High",
+        "assignee": "Sarah Jenkins",
+        "repInitials": "SJ",
+        "done": false,
+        "created_at": "2026-10-30T06:18:41.246Z"
+      },
+      {
+        "task_id": "tk-6",
+        "id": 6,
+        "title": "Pull Recent Cash Sales Comps within 0.5-Mile Radius",
+        "description": "Normandy Blvd area has had 3 wholesale flips recorded in last 45 days.",
+        "deal": "8824 Normandy Blvd, Jacksonville, FL 32221",
+        "parcel": "DUV-041920-0112",
+        "category": "Acquisitions",
+        "dueDate": "Friday",
+        "dueStatus": "upcoming",
+        "priority": "Medium",
+        "assignee": "Elena Rostova",
+        "repInitials": "ER",
+        "done": true,
+        "created_at": "2026-10-30T06:18:41.246Z"
       }
     ],
     "users": [
@@ -2623,6 +2736,14 @@
         "source_record_id": "sr-feed-2",
         "verification_status": "CONFIRMED",
         "observed_at": "2026-10-28T16:18:04.418Z",
+        "notes": "New foreclosure docket"
+      },
+      {
+        "evidence_id": "968bbd9e-94f2-4743-bad8-e69a25540897",
+        "event_id": "131577b1-b510-4744-8755-1aa9846545a2",
+        "source_record_id": "sr-feed-2",
+        "verification_status": "CONFIRMED",
+        "observed_at": "2026-10-30T06:25:02.196Z",
         "notes": "New foreclosure docket"
       }
     ],
@@ -3078,17 +3199,503 @@
         "last_sync_at": "2026-10-28T16:18:04.421Z",
         "version_hash": "dc5b31af",
         "status": "SYNCED"
+      },
+      {
+        "sync_id": "ae2153ed-cf25-42b4-9e80-efe1e0837255",
+        "internal_entity_type": "LEAD",
+        "internal_uuid": "708fc477-7d92-439b-b526-d39246ebc8b2",
+        "external_system": "PODIO",
+        "external_app_id": "29481023",
+        "external_item_id": "podio-502200",
+        "last_sync_at": "2026-10-30T06:25:02.200Z",
+        "version_hash": "8f078563",
+        "status": "SYNCED"
+      }
+    ],
+    "buyers": [
+      {
+        "id": "b1",
+        "name": "Mike Williams",
+        "company": "Mike Williams Capital",
+        "phone": "(904) 555-2187",
+        "email": "mike@mwcapitaljax.com",
+        "location": "Jacksonville, FL",
+        "zips": [
+          "32204",
+          "32210",
+          "32218",
+          "32209",
+          "32254"
+        ],
+        "min": 50000,
+        "max": 350000,
+        "types": "SFR, Duplex, Cash",
+        "pofVerified": true,
+        "response": 92,
+        "dealsClosed": 8,
+        "tier": "VIP Tier 1",
+        "tierClass": "tier-gold",
+        "notes": "Top tier cash buyer in Westside and Northside Jacksonville. Closes in 7-10 days with clean title. Has K cash escrow ready.",
+        "created_at": "2026-10-30T06:18:41.241Z"
+      },
+      {
+        "id": "b2",
+        "name": "Sarah Mitchell",
+        "company": "Mitchell Investments",
+        "phone": "(904) 555-2288",
+        "email": "sarah@mitchellinv.com",
+        "location": "Jacksonville, FL",
+        "zips": [
+          "32073",
+          "32225",
+          "32226",
+          "32211"
+        ],
+        "min": 75000,
+        "max": 500000,
+        "types": "SFR, Multifamily",
+        "pofVerified": true,
+        "response": 84,
+        "dealsClosed": 5,
+        "tier": "VIP Tier 1",
+        "tierClass": "tier-gold",
+        "notes": "Loves turnkey or light cosmetic rehab in Arlington and East Jax. Never asks for inspection concessions if repair numbers match.",
+        "created_at": "2026-10-30T06:18:41.245Z"
+      },
+      {
+        "id": "b3",
+        "name": "David Chen",
+        "company": "Chen Capital Group",
+        "phone": "(904) 555-2389",
+        "email": "david@chencapital.net",
+        "location": "Jacksonville, FL",
+        "zips": [
+          "32207",
+          "32256",
+          "32257"
+        ],
+        "min": 100000,
+        "max": 750000,
+        "types": "SFR, Multi, Value-Add",
+        "pofVerified": true,
+        "response": 88,
+        "dealsClosed": 6,
+        "tier": "VIP Tier 1",
+        "tierClass": "tier-gold",
+        "notes": "Focus on Southside and San Marco. Prefers off-market properties with heavy equity spread.",
+        "created_at": "2026-10-30T06:18:41.245Z"
+      },
+      {
+        "id": "b4",
+        "name": "Tasha Brown",
+        "company": "Brown Family Homes LLC",
+        "phone": "(904) 555-2490",
+        "email": "tasha@brownfamilyhomes.com",
+        "location": "Jacksonville, FL",
+        "zips": [
+          "32208",
+          "32209",
+          "32254"
+        ],
+        "min": 40000,
+        "max": 250000,
+        "types": "SFR, As-Is",
+        "pofVerified": true,
+        "response": 76,
+        "dealsClosed": 3,
+        "tier": "Active VIP",
+        "tierClass": "tier-blue",
+        "notes": "Buy and hold landlord specializing in Northside rentals. Fast decision maker once photos are provided.",
+        "created_at": "2026-10-30T06:18:41.245Z"
+      },
+      {
+        "id": "b5",
+        "name": "Marcus Hill",
+        "company": "Hill Property Solutions",
+        "phone": "(904) 555-2591",
+        "email": "marcus@hillprops.com",
+        "location": "Jacksonville, FL",
+        "zips": [
+          "32216",
+          "32211",
+          "32246"
+        ],
+        "min": 60000,
+        "max": 420000,
+        "types": "SFR, Duplex, Fix & Flip",
+        "pofVerified": false,
+        "response": 68,
+        "dealsClosed": 2,
+        "tier": "Active VIP",
+        "tierClass": "tier-blue",
+        "notes": "General contractor and flipper looking for distressed single families in 32211 and 32216.",
+        "created_at": "2026-10-30T06:18:41.245Z"
+      },
+      {
+        "id": "b6",
+        "name": "Kevin Patel",
+        "company": "Patel Holdings LLC",
+        "phone": "(904) 555-2692",
+        "email": "kevin@patelholdings.com",
+        "location": "St. Johns / Duval",
+        "zips": [
+          "32068",
+          "32081",
+          "32259"
+        ],
+        "min": 150000,
+        "max": 1200000,
+        "types": "Multifamily, New Build",
+        "pofVerified": true,
+        "response": 82,
+        "dealsClosed": 4,
+        "tier": "VIP Tier 1",
+        "tierClass": "tier-gold",
+        "notes": "High net worth investor with proof of funds on file for .5M. Looking for 4-plexes or land assemblies.",
+        "created_at": "2026-10-30T06:18:41.245Z"
+      }
+    ],
+    "contracts": [
+      {
+        "id": "c1",
+        "code": "PSA-2026-084",
+        "address": "4531 Lenox Ave",
+        "zip": "32210",
+        "type": "PSA",
+        "seller": "Thomas Richards",
+        "buyer": "Mike Williams Capital LLC",
+        "buyPrice": 125000,
+        "fee": 40000,
+        "titleAgency": "First American Title Jax",
+        "fileNumber": "FAT-2026-9921",
+        "closingDate": "2026-05-08",
+        "status": "Clear to Close",
+        "statusClass": "status-clear",
+        "milestones": [
+          {
+            "name": "Purchase & Sale Executed",
+            "detail": "Executed on Apr 18",
+            "completed": true
+          },
+          {
+            "name": "Seller EMD Verified",
+            "detail": ",500 deposited in escrow",
+            "completed": true
+          },
+          {
+            "name": "Title Commitment & Municipal Lien Search",
+            "detail": "Issued clean schedule B",
+            "completed": true
+          },
+          {
+            "name": "Assignment of Contract Executed",
+            "detail": "Signed with K fee locked",
+            "completed": true
+          },
+          {
+            "name": "Buyer EMD (,000) Received",
+            "detail": "Held in escrow",
+            "completed": true
+          },
+          {
+            "name": "Final Settlement Statement Approved",
+            "detail": "ALTA signed by parties",
+            "completed": true
+          }
+        ],
+        "docs": [
+          {
+            "name": "Executed_PSA_4531Lenox.pdf"
+          },
+          {
+            "name": "Title_Commitment_FAT.pdf"
+          },
+          {
+            "name": "Assignment_Agreement_Signed.pdf"
+          }
+        ],
+        "created_at": "2026-10-30T06:18:41.245Z"
+      },
+      {
+        "id": "c2",
+        "code": "PSA-2026-085",
+        "address": "7810 Moncrief Rd",
+        "zip": "32209",
+        "type": "PSA",
+        "seller": "Estate of Dorothy Jenkins",
+        "buyer": "",
+        "buyPrice": 92000,
+        "fee": 33000,
+        "titleAgency": "Florida Crown Title",
+        "fileNumber": "FCT-8812",
+        "closingDate": "2026-05-14",
+        "status": "In Escrow",
+        "statusClass": "status-escrow",
+        "milestones": [
+          {
+            "name": "Purchase & Sale Executed",
+            "detail": "Executed on Apr 21",
+            "completed": true
+          },
+          {
+            "name": "Seller EMD Verified",
+            "detail": ",000 deposited",
+            "completed": true
+          },
+          {
+            "name": "Title Commitment & Municipal Lien Search",
+            "detail": "Title exam in progress",
+            "completed": false
+          },
+          {
+            "name": "Assignment of Contract Executed",
+            "detail": "In dispo to buyers",
+            "completed": false
+          },
+          {
+            "name": "Buyer EMD Received",
+            "detail": "Pending assignment",
+            "completed": false
+          }
+        ],
+        "docs": [
+          {
+            "name": "Executed_PSA_7810Moncrief.pdf"
+          },
+          {
+            "name": "Probate_Letters_Administration.pdf"
+          }
+        ],
+        "created_at": "2026-10-30T06:18:41.245Z"
+      },
+      {
+        "id": "c3",
+        "code": "ASN-2026-039",
+        "address": "2834 W 21st St",
+        "zip": "32209",
+        "type": "Assignment",
+        "seller": "Robert L. Henderson",
+        "buyer": "Mitchell Investments LLC",
+        "buyPrice": 65000,
+        "fee": 30000,
+        "titleAgency": "Landmark Title Jax",
+        "fileNumber": "LT-2026-4412",
+        "closingDate": "2026-05-02",
+        "status": "Clear to Close",
+        "statusClass": "status-clear",
+        "milestones": [
+          {
+            "name": "Purchase & Sale Executed",
+            "detail": "Signed",
+            "completed": true
+          },
+          {
+            "name": "Seller EMD Verified",
+            "detail": "Held in escrow",
+            "completed": true
+          },
+          {
+            "name": "Title Commitment Clear",
+            "detail": "Clean title",
+            "completed": true
+          },
+          {
+            "name": "Assignment Signed",
+            "detail": "Mitchell Inv verified",
+            "completed": true
+          },
+          {
+            "name": "Buyer EMD (,000) Deposited",
+            "detail": "Confirmed",
+            "completed": true
+          },
+          {
+            "name": "Clear to Close",
+            "detail": "Funding scheduled",
+            "completed": true
+          }
+        ],
+        "docs": [
+          {
+            "name": "PSA_2834W21st.pdf"
+          },
+          {
+            "name": "Assignment_MitchellInvestments.pdf"
+          },
+          {
+            "name": "Wire_Instructions_Landmark.pdf"
+          }
+        ],
+        "created_at": "2026-10-30T06:18:41.245Z"
+      },
+      {
+        "id": "c4",
+        "code": "PSA-2026-086",
+        "address": "6243 Winton Dr",
+        "zip": "32208",
+        "type": "PSA",
+        "seller": "Marcus Washington",
+        "buyer": "Chen Capital Group",
+        "buyPrice": 85000,
+        "fee": 25000,
+        "titleAgency": "First American Title Jax",
+        "fileNumber": "FAT-2026-9988",
+        "closingDate": "2026-05-20",
+        "status": "In Escrow",
+        "statusClass": "status-escrow",
+        "milestones": [
+          {
+            "name": "Purchase & Sale Executed",
+            "detail": "Signed Apr 24",
+            "completed": true
+          },
+          {
+            "name": "Seller EMD Verified",
+            "detail": "Deposited",
+            "completed": true
+          },
+          {
+            "name": "Title Commitment & Municipal Lien Search",
+            "detail": "In progress",
+            "completed": false
+          },
+          {
+            "name": "Assignment of Contract Executed",
+            "detail": "Drafted",
+            "completed": true
+          }
+        ],
+        "docs": [
+          {
+            "name": "Executed_PSA_6243Winton.pdf"
+          }
+        ],
+        "created_at": "2026-10-30T06:18:41.246Z"
+      }
+    ],
+    "contacts": [
+      {
+        "id": "ct1",
+        "name": "Ronald Campbell",
+        "company": "",
+        "type": "Distressed Seller",
+        "phone": "(904) 555-0182",
+        "email": "r.campbell@att.net",
+        "tags": [
+          "Probate",
+          "Duval 32208",
+          "Vacant"
+        ],
+        "property": "4812 Moncrief Rd, Jacksonville, FL",
+        "status": "Under Contract",
+        "initials": "RC",
+        "lastTouch": "Today 10:14 AM",
+        "notes": "Inherited from parents. Agreed to k cash offer. In escrow with First American.",
+        "created_at": "2026-10-30T06:18:41.246Z"
+      },
+      {
+        "id": "ct2",
+        "name": "David Ross",
+        "company": "Apex Jacksonville Holdings LLC",
+        "type": "Cash Buyer",
+        "phone": "(904) 555-8911",
+        "email": "dross@apexjaxholdings.com",
+        "tags": [
+          "VIP Buyer",
+          "Duval",
+          "Cash Fast Close",
+          "BRRRR"
+        ],
+        "property": "1540 W 23rd St, Jacksonville, FL",
+        "status": "VIP Verified",
+        "initials": "DR",
+        "lastTouch": "Today 9:30 AM",
+        "notes": "k liquid POF on file. Looking for 3/1 or 3/2 SFRs in 32208/32209 under k.",
+        "created_at": "2026-10-30T06:18:41.246Z"
+      },
+      {
+        "id": "ct3",
+        "name": "Lisa Miller",
+        "company": "First American Title / Crown Escrow",
+        "type": "Title Officer",
+        "phone": "(904) 555-2100",
+        "email": "lmiller@firstam.com",
+        "tags": [
+          "Title Partner",
+          "Assignment Friendly",
+          "Double Close"
+        ],
+        "property": "",
+        "status": "Active",
+        "initials": "LM",
+        "lastTouch": "Yesterday 3:30 PM",
+        "notes": "Primary title agent for HushHawk wholesale assignments. Understands double closes and assignment contracts.",
+        "created_at": "2026-10-30T06:18:41.246Z"
+      },
+      {
+        "id": "ct4",
+        "name": "Greg Thornton",
+        "company": "First Coast Hard Money Partners",
+        "type": "Lender",
+        "phone": "(904) 555-9080",
+        "email": "greg@firstcoasthml.com",
+        "tags": [
+          "100% Rehab",
+          "10.5% Rate",
+          "48hr Close"
+        ],
+        "property": "",
+        "status": "Active",
+        "initials": "GT",
+        "lastTouch": "Last week",
+        "notes": "Funds our VIP buyers at 90% purchase / 100% rehab. Fast approval without appraisal.",
+        "created_at": "2026-10-30T06:18:41.246Z"
+      },
+      {
+        "id": "ct5",
+        "name": "Evelyn Richardson",
+        "company": "",
+        "type": "Distressed Seller",
+        "phone": "(904) 555-0143",
+        "email": "evelyn.richardson@att.net",
+        "tags": [
+          "Tax Delinquent",
+          "Commonwealth",
+          "Duval 32254"
+        ],
+        "property": "4218 Commonwealth Ave, Jacksonville, FL",
+        "status": "Active",
+        "initials": "ER",
+        "lastTouch": "Yesterday 2:05 PM",
+        "notes": "Motivated to close before end of month. Offered k net cash.",
+        "created_at": "2026-10-30T06:18:41.246Z"
       }
     ]
   },
   "ops": {
     "event_counters": {
-      "p1000000-0000-0000-0000-000000000001:FC": 31,
+      "p1000000-0000-0000-0000-000000000001:FC": 32,
       "p2000000-0000-0000-0000-000000000002:TAX": 1,
       "p3000000-0000-0000-0000-000000000003:ML": 1,
-      "p1000000-0000-0000-0000-000000000001:TAX": 62
+      "p1000000-0000-0000-0000-000000000001:TAX": 64
     },
     "outbox_events": [
+      {
+        "outbox_id": "06dde5e3-fd53-4986-badf-e3f01cb20ce9",
+        "aggregate_type": "PILLAR_EVENT",
+        "aggregate_id": "131577b1-b510-4744-8755-1aa9846545a2",
+        "payload": {
+          "property_id": "p1000000-0000-0000-0000-000000000001",
+          "pillar_code": "FC",
+          "event_number": 32,
+          "case_reference": "16-2026-CA-1793341502196",
+          "verification_status": "CONFIRMED"
+        },
+        "created_at": "2026-10-30T06:25:02.197Z",
+        "published_at": null,
+        "attempts": 0,
+        "last_error": null
+      },
       {
         "outbox_id": "2d608890-716e-4c14-9ef0-dd062c71070a",
         "aggregate_type": "PILLAR_EVENT",
@@ -3590,6 +4197,181 @@
   },
   "audit": {
     "audit_events": [
+      {
+        "audit_id": "be10aeb3-6153-4a34-99d0-609b93ab38a4",
+        "actor": "Elena Rostova",
+        "action": "COMPLIANCE_GATE_PASSED",
+        "entity_type": "OUTBOUND_DISPATCH",
+        "entity_id": "e42d9c87-ea80-4bc6-84a3-0623ca989288",
+        "request_id": "5362ca4b-4163-441a-85d8-6134a76b198a",
+        "redacted_diff": {
+          "channel": "CALL",
+          "recipient": "(904) 555-0182",
+          "checks": [
+            {
+              "step": 1,
+              "name": "Suppression & DNC Check",
+              "passed": true,
+              "reason": "Clean on internal & federal DNC list"
+            },
+            {
+              "step": 2,
+              "name": "Consent & Legal Basis",
+              "passed": true,
+              "reason": "Public record or affirmative seller inquiry verified"
+            },
+            {
+              "step": 3,
+              "name": "Campaign Rules & Template",
+              "passed": true,
+              "reason": "Template 'tmpl-cash-offer-v1' is approved"
+            },
+            {
+              "step": 4,
+              "name": "User Permission",
+              "passed": true,
+              "reason": "Actor 'Elena Rostova' holds authorized role for outbound dispatch"
+            },
+            {
+              "step": 5,
+              "name": "Rate Limit & Cadence",
+              "passed": true,
+              "reason": "Within safe carrier & 10DLC frequency limits"
+            },
+            {
+              "step": 6,
+              "name": "Jurisdiction Rules",
+              "passed": true,
+              "reason": "Compliant with Florida telemarketing & solicitation statutes"
+            }
+          ],
+          "status": "APPROVED"
+        },
+        "created_at": "2026-10-30T06:25:02.205Z"
+      },
+      {
+        "audit_id": "7501c5d4-714a-47f2-95d9-564ff8ba38d0",
+        "actor": "Elena Rostova",
+        "action": "COMPLIANCE_GATE_BLOCKED",
+        "entity_type": "OUTBOUND_DISPATCH",
+        "entity_id": "5fb56cb8-8313-4893-8641-a419735116c5",
+        "request_id": "caf94349-8707-4307-8b87-fdfe6580919f",
+        "redacted_diff": {
+          "channel": "CALL",
+          "recipient": "(904) 555-0744",
+          "checks": [
+            {
+              "step": 1,
+              "name": "Suppression & DNC Check",
+              "passed": false,
+              "reason": "BLOCKED: Recipient phone is on the Suppression/DNC list (Federal DNC Registry and direct owner opt-out request)"
+            },
+            {
+              "step": 2,
+              "name": "Consent & Legal Basis",
+              "passed": true,
+              "reason": "Public record or affirmative seller inquiry verified"
+            },
+            {
+              "step": 3,
+              "name": "Campaign Rules & Template",
+              "passed": true,
+              "reason": "Template 'tmpl-cash-offer-v1' is approved"
+            },
+            {
+              "step": 4,
+              "name": "User Permission",
+              "passed": true,
+              "reason": "Actor 'Elena Rostova' holds authorized role for outbound dispatch"
+            },
+            {
+              "step": 5,
+              "name": "Rate Limit & Cadence",
+              "passed": true,
+              "reason": "Within safe carrier & 10DLC frequency limits"
+            },
+            {
+              "step": 6,
+              "name": "Jurisdiction Rules",
+              "passed": true,
+              "reason": "Compliant with Florida telemarketing & solicitation statutes"
+            }
+          ],
+          "status": "BLOCKED"
+        },
+        "created_at": "2026-10-30T06:25:02.205Z"
+      },
+      {
+        "audit_id": "dca8f4d3-5135-4150-9c78-b8f8ecf01147",
+        "actor": "Elena Rostova",
+        "action": "INTERACTION_LOGGED",
+        "entity_type": "INTERACTION",
+        "entity_id": "98d19979-41d5-4d36-8038-356a432e8593",
+        "request_id": "55e9272f-cab5-45dd-b6fe-50563f84cdb6",
+        "redacted_diff": {
+          "method": "EMAIL",
+          "direction": "OUTBOUND",
+          "leadId": "708fc477-7d92-439b-b526-d39246ebc8b2",
+          "result": "SENT"
+        },
+        "created_at": "2026-10-30T06:25:02.203Z"
+      },
+      {
+        "audit_id": "bb269444-10de-429a-85db-ffa2da2f6295",
+        "actor": "Elena Rostova",
+        "action": "INTERACTION_LOGGED",
+        "entity_type": "INTERACTION",
+        "entity_id": "3392dc81-5ffa-436f-a718-44c5ab010800",
+        "request_id": "9c171a84-44fb-4321-a696-52745c2bd0d7",
+        "redacted_diff": {
+          "method": "CALL",
+          "direction": "INBOUND",
+          "leadId": "708fc477-7d92-439b-b526-d39246ebc8b2",
+          "result": "CONNECTED"
+        },
+        "created_at": "2026-10-30T06:25:02.202Z"
+      },
+      {
+        "audit_id": "26941d63-15b6-44e2-9db4-8071f5ba1c4f",
+        "actor": "Marcus Vance",
+        "action": "LEAD_CREATED",
+        "entity_type": "LEAD",
+        "entity_id": "708fc477-7d92-439b-b526-d39246ebc8b2",
+        "request_id": "25df2a33-0dcf-4d4b-8863-b607e885e349",
+        "redacted_diff": {
+          "first_source_code": "MAIL",
+          "propertyId": "p1000000-0000-0000-0000-000000000001",
+          "status": "NEW"
+        },
+        "created_at": "2026-10-30T06:25:02.201Z"
+      },
+      {
+        "audit_id": "7ab7b313-1049-4c35-941b-1a50a4c56371",
+        "actor": "SYSTEM_CONNECTOR",
+        "action": "EVENT_CREATED",
+        "entity_type": "PILLAR_EVENT",
+        "entity_id": "131577b1-b510-4744-8755-1aa9846545a2",
+        "request_id": "85eca770-4b96-4f0b-907f-68f859afdf13",
+        "redacted_diff": {
+          "pillar_code": "FC",
+          "event_number": 32,
+          "caseReference": "16-2026-CA-1793341502196"
+        },
+        "created_at": "2026-10-30T06:25:02.197Z"
+      },
+      {
+        "audit_id": "5a34b1ab-83c5-4696-bdc6-1e3139a8fc28",
+        "actor": "SYSTEM_CONNECTOR",
+        "action": "EVENT_EVIDENCE_ATTACHED",
+        "entity_type": "PILLAR_EVENT",
+        "entity_id": "ev100000-0000-0000-0000-000000000001",
+        "request_id": "83389667-cd48-4e33-b831-426755029903",
+        "redacted_diff": {
+          "sourceRecordId": "sr-feed-1",
+          "notes": "Court clerk feed"
+        },
+        "created_at": "2026-10-30T06:25:02.195Z"
+      },
       {
         "audit_id": "34353af4-e8ed-4f5c-a37d-f58a36e71574",
         "actor": "Elena Rostova",

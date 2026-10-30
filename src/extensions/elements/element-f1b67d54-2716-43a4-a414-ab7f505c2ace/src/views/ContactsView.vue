@@ -405,7 +405,23 @@ export default {
       });
     }
   },
+
+  mounted() {
+    this.loadContacts();
+  },
   methods: {
+    async loadContacts() {
+      try {
+        const res = await fetch('/api/v1/contacts');
+        const data = await res.json();
+        if (data.contacts && data.contacts.length > 0) {
+          this.contacts = data.contacts;
+        }
+      } catch (err) {
+        console.warn('[Contacts] Using local cache:', err.message);
+      }
+    },
+
     selectContact(c) {
       this.selectedContact = c;
     },
@@ -429,24 +445,51 @@ export default {
       this.typeFilter = '';
       this.statusFilter = '';
     },
-    saveNewContact() {
-      const id = Date.now();
-      const initials = this.newContact.name.split(' ').map(n => n[0]).join('');
-      const tags = this.newContact.tagsInput ? this.newContact.tagsInput.split(',').map(t => t.trim()) : ['New Lead'];
-      this.contacts.unshift({
-        id,
+    async saveNewContact() {
+      const initials = this.newContact.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+      const tags = this.newContact.tagsInput ? this.newContact.tagsInput.split(',').map(t => t.trim()).filter(Boolean) : ['New Contact'];
+      const payload = {
         name: this.newContact.name,
         company: this.newContact.company,
         type: this.newContact.type,
         phone: this.newContact.phone,
         email: this.newContact.email,
-        tags,
-        property: '',
-        status: 'Active',
-        initials,
-        lastTouch: 'Just now',
+        tagsInput: tags,
         notes: this.newContact.notes
-      });
+      };
+
+      try {
+        const res = await fetch('/api/v1/contacts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          const saved = await res.json();
+          this.contacts.unshift(saved);
+        } else {
+          this.contacts.unshift({
+            id: Date.now(),
+            ...payload,
+            tags,
+            property: '',
+            status: 'Active',
+            initials,
+            lastTouch: 'Just now'
+          });
+        }
+      } catch (e) {
+        this.contacts.unshift({
+          id: Date.now(),
+          ...payload,
+          tags,
+          property: '',
+          status: 'Active',
+          initials,
+          lastTouch: 'Just now'
+        });
+      }
+
       this.isAddModalOpen = false;
       this.newContact = {
         name: '',
@@ -457,6 +500,9 @@ export default {
         tagsInput: '',
         notes: ''
       };
+      if (typeof window.showHushHawkToast === 'function') {
+        window.showHushHawkToast('Contact Created', `${payload.name} added to Rolodex.`, 'success');
+      }
     }
   }
 };

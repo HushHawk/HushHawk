@@ -385,7 +385,7 @@
 </template>
 
 <script>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { icons } from '../icons.js';
 
 export default {
@@ -398,6 +398,26 @@ export default {
       { label: 'Avg. Response Rate', value: '74%', change: '+9%', icon: 'chart' },
       { label: 'Buying Capacity', value: '$18.4M', change: '+22%', icon: 'badgeDollar' }
     ];
+
+    
+    const API_BASE = '/api/v1';
+
+    async function loadBuyers() {
+      try {
+        const res = await fetch(API_BASE + '/buyers');
+        const data = await res.json();
+        if (data.buyers && data.buyers.length > 0) {
+          buyers.value = data.buyers;
+          if (!selectedBuyer.value) selectedBuyer.value = data.buyers[0];
+        }
+      } catch (err) {
+        console.warn('[CashBuyers] Using local cache:', err.message);
+      }
+    }
+
+    onMounted(() => {
+      loadBuyers();
+    });
 
     const buyers = ref([
       {
@@ -605,28 +625,42 @@ export default {
       openSendDealModal(selectedBuyer.value);
     }
 
-    function saveNewBuyer() {
+    async function saveNewBuyer() {
       if (!newBuyer.value.name) return;
       const bName = newBuyer.value.name;
-      buyers.value.unshift({
-        id: 'b-' + Date.now(),
+      const payload = {
         name: newBuyer.value.name,
         company: newBuyer.value.company || 'Private Investor',
         phone: newBuyer.value.phone || '(904) 555-0000',
         email: newBuyer.value.email || 'investor@example.com',
         location: 'Jacksonville, FL',
-        zips: newBuyer.value.zips.split(',').map(s => s.trim()),
+        zips: newBuyer.value.zips ? newBuyer.value.zips.split(',').map(s => s.trim()) : ['32204'],
         min: Number(newBuyer.value.min) || 50000,
         max: Number(newBuyer.value.max) || 300000,
         types: 'SFR, Cash Buyer',
         pofVerified: true,
-        response: 85,
-        dealsClosed: 0,
-        tier: 'Active VIP',
-        tierClass: 'tier-blue',
         notes: newBuyer.value.notes || 'Added from Cash Buyers command center.'
-      });
-      selectedBuyer.value = buyers.value[0];
+      };
+
+      try {
+        const res = await fetch(API_BASE + '/buyers', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          const saved = await res.json();
+          buyers.value.unshift(saved);
+          selectedBuyer.value = saved;
+        } else {
+          buyers.value.unshift({ id: 'b-' + Date.now(), ...payload, tier: 'Active VIP', tierClass: 'tier-blue', response: 85, dealsClosed: 0 });
+          selectedBuyer.value = buyers.value[0];
+        }
+      } catch (e) {
+        buyers.value.unshift({ id: 'b-' + Date.now(), ...payload, tier: 'Active VIP', tierClass: 'tier-blue', response: 85, dealsClosed: 0 });
+        selectedBuyer.value = buyers.value[0];
+      }
+
       closeModal();
       if (typeof window.showHushHawkToast === 'function') {
         window.showHushHawkToast('Cash Buyer Added', `${bName} added to VIP Investor network.`, 'success');

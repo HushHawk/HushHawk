@@ -184,7 +184,7 @@
           </div>
           <div class="milestone-checklist">
             <label v-for="m in selectedContract.milestones" :key="m.name" class="milestone-row">
-              <input type="checkbox" v-model="m.completed" />
+              <input type="checkbox" v-model="m.completed" @change="onMilestoneToggle(selectedContract, m)" />
               <div>
                 <strong :class="{ done: m.completed }">{{ m.name }}</strong>
                 <small>{{ m.detail }}</small>
@@ -306,7 +306,7 @@
 </template>
 
 <script>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { icons } from '../icons.js';
 
 export default {
@@ -319,6 +319,26 @@ export default {
       { label: 'EMD Verified', value: '16', change: '+14%', icon: 'check' },
       { label: 'Clear to Close', value: '10', change: '+42%', icon: 'crown' }
     ];
+
+    
+    const API_BASE = '/api/v1';
+
+    async function loadContracts() {
+      try {
+        const res = await fetch(API_BASE + '/contracts');
+        const data = await res.json();
+        if (data.contracts && data.contracts.length > 0) {
+          contracts.value = data.contracts;
+          if (!selectedContract.value) selectedContract.value = data.contracts[0];
+        }
+      } catch (err) {
+        console.warn('[Contracts] Using local cache:', err.message);
+      }
+    }
+
+    onMounted(() => {
+      loadContracts();
+    });
 
     const contracts = ref([
       {
@@ -483,7 +503,24 @@ export default {
       modalType.value = '';
     }
 
-    function saveContract() {
+    
+    async function onMilestoneToggle(contract, milestone) {
+      if (!contract) return;
+      const idx = contract.milestones ? contract.milestones.indexOf(milestone) : -1;
+      if (idx !== -1) {
+        try {
+          await fetch(API_BASE + '/contracts/' + contract.id + '/milestone', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ milestoneIndex: idx, completed: milestone.completed })
+          });
+        } catch (e) {
+          console.warn('[Contracts] Milestone sync fallback');
+        }
+      }
+    }
+
+    async function saveContract() {
       if (!newForm.value.address) return;
       contracts.value.unshift({
         id: 'c-' + Date.now(),
@@ -569,6 +606,7 @@ export default {
       openModal,
       closeModal,
       saveContract,
+      onMilestoneToggle,
       confirmUpload,
       downloadDoc,
       formatCurrency

@@ -392,7 +392,7 @@
 </template>
 
 <script>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { icons } from '../icons.js';
 
 export default {
@@ -405,6 +405,45 @@ export default {
       { label: 'Clear to Close', value: '14', change: '+16%', icon: 'check' },
       { label: 'Total Spread Pending', value: '$642,000', change: '+34%', icon: 'crown' }
     ];
+
+    
+    const API_BASE = '/api/v1';
+
+    async function loadDispoContracts() {
+      try {
+        const res = await fetch(API_BASE + '/contracts');
+        const data = await res.json();
+        if (data.contracts && data.contracts.length > 0) {
+          // Merge dynamic contracts with dispo attributes
+          const mapped = data.contracts.map(c => ({
+            id: c.id,
+            address: c.address,
+            zip: c.zip || '32210',
+            crownKey: c.crownKey || 'DUV-' + Math.floor(100000 + Math.random() * 900000) + '-0000',
+            beds: c.beds || 3,
+            baths: c.baths || 2,
+            sqft: c.sqft || 1400,
+            contractPrice: c.buyPrice || 115000,
+            askingPrice: (c.buyPrice || 115000) + (c.fee || 30000),
+            titleCompany: c.titleAgency || 'First American Title Jax',
+            emdStatus: 'Verified ($2,500)',
+            daysLeft: 10,
+            matchedBuyersCount: 14,
+            status: c.status || 'Under Contract',
+            statusClass: c.statusClass || 'status-contract',
+            milestones: c.milestones || []
+          }));
+          contracts.value = mapped;
+          if (!selectedContract.value) selectedContract.value = mapped[0];
+        }
+      } catch (err) {
+        console.warn('[Dispositions] Using local cache:', err.message);
+      }
+    }
+
+    onMounted(() => {
+      loadDispoContracts();
+    });
 
     const contracts = ref([
       {
