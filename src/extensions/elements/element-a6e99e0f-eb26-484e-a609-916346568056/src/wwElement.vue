@@ -120,13 +120,13 @@
   <div class="acquisition-layout" :class="{'detail-closed':!selected}">
    <div class="pipeline-side">
     <div class="kpi-row"><div v-for="m in metrics" :key="m.label" class="kpi"><span class="kpi-icon" v-html="icons[m.icon]"></span><div><span>{{m.label}}</span><strong>{{m.value}}</strong><small>↑ {{m.change}}</small></div></div></div>
-    <div class="preview-line"><span>HUSHHAWK LIVE PIPELINE · Acquisitions & Pipeline Production</span><button v-if="query" @click="clearSearch">Clear search · {{visible.length}} matches</button><span v-else>{{deals.length}} wholesale deals</span></div>
+    <div class="preview-line"><span>HUSHHAWK LIVE PIPELINE · Acquisitions & Pipeline Production</span><button v-if="query" @click="clearSearch">Clear search · {{(visible || []).length}} matches</button><span v-else>{{(deals?.value || deals || []).length}} wholesale deals</span></div>
     <div class="board-scroll" aria-label="Acquisitions pipeline">
      <div class="board">
       <section v-for="(stage,index) in stages" :key="stage.name" class="stage" :style="{'--stage':stage.color}" @dragover.prevent @drop.prevent="dropDeal(index)" :aria-label="stage.name">
        <h2>{{stage.name}} <b>{{stageCount(index)}}</b></h2>
        <div class="stage-cards">
-        <button v-for="deal in visible.filter(d=>d.stage===index)" :key="deal.id" class="deal-card" :class="{selected:selected?.id===deal.id}" :draggable="!isEditing" @dragstart="startDrag($event,deal)" @dragend="dragged=''" @click="selectDeal(deal)" :aria-pressed="selected?.id===deal.id">
+        <button v-for="deal in (visible || []).filter(d=>d.stage===index)" :key="deal.id" class="deal-card" :class="{selected:selected?.id===deal.id}" :draggable="!isEditing" @dragstart="startDrag($event,deal)" @dragend="dragged=''" @click="selectDeal(deal)" :aria-pressed="selected?.id===deal.id">
          <img :src="photo(deal)" alt="Illustrative house exterior" @error="imageFailed">
          <div class="card-body"><h3>{{deal.address}}</h3><p>Jacksonville, FL {{deal.zip}}</p>
           <dl><div><dt>ARV</dt><dd>{{money(deal.arv)}}</dd></div><div><dt>Repairs</dt><dd>{{money(deal.repairs)}}</dd></div><div><dt>MAO</dt><dd>{{money(deal.mao)}}</dd></div><div><dt>Est. Fee</dt><dd>{{money(deal.fee)}}</dd></div></dl>
@@ -214,7 +214,7 @@ export default {
    }
  });
  const drafts={},selected=computed(()=>deals.value.find(d=>d.id===selectedId.value)||null);
- const visible=computed(()=>deals.value.filter(d=>!query.value.trim()||[d.address,d.zip,d.owner,d.source,d.agent,stages[d.stage].name].join(' ').toLowerCase().includes(query.value.trim().toLowerCase())));
+ const visible=computed(()=>(deals.value||[]).filter(d=>!query.value.trim()||[d.address,d.zip,d.owner,d.source,d.agent,stages[d.stage]?.name||''].join(' ').toLowerCase().includes(query.value.trim().toLowerCase())));
  const heroStyle=computed(()=>({backgroundImage:'linear-gradient(90deg,#03172fed 0%,#03172fc9 31%,#06244144 62%,#011a3440),url("'+(props.content?.skyline||'')+'")'}));
  const metrics=[{label:'Total Acquisition Leads',value:'412',change:'18%',icon:'users'},{label:'New This Week',value:'48',change:'33%',icon:'file'},{label:'Appointments Set',value:'28',change:'27%',icon:'calendar'},{label:'Under Contract',value:'14',change:'75%',icon:'handshake'},{label:'Closed This Month',value:'9',change:'80%',icon:'dollar'},{label:'Avg Assignment Fee',value:'$18,400',change:'42%',icon:'chart'}];
  const activities=[{label:'Calls Made',value:'48',change:'26%',icon:'phone'},{label:'Texts Sent',value:'112',change:'34%',icon:'text'},{label:'Emails Sent',value:'36',change:'20%',icon:'mail'},{label:'Follow-Ups Due',value:'24',change:'33%',icon:'calendar'}];
@@ -225,7 +225,7 @@ export default {
  function guard(e){if(isEditing.value)e.preventDefault();}
  function imageFailed(e){e.target.style.visibility='hidden';}
  function shortStage(i){return ['New Lead','Calling','Contacted','Qualified','Appt Set','Offer Sent','Under Contract','Closed'][i];}
- function stageCount(i){return stages[i].count+deals.value.filter(d=>d.stage===i).length-samples.filter(d=>d.stage===i).length;}
+ function stageCount(i){return ((stages[i]&&stages[i].count)||0)+(deals.value||[]).filter(d=>d.stage===i).length-(samples||[]).filter(d=>d.stage===i).length;}
  function clearSearch(){if(!isEditing.value)query.value='';}
  function selectDeal(d){if(isEditing.value)return;selectedId.value=d.id;notice.value='';}
  function closeDetail(){if(!isEditing.value)selectedId.value='';}

@@ -35,16 +35,32 @@ app.get('/', (req, res) => {
 app.use('/api/v1', apiRouter);
 
 // Auth session endpoint for frontend WeWeb auth checks
+const mockAuthPayload = {
+    session: {
+        id: 's-admin-1',
+        userId: 'u-admin-1',
+        token: 'hushhawk-token-admin',
+        expiresAt: new Date(Date.now() + 86400000 * 30).toISOString(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+    },
+    user: {
+        id: 'u-admin-1',
+        name: 'HushHawk Acquisitions Admin',
+        email: 'admin@hushhawk.com',
+        role: 'admin',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+    },
+    authenticated: true,
+};
+
 app.all('/api/auth/get-session', (req, res) => {
-    res.json({
-        user: {
-            id: 'u-admin-1',
-            name: 'HushHawk Acquisitions Admin',
-            email: 'admin@hushhawk.com',
-            role: 'admin',
-        },
-        authenticated: true,
-    });
+    res.json(mockAuthPayload);
+});
+
+app.all('/api/auth/*', (req, res) => {
+    res.json(mockAuthPayload);
 });
 
 // Mount /ww and /api/ww adapter for WeWeb frontend table-views and workflows
