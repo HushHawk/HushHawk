@@ -3479,10 +3479,6 @@
               "isWwObject": true
             },
             {
-              "uid": "2fe7d982-8bd5-42c4-9ba0-f662e153ee43",
-              "isWwObject": true
-            },
-            {
               "uid": "72a31586-fb16-4927-8c02-80bf146f6154",
               "isWwObject": true
             }
@@ -27815,7 +27811,7 @@
             "width": "176px",
             "height": "100vh",
             "zIndex": 40,
-            "display": "flex",
+            "display": "none",
             "maxWidth": "176px",
             "minWidth": "176px",
             "position": "sticky",
@@ -27826,7 +27822,8 @@
             "minHeight": "100vh",
             "borderRight": "1px solid rgba(255, 255, 255, 0.08)",
             "backgroundColor": "#070B14",
-            "backgroundGradient": "linear-gradient(180deg,#0a2e53,#05192e 70%)"
+            "backgroundGradient": "linear-gradient(180deg,#0a2e53,#05192e 70%)",
+            "conditionalRendering": false
           }
         },
         "states": [],
@@ -30615,7 +30612,9 @@
             "display": "flex",
             "minWidth": "0",
             "minHeight": "100vh",
-            "backgroundColor": "var(--702de9b1-4d57-47c9-8102-295901b861fa,#0A1128)"
+            "backgroundColor": "var(--702de9b1-4d57-47c9-8102-295901b861fa,#0A1128)",
+            "width": "100%",
+            "maxWidth": "100%"
           }
         }
       },
