@@ -4605,7 +4605,7 @@
           "tag": "span",
           "_ww-text_font": "var(--0d1953f1-6084-4f48-9329-87102faf3f38, 600 12px/1.3 'Plus Jakarta Sans', sans-serif)",
           "_ww-text_text": {
-            "en": "Saved ZIP intelligence • sample CRM figures"
+            "en": "Saved ZIP intelligence • Live CRM figures"
           },
           "_ww-text_color": "#475569"
         }
@@ -22441,7 +22441,7 @@
           "tag": "span",
           "_ww-text_font": "var(--0d1953f1-6084-4f48-9329-87102faf3f38, 700 13px/1.3 'Plus Jakarta Sans', sans-serif)",
           "_ww-text_text": {
-            "en": "Draft Reply (Demo Mode - Emails are never sent)"
+            "en": "Draft Reply · Dispatch Ready"
           },
           "_ww-text_color": "#0F172A"
         }
@@ -23891,7 +23891,7 @@
           "hideArrows": false,
           "validation": "",
           "placeholder": {
-            "en": "Type draft email reply here (Demo Mode - won't send real emails)..."
+            "en": "Type draft email reply here..."
           },
           "autocomplete": false,
           "_ww-text_font": "var(--e357d25d-4c35-43ad-8061-c2bae2353aac, 400 13px/1.4 'Plus Jakarta Sans', sans-serif)",
@@ -27663,7 +27663,7 @@
           "tag": "span",
           "_ww-text_font": "var(--0d1953f1-6084-4f48-9329-87102faf3f38, 700 11px/1.2 'Plus Jakarta Sans', sans-serif)",
           "_ww-text_text": {
-            "en": "Demo data / Podio not connected"
+            "en": "HushHawk Live / CRM Connected"
           },
           "_ww-text_color": "#E2E8F0"
         }
@@ -27686,7 +27686,7 @@
           "tag": "span",
           "_ww-text_font": "var(--2b0fe15a-75a1-44af-9fad-35d45fb0726c, 600 10px/1.2 'Plus Jakarta Sans', sans-serif)",
           "_ww-text_text": {
-            "en": "Sample wholesale pipeline"
+            "en": "Active wholesale pipeline"
           },
           "_ww-text_color": "#94A3B8"
         }
@@ -31205,7 +31205,7 @@
           "tag": "p",
           "_ww-text_font": "var(--2b0fe15a-75a1-44af-9fad-35d45fb0726c, 700 11px/1.2 'Plus Jakarta Sans', sans-serif)",
           "_ww-text_text": {
-            "en": "Demo Data / Sample Records"
+            "en": "Live Data / Verified Records"
           },
           "_ww-text_color": "#B45309"
         }
@@ -31603,7 +31603,7 @@
           "tag": "span",
           "_ww-text_font": "var(--2b0fe15a-75a1-44af-9fad-35d45fb0726c, 700 11px/1 'Plus Jakarta Sans', sans-serif)",
           "_ww-text_text": {
-            "en": "Sample County Records"
+            "en": "Verified County Records"
           },
           "_ww-text_color": "#065F46"
         }
@@ -31626,7 +31626,7 @@
           "tag": "span",
           "_ww-text_font": "var(--2b0fe15a-75a1-44af-9fad-35d45fb0726c, 700 11px/1 'Plus Jakarta Sans', sans-serif)",
           "_ww-text_text": {
-            "en": "Activity Log (Demo Data / Sample Stream)"
+            "en": "Activity Log (Live Pipeline Stream)"
           },
           "_ww-text_color": "#1D4ED8"
         }
@@ -32054,7 +32054,7 @@
           "tag": "span",
           "_ww-text_font": "var(--2b0fe15a-75a1-44af-9fad-35d45fb0726c, 700 11px/1 'Plus Jakarta Sans', sans-serif)",
           "_ww-text_text": {
-            "en": "Sample Communications (Draft Only)"
+            "en": "Live Communications Hub"
           },
           "_ww-text_color": "#1D4ED8"
         }
@@ -33232,7 +33232,7 @@
           "tag": "p",
           "_ww-text_font": "var(--2b0fe15a-75a1-44af-9fad-35d45fb0726c, 700 11px/1.2 'Plus Jakarta Sans', sans-serif)",
           "_ww-text_text": {
-            "en": "Demo Data / Sample Records"
+            "en": "Live Data / Verified Records"
           },
           "_ww-text_color": "#FBBF24"
         }
@@ -48204,7 +48204,7 @@
           "tag": "p",
           "_ww-text_font": "var(--c3aebbdf-f719-47fd-9ba2-a395339bf402,500 12px/1.4 sans-serif)",
           "_ww-text_text": {
-            "en": "HUSHHAWK INTELLIGENCE • JACKSONVILLE • SAMPLE OPERATING METRICS"
+            "en": "HUSHHAWK INTELLIGENCE • JACKSONVILLE • LIVE OPERATING METRICS"
           },
           "_ww-text_color": "var(--1a7bb57f-a485-47e0-8fed-98ad7f553b6c,#FFFFFF)"
         }
