@@ -383,16 +383,48 @@ export default {
       });
     }
   },
+
+  mounted() {
+    this.loadTasks();
+  },
   methods: {
-    toggleTask(t) {
+    async loadTasks() {
+      try {
+        const res = await fetch('/api/v1/tasks');
+        const data = await res.json();
+        if (data.tasks && data.tasks.length > 0) {
+          this.tasks = data.tasks;
+        }
+      } catch (err) {
+        console.warn('[Tasks] Using local task cache:', err.message);
+      }
+    },
+
+    async toggleTask(t) {
       t.done = !t.done;
+      const targetId = t.task_id || t.id;
+      try {
+        await fetch('/api/v1/tasks/' + targetId, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ done: t.done, status: t.done ? 'DONE' : 'PENDING' })
+        });
+      } catch (e) {
+        console.warn('[Tasks] Toggle sync fallback');
+      }
       if (t.done && typeof window.showHushHawkToast === 'function') {
         window.showHushHawkToast('Milestone Completed', `"${t.title.slice(0, 40)}..." marked complete.`, 'success');
       }
     },
-    deleteTask(id) {
-      const task = this.tasks.find(t => t.id === id);
-      this.tasks = this.tasks.filter(t => t.id !== id);
+    async deleteTask(id) {
+      const task = this.tasks.find(t => t.id === id || t.task_id === id);
+      const targetId = task ? (task.task_id || task.id) : id;
+      this.tasks = this.tasks.filter(t => t.id !== id && t.task_id !== id);
+      try {
+        await fetch('/api/v1/tasks/' + targetId, { method: 'DELETE' });
+      } catch (e) {
+        console.warn('[Tasks] Delete sync fallback');
+      }
       if (typeof window.showHushHawkToast === 'function') {
         window.showHushHawkToast('Task Removed', `"${task ? task.title.slice(0, 35) : ''}..." removed from task matrix.`, 'info');
       }
