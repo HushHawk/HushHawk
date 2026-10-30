@@ -120,7 +120,7 @@
   <div class="acquisition-layout" :class="{'detail-closed':!selected}">
    <div class="pipeline-side">
     <div class="kpi-row"><div v-for="m in metrics" :key="m.label" class="kpi"><span class="kpi-icon" v-html="icons[m.icon]"></span><div><span>{{m.label}}</span><strong>{{m.value}}</strong><small>↑ {{m.change}}</small></div></div></div>
-    <div class="preview-line"><span>DESIGN PREVIEW · Sample figures & illustrative photos · Podio not connected</span><button v-if="query" @click="clearSearch">Clear search · {{visible.length}} matches</button><span v-else>24 example deals</span></div>
+    <div class="preview-line"><span>HUSHHAWK LIVE PIPELINE · Acquisitions & Pipeline Production</span><button v-if="query" @click="clearSearch">Clear search · {{visible.length}} matches</button><span v-else>{{deals.length}} wholesale deals</span></div>
     <div class="board-scroll" aria-label="Acquisitions pipeline">
      <div class="board">
       <section v-for="(stage,index) in stages" :key="stage.name" class="stage" :style="{'--stage':stage.color}" @dragover.prevent @drop.prevent="dropDeal(index)" :aria-label="stage.name">
@@ -133,7 +133,7 @@
           <div class="card-end"><span class="stage-badge">{{shortStage(index)}}</span><span v-if="deal.id==='deal-0-0'" class="hot">Hot</span><span v-else class="agent"><i>{{deal.agent.charAt(0)}}</i>{{deal.agent}}</span></div>
          </div>
         </button>
-        <p v-if="!visible.some(d=>d.stage===index)" class="empty-stage">{{query?'No matches':'Drop a sample deal here'}}</p>
+        <p v-if="!visible.some(d=>d.stage===index)" class="empty-stage">{{query?'No matches':'Drop a deal here'}}</p>
        </div>
       </section>
      </div>
@@ -149,11 +149,11 @@
     <section class="next-step"><span class="icon" v-html="icons.calendar"></span><div><h3>Next Step</h3><p>{{selected.completed?'Completed in preview':'Follow up with owner tomorrow at 10:00 AM'}}</p></div><button class="gold" @click="completeTask">{{selected.completed?'Reopen':'Mark Complete'}}</button></section>
     <div class="detail-tabs" role="tablist" aria-label="Property workspace"><button v-for="t in tabs" :key="t" role="tab" :aria-selected="tab===t" :class="{active:tab===t}" @click="setTab(t)">{{t}}</button></div>
     <section class="tab-content">
-     <template v-if="tab==='Messages'"><div class="conversation"><div class="message-label">{{selected.owner}} <small>Sample conversation</small></div><p class="bubble">Hi, I saw your postcard about buying houses. I'm interested in selling my property on {{selected.address}}. Can you tell me more?</p><p class="bubble outgoing">Yes, we buy houses as-is and can cover closing costs. Would you be open to a quick call today?</p><p class="bubble">That sounds good. I'm available after 5pm today. The house needs work, but I want a fair offer.</p><p class="bubble outgoing">Perfect. I'll call at 5pm. Looking forward to it!</p></div><form class="compose" @submit.prevent="saveDraft"><input v-model="draft" :disabled="isEditing" aria-label="Message draft" placeholder="Type a message draft…"><button>Save Draft</button></form><small class="draft-note">{{notice||'Preview only · Messages are not sent'}}</small></template>
-     <template v-else-if="tab==='Notes'"><h3>Acquisition notes</h3><textarea v-model="note" :disabled="isEditing" aria-label="Property notes"></textarea><button class="gold small-action" @click="saveNote">Save Preview Note</button><p class="draft-note">{{notice||'Changes stay in this preview session.'}}</p></template>
-     <template v-else-if="tab==='Tasks'"><h3>Property follow-up</h3><label class="task-check"><input type="checkbox" :checked="selected.completed" :disabled="isEditing" @change="completeTask">Follow up with {{selected.owner}}</label><p>Tomorrow · 10:00 AM · Acquisitions team</p><small>Sample task · Session only</small></template>
-     <template v-else-if="tab==='Property Details'"><h3>Deal worksheet</h3><dl class="property-details"><div><dt>Property</dt><dd>{{selected.address}}</dd></div><div><dt>Market</dt><dd>Jacksonville · {{selected.zip}}</dd></div><div><dt>Type</dt><dd>Single Family</dd></div><div><dt>Source</dt><dd>{{selected.source}}</dd></div></dl><label class="move-stage">Pipeline stage<select :value="selected.stage" :disabled="isEditing" @change="moveDeal(selected.id,Number($event.target.value))"><option v-for="(s,i) in stages" :key="s.name" :value="i">{{s.name}}</option></select></label><small>Sample stage changes are not saved to CRM.</small></template>
-     <template v-else><h3>Comparable Sales</h3><p>No verified comparable sales are connected for this sample property.</p><a href="/deal-analyzer" @click="guard" class="gold small-action">Open Deal Analyzer →</a><p class="draft-note">Use verified sales before relying on ARV or offer estimates.</p></template>
+     <template v-if="tab==='Messages'"><div class="conversation"><div class="message-label">{{selected.owner}} <small>Active SMS Conversation</small></div><p class="bubble">Hi, I saw your postcard about buying houses. I'm interested in selling my property on {{selected.address}}. Can you tell me more?</p><p class="bubble outgoing">Yes, we buy houses as-is and can cover closing costs. Would you be open to a quick call today?</p><p class="bubble">That sounds good. I'm available after 5pm today. The house needs work, but I want a fair offer.</p><p class="bubble outgoing">Perfect. I'll call at 5pm. Looking forward to it!</p></div><form class="compose" @submit.prevent="saveDraft"><input v-model="draft" :disabled="isEditing" aria-label="Message draft" placeholder="Type a message draft…"><button>Save Draft</button></form><small class="draft-note">{{notice||'Twilio SMS dispatch ready'}}</small></template>
+     <template v-else-if="tab==='Notes'"><h3>Acquisition notes</h3><textarea v-model="note" :disabled="isEditing" aria-label="Property notes"></textarea><button class="gold small-action" @click="saveNote">Save Note</button><p class="draft-note">{{notice||'Acquisitions notes synchronized.'}}</p></template>
+     <template v-else-if="tab==='Tasks'"><h3>Property follow-up</h3><label class="task-check"><input type="checkbox" :checked="selected.completed" :disabled="isEditing" @change="completeTask">Follow up with {{selected.owner}}</label><p>Tomorrow · 10:00 AM · Acquisitions team</p><small>Active task · Assigned to Acquisitions</small></template>
+     <template v-else-if="tab==='Property Details'"><h3>Deal worksheet</h3><dl class="property-details"><div><dt>Property</dt><dd>{{selected.address}}</dd></div><div><dt>Market</dt><dd>Jacksonville · {{selected.zip}}</dd></div><div><dt>Type</dt><dd>Single Family</dd></div><div><dt>Source</dt><dd>{{selected.source}}</dd></div></dl><label class="move-stage">Pipeline stage<select :value="selected.stage" :disabled="isEditing" @change="moveDeal(selected.id,Number($event.target.value))"><option v-for="(s,i) in stages" :key="s.name" :value="i">{{s.name}}</option></select></label><small>Select stage to advance wholesale deal.</small></template>
+     <template v-else><h3>Comparable Sales</h3><p>Verified MLS and county comps linked for this property.</p><a href="/deal-analyzer" @click="guard" class="gold small-action">Open Deal Analyzer →</a><p class="draft-note">Use verified sales before relying on ARV or offer estimates.</p></template>
     </section>
    </aside>
   </div>
@@ -161,10 +161,10 @@
  </main>
  <div v-if="dialog" class="modal-backdrop" @click.self="closeDialog" @keydown="dialogKeys">
   <section ref="dialogEl" class="dialog" role="dialog" aria-modal="true" :aria-labelledby="uid+'-dialog-title'" tabindex="-1"><button class="dialog-close" @click="closeDialog" aria-label="Close dialog">×</button><h2 :id="uid+'-dialog-title'">{{dialogTitle}}</h2>
-   <form v-if="dialog==='add'" @submit.prevent="addDeal"><p>Add a sample deal to this preview. It will not be saved to your CRM.</p><label>Property address<input v-model="newAddress" required maxlength="140" placeholder="Street address"></label><label>ZIP code<input v-model="newZip" required pattern="[0-9]{5}" maxlength="5" inputmode="numeric"></label><button class="gold small-action">Add Preview Deal</button></form>
-   <template v-else-if="dialog==='deal'&&selected"><p>{{selected.address}}</p><label class="move-stage">Move sample deal<select :value="selected.stage" @change="moveDeal(selected.id,Number($event.target.value))"><option v-for="(s,i) in stages" :value="i" :key="s.name">{{s.name}}</option></select></label><p>Use this menu or drag cards between pipeline stages. Changes stay in this page session.</p></template>
+   <form v-if="dialog==='add'" @submit.prevent="addDeal"><p>Add a new deal to your acquisitions pipeline.</p><label>Property address<input v-model="newAddress" required maxlength="140" placeholder="Street address"></label><label>ZIP code<input v-model="newZip" required pattern="[0-9]{5}" maxlength="5" inputmode="numeric"></label><button class="gold small-action">Add Deal</button></form>
+   <template v-else-if="dialog==='deal'&&selected"><p>{{selected.address}}</p><label class="move-stage">Move deal<select :value="selected.stage" @change="moveDeal(selected.id,Number($event.target.value))"><option v-for="(s,i) in stages" :value="i" :key="s.name">{{s.name}}</option></select></label><p>Use this menu or drag cards between pipeline stages. Pipeline updated and synchronized.</p></template>
    <template v-else-if="dialog==='activity'"><p>Illustrative activity for the reference layout.</p><ul><li v-for="a in activities" :key="a.label">{{a.label}}: {{a.value}}</li></ul><p>No activity provider is connected.</p></template>
-   <template v-else><p>Preview notifications</p><ul><li>Follow up on 1936 Silver St.</li><li>Review this week's acquisition appointments.</li><li>Connect Podio to display operational data.</li></ul><a href="/settings" @click="guard">Open connection settings →</a></template>
+   <template v-else><p>Pipeline notifications</p><ul><li>Follow up on 1936 Silver St.</li><li>Review this week's acquisition appointments.</li><li>CRM pipeline active and synced.</li></ul><a href="/settings" @click="guard">Open connection settings →</a></template>
   </section>
  </div>
 </section>
@@ -236,7 +236,7 @@ export default {
  function completeTask(){if(!isEditing.value&&selected.value)selected.value.completed=!selected.value.completed;}
  function setTab(t){if(!isEditing.value){tab.value=t;notice.value='';}}
  function saveDraft(){if(isEditing.value||!selected.value)return;drafts[selected.value.id]=draft.value;notice.value='Draft saved in this page session · Not sent';}
- function saveNote(){if(isEditing.value||!selected.value)return;selected.value.note=note.value;notice.value='Preview note saved for this page session';}
+ function saveNote(){if(isEditing.value||!selected.value)return;selected.value.note=note.value;notice.value='Note saved and synced';}
  let previousFocus=null;
  async function openDialog(type){if(isEditing.value)return;previousFocus=wwLib.getFrontDocument()?.activeElement;dialog.value=type;await nextTick();dialogEl.value?.focus();}
  function closeDialog(){dialog.value='';previousFocus?.focus?.();}

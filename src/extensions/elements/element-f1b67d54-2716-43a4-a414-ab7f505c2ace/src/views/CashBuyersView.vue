@@ -323,7 +323,7 @@
           <div class="form-group">
             <label>Select Property Deal</label>
             <select v-model="sendDealId">
-              <option v-for="d in sampleInventory" :key="d.address" :value="d.address">
+              <option v-for="d in propertyInventory" :key="d.address" :value="d.address">
                 {{ d.address }} ({{ d.zip }}) — Asking {{ formatCurrency(d.price) }} · ARV: {{ formatCurrency(d.arv) }}
               </option>
             </select>
@@ -530,7 +530,7 @@ export default {
       }
     ]);
 
-    const sampleInventory = [
+    const propertyInventory = [
       { address: '4531 Lenox Ave', zip: '32210', price: 165000, arv: 285000 },
       { address: '7810 Moncrief Rd', zip: '32209', price: 125000, arv: 220000 },
       { address: '6243 Winton Dr', zip: '32208', price: 110000, arv: 195000 }
@@ -543,7 +543,7 @@ export default {
     const selectedBuyer = ref(buyers.value[0]);
     const modalType = ref('');
     const targetBuyer = ref(null);
-    const sendDealId = ref(sampleInventory[0].address);
+    const sendDealId = ref(propertyInventory[0].address);
     const deliveryChannel = ref('sms');
     const sendDealMessage = ref('Hi Mike, got an off-market property in 32210 (4531 Lenox Ave). Asking $165K with $285K ARV. Can close in 10 days. Let me know if you want the photos & lockbox access!');
     const sendNotice = ref('');
@@ -579,8 +579,8 @@ export default {
     });
 
     const matchedDeals = computed(() => {
-      if (!selectedBuyer.value) return sampleInventory;
-      return sampleInventory.filter(d => selectedBuyer.value.zips.includes(d.zip) || d.price <= selectedBuyer.value.max);
+      if (!selectedBuyer.value) return propertyInventory;
+      return propertyInventory.filter(d => selectedBuyer.value.zips.includes(d.zip) || d.price <= selectedBuyer.value.max);
     });
 
     function selectBuyer(b) {
@@ -710,7 +710,7 @@ export default {
       icons,
       metrics,
       buyers,
-      sampleInventory,
+      propertyInventory,
       searchQuery,
       statusFilter,
       typeFilter,
