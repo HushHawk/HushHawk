@@ -55,11 +55,7 @@ const mockAuthPayload = {
     authenticated: true,
 };
 
-app.all('/api/auth/get-session', (req, res) => {
-    res.json(mockAuthPayload);
-});
-
-app.all('/api/auth/*', (req, res) => {
+app.use('/api/auth', (req, res) => {
     res.json(mockAuthPayload);
 });
 
