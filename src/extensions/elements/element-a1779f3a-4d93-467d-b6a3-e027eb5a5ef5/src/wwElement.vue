@@ -1,7 +1,57 @@
 <template>
-<section class="command">
-  <div class="topbar">
-    <label class="global-search">
+<section class="hushhawk-command-center" :class="{ 'nav-open': navOpen }">
+  <!-- Left Navigation Sidebar -->
+  <aside class="sidebar">
+    <a href="/home" class="brand" @click="handleNav('/home', $event)">
+      <span class="brand-icon" v-html="icons.logo"></span>
+      <strong>HUSHHAWK<br>INTELLIGENCE</strong>
+      <small>PEOPLE • PROPERTIES • PROSPERITY</small>
+    </a>
+
+    <nav aria-label="HushHawk navigation">
+      <a
+        v-for="item in primaryNavigation"
+        :key="item.path"
+        :href="item.path"
+        :aria-current="item.path === '/home' ? 'page' : undefined"
+        :class="{ active: item.path === '/home' }"
+        @click="handleNav(item.path, $event)"
+      >
+        <span class="icon" v-html="icons[item.icon] || icons.house"></span>
+        {{ item.name }}
+      </a>
+
+      <details class="more-workspaces" open>
+        <summary>More Workspaces</summary>
+        <a
+          v-for="item in secondaryNavigation"
+          :key="item.path"
+          :href="item.path"
+          :aria-current="item.path === '/home' ? 'page' : undefined"
+          :class="{ active: item.path === '/home' }"
+          @click="handleNav(item.path, $event)"
+        >
+          <span class="icon" v-html="icons[item.icon] || icons.file"></span>
+          {{ item.name }}
+        </a>
+      </details>
+    </nav>
+
+    <div class="brand-bottom">
+      <p>“REAL ESTATE<br>CREATES FREEDOM.”</p>
+      <span>HUSHHAWK • BUILT TO CLOSE</span>
+      <small>Jacksonville Command v4.0</small>
+    </div>
+  </aside>
+
+  <!-- Main Workspace -->
+  <main class="workspace command">
+    <div class="topbar">
+      <button class="mobile-menu" @click="navOpen = !navOpen" :aria-expanded="navOpen">
+        <span v-html="icons.sliders"></span>
+      </button>
+
+      <label class="global-search">
       <span class="icon" v-html="icons.search"></span>
       <input
         v-model="query"
@@ -123,15 +173,31 @@
  <section class="pulse"><div class="pulse-heading"><strong><i></i> CAPITAL DESK</strong><div class="feed-tabs"><button :class="{active:feedMode==='deals'}" @click="!isEditing&&(feedMode='deals')">Deal Pulse</button><button :class="{active:feedMode==='markets'}" @click="!isEditing&&(feedMode='markets')">Market Watch</button></div><span v-if="feedMode==='deals'">LIVE CRM SIGNALS</span><button v-if="feedMode==='deals'" @click="!isEditing&&(paused=!paused)" :aria-pressed="paused">{{paused?'Resume':'Pause'}}</button></div><div class="tape-window" v-show="feedMode==='deals'"><div class="tape" :class="{paused}"><span v-for="(item,i) in signalTape" :key="i" :aria-hidden="i>=signalsCount"><b>{{item.code}}</b> {{item.label}} <strong>{{item.value}}</strong><em>▲ {{item.change}}</em></span></div></div></section>
  <section class="market-tape" v-show="feedMode==='markets'"><div class="market-label"><b>MARKET WATCH</b><span>External quotes · timing varies by exchange</span><a href="https://www.tradingview.com/markets/" target="_blank" rel="noopener noreferrer">TradingView ↗</a></div><div ref="marketHost" class="tradingview-widget-container"><div class="market-placeholder">{{marketError?'Market feed unavailable. Open TradingView ↗':'Loading market quotes…'}}</div></div></section>
  <footer class="footer"><span>HUSHHAWK PROPERTY INTELLIGENCE</span><span>EXECUTE WITH PRECISION. CLOSE WITH CONFIDENCE.</span><span>JACKSONVILLE, FL</span></footer>
+  </main>
 </section>
 </template>
 <script>
 import {computed,ref,onMounted,onBeforeUnmount} from 'vue';
 import CountyMap from './components/CountyMap.vue';
 import { icons } from '../../element-f1b67d54-2716-43a4-a414-ab7f505c2ace/src/icons.js';
+import { navigation } from '../../element-f1b67d54-2716-43a4-a414-ab7f505c2ace/src/navigation.js';
 export default {components:{CountyMap},props:{uid:{type:String,required:true},content:{type:Object,required:true},},setup(props){
 const uid=computed(()=>props.uid||'dashboard');
 const isEditing=computed(()=>{return false;});
+const navOpen=ref(false);
+const primaryNavigation=computed(()=>navigation.slice(0, 11));
+const secondaryNavigation=computed(()=>navigation.slice(11));
+function handleNav(path, e) {
+  if (isEditing.value) {
+    if (e) e.preventDefault();
+    return;
+  }
+  isQuickAddOpen.value = false;
+  navOpen.value = false;
+  if (path === '/home' || (typeof window !== 'undefined' && path === window.location.pathname)) {
+    if (e) e.preventDefault();
+  }
+}
 const heroStyle=computed(()=>({backgroundImage:'linear-gradient(90deg,#06182ef5 0%,#06182ede 36%,#06182e20 76%),url("'+(props.content?.skyline||'')+'")'}));
 const feedMode=ref('markets');const query=ref(''),zip=ref(''),checked=ref([]),draft=ref(''),draftStatus=ref(''),paused=ref(false),activeEmail=ref(null),clock=ref(''),marketHost=ref(null),marketError=ref(false);let timer,marketTimer;
 const isQuickAddOpen=ref(false),isNotifOpen=ref(false),currentTime=ref('09:42 AM');
@@ -272,10 +338,222 @@ onBeforeUnmount(()=>{
   }
   if(marketHost.value)marketHost.value.innerHTML='';
 });
-return{icons,uid,feedMode,isEditing,heroStyle,metrics,query,zip,checked,tasks,imports,filteredLeads,stages,stageColors,sources,emails,activeEmail,chooseEmail,draft,draftStatus,saveDraft,paused,signals,signalTape,signalsCount,clock,marketHost,marketError,onZip,clearZip,guard,isQuickAddOpen,isNotifOpen,currentTime};
+return{icons,uid,feedMode,isEditing,heroStyle,metrics,query,zip,checked,tasks,imports,filteredLeads,stages,stageColors,sources,emails,activeEmail,chooseEmail,draft,draftStatus,saveDraft,paused,signals,signalTape,signalsCount,clock,marketHost,marketError,onZip,clearZip,guard,isQuickAddOpen,isNotifOpen,currentTime,navOpen,primaryNavigation,secondaryNavigation,handleNav};
 }};
 </script>
 <style scoped>
+.hushhawk-command-center {
+  display: grid !important;
+  grid-template-columns: 210px minmax(0, 1fr) !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  background: #04182d;
+  color: #f8fafc;
+  font-family: 'Plus Jakarta Sans', Arial, sans-serif;
+  line-height: 1.4;
+  min-height: 100vh;
+}
+
+.hushhawk-command-center * {
+  box-sizing: border-box;
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.icon :deep(svg), .brand-icon :deep(svg), .identity-logo :deep(svg) {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Sidebar Styling */
+.sidebar {
+  width: 210px !important;
+  min-width: 210px !important;
+  max-width: 210px !important;
+  background: radial-gradient(circle at 85% 0%, #075199 0%, transparent 25%),
+              linear-gradient(180deg, #08274a, #041a33 80%);
+  border-right: 1px solid #23568a;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  box-sizing: border-box;
+  z-index: 50;
+}
+
+.brand {
+  height: 182px;
+  min-height: 182px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  color: white !important;
+  text-decoration: none;
+  border-bottom: 1px solid #1b4a78;
+  padding: 15px 8px 12px;
+  text-align: center;
+}
+
+.brand-icon {
+  display: block;
+  width: 98px;
+  height: 92px;
+  filter: drop-shadow(0 3px 6px #001528);
+}
+
+.brand strong {
+  font-size: 15px;
+  font-weight: 850;
+  line-height: 1.04;
+  margin-top: 6px;
+  color: #f8fafc;
+  letter-spacing: 0.05em;
+}
+
+.brand small {
+  font-size: 5.5px;
+  letter-spacing: 1px;
+  margin-top: 7px;
+  color: #94a3b8;
+}
+
+.sidebar nav {
+  padding: 8px 6px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sidebar nav a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 10px;
+  min-height: 34px;
+  font-size: 11.5px;
+  color: #e2e8f0;
+  text-decoration: none;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+
+.sidebar nav a:hover {
+  background-color: rgba(43, 111, 166, 0.25);
+  color: #f8fafc;
+}
+
+.sidebar nav a.active {
+  background: linear-gradient(130deg, rgba(255, 240, 171, 0.15), #d4ac47 55%, #a07d2d);
+  border-color: #edce81;
+  box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.4), 0 0 12px rgba(229, 198, 106, 0.25);
+  color: #fff;
+  font-weight: 700;
+}
+
+.sidebar nav .icon {
+  width: 17px;
+  height: 17px;
+  color: #cbd5e1;
+}
+
+.sidebar nav a.active .icon {
+  color: #ffffff;
+}
+
+.sidebar .more-workspaces {
+  margin: 6px 0 0 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 6px;
+}
+
+.sidebar .more-workspaces summary {
+  cursor: pointer;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #edcf7c;
+  padding: 6px 10px;
+  font-weight: 700;
+}
+
+.brand-bottom {
+  text-align: center;
+  padding: 10px;
+  color: #e4d39b;
+  border-top: 1px solid #1b4a78;
+}
+
+.brand-bottom p {
+  font-size: 8.5px;
+  letter-spacing: 1.5px;
+  line-height: 1.6;
+  margin: 0 0 4px;
+  font-weight: 700;
+}
+
+.brand-bottom span {
+  font-size: 7px;
+  letter-spacing: 1px;
+  color: #cbd5e1;
+}
+
+.brand-bottom small {
+  display: block;
+  font-size: 8px;
+  margin-top: 6px;
+  color: #64748b;
+}
+
+.workspace {
+  min-width: 0 !important;
+  flex: 1 1 0% !important;
+  background: radial-gradient(ellipse at 55% 0%, #123965, #061c34 65%, #04182d);
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+.mobile-menu {
+  display: none;
+  background: transparent;
+  border: none;
+  color: #cbd5e1;
+  cursor: pointer;
+}
+
+@media (max-width: 860px) {
+  .hushhawk-command-center {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+  .sidebar {
+    display: none;
+  }
+  .nav-open .sidebar {
+    display: flex;
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.8);
+  }
+  .mobile-menu {
+    display: block;
+  }
+}
+
 .command{--navy:var(--702de9b1-4d57-47c9-8102-295901b861fa,#0A1128);--white:var(--1a7bb57f-a485-47e0-8fed-98ad7f553b6c,#fff);background:radial-gradient(ellipse at 40% 0%,#103862 0%,#051a30 55%,#041427 100%);color:var(--white);font-family:'Plus Jakarta Sans',Arial,sans-serif;width:100%;min-width:0;container-type:inline-size;padding:0 10px 7px;box-sizing:border-box}
 .command *{box-sizing:border-box}.command a{text-decoration:none;color:#65c9ff}.command button,.command input{font:inherit}.command button,.command a{cursor:pointer}.command button:focus-visible,.command a:focus-visible,.command input:focus-visible{outline:2px solid #f5cf72;outline-offset:2px}.command button:disabled{cursor:default;opacity:.5}
 .command :deep(svg), .command :deep(.svg-icon){display:block;width:100%;height:100%}
