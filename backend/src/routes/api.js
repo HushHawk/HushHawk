@@ -1372,3 +1372,333 @@ apiRouter.delete('/contacts/:id', (req, res) => {
     }
 });
 
+
+
+// --- Skip Tracing ---
+apiRouter.get('/skip-tracing', (req, res) => {
+    try {
+        const traces = db.data.crm.skip_traces || [];
+        res.json({ total: traces.length, traces });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+apiRouter.post('/skip-tracing', (req, res) => {
+    try {
+        const { ownerName, address, zip, mailingAddress, phone, email, notes } = req.body;
+        if (!ownerName) return res.status(400).json({ error: 'Owner name is required' });
+
+        const traceId = 't-' + Date.now();
+        const newTrace = {
+            id: traceId,
+            ownerName,
+            age: 55,
+            deceased: false,
+            address: address || 'Jacksonville, FL',
+            zip: zip || '32208',
+            mailingAddress: mailingAddress || address || 'Jacksonville, FL',
+            score: 95,
+            primaryPhone: phone || '(904) 555-' + Math.floor(1000 + Math.random() * 9000),
+            phoneType: 'Mobile (Verizon Wireless)',
+            carrier: 'Verizon Wireless',
+            dncStatus: 'Clean / Safe',
+            dncClass: 'status-clean',
+            email: email || 'owner@example.com',
+            bankruptcy: false,
+            liens: '$0 recorded',
+            tier: 'Tier 1 Gold',
+            tierClass: 'tier-gold',
+            matchType: 'Single Owner Verified',
+            created_at: new Date().toISOString()
+        };
+
+        if (!db.data.crm.skip_traces) db.data.crm.skip_traces = [];
+        db.data.crm.skip_traces.unshift(newTrace);
+        db.persist();
+
+        res.status(201).json(newTrace);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// --- Facebook Leads ---
+apiRouter.get('/facebook-leads', (req, res) => {
+    try {
+        const leads = db.data.crm.facebook_leads || [];
+        res.json({ total: leads.length, leads });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+apiRouter.post('/facebook-leads', (req, res) => {
+    try {
+        const { name, phone, email, address, campaign, timeframe, askingPrice, reason } = req.body;
+        if (!name) return res.status(400).json({ error: 'Name is required' });
+
+        const leadId = Date.now();
+        const newLead = {
+            id: leadId,
+            name,
+            phone: phone || '(904) 555-0100',
+            email: email || 'lead@example.com',
+            address: address || 'Jacksonville, FL',
+            parcelId: 'DUV-' + Math.floor(100000 + Math.random() * 900000) + '-0000',
+            campaign: campaign || 'Duval Inherited & Probate',
+            motivationScore: 88,
+            motivationClass: 'score-hot',
+            stage: 'New Ingested',
+            submittedTime: 'Just now',
+            askingPrice: Number(askingPrice) || 120000,
+            arv: 240000,
+            timeframe: timeframe || 'Immediately (under 14 days)',
+            reason: reason || 'Inherited vacant house. Needs cosmetic updates.',
+            notes: 'Created from Facebook Leads Command Center.',
+            created_at: new Date().toISOString()
+        };
+
+        if (!db.data.crm.facebook_leads) db.data.crm.facebook_leads = [];
+        db.data.crm.facebook_leads.unshift(newLead);
+        db.persist();
+
+        res.status(201).json(newLead);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// --- Follow Ups ---
+apiRouter.get('/follow-ups', (req, res) => {
+    try {
+        const followUps = db.data.crm.follow_ups || [];
+        res.json({ total: followUps.length, followUps });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+apiRouter.post('/follow-ups', (req, res) => {
+    try {
+        const { seller, address, phone, cadenceStage, motivation, channel, lastOffer, arv, notes } = req.body;
+        if (!seller && !address) return res.status(400).json({ error: 'Seller or address is required' });
+
+        const followUpId = Date.now();
+        const newFollowUp = {
+            id: followUpId,
+            seller: seller || 'Property Owner',
+            address: address || 'Jacksonville, FL',
+            parcelId: 'DUV-' + Math.floor(100000 + Math.random() * 900000) + '-0000',
+            phone: phone || '(904) 555-0100',
+            email: 'seller@example.com',
+            cadenceStage: cadenceStage || 'Day 1 Post-Offer',
+            motivation: motivation || 'Hot',
+            channel: channel || 'Call',
+            lastOffer: Number(lastOffer) || 110000,
+            arv: Number(arv) || 240000,
+            dueDate: 'Today',
+            dueUrgency: 'urgent',
+            activityCount: 1,
+            assignedRep: 'Marcus Vance',
+            repInitials: 'MV',
+            notes: notes || 'Cadence follow-up established.',
+            created_at: new Date().toISOString()
+        };
+
+        if (!db.data.crm.follow_ups) db.data.crm.follow_ups = [];
+        db.data.crm.follow_ups.unshift(newFollowUp);
+        db.persist();
+
+        res.status(201).json(newFollowUp);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// --- Direct Mail ---
+apiRouter.get('/direct-mail', (req, res) => {
+    try {
+        const directMail = db.data.crm.direct_mail || [];
+        res.json({ total: directMail.length, mailBatches: directMail });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+apiRouter.post('/direct-mail', (req, res) => {
+    try {
+        const { name, audience, zips, format, quantity, dropDate } = req.body;
+        if (!name) return res.status(400).json({ error: 'Batch name is required' });
+
+        const batchId = Date.now();
+        const batchCode = 'DM-2026-B' + Math.floor(109 + Math.random() * 50);
+        const qty = Number(quantity) || 2500;
+        const cost = Math.round(qty * 0.44);
+
+        const newBatch = {
+            id: batchId,
+            batchCode,
+            name,
+            audience: audience || 'Duval County High Equity Absentee',
+            zips: zips || '32208, 32209',
+            format: format || '4x6 Postcard',
+            quantity: qty,
+            cost,
+            calls: 0,
+            responseRate: '0.00',
+            status: 'In Production',
+            statusClass: 'status-prod',
+            dropDate: dropDate || new Date().toISOString().split('T')[0],
+            created_at: new Date().toISOString()
+        };
+
+        if (!db.data.crm.direct_mail) db.data.crm.direct_mail = [];
+        db.data.crm.direct_mail.unshift(newBatch);
+        db.persist();
+
+        res.status(201).json(newBatch);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// --- County Records ---
+apiRouter.get('/county-records', (req, res) => {
+    try {
+        const records = db.data.crm.county_records || [];
+        res.json({ total: records.length, records });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// --- Communications ---
+apiRouter.get('/communications', (req, res) => {
+    try {
+        const threads = db.data.crm.communications || [];
+        res.json({ total: threads.length, threads });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+apiRouter.post('/communications/messages', (req, res) => {
+    try {
+        const { threadId, text } = req.body;
+        if (!text) return res.status(400).json({ error: 'Message text is required' });
+
+        const threads = db.data.crm.communications || [];
+        const thread = threads.find(t => t.id === threadId || t.id === Number(threadId));
+        if (thread) {
+            if (!thread.messages) thread.messages = [];
+            thread.messages.push({
+                sender: 'rep',
+                name: 'Marcus Vance (HushHawk)',
+                text,
+                time: 'Just now'
+            });
+            thread.lastMessage = text;
+            thread.time = 'Just now';
+            db.persist();
+            return res.status(201).json(thread);
+        }
+        res.status(404).json({ error: 'Thread not found' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// --- Calendar Events ---
+apiRouter.get('/calendar', (req, res) => {
+    try {
+        const events = db.data.crm.calendar_events || [];
+        res.json({ total: events.length, events });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+apiRouter.post('/calendar', (req, res) => {
+    try {
+        const { title, type, date, time, address, rep, notes } = req.body;
+        if (!title) return res.status(400).json({ error: 'Title is required' });
+
+        const eventId = Date.now();
+        const dateObj = new Date(date || Date.now());
+        const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const dateString = dayNames[dateObj.getDay()] + ', ' + monthNames[dateObj.getMonth()] + ' ' + dateObj.getDate();
+
+        const newEvent = {
+            id: eventId,
+            date: date || new Date().toISOString().split('T')[0],
+            dayNum: String(dateObj.getDate()),
+            dateString,
+            time: time || '10:00 AM',
+            title,
+            address: address || 'Jacksonville, FL',
+            parcel: 'DUV-' + Math.floor(100000 + Math.random() * 900000) + '-0000',
+            type: type || 'Seller Walkthrough',
+            rep: rep || 'Marcus Vance',
+            notes: notes || 'Scheduled inspection/walkthrough.',
+            completed: false,
+            created_at: new Date().toISOString()
+        };
+
+        if (!db.data.crm.calendar_events) db.data.crm.calendar_events = [];
+        db.data.crm.calendar_events.unshift(newEvent);
+        db.persist();
+
+        res.status(201).json(newEvent);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// --- Team Members ---
+apiRouter.get('/team', (req, res) => {
+    try {
+        const members = db.data.crm.team_members || [];
+        res.json({ total: members.length, members });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+apiRouter.post('/team', (req, res) => {
+    try {
+        const { name, title, department, email, phone, accessLevel } = req.body;
+        if (!name) return res.status(400).json({ error: 'Member name is required' });
+
+        const memberId = 'tm-' + Date.now();
+        const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+
+        const newMember = {
+            id: memberId,
+            name,
+            initials,
+            avatarBg: 'linear-gradient(135deg, #38bdf8, #0284c7)',
+            title: title || 'Acquisitions Specialist',
+            department: department || 'Acquisitions',
+            accessLevel: accessLevel || 'Standard User',
+            tier: 'Tier 1 Specialist',
+            email: email || 'member@hushhawk.com',
+            phone: phone || '(904) 555-0100',
+            status: 'Active',
+            statusClass: 'status-active',
+            dealsAssigned: 0,
+            volumeMTD: '$0',
+            conversionRate: '0%',
+            created_at: new Date().toISOString()
+        };
+
+        if (!db.data.crm.team_members) db.data.crm.team_members = [];
+        db.data.crm.team_members.unshift(newMember);
+        db.persist();
+
+        res.status(201).json(newMember);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});

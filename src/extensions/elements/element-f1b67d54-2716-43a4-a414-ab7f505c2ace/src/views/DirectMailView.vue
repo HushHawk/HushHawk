@@ -326,7 +326,23 @@ export default {
       });
     }
   },
+
+  mounted() {
+    this.loadDirectMail();
+  },
   methods: {
+    async loadDirectMail() {
+      try {
+        const res = await fetch('/api/v1/direct-mail');
+        const data = await res.json();
+        if (data.mailBatches && data.mailBatches.length > 0) {
+          this.mailBatches = data.mailBatches;
+        }
+      } catch (err) {
+        console.warn('[DirectMail] Using local cache:', err.message);
+      }
+    },
+
     showToast(title, message, type = 'info') {
       if (typeof window !== 'undefined') {
         if (window.showHushHawkToast) {

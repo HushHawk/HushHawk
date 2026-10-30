@@ -658,7 +658,24 @@ export default {
       this.selectedMember = this.members[0];
     }
   },
+
+  mounted() {
+    this.loadTeamMembers();
+  },
   methods: {
+    async loadTeamMembers() {
+      try {
+        const res = await fetch('/api/v1/team');
+        const data = await res.json();
+        if (data.members && data.members.length > 0) {
+          this.members = data.members;
+          if (!this.selectedMember) this.selectedMember = data.members[0];
+        }
+      } catch (err) {
+        console.warn('[Team] Using local cache:', err.message);
+      }
+    },
+
     selectMember(member) {
       this.selectedMember = member;
     },

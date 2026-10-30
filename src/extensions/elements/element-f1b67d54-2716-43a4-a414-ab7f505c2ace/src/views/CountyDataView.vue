@@ -232,7 +232,7 @@
 </template>
 
 <script>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { icons } from '../icons.js';
 
 export default {
@@ -245,6 +245,26 @@ export default {
       { label: 'Pre-Foreclosure / Lis Pendens', value: '842', change: '+15%', icon: 'file' },
       { label: 'Ready for Skip Trace', value: '5,240', change: '+22%', icon: 'search' }
     ];
+
+    
+    const API_BASE = '/api/v1';
+
+    async function loadCountyRecords() {
+      try {
+        const res = await fetch(API_BASE + '/county-records');
+        const data = await res.json();
+        if (data.records && data.records.length > 0) {
+          records.value = data.records;
+          if (!selectedRecord.value) selectedRecord.value = data.records[0];
+        }
+      } catch (err) {
+        console.warn('[CountyData] Using local cache:', err.message);
+      }
+    }
+
+    onMounted(() => {
+      loadCountyRecords();
+    });
 
     const records = ref([
       {

@@ -399,7 +399,24 @@ export default {
       });
     }
   },
+
+  mounted() {
+    this.loadFacebookLeads();
+  },
   methods: {
+    async loadFacebookLeads() {
+      try {
+        const res = await fetch('/api/v1/facebook-leads');
+        const data = await res.json();
+        if (data.leads && data.leads.length > 0) {
+          this.leads = data.leads;
+          if (!this.selectedLead) this.selectedLead = data.leads[0];
+        }
+      } catch (err) {
+        console.warn('[FacebookLeads] Using local cache:', err.message);
+      }
+    },
+
     getScoreClass(score) {
       if (score >= 85) return 'hot';
       if (score >= 70) return 'warm';
