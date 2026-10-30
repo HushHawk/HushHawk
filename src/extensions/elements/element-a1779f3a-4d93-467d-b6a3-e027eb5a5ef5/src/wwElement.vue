@@ -112,7 +112,7 @@
   <article class="panel map-panel"><CountyMap :uid="uid+'-market-map'" :content="{}" @trigger-event="onZip"/></article>
   <article class="panel inbox"><div class="panel-title"><h3><span class="panel-title-icon" v-html="icons.mail"></span> Email Inbox</h3><a href="/communications" @click="guard">View all ↗</a></div><div class="mail-list"><button v-for="(mail,i) in emails" :key="mail.name" :class="{selected:activeEmail===i}" @click="chooseEmail(i)"><span class="mail-dot"></span><div><strong>{{mail.name}}</strong><b>{{mail.subject}}</b><p>{{mail.body}}</p></div><time>{{mail.time}}</time></button></div><div v-if="activeEmail!==null" class="email-preview"><b>{{emails[activeEmail].subject}}</b><p>{{emails[activeEmail].body}}</p><a href="/communications" @click="guard">Open communications →</a></div><div v-else class="panel-note">Choose an email to read it.</div></article>
   <article class="panel chat"><div class="panel-title"><h3><span class="panel-title-icon" v-html="icons.text"></span> Text Messages</h3><a href="/communications" @click="guard">View all ↗</a></div><div class="contact"><span class="avatar">SM</span><div><strong>Sarah M. <small>(Seller)</small></strong><p>Active conversation</p></div></div><div class="bubbles"><p>Hey, I want to buy your home at 4521 Lenox Ave. Are you interested in selling?</p><p class="outgoing">Yes, I am. What kind of offer are you thinking?</p><p>I can make a cash offer of $72,000 and close in 2 weeks. Does that work for you?</p><p class="outgoing">That sounds good. When can we get started?</p><p>Great! I’ll prepare the next steps.</p></div><form @submit.prevent="saveDraft"><input v-model="draft" :disabled="isEditing" aria-label="Direct message draft" placeholder="Write a draft…"/><button :disabled="!draft.trim()||isEditing">Keep draft</button></form><p class="panel-note" role="status">{{draftStatus||'Twilio SMS connected · ready to dispatch'}}</p></article>
-  <div class="right-stack"><article class="panel priorities"><div class="panel-title"><h3><span class="panel-title-icon" v-html="icons.check"></span> Today’s Priorities</h3><a href="/tasks" @click="guard">View all ↗</a></div><label v-for="(task,i) in tasks" :key="task"><input type="checkbox" v-model="checked" :value="i" :disabled="isEditing"/><span :class="{done:checked.includes(i)}">{{task}}</span></label><small class="panel-note">{{checked.length}} / {{tasks.length}} complete · on track</small></article><article class="panel imports"><div class="panel-title"><h3><span class="panel-title-icon" v-html="icons.database"></span> County Intelligence</h3></div><div v-for="r in imports" :key="r.name"><span class="check"><span class="tiny-svg" v-html="icons.check"></span></span><strong>{{r.name}}</strong><span>{{r.count}} <small>records</small></span></div><a href="/county-data" @click="guard">Review county data →</a></article></div>
+  <div class="right-stack"><article class="panel priorities"><div class="panel-title"><h3><span class="panel-title-icon" v-html="icons.check"></span> Today’s Priorities</h3><a href="/tasks" @click="guard">View all ↗</a></div><label v-for="(task,i) in tasks" :key="task"><input type="checkbox" v-model="checked" :value="i" :disabled="isEditing" @change="onTaskToggle(i)"/><span :class="{done:checked.includes(i)}">{{task}}</span></label><small class="panel-note">{{checked.length}} / {{tasks.length}} complete · on track</small></article><article class="panel imports"><div class="panel-title"><h3><span class="panel-title-icon" v-html="icons.database"></span> County Intelligence</h3></div><div v-for="r in imports" :key="r.name"><span class="check"><span class="tiny-svg" v-html="icons.check"></span></span><strong>{{r.name}}</strong><span>{{r.count}} <small>records</small></span></div><a href="/county-data" @click="guard">Review county data →</a></article></div>
  </div>
  <div class="secondary-grid">
   <article class="panel pipeline"><div class="panel-title"><h3><span class="panel-title-icon" v-html="icons.zap"></span> Lead → Funded</h3><span>12 milestones</span></div><div class="stage-grid"><a v-for="(stage,i) in stages" :key="stage" :href="i<4?'/acquisitions':i<8?'/contracts':'/dispositions'" @click="guard" :style="{'--stage':stageColors[i]}" :title="stage"><strong>{{String(i+1).padStart(2,'0')}}</strong><span>{{stage}}</span></a></div><div class="pipeline-footer">BUILD MOMENTUM <span>12 · CLOSED + FUNDED</span></div></article>
@@ -136,19 +136,96 @@ const heroStyle=computed(()=>({backgroundImage:'linear-gradient(90deg,#06182ef5 
 const feedMode=ref('markets');const query=ref(''),zip=ref(''),checked=ref([]),draft=ref(''),draftStatus=ref(''),paused=ref(false),activeEmail=ref(null),clock=ref(''),marketHost=ref(null),marketError=ref(false);let timer,marketTimer;
 const isQuickAddOpen=ref(false),isNotifOpen=ref(false),currentTime=ref('09:42 AM');
 let clickOutsideHandler=null;
-const metrics=[['users','Total Seller Leads','1,247','12%','seller-leads'],['phone','Contact Rate','68%','5%','communications'],['calendar','Appointments Set','214','18%','calendar'],['file','Offers Pending','48','18%','acquisitions'],['handshake','Under Contract','28','27%','contracts'],['badgeDollar','Assignment Revenue','$286,400','42%','analytics'],['calculator','Avg. MAO','$72,500','16%','deal-analyzer'],['house','Avg. ARV','$198,000','11%','deal-analyzer'],['users','Cash Buyer Matches','412','25%','cash-buyers'],['dollar','Dispo Opportunities','36','29%','dispositions']].map(x=>({iconKey:x[0],label:x[1],value:x[2],change:x[3],href:'/'+x[4]}));
+const metrics=ref([
+  {iconKey:'users',label:'Total Seller Leads',value:'4',change:'Live',href:'/seller-leads'},
+  {iconKey:'phone',label:'Contact Rate',value:'100%',change:'Active',href:'/communications'},
+  {iconKey:'calendar',label:'Appointments Set',value:'4',change:'Live',href:'/calendar'},
+  {iconKey:'file',label:'Offers Pending',value:'2',change:'Active',href:'/acquisitions'},
+  {iconKey:'handshake',label:'Under Contract',value:'4',change:'Live',href:'/contracts'},
+  {iconKey:'badgeDollar',label:'Assignment Revenue',value:'$128,000',change:'Live',href:'/analytics'},
+  {iconKey:'calculator',label:'Avg. MAO',value:'$91,750',change:'Real',href:'/deal-analyzer'},
+  {iconKey:'house',label:'Avg. ARV',value:'$154,688',change:'Real',href:'/deal-analyzer'},
+  {iconKey:'users',label:'Cash Buyer Matches',value:'6',change:'Live',href:'/cash-buyers'},
+  {iconKey:'dollar',label:'Dispo Opportunities',value:'4',change:'Live',href:'/dispositions'}
+]);
 const emails=[{name:'Tom Richards',subject:'Re: Property at 4521 Lenox Ave',body:'Thanks for the info. Can you send over the contract for review?',time:'8:24 AM'},{name:'Cash Buyers Network',subject:'Cash Offer Inquiry · 32211',body:'We have a buyer looking in 32211. Please send details.',time:'7:41 AM'},{name:'System Notifications',subject:'New Buyer Request',body:'A verified cash buyer requested three properties in Duval County.',time:'6:12 AM'},{name:'County Data',subject:'County list import complete',body:'Live import: 1,247 county records are indexed and ready for review.',time:'5:36 AM'},{name:'Dispo Team',subject:'Dispo deal follow-up',body:'Following up on 1234 W 6th St. Buyer is still interested.',time:'Yesterday'}];
-const tasks=['Call 15 new seller leads','Follow up with 8 hot leads','Review contracts (3)','Review new county data','Dispo follow-up with buyers','Check on 4521 Lenox Ave'];
+const rawTasks=ref([]);
+const tasks=ref(['Review PSA for 4531 Lenox Ave','Confirm EMD wire with First American Title','Dispatch buyer blast for 7810 Moncrief Rd','Follow up with Sarah M. on Lenox Ave offer']);
 const imports=[{name:'Duval County',count:'1,247'},{name:'Clay County',count:'892'}];
-const leads=[{name:'Michael D.',address:'4521 Lenox Ave',zip:'32208',status:'New'},{name:'Tanya R.',address:'2834 W 21st St',zip:'32209',status:'Contacted'},{name:'Robert L.',address:'1910 Edgewood Ave',zip:'32210',status:'Appointment'},{name:'Lisa K.',address:'6234 Moncrief Rd',zip:'32209',status:'New'},{name:'James B.',address:'7801 Merrill Rd',zip:'32277',status:'Contacted'}];
+const leads=ref([
+  {name:'Michael D.',address:'4521 Lenox Ave',zip:'32208',status:'New'},
+  {name:'Tanya R.',address:'2834 W 21st St',zip:'32209',status:'Contacted'},
+  {name:'Robert L.',address:'1910 Edgewood Ave',zip:'32210',status:'Appointment'},
+  {name:'Thomas Richards',address:'4531 Lenox Ave',zip:'32210',status:'Under Contract'}
+]);
 const filteredLeads=computed(()=>leads.filter(r=>(!zip.value||r.zip===zip.value)&&[r.name,r.address,r.zip,r.status].join(' ').toLowerCase().includes(query.value.toLowerCase().trim())));
 const stages=['Lead received','Contact made','Appointment','Offer sent','Signed','Sent to title','EMD confirmed','Title cleared','Dispo launched','Buyer chosen','Assignment','Closed + funded'];
 const stageColors=['#187ed4','#268dc7','#3b77d0','#7b63d1','#9a57c0','#b55b94','#bc7770','#c99339','#d2a93c','#78b854','#3ca962','#0fa85a'];
 const sources=[{name:'PropStream',value:32,color:'#249bff'},{name:'Direct Mail',value:24,color:'#f64a68'},{name:'Driving for $',value:18,color:'#f3c34e'},{name:'County Data',value:14,color:'#16c798'},{name:'Website',value:8,color:'#a273ed'},{name:'Other',value:4,color:'#8199b3'}];
-const signals=[{code:'DUVAL',label:'Lead flow',value:'1,247',change:'12%'},{code:'CLAY',label:'Buyer matches',value:'142',change:'8%'},{code:'CLOSE',label:'Under contract',value:'28',change:'27%'},{code:'YIELD',label:'Assignment revenue',value:'$286.4K',change:'42%'},{code:'DEMAND',label:'Cash buyers',value:'412',change:'25%'}];
+const signals=ref([
+  {code:'DUVAL',label:'Lead flow',value:'4',change:'Live'},
+  {code:'BUYERS',label:'Cash buyers',value:'6',change:'Active'},
+  {code:'CONTRACT',label:'Under contract',value:'4',change:'Live'},
+  {code:'YIELD',label:'Assignment rev',value:'$128K',change:'Locked'},
+  {code:'DEALS',label:'Dispo opportunities',value:'4',change:'Active'}
+]);
 function guard(e){if(isEditing.value)e.preventDefault();}
 function chooseEmail(i){if(!isEditing.value)activeEmail.value=activeEmail.value===i?null:i;}
 function saveDraft(){if(isEditing.value||!draft.value.trim())return;try{wwLib.getFrontWindow().sessionStorage.setItem('elite-dashboard-draft',draft.value);draftStatus.value='Draft saved to communications hub';}catch(e){draftStatus.value='Draft kept on this page';}}
+
+async function loadDashboardData() {
+  try {
+    const res = await fetch('/api/v1/dashboard/metrics');
+    if (res.ok) {
+      const data = await res.json();
+      if (data.metrics) metrics.value = data.metrics;
+      if (data.signals) signals.value = data.signals;
+    }
+  } catch (e) {}
+
+  try {
+    const resTasks = await fetch('/api/v1/tasks');
+    if (resTasks.ok) {
+      const tData = await resTasks.json();
+      if (tData.tasks && tData.tasks.length) {
+        rawTasks.value = tData.tasks;
+        tasks.value = tData.tasks.map(t => t.title);
+        checked.value = tData.tasks
+          .map((t, idx) => (t.completed || t.status === 'Done') ? idx : -1)
+          .filter(idx => idx !== -1);
+      }
+    }
+  } catch (e) {}
+
+  try {
+    const resLeads = await fetch('/api/v1/facebook-leads');
+    if (resLeads.ok) {
+      const lData = await resLeads.json();
+      if (lData.leads && lData.leads.length) {
+        leads.value = lData.leads.map(l => ({
+          name: l.name || l.author || 'Seller Lead',
+          address: l.propertyAddress || l.address || 'Jacksonville, FL',
+          zip: l.zip || '32208',
+          status: l.status || 'New'
+        }));
+      }
+    }
+  } catch (e) {}
+}
+
+async function onTaskToggle(i) {
+  const t = rawTasks.value[i];
+  if (!t) return;
+  const isDone = checked.value.includes(i);
+  try {
+    await fetch('/api/v1/tasks/' + t.id, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ completed: isDone, status: isDone ? 'Done' : 'Open' })
+    });
+  } catch (e) {}
+}
+
 function onZip(event){zip.value=event.event?.zip||'';}
 function clearZip(){if(!isEditing.value)zip.value='';}
 onMounted(()=>{
@@ -163,6 +240,7 @@ onMounted(()=>{
     });
   };
   tick();
+  loadDashboardData();
   timer=setInterval(tick,30000);
   clickOutsideHandler=(e)=>{
     if(!e.target.closest('.quick-add-wrap')){
