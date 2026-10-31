@@ -216,16 +216,11 @@ const metrics=ref([
   {iconKey:'users',label:'Cash Buyer Matches',value:'6',change:'Live',href:'/cash-buyers'},
   {iconKey:'dollar',label:'Dispo Opportunities',value:'4',change:'Live',href:'/dispositions'}
 ]);
-const emails=[{name:'Tom Richards',subject:'Re: Property at 4521 Lenox Ave',body:'Thanks for the info. Can you send over the contract for review?',time:'8:24 AM'},{name:'Cash Buyers Network',subject:'Cash Offer Inquiry · 32211',body:'We have a buyer looking in 32211. Please send details.',time:'7:41 AM'},{name:'System Notifications',subject:'New Buyer Request',body:'A verified cash buyer requested three properties in Duval County.',time:'6:12 AM'},{name:'County Data',subject:'County list import complete',body:'Live import: 44 canonical records indexed in AWS RDS PostgreSQL.',time:'5:36 AM'},{name:'Dispo Team',subject:'Dispo deal follow-up',body:'Following up on 1234 W 6th St. Buyer is still interested.',time:'Yesterday'}];
+const emails=ref([]);
 const rawTasks=ref([]);
-const tasks=ref(['Review PSA for 4531 Lenox Ave','Confirm EMD wire with First American Title','Dispatch buyer blast for 7810 Moncrief Rd','Follow up with Sarah M. on Lenox Ave offer']);
+const tasks=ref([]);
 const imports=ref([{name:'Duval County',count:'44'},{name:'Clay County',count:'18'}]);
-const leads=ref([
-  {name:'Arthur Pendelton',address:'1428 River City Blvd',zip:'32204',status:'New'},
-  {name:'Beatrice Montgomery',address:'3819 San Jose Forest Dr',zip:'32217',status:'Contacted'},
-  {name:'James C. Halpert',address:'714 E 8th St',zip:'32206',status:'Appointment'},
-  {name:'Thomas Richards',address:'4531 Lenox Ave',zip:'32210',status:'Under Contract'}
-]);
+const leads=ref([]);
 const filteredLeads=computed(()=>(leads.value||[]).filter(r=>(!zip.value||r.zip===zip.value)&&[r.name,r.address,r.zip,r.status].join(' ').toLowerCase().includes(query.value.toLowerCase().trim())));
 const stages=['Lead received','Contact made','Appointment','Offer sent','Signed','Sent to title','EMD confirmed','Title cleared','Dispo launched','Buyer chosen','Assignment','Closed + funded'];
 const stageColors=['#187ed4','#268dc7','#3b77d0','#7b63d1','#9a57c0','#b55b94','#bc7770','#c99339','#d2a93c','#78b854','#3ca962','#0fa85a'];
@@ -264,6 +259,22 @@ async function loadDashboardData() {
         checked.value = tData.tasks
           .map((t, idx) => (t.completed || t.status === 'Done') ? idx : -1)
           .filter(idx => idx !== -1);
+      }
+    }
+  } catch (e) {}
+
+  try {
+    const resComm = await fetch('/api/v1/communications');
+    if (resComm.ok) {
+      const cData = await resComm.json();
+      const list = cData.communications || cData.messages || cData;
+      if (Array.isArray(list) && list.length) {
+        emails.value = list.filter(m => m.type === 'email' || m.channel === 'EMAIL' || !m.type).map(m => ({
+          name: m.sender || m.name || m.recipient || 'Lead',
+          subject: m.subject || 'Wholesale Inbound Inquiry',
+          body: m.content || m.body || m.preview || '...',
+          time: m.time || m.timestamp || 'Today'
+        }));
       }
     }
   } catch (e) {}
