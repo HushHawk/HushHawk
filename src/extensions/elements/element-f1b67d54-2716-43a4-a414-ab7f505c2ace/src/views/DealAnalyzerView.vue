@@ -14,6 +14,7 @@
           <span v-html="icons.refresh"></span>
           Reset Calculations
         </button>
+        <button class="btn btn-secondary" @click="saveAnalysis"><span v-html="icons.check || icons.file"></span>Save Analysis</button>
         <button class="btn btn-primary" @click="isExportModalOpen = true">
           <span v-html="icons.download"></span>
           Generate Buyer Deal One-Pager
@@ -299,6 +300,35 @@ export default {
         } else {
           window.dispatchEvent(new CustomEvent('hushhawk-toast', { detail: { title, message, type } }));
         }
+      }
+    },
+    async saveAnalysis() {
+      try {
+        const payload = {
+          address: this.property.address,
+          sqft: this.property.sqft,
+          bedsBaths: this.property.bedsBaths,
+          arv: this.arv,
+          investorDiscount: this.investorDiscount,
+          totalRehab: this.totalRehab,
+          targetWholesaleFee: this.targetWholesaleFee,
+          closingCostsBuffer: this.closingCostsBuffer,
+          investorPurchaseCeiling: this.investorPurchaseCeiling,
+          calculatedMAO: this.calculatedMAO
+        };
+        const res = await fetch('/api/v1/deal-analysis', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          const saved = await res.json();
+          this.showToast('Deal Analysis Saved', `Worksheet ${saved.id} stored to HushHawk pipeline database.`, 'success');
+        } else {
+          this.showToast('Save Failed', 'Could not persist deal analysis.', 'error');
+        }
+      } catch (err) {
+        this.showToast('Error', err.message, 'error');
       }
     },
     resetToDefaults() {

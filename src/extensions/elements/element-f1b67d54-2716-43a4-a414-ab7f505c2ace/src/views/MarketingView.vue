@@ -209,7 +209,7 @@
 </template>
 
 <script>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { icons } from '../icons.js';
 
 export default {
@@ -344,7 +344,75 @@ export default {
       c.status = c.status === 'Active' ? 'Paused' : 'Active';
     }
 
-    function saveNewCampaign() {
+    async function loadMarketing() {
+      try {
+        const res = await fetch('/api/v1/marketing');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.campaigns && data.campaigns.length > 0) {
+            campaigns.value = data.campaigns;
+          }
+        }
+      } catch (err) {
+        console.warn('[Marketing] Using local fallback:', err.message);
+      }
+    }
+
+    onMounted(() => {
+      loadMarketing();
+    });
+
+    async function saveNewCampaign() {
+      if (!newCampaign.value.name) return;
+      const payload = {
+        name: newCampaign.value.name,
+        channel: newCampaign.value.channel,
+        targetAudience: newCampaign.value.targetAudience || 'Target Jacksonville Homeowners',
+        budget: Number(newCampaign.value.budget) || 2500
+      };
+      try {
+        const res = await fetch('/api/v1/marketing', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          const created = await res.json();
+          campaigns.value.unshift(created);
+        } else {
+          campaigns.value.unshift({
+            id: 'm-' + Date.now(),
+            name: payload.name,
+            channel: payload.channel,
+            targetAudience: payload.targetAudience,
+            spend: payload.budget,
+            leads: 0,
+            cpl: 0,
+            contracts: 0,
+            roi: 0,
+            status: 'Active',
+            dateRange: 'Just Launched'
+          });
+        }
+      } catch (e) {
+        campaigns.value.unshift({
+          id: 'm-' + Date.now(),
+          name: payload.name,
+          channel: payload.channel,
+          targetAudience: payload.targetAudience,
+          spend: payload.budget,
+          leads: 0,
+          cpl: 0,
+          contracts: 0,
+          roi: 0,
+          status: 'Active',
+          dateRange: 'Just Launched'
+        });
+      }
+      showAddModal.value = false;
+    }
+
+    function _oldSaveNewCampaign() {
       if (!newCampaign.value.name) return;
       campaigns.value.unshift({
         id: 'm-' + Date.now(),
