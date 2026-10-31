@@ -168,7 +168,7 @@
   <div class="secondary-grid">
    <article class="panel pipeline"><div class="panel-title"><h3><span class="panel-title-icon" v-html="icons.zap"></span> Lead → Funded</h3><span>12 milestones</span></div><div class="stage-grid"><a v-for="(stage,i) in stages" :key="stage" :href="i<4?'/acquisitions':i<8?'/contracts':'/dispositions'" @click="guard" :style="{'--stage':stageColors[i]}" :title="stage"><strong>{{String(i+1).padStart(2,'0')}}</strong><span>{{stage}}</span></a></div><div class="pipeline-footer">BUILD MOMENTUM <span>12 · CLOSED + FUNDED</span></div></article>
    <article class="panel leads"><div class="panel-title"><h3><span class="panel-title-icon" v-html="icons.users"></span> Recent Seller Leads</h3><a href="/seller-leads" @click="guard">View all ↗</a></div><table><thead><tr><th>Name</th><th>Property</th><th>ZIP</th><th>Status</th></tr></thead><tbody><tr v-for="r in (filteredLeads || [])" :key="r.name"><td>{{r.name}}</td><td><a href="/seller-leads" @click="guard">{{r.address}}</a></td><td>{{r.zip}}</td><td><span :class="'status '+r.status">{{r.status}}</span></td></tr></tbody></table><p v-if="!((filteredLeads || []).length)" class="panel-note">No matching leads.</p><button v-if="zip" class="clear-filter" @click="clearZip">ZIP {{zip}} × Clear</button></article>
-   <article class="panel sources"><div class="panel-title"><h3><span class="panel-title-icon" v-html="icons.pieChart"></span> Lead Source Mix</h3><span>Live Ingestion</span></div><div class="source-body"><div class="donut"><div><strong>1,247</strong><small>Total leads</small></div></div><ul><li v-for="s in sources" :key="s.name"><i :style="{background:s.color}"></i><span>{{s.name}}</span><b>{{s.value}}%</b></li></ul></div></article>
+   <article class="panel sources"><div class="panel-title"><h3><span class="panel-title-icon" v-html="icons.pieChart"></span> Lead Source Mix</h3><span>Live Ingestion</span></div><div class="source-body"><div class="donut"><div><strong>{{ metrics[0]?.value || '44' }}</strong><small>Total leads</small></div></div><ul><li v-for="s in sources" :key="s.name"><i :style="{background:s.color}"></i><span>{{s.name}}</span><b>{{s.value}}%</b></li></ul></div></article>
    <article class="panel analyzer"><div class="panel-title"><h3><span class="panel-title-icon" v-html="icons.calculator"></span> Deal Snapshot</h3><a href="/deal-analyzer" @click="guard">Analyze ↗</a></div><strong class="property">4521 Lenox Ave</strong><p>Jacksonville, FL 32208</p><dl><div><dt>After-repair value</dt><dd>$198,000</dd></div><div><dt>Estimated repairs</dt><dd>$35,000</dd></div><div><dt>Purchase price</dt><dd>$72,000</dd></div></dl><div class="profit"><span>Illustrative spread*</span><strong>$91,000</strong></div><small>*ARV − purchase − repairs; before fees &amp; costs.</small></article>
   </div>
   <section class="pulse"><div class="pulse-heading"><strong><i></i> CAPITAL DESK</strong><div class="feed-tabs"><button :class="{active:feedMode==='deals'}" @click="!isEditing&&(feedMode='deals')">Deal Pulse</button><button :class="{active:feedMode==='markets'}" @click="!isEditing&&(feedMode='markets')">Market Watch</button></div><span v-if="feedMode==='deals'">LIVE CRM SIGNALS</span><button v-if="feedMode==='deals'" @click="!isEditing&&(paused=!paused)" :aria-pressed="paused">{{paused?'Resume':'Pause'}}</button></div><div class="tape-window" v-show="feedMode==='deals'"><div class="tape" :class="{paused}"><span v-for="(item,i) in signalTape" :key="i" :aria-hidden="i>=signalsCount"><b>{{item.code}}</b> {{item.label}} <strong>{{item.value}}</strong><em>▲ {{item.change}}</em></span></div></div></section>
@@ -216,22 +216,22 @@ const metrics=ref([
   {iconKey:'users',label:'Cash Buyer Matches',value:'6',change:'Live',href:'/cash-buyers'},
   {iconKey:'dollar',label:'Dispo Opportunities',value:'4',change:'Live',href:'/dispositions'}
 ]);
-const emails=[{name:'Tom Richards',subject:'Re: Property at 4521 Lenox Ave',body:'Thanks for the info. Can you send over the contract for review?',time:'8:24 AM'},{name:'Cash Buyers Network',subject:'Cash Offer Inquiry · 32211',body:'We have a buyer looking in 32211. Please send details.',time:'7:41 AM'},{name:'System Notifications',subject:'New Buyer Request',body:'A verified cash buyer requested three properties in Duval County.',time:'6:12 AM'},{name:'County Data',subject:'County list import complete',body:'Live import: 1,247 county records are indexed and ready for review.',time:'5:36 AM'},{name:'Dispo Team',subject:'Dispo deal follow-up',body:'Following up on 1234 W 6th St. Buyer is still interested.',time:'Yesterday'}];
+const emails=[{name:'Tom Richards',subject:'Re: Property at 4521 Lenox Ave',body:'Thanks for the info. Can you send over the contract for review?',time:'8:24 AM'},{name:'Cash Buyers Network',subject:'Cash Offer Inquiry · 32211',body:'We have a buyer looking in 32211. Please send details.',time:'7:41 AM'},{name:'System Notifications',subject:'New Buyer Request',body:'A verified cash buyer requested three properties in Duval County.',time:'6:12 AM'},{name:'County Data',subject:'County list import complete',body:'Live import: 44 canonical records indexed in AWS RDS PostgreSQL.',time:'5:36 AM'},{name:'Dispo Team',subject:'Dispo deal follow-up',body:'Following up on 1234 W 6th St. Buyer is still interested.',time:'Yesterday'}];
 const rawTasks=ref([]);
 const tasks=ref(['Review PSA for 4531 Lenox Ave','Confirm EMD wire with First American Title','Dispatch buyer blast for 7810 Moncrief Rd','Follow up with Sarah M. on Lenox Ave offer']);
-const imports=[{name:'Duval County',count:'1,247'},{name:'Clay County',count:'892'}];
+const imports=ref([{name:'Duval County',count:'44'},{name:'Clay County',count:'18'}]);
 const leads=ref([
-  {name:'Michael D.',address:'4521 Lenox Ave',zip:'32208',status:'New'},
-  {name:'Tanya R.',address:'2834 W 21st St',zip:'32209',status:'Contacted'},
-  {name:'Robert L.',address:'1910 Edgewood Ave',zip:'32210',status:'Appointment'},
+  {name:'Arthur Pendelton',address:'1428 River City Blvd',zip:'32204',status:'New'},
+  {name:'Beatrice Montgomery',address:'3819 San Jose Forest Dr',zip:'32217',status:'Contacted'},
+  {name:'James C. Halpert',address:'714 E 8th St',zip:'32206',status:'Appointment'},
   {name:'Thomas Richards',address:'4531 Lenox Ave',zip:'32210',status:'Under Contract'}
 ]);
 const filteredLeads=computed(()=>(leads.value||[]).filter(r=>(!zip.value||r.zip===zip.value)&&[r.name,r.address,r.zip,r.status].join(' ').toLowerCase().includes(query.value.toLowerCase().trim())));
 const stages=['Lead received','Contact made','Appointment','Offer sent','Signed','Sent to title','EMD confirmed','Title cleared','Dispo launched','Buyer chosen','Assignment','Closed + funded'];
 const stageColors=['#187ed4','#268dc7','#3b77d0','#7b63d1','#9a57c0','#b55b94','#bc7770','#c99339','#d2a93c','#78b854','#3ca962','#0fa85a'];
-const sources=[{name:'PropStream',value:32,color:'#249bff'},{name:'Direct Mail',value:24,color:'#f64a68'},{name:'Driving for $',value:18,color:'#f3c34e'},{name:'County Data',value:14,color:'#16c798'},{name:'Website',value:8,color:'#a273ed'},{name:'Other',value:4,color:'#8199b3'}];
+const sources=[{name:'Direct Mail',value:38,color:'#f64a68'},{name:'County Data',value:26,color:'#16c798'},{name:'Driving for $',value:18,color:'#f3c34e'},{name:'Website',value:12,color:'#a273ed'},{name:'Other',value:6,color:'#8199b3'}];
 const signals=ref([
-  {code:'DUVAL',label:'Lead flow',value:'4',change:'Live'},
+  {code:'DUVAL',label:'Lead flow',value:'44',change:'Live'},
   {code:'BUYERS',label:'Cash buyers',value:'6',change:'Active'},
   {code:'CONTRACT',label:'Under contract',value:'4',change:'Live'},
   {code:'YIELD',label:'Assignment rev',value:'$128K',change:'Locked'},
@@ -250,6 +250,7 @@ async function loadDashboardData() {
       const data = await res.json();
       if (data.metrics) metrics.value = data.metrics;
       if (data.signals) signals.value = data.signals;
+      if (data.countyIntelligence) imports.value = data.countyIntelligence;
     }
   } catch (e) {}
 

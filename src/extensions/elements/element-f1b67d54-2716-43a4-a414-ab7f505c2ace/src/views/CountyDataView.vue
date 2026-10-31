@@ -223,7 +223,7 @@
         <div class="modal-footer">
           <button class="btn btn-secondary" @click="showImportModal = false">Cancel</button>
           <button class="btn btn-primary" @click="executeImport">
-            Import 1,247 Records
+            Import County Records
           </button>
         </div>
       </div>
@@ -448,11 +448,11 @@ export default {
     }
 
     function handleFileUpload() {
-      importNotice.value = 'File parsed: 1,247 Duval County records ready for ingestion.';
+      importNotice.value = 'File parsed: Duval County records ready for ingestion.';
     }
 
     function executeImport() {
-      importNotice.value = 'Successfully imported 1,247 county records into canonical truth store.';
+      importNotice.value = 'Successfully imported county records into canonical truth store.';
       setTimeout(() => {
         showImportModal.value = false;
         importNotice.value = '';
