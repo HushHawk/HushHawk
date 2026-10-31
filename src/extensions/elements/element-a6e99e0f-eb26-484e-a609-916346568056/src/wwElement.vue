@@ -180,7 +180,7 @@ export default {
  const isEditing=computed(()=>{return false;});
  const icons=ref({ ...masterIcons });const {getIcon}=wwLib.useIcons();
  watch(()=>Object.keys(iconDefaults).map(k=>props.content?.[k+'Icon']||iconDefaults[k]),async names=>{const vals=await Promise.all(names.map(n=>getIcon(n).catch(()=>'')));icons.value={ ...masterIcons, ...Object.fromEntries(Object.keys(iconDefaults).map((k,i)=>[k,vals[i]])) };},{immediate:true});
- const navOpen=ref(false),query=ref(''),deals=ref(samples.map(d=>({...d}))),selectedId=ref('deal-3-0'),dragged=ref(''),tab=ref('Messages'),draft=ref(''),note=ref(''),notice=ref(''),dialog=ref(''),dialogEl=ref(null),newAddress=ref(''),newZip=ref('32206');
+ const navOpen=ref(false),query=ref(''),deals=ref([]),selectedId=ref('deal-3-0'),dragged=ref(''),tab=ref('Messages'),draft=ref(''),note=ref(''),notice=ref(''),dialog=ref(''),dialogEl=ref(null),newAddress=ref(''),newZip=ref('32206');
  const isQuickAddOpen=ref(false),isNotifOpen=ref(false),currentTime=ref('09:42 AM');
  let timeInterval=null,clickOutsideHandler=null;
  function updateClock(){
