@@ -70,38 +70,27 @@
 
       <button class="notification-btn" @click.stop="isNotifOpen = !isNotifOpen" aria-label="Notifications">
         <span class="icon" v-html="icons.bell"></span>
-        <span class="notif-badge">3</span>
+        <span v-if="notifications.length" class="notif-badge">{{ notifications.length }}</span>
       </button>
 
       <!-- Notifications Modal / Dropdown -->
       <div v-if="isNotifOpen" class="notif-dropdown" @click.stop>
         <div class="notif-head">
           <strong>Escrow &amp; Pipeline Alerts</strong>
-          <span class="badge-sub">3 unread</span>
+          <span class="badge-sub">{{ notifications.length }} unread</span>
         </div>
-        <div class="notif-item">
-          <span class="notif-icon green" v-html="icons.check"></span>
-          <div>
-            <strong>First American Title: Wire Disbursed</strong>
-            <p>$32,500 assignment fee funded for 4812 Moncrief Rd.</p>
-            <small>12 mins ago</small>
+        <div v-if="notifications.length">
+          <div v-for="n in notifications" :key="n.id" class="notif-item">
+            <span class="notif-icon" :class="n.color" v-html="icons[n.icon] || icons.check"></span>
+            <div>
+              <strong>{{ n.title }}</strong>
+              <p>{{ n.body }}</p>
+              <small>{{ n.time }}</small>
+            </div>
           </div>
         </div>
-        <div class="notif-item">
-          <span class="notif-icon gold" v-html="icons.file"></span>
-          <div>
-            <strong>DocuSign PSA Executed</strong>
-            <p>Ronald Campbell signed PSA for $110,000 cash.</p>
-            <small>1 hr ago</small>
-          </div>
-        </div>
-        <div class="notif-item">
-          <span class="notif-icon cyan" v-html="icons.phone"></span>
-          <div>
-            <strong>Hot Seller Lead Ingested</strong>
-            <p>Travis Holloway (Duval Probate) score 94/100.</p>
-            <small>2 hrs ago</small>
-          </div>
+        <div v-else style="padding: 24px; text-align: center; color: #64748b; font-size: 11px;">
+          No unread alerts. Pipeline updates and escrow notifications will stream here.
         </div>
       </div>
 
@@ -180,8 +169,8 @@ export default {
  const isEditing=computed(()=>{return false;});
  const icons=ref({ ...masterIcons });const {getIcon}=wwLib.useIcons();
  watch(()=>Object.keys(iconDefaults).map(k=>props.content?.[k+'Icon']||iconDefaults[k]),async names=>{const vals=await Promise.all(names.map(n=>getIcon(n).catch(()=>'')));icons.value={ ...masterIcons, ...Object.fromEntries(Object.keys(iconDefaults).map((k,i)=>[k,vals[i]])) };},{immediate:true});
- const navOpen=ref(false),query=ref(''),deals=ref([]),selectedId=ref('deal-3-0'),dragged=ref(''),tab=ref('Messages'),draft=ref(''),note=ref(''),notice=ref(''),dialog=ref(''),dialogEl=ref(null),newAddress=ref(''),newZip=ref('32206');
- const isQuickAddOpen=ref(false),isNotifOpen=ref(false),currentTime=ref('09:42 AM');
+ const navOpen=ref(false),query=ref(''),deals=ref([]),selectedId=ref(''),dragged=ref(''),tab=ref('Messages'),draft=ref(''),note=ref(''),notice=ref(''),dialog=ref(''),dialogEl=ref(null),newAddress=ref(''),newZip=ref('32206');
+ const isQuickAddOpen=ref(false),isNotifOpen=ref(false),currentTime=ref('09:42 AM'),notifications=ref([]);
  let timeInterval=null,clickOutsideHandler=null;
  function updateClock(){
    const now=new Date();
@@ -252,8 +241,30 @@ export default {
  const drafts={},selected=computed(()=>deals.value.find(d=>d.id===selectedId.value)||null);
  const visible=computed(()=>(deals.value||[]).filter(d=>!query.value.trim()||[d.address,d.zip,d.owner,d.source,d.agent,stages[d.stage]?.name||''].join(' ').toLowerCase().includes(query.value.trim().toLowerCase())));
  const heroStyle=computed(()=>({backgroundImage:'linear-gradient(90deg,#03172fed 0%,#03172fc9 31%,#06244144 62%,#011a3440),url("'+(props.content?.skyline||'')+'")'}));
- const metrics=[{label:'Total Acquisition Leads',value:'412',change:'18%',icon:'users'},{label:'New This Week',value:'48',change:'33%',icon:'file'},{label:'Appointments Set',value:'28',change:'27%',icon:'calendar'},{label:'Under Contract',value:'14',change:'75%',icon:'handshake'},{label:'Closed This Month',value:'9',change:'80%',icon:'dollar'},{label:'Avg Assignment Fee',value:'$18,400',change:'42%',icon:'chart'}];
- const activities=[{label:'Calls Made',value:'48',change:'26%',icon:'phone'},{label:'Texts Sent',value:'112',change:'34%',icon:'text'},{label:'Emails Sent',value:'36',change:'20%',icon:'mail'},{label:'Follow-Ups Due',value:'24',change:'33%',icon:'calendar'}];
+ const metrics=computed(()=>{
+   const d=deals.value||[];
+   const total=d.length;
+   const newCount=d.filter(x=>x.stage===0).length;
+   const appts=d.filter(x=>x.stage===2).length;
+   const underContract=d.filter(x=>x.stage===4).length;
+   const closed=d.filter(x=>x.stage===6).length;
+   const fees=d.filter(x=>x.fee).map(x=>Number(x.fee)||0);
+   const avgFee=fees.length?Math.round(fees.reduce((a,b)=>a+b,0)/fees.length):0;
+   return [
+     {label:'Total Acquisition Leads',value:String(total),change:'Live',icon:'users'},
+     {label:'New This Week',value:String(newCount),change:'Live',icon:'file'},
+     {label:'Appointments Set',value:String(appts),change:'Live',icon:'calendar'},
+     {label:'Under Contract',value:String(underContract),change:'Live',icon:'handshake'},
+     {label:'Closed This Month',value:String(closed),change:'Funded',icon:'dollar'},
+     {label:'Avg Assignment Fee',value:avgFee?money(avgFee):'$0',change:'Real',icon:'chart'}
+   ];
+ });
+ const activities=computed(()=>[
+   {label:'Calls Made',value:'0',change:'0%',icon:'phone'},
+   {label:'Texts Sent',value:'0',change:'0%',icon:'text'},
+   {label:'Emails Sent',value:'0',change:'0%',icon:'mail'},
+   {label:'Follow-Ups Due',value:'0',change:'0%',icon:'calendar'}
+ ]);
  const tabs=['Messages','Notes','Tasks','Property Details','Comps'];
  const dialogTitle=computed(()=>({add:'Add Acquisition',notifications:'Notifications',deal:'Deal Actions',activity:"Today's Activity"}[dialog.value]||''));
  const photo=d=>props.content?.['photo'+(d.photo+1)]||props.content?.photo1||'';
@@ -261,7 +272,7 @@ export default {
  function guard(e){if(isEditing.value)e.preventDefault();}
  function imageFailed(e){e.target.style.visibility='hidden';}
  function shortStage(i){return ['New Lead','Calling','Contacted','Qualified','Appt Set','Offer Sent','Under Contract','Closed'][i];}
- function stageCount(i){return ((stages[i]&&stages[i].count)||0)+(deals.value||[]).filter(d=>d.stage===i).length-(samples||[]).filter(d=>d.stage===i).length;}
+ function stageCount(i){return (deals.value||[]).filter(d=>d.stage===i).length;}
  function clearSearch(){if(!isEditing.value)query.value='';}
  function selectDeal(d){if(isEditing.value)return;selectedId.value=d.id;notice.value='';}
  function closeDetail(){if(!isEditing.value)selectedId.value='';}
@@ -290,7 +301,7 @@ export default {
  function closeDialog(){dialog.value='';previousFocus?.focus?.();}
  function dialogKeys(e){if(e.key==='Escape'){e.preventDefault();closeDialog();}if(e.key==='Tab'){const nodes=Array.from(dialogEl.value?.querySelectorAll('button,a[href],input,select,textarea,[tabindex="0"]')||[]).filter(n=>!n.disabled);const first=nodes[0],last=nodes[nodes.length-1],active=wwLib.getFrontDocument()?.activeElement;if(e.shiftKey&&(active===first||active===dialogEl.value)){e.preventDefault();last?.focus();}else if(!e.shiftKey&&(active===last||active===dialogEl.value)){e.preventDefault();first?.focus();}}}
  function addDeal(){if(isEditing.value||!newAddress.value.trim()||!/^\d{5}$/.test(newZip.value))return;const d={...samples[0],id:'preview-'+Date.now(),address:newAddress.value.trim(),zip:newZip.value,owner:'Owner not entered',phone:'—',email:'—',arv:null,repairs:null,mao:null,fee:null,note:'',agent:'Elite Team',completed:false};deals.value.push(d);query.value='';selectedId.value=d.id;newAddress.value='';closeDialog();}
- return {icons,isEditing,navigation,stages,navOpen,query,selected,visible,heroStyle,metrics,activities,tabs,tab,draft,note,notice,dialog,dialogEl,dialogTitle,newAddress,newZip,dragged,photo,money,guard,imageFailed,shortStage,stageCount,clearSearch,selectDeal,closeDetail,startDrag,dropDeal,moveDeal,completeTask,setTab,saveDraft,saveNote,openDialog,closeDialog,dialogKeys,addDeal,isQuickAddOpen,isNotifOpen,currentTime};
+ return {icons,isEditing,navigation,stages,navOpen,query,selected,visible,heroStyle,metrics,activities,tabs,tab,draft,note,notice,dialog,dialogEl,dialogTitle,newAddress,newZip,dragged,photo,money,guard,imageFailed,shortStage,stageCount,clearSearch,selectDeal,closeDetail,startDrag,dropDeal,moveDeal,completeTask,setTab,saveDraft,saveNote,openDialog,closeDialog,dialogKeys,addDeal,isQuickAddOpen,isNotifOpen,currentTime,notifications};
  }
 };
 </script>

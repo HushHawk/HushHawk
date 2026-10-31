@@ -81,6 +81,9 @@
 
       <!-- Agenda View -->
       <div v-else class="agenda-list">
+        <div v-if="filteredEvents.length === 0" style="padding: 40px; text-align: center; color: #64748b; font-size: 14px;">
+          No upcoming scheduled visits or appointments on the calendar.
+        </div>
         <div v-for="ev in filteredEvents" :key="ev.id" class="agenda-item" @click="selectEvent(ev)">
           <div class="agenda-date-col">
             <span class="agenda-month">OCT</span>

@@ -312,24 +312,33 @@ import { icons } from '../icons.js';
 export default {
   name: 'ContractsView',
   setup() {
-    const metrics = [
-      { label: 'Executed Purchase PSA', value: '28', change: '+27%', icon: 'file' },
-      { label: 'Assigned to Buyers', value: '18', change: '+22%', icon: 'handshake' },
-      { label: 'In Title / Escrow', value: '14', change: '+18%', icon: 'shield' },
-      { label: 'EMD Verified', value: '16', change: '+14%', icon: 'check' },
-      { label: 'Clear to Close', value: '10', change: '+42%', icon: 'crown' }
-    ];
+    const contracts = ref([]);
 
-    
+    const metrics = computed(() => {
+      const list = contracts.value || [];
+      const total = list.length;
+      const assigned = list.filter(c => c.status === 'Assigned' || (c.buyer && c.buyer !== '—')).length;
+      const inTitle = list.filter(c => c.status === 'Title/Escrow' || c.status === 'EMD Verified').length;
+      const emd = list.filter(c => c.status === 'EMD Verified' || c.emdReceived).length;
+      const clearToClose = list.filter(c => c.status === 'Clear to Close' || c.status === 'Closed').length;
+      return [
+        { label: 'Executed Purchase PSA', value: String(total), change: 'Live', icon: 'file' },
+        { label: 'Assigned to Buyers', value: String(assigned), change: 'Active', icon: 'handshake' },
+        { label: 'In Title / Escrow', value: String(inTitle), change: 'Live', icon: 'shield' },
+        { label: 'EMD Verified', value: String(emd), change: 'Live', icon: 'check' },
+        { label: 'Clear to Close', value: String(clearToClose), change: 'Live', icon: 'crown' }
+      ];
+    });
+
     const API_BASE = '/api/v1';
 
     async function loadContracts() {
       try {
         const res = await fetch(API_BASE + '/contracts');
         const data = await res.json();
-        if (data) {
+        if (data && data.contracts) {
           contracts.value = data.contracts;
-          if (!selectedContract.value) selectedContract.value = data.contracts[0];
+          if (!selectedContract.value && data.contracts.length) selectedContract.value = data.contracts[0];
         }
       } catch (err) {
         console.warn('[Contracts] Using local cache:', err.message);
@@ -339,8 +348,6 @@ export default {
     onMounted(() => {
       loadContracts();
     });
-
-    const contracts = ref([]);
 
     const searchQuery = ref('');
     const typeFilter = ref('');

@@ -84,6 +84,9 @@
           <span class="badge-sub">{{ teamTotalVolume }} Assigned</span>
         </div>
         <div class="leaderboard-list">
+          <div v-if="!reps.length" class="empty-state-notice" style="text-align: center; color: #64748b; padding: 32px;">
+            No team transactions recorded yet. Closed deals will rank here.
+          </div>
           <div v-for="(rep, idx) in reps" :key="rep.name" class="rep-card">
             <div class="rep-rank" :class="{ gold: idx === 0, silver: idx === 1 }">
               #{{ idx + 1 }}
@@ -131,6 +134,11 @@
               </tr>
             </thead>
             <tbody>
+              <tr v-if="!submarkets.length">
+                <td colspan="5" style="text-align: center; color: #64748b; padding: 24px;">
+                  No submarket transactions recorded yet.
+                </td>
+              </tr>
               <tr v-for="sub in submarkets" :key="sub.zip">
                 <td>
                   <strong>{{ sub.zip }}</strong> - <span class="text-muted">{{ sub.area }}</span>
@@ -167,6 +175,11 @@
               </tr>
             </thead>
             <tbody>
+              <tr v-if="!marketingChannels.length">
+                <td colspan="6" style="text-align: center; color: #64748b; padding: 24px;">
+                  No marketing channel spend or conversion data recorded yet.
+                </td>
+              </tr>
               <tr v-for="ch in marketingChannels" :key="ch.channel">
                 <td>
                   <span class="channel-name-cell">
@@ -202,78 +215,41 @@ export default {
       timeRange: '30D',
       metricsData: {
         '7D': [
-          { label: '7-Day Net Wholesale Fee', value: '$68,500', change: '+18.4%', icon: 'dollar' },
-          { label: 'Contracts Under Escrow', value: '4', change: '100% on schedule', icon: 'file' },
-          { label: 'Avg Assignment Spread', value: '$26,100', change: '+$2.4k vs avg', icon: 'badgeDollar' },
-          { label: 'Dispo Speed (Days)', value: '4.8 Days', change: '-1.2 days', icon: 'zap' }
+          { label: '7-Day Net Wholesale Fee', value: '$0', change: '0%', icon: 'dollar' },
+          { label: 'Contracts Under Escrow', value: '0', change: '0 on schedule', icon: 'file' },
+          { label: 'Avg Assignment Spread', value: '$0', change: '$0 avg', icon: 'badgeDollar' },
+          { label: 'Dispo Speed (Days)', value: '0 Days', change: '0 days', icon: 'zap' }
         ],
         '30D': [
-          { label: '30-Day Net Wholesale Fee', value: '$248,500', change: '+32.8%', icon: 'dollar' },
-          { label: 'Contracts Under Escrow', value: '14', change: '$384k pipeline', icon: 'file' },
-          { label: 'Avg Assignment Spread', value: '$24,850', change: '+$3.1k vs avg', icon: 'badgeDollar' },
-          { label: 'Dispo Speed (Days)', value: '5.2 Days', change: '-0.8 days', icon: 'zap' }
+          { label: '30-Day Net Wholesale Fee', value: '$0', change: '0%', icon: 'dollar' },
+          { label: 'Contracts Under Escrow', value: '0', change: '$0 pipeline', icon: 'file' },
+          { label: 'Avg Assignment Spread', value: '$0', change: '$0 avg', icon: 'badgeDollar' },
+          { label: 'Dispo Speed (Days)', value: '0 Days', change: '0 days', icon: 'zap' }
         ],
         '90D': [
-          { label: '90-Day Net Wholesale Fee', value: '$692,400', change: '+44.1%', icon: 'dollar' },
-          { label: 'Total Completed Assignments', value: '31', change: '94% close rate', icon: 'file' },
-          { label: 'Avg Assignment Spread', value: '$23,900', change: '+$1.8k vs benchmark', icon: 'badgeDollar' },
-          { label: 'Dispo Speed (Days)', value: '5.5 Days', change: '-0.5 days', icon: 'zap' }
+          { label: '90-Day Net Wholesale Fee', value: '$0', change: '0%', icon: 'dollar' },
+          { label: 'Total Completed Assignments', value: '0', change: '0% close rate', icon: 'file' },
+          { label: 'Avg Assignment Spread', value: '$0', change: '$0 benchmark', icon: 'badgeDollar' },
+          { label: 'Dispo Speed (Days)', value: '0 Days', change: '0 days', icon: 'zap' }
         ],
         'YTD': [
-          { label: 'YTD Gross Wholesale Fees', value: '$1,842,000', change: '+52.0%', icon: 'dollar' },
-          { label: 'Total Assigned Properties', value: '82 Deals', change: 'Pacing $2.4M', icon: 'file' },
-          { label: 'Avg Assignment Spread', value: '$22,460', change: 'Record margin', icon: 'badgeDollar' },
-          { label: 'Dispo Speed (Days)', value: '5.4 Days', change: '-1.0 days', icon: 'zap' }
+          { label: 'YTD Gross Wholesale Fees', value: '$0', change: '0%', icon: 'dollar' },
+          { label: 'Total Assigned Properties', value: '0 Deals', change: 'Pacing $0', icon: 'file' },
+          { label: 'Avg Assignment Spread', value: '$0', change: 'Margin 0%', icon: 'badgeDollar' },
+          { label: 'Dispo Speed (Days)', value: '0 Days', change: '0 days', icon: 'zap' }
         ]
       },
       funnelStages: [
-        { name: 'Total Inbound Raw Leads', count: 412, color: '#38bdf8' },
-        { name: 'Qualified Distressed Sellers', count: 184, color: '#818cf8' },
-        { name: 'Cash Offers Presented', count: 89, color: '#c084fc' },
-        { name: 'Executed Purchase Contracts (PSA)', count: 24, color: '#f472b6' },
-        { name: 'Assigned to Cash Buyers', count: 18, color: '#fb923c' },
-        { name: 'Closed & Escrow Wire Disbursed', count: 14, color: '#4ade80' }
+        { name: 'Total Inbound Raw Leads', count: 0, color: '#38bdf8' },
+        { name: 'Qualified Distressed Sellers', count: 0, color: '#818cf8' },
+        { name: 'Cash Offers Presented', count: 0, color: '#c084fc' },
+        { name: 'Executed Purchase Contracts (PSA)', count: 0, color: '#f472b6' },
+        { name: 'Assigned to Cash Buyers', count: 0, color: '#fb923c' },
+        { name: 'Closed & Escrow Wire Disbursed', count: 0, color: '#4ade80' }
       ],
-      reps: [
-        {
-          name: 'Marcus Vance',
-          role: 'Sr. Acquisitions Specialist',
-          contracts: 11,
-          assigned: 9,
-          avgSpread: 28400,
-          grossVolume: 255600
-        },
-        {
-          name: 'Sarah Jenkins',
-          role: 'Acquisitions & Dispo Manager',
-          contracts: 8,
-          assigned: 6,
-          avgSpread: 23200,
-          grossVolume: 139200
-        },
-        {
-          name: 'Elena Rostova',
-          role: 'Lead Qualifier & Junior Acq',
-          contracts: 5,
-          assigned: 3,
-          avgSpread: 19500,
-          grossVolume: 58500
-        }
-      ],
-      submarkets: [
-        { zip: '32208', area: 'Northside / Moncrief', deals: 6, avgSpread: 28200, totalRev: 169200, dom: 4.1 },
-        { zip: '32209', area: 'Northwest Jax / Grand Pk', deals: 5, avgSpread: 24500, totalRev: 122500, dom: 3.8 },
-        { zip: '32210', area: 'Westside / Ortega', deals: 4, avgSpread: 26800, totalRev: 107200, dom: 6.2 },
-        { zip: '32211', area: 'Arlington / River Hills', deals: 3, avgSpread: 21900, totalRev: 65700, dom: 5.4 },
-        { zip: '32254', area: 'Lackawanna / Commonwealth', deals: 3, avgSpread: 23100, totalRev: 69300, dom: 4.9 }
-      ],
-      marketingChannels: [
-        { channel: 'Direct Mail (Postcards)', icon: 'mail', spend: 6400, leads: 148, cpc: 800, revenue: 194000, roi: '3,031%' },
-        { channel: 'Cold Calling (Duval Lists)', icon: 'phone', spend: 3200, leads: 92, cpc: 1066, revenue: 84000, roi: '2,625%' },
-        { channel: 'Facebook Distressed Ads', icon: 'facebook', spend: 4100, leads: 114, cpc: 1366, revenue: 68500, roi: '1,670%' },
-        { channel: 'Google Search Ads (PPC)', icon: 'search', spend: 5200, leads: 38, cpc: 2600, revenue: 52000, roi: '1,000%' },
-        { channel: 'Driving for Dollars (D4D)', icon: 'house', spend: 850, leads: 20, cpc: 425, revenue: 48000, roi: '5,647%' }
-      ]
+      reps: [],
+      submarkets: [],
+      marketingChannels: []
     };
   },
   computed: {
@@ -281,12 +257,12 @@ export default {
       return this.metricsData[this.timeRange] || this.metricsData['30D'];
     },
     funnelConversionRate() {
-      const top = this.funnelStages[0].count;
-      const bottom = this.funnelStages[this.funnelStages.length - 1].count;
-      return ((bottom / top) * 100).toFixed(1);
+      const top = this.funnelStages[0]?.count || 0;
+      const bottom = this.funnelStages[this.funnelStages.length - 1]?.count || 0;
+      return top > 0 ? ((bottom / top) * 100).toFixed(1) : '0.0';
     },
     teamTotalVolume() {
-      const total = this.reps.reduce((acc, r) => acc + r.grossVolume, 0);
+      const total = this.reps.reduce((acc, r) => acc + (r.grossVolume || 0), 0);
       return '$' + (total / 1000).toFixed(1) + 'k Total';
     }
   },
@@ -300,48 +276,31 @@ export default {
         if (res.ok) {
           const data = await res.json();
           if (data.kpis) {
-            this.metricsData['30D'][0].value = '$' + Number(data.kpis.totalRevenue || 248500).toLocaleString();
-            this.metricsData['30D'][1].value = String(data.kpis.contractsUnderEscrow || 14);
-            this.metricsData['30D'][2].value = '$' + Number(data.kpis.avgAssignmentSpread || 24850).toLocaleString();
-            this.metricsData['30D'][3].value = String(data.kpis.dispoSpeedDays || 5.2) + ' Days';
+            this.metricsData['30D'][0].value = '$' + Number(data.kpis.totalRevenue || 0).toLocaleString();
+            this.metricsData['30D'][1].value = String(data.kpis.contractsUnderEscrow || 0);
+            this.metricsData['30D'][2].value = '$' + Number(data.kpis.avgAssignmentSpread || 0).toLocaleString();
+            this.metricsData['30D'][3].value = String(data.kpis.dispoSpeedDays || 0) + ' Days';
           }
           if (data.funnel && Array.isArray(data.funnel)) {
             data.funnel.forEach((f, idx) => {
               if (this.funnelStages[idx]) {
-                this.funnelStages[idx].count = f.value;
+                this.funnelStages[idx].count = f.value || 0;
               }
             });
           }
           if (data.submarkets && Array.isArray(data.submarkets)) {
             this.submarkets = data.submarkets;
           }
+          if (data.reps && Array.isArray(data.reps)) {
+            this.reps = data.reps;
+          }
+          if (data.marketingChannels && Array.isArray(data.marketingChannels)) {
+            this.marketingChannels = data.marketingChannels;
+          }
           return;
         }
-        const res2 = await fetch('/api/v1/dashboard/metrics');
-        if (res.ok) {
-          const data = await res.json();
-          if (data.metrics) {
-            const revM = data.metrics.find(m => m.label.includes('Assignment Revenue'));
-            const contractM = data.metrics.find(m => m.label.includes('Under Contract'));
-            const leadsM = data.metrics.find(m => m.label.includes('Total Seller Leads'));
-
-            if (revM && contractM) {
-              this.metricsData['30D'][0].value = revM.value;
-              this.metricsData['30D'][1].value = contractM.value;
-            }
-            if (leadsM && Number(leadsM.value)) {
-              const val = Number(leadsM.value);
-              this.funnelStages[0].count = val;
-              this.funnelStages[1].count = Math.max(1, Math.round(val * 0.45));
-              this.funnelStages[2].count = Math.max(1, Math.round(val * 0.22));
-              this.funnelStages[3].count = Math.max(1, Math.round(val * 0.10));
-              this.funnelStages[4].count = Math.max(1, Math.round(val * 0.08));
-              this.funnelStages[5].count = Math.max(1, Math.round(val * 0.06));
-            }
-          }
-        }
       } catch (err) {
-        console.warn('[Analytics] Using fallback data:', err.message);
+        console.warn('[Analytics] Load error:', err.message);
       }
     },
     showToast(title, message, type = 'info') {

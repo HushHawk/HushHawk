@@ -105,6 +105,11 @@
               </tr>
             </thead>
             <tbody>
+              <tr v-if="filteredTraces.length === 0">
+                <td colspan="8" style="text-align: center; color: #64748b; padding: 36px;">
+                  No skip traces found. Batch upload a CSV or run a single search to enrich contacts.
+                </td>
+              </tr>
               <tr
                 v-for="t in filteredTraces"
                 :key="t.id"
@@ -340,13 +345,23 @@ import { icons } from '../icons.js';
 export default {
   name: 'SkipTracingView',
   setup() {
-    const metrics = [
-      { label: 'Total Traces Run', value: '8,420', change: '+31%', icon: 'search' },
-      { label: 'Phone Match Rate', value: '89.4%', change: '+4%', icon: 'check' },
-      { label: 'Verified Mobiles', value: '14,890', change: '+26%', icon: 'phone' },
-      { label: 'DNC Clean Recipient', value: '7,210', change: 'Safe', icon: 'shield' },
-      { label: 'Avg Cost per Trace', value: '$0.12', change: '-8%', icon: 'badgeDollar' }
-    ];
+    const traces = ref([]);
+
+    const metrics = computed(() => {
+      const list = traces.value || [];
+      const total = list.length;
+      const matched = list.filter(t => (t.phones && t.phones.length) || (t.primaryPhone && t.primaryPhone !== '—')).length;
+      const verified = list.reduce((acc, t) => acc + (t.phones ? t.phones.length : (t.primaryPhone && t.primaryPhone !== '—' ? 1 : 0)), 0);
+      const dncSafe = list.filter(t => !t.dncFlag).length;
+      const matchRate = total ? Math.round((matched / total) * 100) + '%' : '0%';
+      return [
+        { label: 'Total Traces Run', value: total.toLocaleString(), change: total ? '+0%' : '0%', icon: 'search' },
+        { label: 'Phone Match Rate', value: matchRate, change: total ? 'Active' : '0%', icon: 'check' },
+        { label: 'Verified Mobiles', value: verified.toLocaleString(), change: total ? 'Active' : '0%', icon: 'phone' },
+        { label: 'DNC Clean Recipient', value: dncSafe.toLocaleString(), change: 'Safe', icon: 'shield' },
+        { label: 'Avg Cost per Trace', value: '$0.00', change: '0%', icon: 'badgeDollar' }
+      ];
+    });
 
     
     const API_BASE = '/api/v1';
@@ -367,8 +382,6 @@ export default {
     onMounted(() => {
       loadTraces();
     });
-
-    const traces = ref([]);;
 
     const searchQuery = ref('');
     const qualityFilter = ref('');

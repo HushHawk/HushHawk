@@ -36,7 +36,7 @@
       </div>
 
       <!-- Channel Attribution Breakdown Cards -->
-      <div class="channels-strip">
+      <div class="channels-strip" v-if="channelStats.length">
         <div v-for="ch in channelStats" :key="ch.channel" class="channel-card">
           <div class="channel-top">
             <span class="channel-name">{{ ch.channel }}</span>
@@ -50,6 +50,9 @@
             <strong>{{ ch.leads }} leads · {{ ch.deals }} deals</strong>
           </div>
         </div>
+      </div>
+      <div v-else class="channels-strip empty-strip" style="padding: 16px; color: #64748b; font-size: 13px; text-align: center; border: 1px dashed #1c4266; border-radius: 8px; margin-bottom: 20px;">
+        No active marketing channels running. Create your first campaign or launch direct mail/meta ads.
       </div>
 
       <!-- Filter & Search Toolbar -->
@@ -123,6 +126,11 @@
             </tr>
           </thead>
           <tbody>
+            <tr v-if="filteredCampaigns.length === 0">
+              <td colspan="10" style="text-align: center; color: #64748b; padding: 36px;">
+                No marketing campaigns found. Click "New Campaign" to launch your first marketing channel.
+              </td>
+            </tr>
             <tr v-for="c in filteredCampaigns" :key="c.id">
               <td>
                 <div class="campaign-cell">
@@ -215,23 +223,23 @@ import { icons } from '../icons.js';
 export default {
   name: 'MarketingView',
   setup() {
-    const metrics = [
-      { label: 'Total Marketing Spend', value: '$24,800', change: '+14%', note: 'budget pacing', icon: 'dollar' },
-      { label: 'Total Leads Generated', value: '44', change: '+28%', note: 'lead velocity', icon: 'users' },
-      { label: 'Avg. Cost Per Lead', value: '$19.88', change: '-12%', note: 'efficiency gain', icon: 'chart' },
-      { label: 'Contracts Acquired', value: '28', change: '+27%', note: 'under contract', icon: 'file' },
-      { label: 'Blended Marketing ROI', value: '1,154%', change: '+42%', note: 'revenue / spend', icon: 'crown' }
-    ];
+    const channelStats = ref([]);
+    const campaigns = ref([]);
 
-    const channelStats = [
-      { channel: 'Direct Mail', spend: 9500, leads: 480, deals: 11, roi: '1,240%', percent: 85 },
-      { channel: 'Facebook Meta Ads', spend: 6200, leads: 418, deals: 8, roi: '1,120%', percent: 70 },
-      { channel: 'Cold Calling', spend: 4800, leads: 215, deals: 5, roi: '980%', percent: 55 },
-      { channel: 'Driving for Dollars', spend: 2100, leads: 84, deals: 3, roi: '1,350%', percent: 40 },
-      { channel: 'Google Search PPC', spend: 2200, leads: 50, deals: 1, roi: '620%', percent: 30 }
-    ];
-
-    const campaigns = ref([]);;
+    const metrics = computed(() => {
+      const list = campaigns.value || [];
+      const totalSpend = list.reduce((acc, c) => acc + (Number(c.spend) || 0), 0);
+      const totalLeads = list.reduce((acc, c) => acc + (Number(c.leads) || 0), 0);
+      const totalDeals = list.reduce((acc, c) => acc + (Number(c.deals || c.contracts) || 0), 0);
+      const avgCpl = totalLeads ? (totalSpend / totalLeads).toFixed(2) : '0.00';
+      return [
+        { label: 'Total Marketing Spend', value: `$${totalSpend.toLocaleString()}`, change: totalSpend ? '+0%' : '0%', note: 'budget pacing', icon: 'dollar' },
+        { label: 'Total Leads Generated', value: totalLeads.toLocaleString(), change: totalLeads ? '+0%' : '0%', note: 'lead velocity', icon: 'users' },
+        { label: 'Avg. Cost Per Lead', value: `$${avgCpl}`, change: '0%', note: 'efficiency gain', icon: 'chart' },
+        { label: 'Contracts Acquired', value: totalDeals.toLocaleString(), change: totalDeals ? '+0%' : '0%', note: 'under contract', icon: 'file' },
+        { label: 'Blended Marketing ROI', value: '0%', change: '0%', note: 'revenue / spend', icon: 'crown' }
+      ];
+    });
 
     const searchQuery = ref('');
     const channelFilter = ref('');
@@ -284,7 +292,8 @@ export default {
         if (res.ok) {
           const data = await res.json();
           if (data) {
-            campaigns.value = data.campaigns;
+            campaigns.value = data.campaigns || [];
+            channelStats.value = data.channelStats || [];
           }
         }
       } catch (err) {

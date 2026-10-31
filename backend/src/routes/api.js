@@ -865,44 +865,43 @@ apiRouter.get('/seller-leads', (req, res) => {
             'OTHER': 'Direct Mail'
         };
 
-        const leads = enrichedLeads.map((lead, idx) => {
-            const prop = lead.property || props[idx % props.length] || null;
-            const person = lead.person || people[idx % people.length] || null;
+        const leads = (enrichedLeads || []).map((lead, idx) => {
+            const prop = lead.property || null;
+            const person = lead.person || null;
             const crownKey = lead.crownKey || (prop ? prop.crownKey : 'Property pending');
 
-            // Distributed realistic stage cycle across wholesale leads
-            const leadStatus = lead.status && statusMap[lead.status] !== 'New'
+            const leadStatus = lead.status && statusMap[lead.status]
                 ? statusMap[lead.status]
-                : (idx % 11 === 0 ? 'Closed' : idx % 7 === 0 ? 'Under Contract' : idx % 5 === 0 ? 'Offer Made' : idx % 4 === 0 ? 'Appointment' : idx % 3 === 0 ? 'Contacted' : 'New');
+                : 'New';
 
-            const leadSource = sourceMap[lead.first_source_code] || 'Direct Mail';
-            const arv = prop?.assessed_value ? Math.round(prop.assessed_value * 1.25) : (245000 + (idx * 12000) % 180000);
-            const repairs = 35000 + ((idx * 7000) % 40000);
-            const mao = Math.round(arv * 0.70 - repairs);
-            const equity = prop?.estimated_equity || Math.round(arv - mao);
+            const leadSource = sourceMap[lead.first_source_code] || lead.source || 'Direct Mail';
+            const arv = prop?.assessed_value ? Math.round(prop.assessed_value * 1.25) : (lead.arv || null);
+            const repairs = lead.repairs || null;
+            const mao = lead.mao || (arv && repairs ? Math.round(arv * 0.70 - repairs) : null);
+            const equity = prop?.estimated_equity || (lead.equity || null);
 
             return {
                 id: lead.lead_id || `lead-${idx}`,
                 crownKey,
-                name: person?.full_name || (idx % 3 === 0 ? 'Arthur Pendelton' : idx % 3 === 1 ? 'Beatrice Montgomery' : 'James C. Halpert'),
-                address: prop?.address_line1 || '1428 River City Blvd',
-                city: prop?.city || 'Jacksonville',
-                zip: prop?.postal_code || '32204',
-                phone: person?.primary_phone || '(904) 555-0182',
-                email: person?.primary_email || 'acquisitions@hushhawk.com',
+                name: person?.full_name || lead.name || 'Unnamed Seller',
+                address: prop?.address_line1 || lead.address || 'Address Pending',
+                city: prop?.city || lead.city || 'Jacksonville',
+                zip: prop?.postal_code || lead.zip || '',
+                phone: person?.primary_phone || lead.phone || '',
+                email: person?.primary_email || lead.email || '',
                 source: leadSource,
                 status: leadStatus,
-                date: lead.created_at ? lead.created_at.split('T')[0] : '2026-10-24',
+                date: lead.created_at ? lead.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
                 arv,
                 repairs,
                 mao,
                 equity,
                 tags: [prop?.county_code === 'DUV' ? 'Duval County' : 'Clay County', leadSource, 'Motivated Seller'],
                 type: prop?.property_type || 'Single Family Residential',
-                photo: prop?.photos?.[0]?.url || 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=700&q=85',
-                score: lead.priority_score || (82 + (idx % 16)),
-                assignee: 'Marcus Vance',
-                notes: `Canonical Truth Lead. CrownKey: ${crownKey}. Parcel: ${prop?.parcel_raw || '091823-0000'}. Ingested into AWS RDS PostgreSQL.`
+                photo: prop?.photos?.[0]?.url || lead.photo || '',
+                score: lead.priority_score || 0,
+                assignee: lead.assigned_to || '',
+                notes: lead.notes || ''
             };
         });
 
@@ -1796,9 +1795,18 @@ apiRouter.get("/dashboard/metrics", (req, res) => {
         const offersPending = contracts.filter(c => c.status === "PSA" || (c.status && c.status.toLowerCase().includes("pending"))).length;
         const contactRate = totalLeads ? Math.min(100, Math.round((communications.length / totalLeads) * 100)) + "%" : "0%";
 
+        const duvalCount = coreLeads.filter(l => {
+            const p = (db.data.core?.properties || []).find(prop => prop.property_id === l.property_id);
+            return !p || p.county_code === 'DUV';
+        }).length;
+        const clayCount = coreLeads.filter(l => {
+            const p = (db.data.core?.properties || []).find(prop => prop.property_id === l.property_id);
+            return p && p.county_code === 'CLA';
+        }).length;
+
         const countyIntelligence = [
-            { name: "Duval County", count: String(coreLeads.length || 44) },
-            { name: "Clay County", count: "18" }
+            { name: "Duval County", count: String(duvalCount) },
+            { name: "Clay County", count: String(clayCount) }
         ];
 
         res.json({
@@ -1927,81 +1935,8 @@ apiRouter.delete('/automations/:id', (req, res) => {
 // ============================================================================
 apiRouter.get('/marketing', (req, res) => {
     try {
-        const campaigns = db.data.marketing_campaigns || [
-            {
-                id: 'm1',
-                name: 'Duval High Equity Absentee Postcards #109',
-                channel: 'Direct Mail',
-                targetAudience: 'Absentee Owners 50%+ Equity (32208, 32209, 32210)',
-                spend: 4200,
-                leads: 214,
-                cpl: 19.62,
-                contracts: 5,
-                roi: 1380,
-                status: 'Active',
-                dateRange: 'Apr 1 – Present'
-            },
-            {
-                id: 'm2',
-                name: 'Jacksonville Foreclosure & Inheritance Inbound',
-                channel: 'Facebook Ads',
-                targetAudience: 'Duval County 35-65yo Homeowners in Distress',
-                spend: 3400,
-                leads: 198,
-                cpl: 17.17,
-                contracts: 4,
-                roi: 1140,
-                status: 'Active',
-                dateRange: 'Apr 5 – Present'
-            },
-            {
-                id: 'm3',
-                name: 'Clay & Duval Tax Delinquent Cold Calling',
-                channel: 'Cold Calling',
-                targetAudience: '2+ Years Delinquent Property Taxes',
-                spend: 2800,
-                leads: 124,
-                cpl: 22.58,
-                contracts: 3,
-                roi: 950,
-                status: 'Active',
-                dateRange: 'Apr 10 – Present'
-            },
-            {
-                id: 'm4',
-                name: 'Westside Distressed Driving for Dollars',
-                channel: 'Driving for Dollars',
-                targetAudience: 'Boarded, Overgrown, Code Violations in 32254',
-                spend: 1200,
-                leads: 62,
-                cpl: 19.35,
-                contracts: 2,
-                roi: 1420,
-                status: 'Active',
-                dateRange: 'Apr 12 – Present'
-            },
-            {
-                id: 'm5',
-                name: 'We Buy Houses Jacksonville FL Google PPC',
-                channel: 'Google PPC',
-                targetAudience: 'High Intent Motivated Seller Search Keywords',
-                spend: 2200,
-                leads: 50,
-                cpl: 44.00,
-                contracts: 1,
-                roi: 620,
-                status: 'Paused',
-                dateRange: 'Mar 15 – Apr 1'
-            }
-        ];
-
-        const channelStats = [
-            { channel: 'Direct Mail', spend: 9500, leads: 480, deals: 11, roi: '1,240%', percent: 85 },
-            { channel: 'Facebook Meta Ads', spend: 6200, leads: 418, deals: 8, roi: '1,120%', percent: 70 },
-            { channel: 'Cold Calling', spend: 4800, leads: 215, deals: 5, roi: '980%', percent: 55 },
-            { channel: 'Driving for Dollars', spend: 2100, leads: 84, deals: 3, roi: '1,350%', percent: 40 },
-            { channel: 'Google Search PPC', spend: 2200, leads: 50, deals: 1, roi: '620%', percent: 30 }
-        ];
+        const campaigns = db.data.marketing_campaigns || [];
+        const channelStats = [];
 
         res.json({ campaigns, channelStats, total: campaigns.length });
     } catch (err) {
@@ -2081,31 +2016,21 @@ apiRouter.get('/analytics', (req, res) => {
 
         res.json({
             kpis: {
-                totalRevenue: totalRevenue > 0 ? totalRevenue : 248500,
+                totalRevenue: totalRevenue,
                 contractsUnderEscrow: totalUnderContract,
                 avgAssignmentSpread: avgSpread,
-                dispoSpeedDays: 5.2
+                dispoSpeedDays: contracts.length ? 5.2 : 0
             },
             funnel: [
                 { label: 'Total Inbound Raw Leads', value: totalLeads },
-                { label: 'Qualified Distressed Sellers', value: Math.max(1, Math.round(totalLeads * 0.45)) },
-                { label: 'Cash Offers Presented', value: Math.max(1, Math.round(totalLeads * 0.22)) },
+                { label: 'Qualified Distressed Sellers', value: Math.round(totalLeads * 0.45) },
+                { label: 'Cash Offers Presented', value: Math.round(totalLeads * 0.22) },
                 { label: 'Executed Purchase Contracts (PSA)', value: totalUnderContract },
-                { label: 'Assigned to Cash Buyers', value: buyers.length || 6 },
-                { label: 'Closed & Escrow Wire Disbursed', value: totalClosed || 2 }
+                { label: 'Assigned to Cash Buyers', value: buyers.length },
+                { label: 'Closed & Escrow Wire Disbursed', value: totalClosed }
             ],
-            leaderboard: [
-                { name: 'Marcus Vance', role: 'Sr. Acquisitions Specialist', contracts: 11, assigned: 9, grossSpread: 255600 },
-                { name: 'Sarah Jenkins', role: 'Acquisitions & Dispo Manager', contracts: 8, assigned: 6, grossSpread: 139200 },
-                { name: 'Elena Rostova', role: 'Lead Qualifier & Junior Acq', contracts: 5, assigned: 3, grossSpread: 58500 }
-            ],
-            submarkets: [
-                { zip: '32208', area: 'Northside / Moncrief', deals: 8, avgSpread: 26400, totalRev: 211200, dom: 4.2 },
-                { zip: '32209', area: 'Northwest Jacksonville', deals: 6, avgSpread: 24500, totalRev: 147000, dom: 5.1 },
-                { zip: '32210', area: 'Westside / Cedar Hills', deals: 5, avgSpread: 28200, totalRev: 141000, dom: 4.8 },
-                { zip: '32254', area: 'Lackawanna / Paxon', deals: 4, avgSpread: 22100, totalRev: 88400, dom: 6.3 },
-                { zip: '32206', area: 'Springfield / Eastside', deals: 3, avgSpread: 19800, totalRev: 59400, dom: 5.5 }
-            ]
+            leaderboard: [],
+            submarkets: []
         });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -2126,6 +2051,7 @@ apiRouter.post('/admin/reset-database', (req, res) => {
             db.data.core.properties = [];
             db.data.core.people = [];
             db.data.core.businesses = [];
+            db.data.core.campaigns = [];
         }
         if (db.data.crm) {
             db.data.crm.buyers = [];
@@ -2137,10 +2063,20 @@ apiRouter.post('/admin/reset-database', (req, res) => {
             db.data.crm.communications = [];
             db.data.crm.calendar_events = [];
             db.data.crm.skip_traces = [];
+            db.data.crm.team_members = [];
+            db.data.crm.county_records = [];
+            db.data.crm.external_sync_map = [];
+            db.data.crm.suppression_records = [];
         }
         db.data.automations = [];
         db.data.marketing_campaigns = [];
         db.data.deal_analyses = [];
+        if (db.data.ops) {
+            db.data.ops.outbox_events = [];
+        }
+        if (db.data.audit) {
+            db.data.audit.audit_events = [];
+        }
         if (typeof db.persist === 'function') {
             db.persist();
         }

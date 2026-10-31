@@ -238,24 +238,33 @@ import { icons } from '../icons.js';
 export default {
   name: 'CountyDataView',
   setup() {
-    const metrics = [
-      { label: 'County Records Indexed', value: '48,920', change: '+18%', icon: 'database' },
-      { label: 'High-Equity Absentee', value: '14,210', change: '+12%', icon: 'users' },
-      { label: 'Tax Delinquent Records', value: '3,480', change: '+8%', icon: 'badgeDollar' },
-      { label: 'Pre-Foreclosure / Lis Pendens', value: '842', change: '+15%', icon: 'file' },
-      { label: 'Ready for Skip Trace', value: '5,240', change: '+22%', icon: 'search' }
-    ];
+    const records = ref([]);
 
-    
+    const metrics = computed(() => {
+      const list = records.value || [];
+      const total = list.length;
+      const absentee = list.filter(r => (r.tags && r.tags.includes('Absentee')) || (r.ownerType && r.ownerType.includes('Absentee'))).length;
+      const taxDelinquent = list.filter(r => (r.tags && r.tags.includes('Tax Delinquent')) || (r.status && r.status.includes('Delinquent'))).length;
+      const lisPendens = list.filter(r => (r.tags && r.tags.includes('Foreclosure')) || (r.status && r.status.includes('Lis Pendens'))).length;
+      const readyForSkip = list.filter(r => !r.phone || r.phone === '—').length;
+      return [
+        { label: 'County Records Indexed', value: total ? total.toLocaleString() : '0', change: 'Live', icon: 'database' },
+        { label: 'High-Equity Absentee', value: absentee ? absentee.toLocaleString() : '0', change: 'Live', icon: 'users' },
+        { label: 'Tax Delinquent Records', value: taxDelinquent ? taxDelinquent.toLocaleString() : '0', change: 'Live', icon: 'badgeDollar' },
+        { label: 'Pre-Foreclosure / Lis Pendens', value: lisPendens ? lisPendens.toLocaleString() : '0', change: 'Live', icon: 'file' },
+        { label: 'Ready for Skip Trace', value: readyForSkip ? readyForSkip.toLocaleString() : '0', change: 'Live', icon: 'search' }
+      ];
+    });
+
     const API_BASE = '/api/v1';
 
     async function loadCountyRecords() {
       try {
         const res = await fetch(API_BASE + '/county-records');
         const data = await res.json();
-        if (data) {
+        if (data && data.records) {
           records.value = data.records;
-          if (!selectedRecord.value) selectedRecord.value = data.records[0];
+          if (!selectedRecord.value && data.records.length) selectedRecord.value = data.records[0];
         }
       } catch (err) {
         console.warn('[CountyData] Using local cache:', err.message);
@@ -265,8 +274,6 @@ export default {
     onMounted(() => {
       loadCountyRecords();
     });
-
-    const records = ref([]);;
 
     const searchQuery = ref('');
     const countyFilter = ref('Duval');

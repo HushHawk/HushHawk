@@ -71,6 +71,12 @@
             <span class="total-rehab-badge text-gold">Total: ${{ totalRehab.toLocaleString() }}</span>
           </div>
           <div class="rehab-table">
+            <div v-if="!rehabItems.length" style="padding: 24px; text-align: center; color: #64748b; font-size: 0.85rem;">
+              No repair line items added.
+              <div style="margin-top: 10px;">
+                <button type="button" class="btn btn-secondary btn-sm" @click="addStandardRehabItems">+ Add Standard Wholesale Scope ($0)</button>
+              </div>
+            </div>
             <div v-for="item in rehabItems" :key="item.name" class="rehab-row">
               <div class="rehab-meta">
                 <span class="rehab-name">{{ item.name }}</span>
@@ -256,25 +262,16 @@ export default {
     return {
       icons,
       isExportModalOpen: false,
-      arv: 240000,
+      arv: 0,
       investorDiscount: 70,
-      targetWholesaleFee: 20000,
-      closingCostsBuffer: 6000,
+      targetWholesaleFee: 0,
+      closingCostsBuffer: 0,
       property: {
-        address: '4812 Moncrief Rd, Jacksonville, FL 32208',
-        sqft: 1420,
-        bedsBaths: '3 Beds / 2 Baths'
+        address: '',
+        sqft: null,
+        bedsBaths: ''
       },
-      rehabItems: [
-        { name: 'Roof Replacement', desc: 'Architectural shingle tear-off', cost: 8500 },
-        { name: 'HVAC System', desc: '3-Ton 14 SEER Heat Pump & Ducts', cost: 6500 },
-        { name: 'Kitchen Remodel', desc: 'Shaker cabinets, granite counters, sink', cost: 7500 },
-        { name: 'Bathrooms (x2)', desc: 'Tile surrounds, vanities, fixtures', cost: 5000 },
-        { name: 'Flooring (LVP)', desc: 'Luxury vinyl plank across 1,420 sqft', cost: 4500 },
-        { name: 'Interior & Exterior Paint', desc: 'Full prep, prime, and paint', cost: 4000 },
-        { name: 'Plumbing & Electrical', desc: 'Panel upgrade & PEX water lines', cost: 3500 },
-        { name: 'Contingency / Misc', desc: 'Unforeseen structural / permits buffer', cost: 4000 }
-      ],
+      rehabItems: [],
       comps: []
     };
   },
@@ -289,6 +286,19 @@ export default {
       return Math.max(0, this.investorPurchaseCeiling - this.targetWholesaleFee);
     }
   },
+  methods: {
+    addStandardRehabItems() {
+      this.rehabItems = [
+        { name: 'Roof Replacement', desc: 'Architectural shingle tear-off', cost: 0 },
+        { name: 'HVAC System', desc: '3-Ton 14 SEER Heat Pump & Ducts', cost: 0 },
+        { name: 'Kitchen Remodel', desc: 'Shaker cabinets, granite counters, sink', cost: 0 },
+        { name: 'Bathrooms', desc: 'Tile surrounds, vanities, fixtures', cost: 0 },
+        { name: 'Flooring (LVP)', desc: 'Luxury vinyl plank across living areas', cost: 0 },
+        { name: 'Paint & Prep', desc: 'Full interior/exterior prime & paint', cost: 0 },
+        { name: 'Plumbing & Electrical', desc: 'Panel & supply line upgrades', cost: 0 },
+        { name: 'Contingency / Misc', desc: 'Permits & structural buffer', cost: 0 }
+      ];
+    },
     showToast(title, message, type = 'info') {
       if (typeof window !== 'undefined') {
         if (window.showHushHawkToast) {
@@ -351,6 +361,7 @@ export default {
       }
       this.isExportModalOpen = false;
     }
+  }
 };
 </script>
 

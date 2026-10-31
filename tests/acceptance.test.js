@@ -5,6 +5,9 @@
  */
 
 import assert from 'assert';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { renderCrownKey, validateCrownKeyFormat, normalizeParcelMatch } from '../packages/crownkey/index.js';
 import { evaluateIdentityLadder, LADDER_RUNGS } from '../packages/identity/index.js';
 import { EventService } from '../backend/src/services/eventService.js';
@@ -12,6 +15,19 @@ import { ComplianceService } from '../backend/src/services/complianceService.js'
 import { GraphService } from '../backend/src/services/graphService.js';
 import { CrmService } from '../backend/src/services/crmService.js';
 import { db } from '../backend/src/store/database.js';
+
+const __test_filename = fileURLToPath(import.meta.url);
+const __test_dirname = path.dirname(__test_filename);
+const STORE_PATH = path.resolve(__test_dirname, '../backend/data/canonical_store.json');
+let snapshotStore = null;
+if (fs.existsSync(STORE_PATH)) {
+    snapshotStore = fs.readFileSync(STORE_PATH, 'utf8');
+}
+process.on('exit', () => {
+    if (snapshotStore) {
+        fs.writeFileSync(STORE_PATH, snapshotStore, 'utf8');
+    }
+});
 
 console.log('🦅 Running HushHawk 12 Platform Acceptance Tests...\n');
 
@@ -68,6 +84,14 @@ console.log(`  ✓ Pass: Allocated sequential numbers: ${num1} -> ${num2} via ro
 // 5. Events & Counters: Same Event From Two Sources Reuses Event & Adds Evidence
 // ----------------------------------------------------------------------------
 console.log('[Test 5] Same Event From Two Sources Reuses Event Identity and Adds Evidence');
+const initEv = EventService.recordPillarEvent({
+    propertyId: testPropId,
+    pillarCode: 'FC',
+    caseReference: '16-2026-CA-004819',
+    externalEventId: '16-2026-CA-004819',
+    sourceRecordId: 'sr-feed-initial',
+    evidenceNotes: 'Initial clerk filing',
+});
 const res1 = EventService.recordPillarEvent({
     propertyId: testPropId,
     pillarCode: 'FC',
@@ -77,7 +101,7 @@ const res1 = EventService.recordPillarEvent({
     evidenceNotes: 'Court clerk feed',
 });
 assert.strictEqual(res1.isNew, false); // Existing event reused!
-assert.strictEqual(res1.event.event_number, 1); // Counter NOT bumped!
+assert.strictEqual(res1.event.event_number, initEv.event.event_number); // Counter NOT bumped!
 console.log('  ✓ Pass: Second source attached evidence without creating duplicate event');
 
 // ----------------------------------------------------------------------------
@@ -149,7 +173,7 @@ console.log('  ✓ Pass: Original source MAIL locked; subsequent touches recorde
 // 9. Compliance: Suppressed Contacts Excluded from Outbound Actions
 // ----------------------------------------------------------------------------
 console.log('[Test 9] Outbound Compliance Gate Blocks Suppressed / DNC Records');
-// James Halpert has phone (904) 555-0744 on the suppression list
+ComplianceService.addSuppression({ type: 'PHONE', value: '(904) 555-0744', reason: 'DNC' });
 const blockedGate = ComplianceService.evaluateOutboundRequest({
     channel: 'CALL',
     recipientPhone: '(904) 555-0744',

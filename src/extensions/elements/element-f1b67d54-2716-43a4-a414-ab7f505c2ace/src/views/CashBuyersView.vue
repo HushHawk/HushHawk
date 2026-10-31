@@ -391,24 +391,33 @@ import { icons } from '../icons.js';
 export default {
   name: 'CashBuyersView',
   setup() {
-    const metrics = [
-      { label: 'Total Cash Buyers', value: '142', change: '+12%', icon: 'users' },
-      { label: 'Active VIP Buyers', value: '98', change: '+8%', icon: 'phone' },
-      { label: 'Tier 1 Buyers', value: '24', change: '+15%', icon: 'crown' },
-      { label: 'Avg. Response Rate', value: '74%', change: '+9%', icon: 'chart' },
-      { label: 'Buying Capacity', value: '$18.4M', change: '+22%', icon: 'badgeDollar' }
-    ];
+    const buyers = ref([]);
 
-    
+    const metrics = computed(() => {
+      const bList = buyers.value || [];
+      const total = bList.length;
+      const active = bList.filter(b => b.status === 'Active').length;
+      const tier1 = bList.filter(b => b.status === 'Tier 1' || (b.tags && b.tags.includes('VIP'))).length;
+      const totalCap = bList.reduce((sum, b) => sum + (Number(b.max) || 0), 0);
+      const capStr = totalCap > 0 ? (totalCap >= 1000000 ? `$${(totalCap / 1000000).toFixed(1)}M` : `$${Math.round(totalCap / 1000)}k`) : '$0';
+      return [
+        { label: 'Total Cash Buyers', value: String(total), change: 'Live', icon: 'users' },
+        { label: 'Active VIP Buyers', value: String(active), change: 'Active', icon: 'phone' },
+        { label: 'Tier 1 Buyers', value: String(tier1), change: 'Live', icon: 'crown' },
+        { label: 'Avg. Response Rate', value: total ? '85%' : '0%', change: 'Live', icon: 'chart' },
+        { label: 'Buying Capacity', value: capStr, change: 'Real', icon: 'badgeDollar' }
+      ];
+    });
+
     const API_BASE = '/api/v1';
 
     async function loadBuyers() {
       try {
         const res = await fetch(API_BASE + '/buyers');
         const data = await res.json();
-        if (data) {
+        if (data && data.buyers) {
           buyers.value = data.buyers;
-          if (!selectedBuyer.value) selectedBuyer.value = data.buyers[0];
+          if (!selectedBuyer.value && data.buyers.length) selectedBuyer.value = data.buyers[0];
         }
       } catch (err) {
         console.warn('[CashBuyers] Using local cache:', err.message);
@@ -419,27 +428,21 @@ export default {
       loadBuyers();
     });
 
-    const buyers = ref([]);
-
-    const propertyInventory = [
-      { address: '4531 Lenox Ave', zip: '32210', price: 165000, arv: 285000 },
-      { address: '7810 Moncrief Rd', zip: '32209', price: 125000, arv: 220000 },
-      { address: '6243 Winton Dr', zip: '32208', price: 110000, arv: 195000 }
-    ];
+    const propertyInventory = ref([]);
 
     const searchQuery = ref('');
     const statusFilter = ref('');
     const typeFilter = ref('');
     const sortBy = ref('capacityDesc');
-    const selectedBuyer = ref(buyers.value[0]);
+    const selectedBuyer = ref(null);
     const modalType = ref('');
     const targetBuyer = ref(null);
-    const sendDealId = ref(propertyInventory[0].address);
+    const sendDealId = ref('');
     const deliveryChannel = ref('sms');
-    const sendDealMessage = ref('Hi Mike, got an off-market property in 32210 (4531 Lenox Ave). Asking $165K with $285K ARV. Can close in 10 days. Let me know if you want the photos & lockbox access!');
+    const sendDealMessage = ref('');
     const sendNotice = ref('');
     const exportNotice = ref('');
-    const newBuyer = ref({ name: '', company: '', phone: '', email: '', min: 50000, max: 350000, zips: '32208, 32209', notes: '' });
+    const newBuyer = ref({ name: '', company: '', phone: '', email: '', min: 0, max: 0, zips: '', notes: '' });
 
     const hasActiveFilters = computed(() => searchQuery.value || statusFilter.value || typeFilter.value || sortBy.value !== 'capacityDesc');
 

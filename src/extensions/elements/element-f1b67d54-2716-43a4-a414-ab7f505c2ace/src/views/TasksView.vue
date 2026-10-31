@@ -258,12 +258,6 @@ export default {
       priorityFilter: '',
       assigneeFilter: '',
       isAddModalOpen: false,
-      metrics: [
-        { label: 'Open Tasks', value: '18', change: '8 on track', icon: 'tasks' },
-        { label: 'Due Today', value: '7', change: 'Escrow heavy', icon: 'clock' },
-        { label: 'Overdue Milestones', value: '2', change: '-1 resolved', icon: 'bell' },
-        { label: 'Completed This Week', value: '41', change: '+18% velocity', icon: 'check' }
-      ],
       newTask: {
         title: '',
         deal: '',
@@ -277,6 +271,19 @@ export default {
     };
   },
   computed: {
+    metrics() {
+      const list = this.tasks || [];
+      const open = list.filter(t => !t.done).length;
+      const dueToday = list.filter(t => (t.dueDate || '').toLowerCase().includes('today')).length;
+      const overdue = list.filter(t => (t.dueDate || '').toLowerCase().includes('overdue')).length;
+      const completed = list.filter(t => t.done).length;
+      return [
+        { label: 'Open Tasks', value: String(open), change: open ? 'Active' : '0 on track', icon: 'tasks' },
+        { label: 'Due Today', value: String(dueToday), change: dueToday ? 'Action needed' : 'Clear', icon: 'clock' },
+        { label: 'Overdue Milestones', value: String(overdue), change: overdue ? 'Attention' : 'None', icon: 'bell' },
+        { label: 'Completed This Week', value: String(completed), change: completed ? `+${completed}` : '0', icon: 'check' }
+      ];
+    },
     hasActiveFilters() {
       return Boolean(this.searchQuery || this.categoryFilter || this.priorityFilter || this.assigneeFilter);
     },

@@ -428,19 +428,26 @@ export default {
         motivation: 'Hot',
         channel: 'Call',
         lastOffer: null,
-        arv: 240000,
+        arv: 0,
         notes: ''
       },
-      metrics: [
-        { label: 'Follow-Ups Due Today', value: '14', change: '+3 today', icon: 'clock' },
-        { label: 'Hot Seller Leads', value: '8', change: '80%+ close prob', icon: 'zap' },
-        { label: 'Overdue Touches', value: '3', change: '-4 cleared', icon: 'bell' },
-        { label: 'Completed This Week', value: '62', change: '+22% pace', icon: 'check' }
-      ],
       followUps: []
     };
   },
   computed: {
+    metrics() {
+      const list = this.followUps || [];
+      const dueToday = list.filter(item => (item.dueStatus || '').toLowerCase() === 'today' || (item.dueText || '').toLowerCase().includes('today')).length;
+      const hot = list.filter(item => (item.motivation || '').toLowerCase() === 'hot').length;
+      const overdue = list.filter(item => (item.dueStatus || '').toLowerCase() === 'overdue').length;
+      const completed = list.filter(item => item.done).length;
+      return [
+        { label: 'Follow-Ups Due Today', value: String(dueToday), change: dueToday ? 'Action needed' : '0 today', icon: 'clock' },
+        { label: 'Hot Seller Leads', value: String(hot), change: hot ? 'High priority' : '0 leads', icon: 'zap' },
+        { label: 'Overdue Touches', value: String(overdue), change: overdue ? 'Attention' : 'None', icon: 'bell' },
+        { label: 'Completed This Week', value: String(completed), change: completed ? `+${completed}` : '0', icon: 'check' }
+      ];
+    },
     hasActiveFilters() {
       return Boolean(this.searchQuery || this.urgencyFilter || this.motivationFilter || this.channelFilter);
     },
