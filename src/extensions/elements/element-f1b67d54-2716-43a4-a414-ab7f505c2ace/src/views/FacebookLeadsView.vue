@@ -281,16 +281,23 @@ export default {
       scoreFilter: '',
       stageFilter: '',
       selectedLead: null,
-      metrics: [
-        { label: 'Leads Ingested (30d)', value: '114', change: '+28 vs last mo', icon: 'facebook' },
-        { label: 'Avg Cost Per Lead (CPL)', value: '$35.96', change: '-$4.20 efficiency', icon: 'dollar' },
-        { label: 'Qualified Motivation Rate', value: '62%', change: '71 Hot/Warm', icon: 'trendingUp' },
-        { label: 'Contracts Executed', value: '6 Deals', change: '$148k projected', icon: 'badgeDollar' }
-      ],
       leads: []
     };
   },
   computed: {
+    metrics() {
+      const list = this.leads || [];
+      const total = list.length;
+      const hotCount = list.filter(l => (l.score || 0) >= 80).length;
+      const qualifiedRate = total ? Math.round((hotCount / total) * 100) + '%' : '0%';
+      const closedCount = list.filter(l => (l.stage || '').toLowerCase().includes('closed') || (l.stage || '').toLowerCase().includes('contract')).length;
+      return [
+        { label: 'Leads Ingested (30d)', value: total.toLocaleString(), change: total ? 'Active' : '0 leads', icon: 'facebook' },
+        { label: 'Avg Cost Per Lead (CPL)', value: '$0.00', change: '0% efficiency', icon: 'dollar' },
+        { label: 'Qualified Motivation Rate', value: qualifiedRate, change: `${hotCount} Hot/Warm`, icon: 'trendingUp' },
+        { label: 'Contracts Executed', value: `${closedCount} Deals`, change: '$0 projected', icon: 'badgeDollar' }
+      ];
+    },
     hasActiveFilters() {
       return Boolean(this.searchQuery || this.campaignFilter || this.scoreFilter || this.stageFilter);
     },

@@ -29,6 +29,9 @@
         </div>
 
         <div class="thread-list">
+          <div v-if="filteredThreads.length === 0" style="padding: 24px; text-align: center; color: #64748b; font-size: 13px;">
+            No conversation threads found.
+          </div>
           <div
             v-for="th in filteredThreads"
             :key="th.id"
@@ -134,6 +137,10 @@
               Send
             </button>
           </div>
+        </div>
+        <div v-if="!activeThread" class="chat-empty" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #64748b; gap: 12px; padding: 40px;">
+          <span v-html="icons.mail" style="transform: scale(1.6); opacity: 0.5;"></span>
+          <p style="margin: 0; font-size: 14px;">Select a thread or start a new conversation.</p>
         </div>
       </div>
 

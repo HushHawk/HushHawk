@@ -198,6 +198,9 @@
             <h4>Top Buyer Matches for {{ selectedContract.zip }}</h4>
           </div>
           <div class="buyer-match-list">
+            <div v-if="!topBuyerMatches.length" style="padding: 16px; color: #64748b; font-size: 13px; text-align: center;">
+              No buyer matches found for this contract.
+            </div>
             <div v-for="b in topBuyerMatches" :key="b.id" class="buyer-match-card">
               <div class="buyer-match-info">
                 <strong>{{ b.name }} ({{ b.company }})</strong>
@@ -398,15 +401,23 @@ import { icons } from '../icons.js';
 export default {
   name: 'DispositionsView',
   setup() {
-    const metrics = [
-      { label: 'Contracts in Dispo', value: '36', change: '+29%', icon: 'file' },
-      { label: 'Avg. Assignment Fee', value: '$28,400', change: '+18%', icon: 'badgeDollar' },
-      { label: 'Active Buyer Matches', value: '142', change: '+25%', icon: 'users' },
-      { label: 'Clear to Close', value: '14', change: '+16%', icon: 'check' },
-      { label: 'Total Spread Pending', value: '$642,000', change: '+34%', icon: 'crown' }
-    ];
+    const contracts = ref([]);
 
-    
+    const metrics = computed(() => {
+      const list = contracts.value || [];
+      const total = list.length;
+      const totalFee = list.reduce((acc, c) => acc + ((c.askingPrice || 0) - (c.contractPrice || 0)), 0);
+      const avgFee = total ? Math.round(totalFee / total) : 0;
+      const clearToClose = list.filter(c => (c.status || '').toLowerCase().includes('clear') || (c.status || '').toLowerCase().includes('close')).length;
+      return [
+        { label: 'Contracts in Dispo', value: total.toLocaleString(), change: total ? 'Active' : '0 contracts', icon: 'file' },
+        { label: 'Avg. Assignment Fee', value: `$${avgFee.toLocaleString()}`, change: '0%', icon: 'badgeDollar' },
+        { label: 'Active Buyer Matches', value: '0', change: '0%', icon: 'users' },
+        { label: 'Clear to Close', value: clearToClose.toLocaleString(), change: '0%', icon: 'check' },
+        { label: 'Total Spread Pending', value: `$${totalFee.toLocaleString()}`, change: '0%', icon: 'crown' }
+      ];
+    });
+
     const API_BASE = '/api/v1';
 
     async function loadDispoContracts() {
@@ -415,7 +426,7 @@ export default {
         const data = await res.json();
         if (data) {
           // Merge dynamic contracts with dispo attributes
-          const mapped = data.contracts.map(c => ({
+          const mapped = (data.contracts || []).map(c => ({
             id: c.id,
             address: c.address,
             zip: c.zip || '32210',
@@ -423,18 +434,18 @@ export default {
             beds: c.beds || 3,
             baths: c.baths || 2,
             sqft: c.sqft || 1400,
-            contractPrice: c.buyPrice || 115000,
-            askingPrice: (c.buyPrice || 115000) + (c.fee || 30000),
+            contractPrice: c.buyPrice || 0,
+            askingPrice: (c.buyPrice || 0) + (c.fee || 0),
             titleCompany: c.titleAgency || 'First American Title Jax',
-            emdStatus: 'Verified ($2,500)',
-            daysLeft: 10,
-            matchedBuyersCount: 14,
+            emdStatus: 'Pending',
+            daysLeft: 0,
+            matchedBuyersCount: 0,
             status: c.status || 'Under Contract',
             statusClass: c.statusClass || 'status-contract',
             milestones: c.milestones || []
           }));
           contracts.value = mapped;
-          if (!selectedContract.value) selectedContract.value = mapped[0];
+          if (!selectedContract.value) selectedContract.value = mapped[0] || null;
         }
       } catch (err) {
         console.warn('[Dispositions] Using local cache:', err.message);
@@ -445,27 +456,21 @@ export default {
       loadDispoContracts();
     });
 
-    const contracts = ref([]);;
-
-    const topBuyerMatches = [
-      { id: 'b1', name: 'Mike Williams', company: 'Mike Williams Capital', max: 300000, types: 'SFR, Cash, Fast Close', matchScore: 98 },
-      { id: 'b2', name: 'Sarah Mitchell', company: 'Mitchell Investments', max: 500000, types: 'SFR, Light Reno', matchScore: 94 },
-      { id: 'b3', name: 'David Chen', company: 'Chen Capital Group', max: 750000, types: 'SFR, Multi, Value-Add', matchScore: 91 }
-    ];
+    const topBuyerMatches = ref([]);
 
     const searchQuery = ref('');
     const statusFilter = ref('');
     const zipFilter = ref('');
     const sortBy = ref('spreadDesc');
-    const selectedContract = ref(contracts.value[0]);
+    const selectedContract = ref(null);
     const modalType = ref('');
-    const blastPropertyId = ref(contracts.value[0].id);
+    const blastPropertyId = ref('');
     const blastAudience = ref('matching');
-    const blastMessage = ref('OFF-MARKET WHOLESALE DEAL: 4531 Lenox Ave, Jacksonville FL 32210. 3b/2ba, 1,420 sqft. Asking $165K (ARV $285K). Light rehab. Clean title in escrow. Reply for walkthrough access & packet!');
+    const blastMessage = ref('');
     const blastNotice = ref('');
     const activeAssignContract = ref(null);
-    const assignForm = ref({ buyerId: 'b1', fee: 35000, emd: 5000, fileNumber: 'FAT-JAX-2026-8819' });
-    const newContract = ref({ address: '', zip: '32208', contractPrice: 80000, askingPrice: 110000, titleCompany: 'First American Title Jax', daysLeft: 10 });
+    const assignForm = ref({ buyerId: '', fee: 0, emd: 0, fileNumber: '' });
+    const newContract = ref({ address: '', zip: '32208', contractPrice: 0, askingPrice: 0, titleCompany: '', daysLeft: 0 });
 
     const uniqueZips = computed(() => [...new Set(contracts.value.map(c => c.zip))]);
 

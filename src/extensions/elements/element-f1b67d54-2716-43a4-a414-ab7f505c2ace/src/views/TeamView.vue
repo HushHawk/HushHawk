@@ -445,13 +445,6 @@ export default {
       selectedMember: null,
       activeModal: null,
       editingMember: null,
-      metrics: [
-        { label: 'Active Team Roster', value: '8 Members', change: '+2', note: 'Q4 growth', icon: 'users' },
-        { label: 'Contracts Locked (MTD)', value: '14 Contracts', change: '+28%', note: 'vs last month', icon: 'file' },
-        { label: 'Closed & Funded (MTD)', value: '9 Deals', change: '+18%', note: 'closing velocity', icon: 'check' },
-        { label: 'Wholesale Net Volume', value: '$248,500', change: '+32%', note: 'gross spreads', icon: 'badgeDollar' },
-        { label: 'Avg Days to Close', value: '16.4 Days', change: '-2.1d', note: 'cycle reduction', icon: 'clock' }
-      ],
       members: [],
       newMember: {
         name: '',
@@ -467,6 +460,20 @@ export default {
     };
   },
   computed: {
+    metrics() {
+      const list = this.members || [];
+      const totalMembers = list.length;
+      const contractsLocked = list.reduce((acc, m) => acc + (Number(m.stats?.contracts) || 0), 0);
+      const closedDeals = list.reduce((acc, m) => acc + (Number(m.stats?.closed) || 0), 0);
+      const totalVolume = list.reduce((acc, m) => acc + (Number(m.stats?.volume) || 0), 0);
+      return [
+        { label: 'Active Team Roster', value: `${totalMembers} Members`, change: totalMembers ? '+0' : '0', note: 'team size', icon: 'users' },
+        { label: 'Contracts Locked (MTD)', value: `${contractsLocked} Contracts`, change: contractsLocked ? '+0%' : '0%', note: 'pipeline pace', icon: 'file' },
+        { label: 'Closed & Funded (MTD)', value: `${closedDeals} Deals`, change: closedDeals ? '+0%' : '0%', note: 'closing velocity', icon: 'check' },
+        { label: 'Wholesale Net Volume', value: `$${totalVolume.toLocaleString()}`, change: totalVolume ? '+0%' : '0%', note: 'gross spreads', icon: 'badgeDollar' },
+        { label: 'Avg Days to Close', value: '0 Days', change: '0d', note: 'cycle reduction', icon: 'clock' }
+      ];
+    },
     filteredMembers() {
       const q = this.searchQuery.toLowerCase().trim();
       return this.members

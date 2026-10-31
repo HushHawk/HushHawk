@@ -294,12 +294,6 @@ export default {
       statusFilter: '',
       selectedContact: null,
       isAddModalOpen: false,
-      metrics: [
-        { label: 'Total Rolodex Contacts', value: '1,248', change: '+38 this month', icon: 'users' },
-        { label: 'VIP Cash Buyers', value: '142', change: '$48M+ verified POF', icon: 'dollar' },
-        { label: 'Active Sellers', value: '84', change: '24 in negotiation', icon: 'house' },
-        { label: 'Title & Lenders', value: '22', change: 'Preferred vendors', icon: 'shield' }
-      ],
       newContact: {
         name: '',
         company: '',
@@ -313,6 +307,19 @@ export default {
     };
   },
   computed: {
+    metrics() {
+      const list = this.contacts || [];
+      const total = list.length;
+      const buyers = list.filter(c => (c.type || '').toLowerCase().includes('buyer')).length;
+      const sellers = list.filter(c => (c.type || '').toLowerCase().includes('seller')).length;
+      const vendors = list.filter(c => (c.type || '').toLowerCase().includes('title') || (c.type || '').toLowerCase().includes('lender') || (c.type || '').toLowerCase().includes('vendor')).length;
+      return [
+        { label: 'Total Rolodex Contacts', value: total.toLocaleString(), change: total ? 'Active' : '0 contacts', icon: 'users' },
+        { label: 'VIP Cash Buyers', value: buyers.toLocaleString(), change: buyers ? 'Active' : '0 verified', icon: 'dollar' },
+        { label: 'Active Sellers', value: sellers.toLocaleString(), change: sellers ? 'Active' : '0 leads', icon: 'house' },
+        { label: 'Title & Lenders', value: vendors.toLocaleString(), change: 'Preferred vendors', icon: 'shield' }
+      ];
+    },
     hasActiveFilters() {
       return Boolean(this.searchQuery || this.typeFilter || this.statusFilter);
     },

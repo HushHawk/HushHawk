@@ -128,6 +128,11 @@
               </tr>
             </thead>
             <tbody>
+              <tr v-if="!auditLogs.length">
+                <td colspan="6" style="text-align: center; color: #64748b; padding: 28px;">
+                  No automation events executed yet. Trigger a workflow manually or connect a webhook to stream execution logs in real time.
+                </td>
+              </tr>
               <tr v-for="log in auditLogs" :key="log.id">
                 <td class="font-mono text-muted">#{{ log.id }}</td>
                 <td><strong>{{ log.workflow }}</strong></td>

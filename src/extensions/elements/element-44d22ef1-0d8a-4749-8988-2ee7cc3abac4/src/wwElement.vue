@@ -70,38 +70,27 @@
 
       <button class="notification-btn" @click.stop="isNotifOpen = !isNotifOpen" aria-label="Notifications">
         <span class="icon" v-html="icons.bell"></span>
-        <span class="notif-badge">3</span>
+        <span v-if="notifications.length" class="notif-badge">{{ notifications.length }}</span>
       </button>
 
       <!-- Notifications Modal / Dropdown -->
       <div v-if="isNotifOpen" class="notif-dropdown" @click.stop>
         <div class="notif-head">
           <strong>Escrow &amp; Pipeline Alerts</strong>
-          <span class="badge-sub">3 unread</span>
+          <span class="badge-sub">{{ notifications.length }} unread</span>
         </div>
-        <div class="notif-item">
-          <span class="notif-icon green" v-html="icons.check"></span>
-          <div>
-            <strong>First American Title: Wire Disbursed</strong>
-            <p>$32,500 assignment fee funded for 4812 Moncrief Rd.</p>
-            <small>12 mins ago</small>
+        <div v-if="notifications.length">
+          <div v-for="n in notifications" :key="n.id" class="notif-item">
+            <span class="notif-icon" :class="n.color" v-html="icons[n.icon] || icons.check"></span>
+            <div>
+              <strong>{{ n.title }}</strong>
+              <p>{{ n.body }}</p>
+              <small>{{ n.time }}</small>
+            </div>
           </div>
         </div>
-        <div class="notif-item">
-          <span class="notif-icon gold" v-html="icons.file"></span>
-          <div>
-            <strong>DocuSign PSA Executed</strong>
-            <p>Ronald Campbell signed PSA for $110,000 cash.</p>
-            <small>1 hr ago</small>
-          </div>
-        </div>
-        <div class="notif-item">
-          <span class="notif-icon cyan" v-html="icons.phone"></span>
-          <div>
-            <strong>Hot Seller Lead Ingested</strong>
-            <p>Travis Holloway (Duval Probate) score 94/100.</p>
-            <small>2 hrs ago</small>
-          </div>
+        <div v-else style="padding: 24px; text-align: center; color: #64748b; font-size: 11px;">
+          No unread alerts. Pipeline updates and escrow notifications will stream here.
         </div>
       </div>
 
@@ -148,8 +137,8 @@
      </template><p v-else class="empty">Select a lead to view its profile.</p>
     </section>
     <div class="messages-grid">
-     <section class="panel texts"><div class="panel-heading"><h2><span class="icon" v-html="icons.text"></span>Text Messages</h2><a href="/communications" @click="guard">View All ↗</a></div><template v-if="selected"><div class="message-contact"><span class="avatar">{{initials(selected.name)}}</span><div><strong>{{selected.name}}</strong><span>{{selected.phone||'No phone saved'}}</span></div><small>{{dateLabel(selected.date)}} · Live</small></div><div class="bubbles"><div v-for="(msg,i) in messages" :key="i" :class="{outgoing:msg.out}"><p>{{msg.body}}</p><time>{{msg.time}}</time></div></div><form class="composer" @submit.prevent="keepDraft"><input ref="smsInput" v-model="smsDraft" :disabled="isEditing" placeholder="Write a draft…" aria-label="SMS draft"><button :disabled="isEditing||!smsDraft.trim()">Keep draft</button></form><p class="draft-note">{{draftNotice||'Twilio SMS dispatch ready'}}</p></template></section>
-     <section class="panel email-summary"><div class="panel-heading"><h2><span class="icon" v-html="icons.mail"></span>Email Summary</h2><button @click="openModal('email')">View All</button></div><template v-if="selected"><div class="email-meta"><span class="icon" v-html="icons.mail"></span><div><p>To: {{selected.email||'No email saved'}}</p><p>Subject: Follow Up on {{selected.address}}</p><time>{{dateLabel(selected.date)}} · 9:45 AM</time></div></div><div class="email-body"><p>Hi {{firstName}},</p><p>Thanks for taking the time to speak with me today. As discussed, I’m a local real estate investor and I’m interested in purchasing your property at {{selected.address}}, {{selected.city}}, FL {{selected.zip}}.</p><p>I’ll be stopping by on Thursday at 10 AM to take a look at the property. If you have any questions in the meantime, feel free to reply to this email or give me a call.</p><p>Best regards,<br>HushHawk Intelligence</p></div><button class="email-draft-button" @click="openModal('email')">Open draft composer →</button></template></section>
+     <section class="panel texts"><div class="panel-heading"><h2><span class="icon" v-html="icons.text"></span>Text Messages</h2><a href="/communications" @click="guard">View All ↗</a></div><template v-if="selected"><div class="message-contact"><span class="avatar">{{initials(selected.name)}}</span><div><strong>{{selected.name}}</strong><span>{{selected.phone||'No phone saved'}}</span></div><small>{{dateLabel(selected.date)}} · Live</small></div><div v-if="messages && messages.length" class="bubbles"><div v-for="(msg,i) in messages" :key="i" :class="{outgoing:msg.out}"><p>{{msg.body}}</p><time>{{msg.time}}</time></div></div><div v-else style="padding: 24px; text-align: center; color: #64748b; font-size: 11px;">No SMS message history for this lead. Type a message below to start a thread.</div><form class="composer" @submit.prevent="keepDraft"><input ref="smsInput" v-model="smsDraft" :disabled="isEditing" placeholder="Write a draft…" aria-label="SMS draft"><button :disabled="isEditing||!smsDraft.trim()">Keep draft</button></form><p class="draft-note">{{draftNotice||'Twilio SMS dispatch ready'}}</p></template></section>
+     <section class="panel email-summary"><div class="panel-heading"><h2><span class="icon" v-html="icons.mail"></span>Email Summary</h2><button @click="openModal('email')">View All</button></div><template v-if="selected"><div v-if="selected.emailSummary" class="email-meta"><span class="icon" v-html="icons.mail"></span><div><p>To: {{selected.email||'No email saved'}}</p><p>Subject: Follow Up on {{selected.address}}</p><time>{{dateLabel(selected.date)}} · 9:45 AM</time></div></div><div v-if="selected.emailSummary" class="email-body"><p>{{selected.emailSummary}}</p></div><div v-else style="padding: 24px; text-align: center; color: #64748b; font-size: 11px;">No emails exchanged with this lead yet.</div><button class="email-draft-button" @click="openModal('email')">Open draft composer →</button></template></section>
     </div>
    </div>
   </div>
@@ -191,7 +180,7 @@ function updateClock(){
   });
 }
 const liveRows=ref([]);
-const mode=ref('live'),previewRows=ref([]),query=ref(''),stage=ref('all'),statusFilter=ref(''),sourceFilter=ref(''),zipFilter=ref(''),sortKey=ref('date'),sortAscending=ref(false),extraFilters=ref(false),checked=ref(['lead-01']),selectedId=ref('lead-01'),navOpen=ref(false),photoFailed=ref(false);
+const mode=ref('live'),previewRows=ref([]),query=ref(''),stage=ref('all'),statusFilter=ref(''),sourceFilter=ref(''),zipFilter=ref(''),sortKey=ref('date'),sortAscending=ref(false),extraFilters=ref(false),checked=ref([]),selectedId=ref(''),navOpen=ref(false),photoFailed=ref(false),notifications=ref([]);
 
 async function loadSellerLeads() {
   try {
@@ -203,6 +192,9 @@ async function loadSellerLeads() {
         if (!selectedId.value || selectedId.value.startsWith('preview') || selectedId.value === 'lead-01') {
           selectedId.value = data.leads[0].id;
         }
+      } else {
+        liveRows.value = [];
+        selectedId.value = '';
       }
     }
   } catch (e) {
@@ -257,7 +249,7 @@ const metrics=computed(()=>[
   {label:'Appointments',value:number(countStage('appointments')),icon:'calendar',change:'Live'},
   {label:'Offers Made',value:number(countStage('offers')),icon:'file',change:'Live'},
   {label:'Under Contract',value:number(countStage('contract')),icon:'handshake',change:'Live'},
-  {label:'Closed (Assigned)',value:'$128,000',icon:'coins',change:'Funded'}
+  {label:'Closed (Assigned)',value:money(countStage('closed') > 0 ? countStage('closed') * 20000 : 0),icon:'coins',change:'Funded'}
 ]);
 const sourceNames=['Direct Mail','Driving for Dollars','County Data','Probate','Website','Bandit Signs','Cold Call','Other'];
 const colors=['#f74764','#ffc145','#20d6a0','#8e78ed','#7533d9','#249dff','#f4ce74','#7790ac'];
@@ -298,7 +290,7 @@ function dateLabel(v){if(!v)return'—';const d=new Date(String(v).length===10?v
 function initials(s){return String(s||'').split(' ').map(p=>p[0]).filter(Boolean).slice(0,2).join('');}
 function statusClass(s){return String(s).toLowerCase().replace(/[^a-z]+/g,'-');}
 const firstName=computed(()=>selected.value?.name?.split(' ')[0]||'there');
-const messages=computed(()=>[{body:'Hey, I want to buy your home. Are you interested in selling?',time:'9:14 AM'},{body:'Yes, I am. What kind of offer are you thinking?',out:true,time:'9:16 AM'},{body:'I’d like to take a look. The house needs some work, but I’m open to a fair offer.',time:'9:21 AM'},{body:'Great! I can schedule a time to come by this week. Does Thursday at 10 AM work for you?',out:true,time:'9:21 AM'},{body:'Yes, that works. See you then.',time:'9:22 AM'}]);
+const messages=computed(()=>selected.value?.messages || []);
 const smsInput=ref(null),smsDraft=ref(''),draftNotice=ref(''),drafts=reactive({});
 watch(selectedId,()=>{smsDraft.value=drafts[selectedId.value]||'';draftNotice.value='';});
 function focusDraft(){if(isEditing.value)return;smsInput.value?.focus();smsInput.value?.scrollIntoView({behavior:'auto',block:'nearest'});}
@@ -314,7 +306,7 @@ function addPreview(){if(isEditing.value||!newLead.name.trim()||!newLead.address
 function addTag(){if(!selected.value||!tagDraft.value.trim())return;if(!selected.value.tags)selected.value.tags=[];if(!selected.value.tags.includes(tagDraft.value.trim()))selected.value.tags.push(tagDraft.value.trim());const r=previewRows.value.find(r=>r.id===selectedId.value);if(r&&!r.tags.includes(tagDraft.value.trim()))r.tags.push(tagDraft.value.trim());closeModal();}
 function keepEmail(){if(isEditing.value)return;drafts['email-'+selectedId.value]={subject:emailSubject.value,body:emailDraft.value};emailNotice.value='Draft kept on this page · not sent';}
 function keepOffer(){if(isEditing.value||offerMAO.value==null)return;drafts['offer-'+selectedId.value]={...offerValues,mao:offerMAO.value};offerNotice.value='Worksheet kept on this page · no offer sent';}
-return{uid,isEditing,icons,navigation,navOpen,heroStyle,mode,metrics,tabs,columns,statuses,query,stage,statusFilter,sourceFilter,zipFilter,sortKey,sortAscending,extraFilters,checked,filtered,selected,selectedIndex,photoUrl,photoFailed,availableSources,sourceChart,donutGradient,allChecked,number,money,dateLabel,statusClass,initials,guard,resetFilters,setMode,setStage,metricAction,sortBy,selectLead,stepLead,toggleRow,toggleAll,changeStatus,onZip,chooseSource,firstName,messages,smsInput,smsDraft,draftNotice,focusDraft,keepDraft,modal,modalTitle,modalBox,closeButton,openModal,closeModal,modalKeys,newLead,addPreview,sourceNames,tagDraft,addTag,emailSubject,emailDraft,emailNotice,keepEmail,offerValues,offerMAO,offerNotice,keepOffer,rows,isQuickAddOpen,isNotifOpen,currentTime};
+return{uid,isEditing,icons,navigation,navOpen,heroStyle,mode,metrics,tabs,columns,statuses,query,stage,statusFilter,sourceFilter,zipFilter,sortKey,sortAscending,extraFilters,checked,filtered,selected,selectedIndex,photoUrl,photoFailed,availableSources,sourceChart,donutGradient,allChecked,number,money,dateLabel,statusClass,initials,guard,resetFilters,setMode,setStage,metricAction,sortBy,selectLead,stepLead,toggleRow,toggleAll,changeStatus,onZip,chooseSource,firstName,messages,smsInput,smsDraft,draftNotice,focusDraft,keepDraft,modal,modalTitle,modalBox,closeButton,openModal,closeModal,modalKeys,newLead,addPreview,sourceNames,tagDraft,addTag,emailSubject,emailDraft,emailNotice,keepEmail,offerValues,offerMAO,offerNotice,keepOffer,rows,isQuickAddOpen,isNotifOpen,currentTime,notifications};
 }};
 </script>
 <style scoped>

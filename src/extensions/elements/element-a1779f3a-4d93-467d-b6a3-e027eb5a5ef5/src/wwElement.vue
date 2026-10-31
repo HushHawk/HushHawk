@@ -110,38 +110,27 @@
 
       <button class="notification-btn" @click.stop="isNotifOpen = !isNotifOpen" aria-label="Notifications">
         <span class="icon" v-html="icons.bell"></span>
-        <span class="notif-badge">3</span>
+        <span v-if="notifications.length" class="notif-badge">{{ notifications.length }}</span>
       </button>
 
       <!-- Notifications Modal / Dropdown -->
       <div v-if="isNotifOpen" class="notif-dropdown" @click.stop>
         <div class="notif-head">
           <strong>Escrow &amp; Pipeline Alerts</strong>
-          <span class="badge-sub">3 unread</span>
+          <span class="badge-sub">{{ notifications.length }} unread</span>
         </div>
-        <div class="notif-item">
-          <span class="notif-icon green" v-html="icons.check"></span>
-          <div>
-            <strong>First American Title: Wire Disbursed</strong>
-            <p>$32,500 assignment fee funded for 4812 Moncrief Rd.</p>
-            <small>12 mins ago</small>
+        <div v-if="notifications.length">
+          <div v-for="n in notifications" :key="n.id" class="notif-item">
+            <span class="notif-icon" :class="n.color" v-html="icons[n.icon] || icons.check"></span>
+            <div>
+              <strong>{{ n.title }}</strong>
+              <p>{{ n.body }}</p>
+              <small>{{ n.time }}</small>
+            </div>
           </div>
         </div>
-        <div class="notif-item">
-          <span class="notif-icon gold" v-html="icons.file"></span>
-          <div>
-            <strong>DocuSign PSA Executed</strong>
-            <p>Ronald Campbell signed PSA for $110,000 cash.</p>
-            <small>1 hr ago</small>
-          </div>
-        </div>
-        <div class="notif-item">
-          <span class="notif-icon cyan" v-html="icons.phone"></span>
-          <div>
-            <strong>Hot Seller Lead Ingested</strong>
-            <p>Travis Holloway (Duval Probate) score 94/100.</p>
-            <small>2 hrs ago</small>
-          </div>
+        <div v-else style="padding: 24px; text-align: center; color: #64748b; font-size: 11px;">
+          No unread alerts. Pipeline updates and escrow notifications will stream here.
         </div>
       </div>
 
@@ -162,14 +151,14 @@
   <div class="primary-grid">
    <article class="panel map-panel"><CountyMap :uid="uid+'-market-map'" :content="{}" @trigger-event="onZip"/></article>
    <article class="panel inbox"><div class="panel-title"><h3><span class="panel-title-icon" v-html="icons.mail"></span> Email Inbox</h3><a href="/communications" @click="guard">View all ↗</a></div><div class="mail-list"><button v-for="(mail,i) in emails" :key="mail.name" :class="{selected:activeEmail===i}" @click="chooseEmail(i)"><span class="mail-dot"></span><div><strong>{{mail.name}}</strong><b>{{mail.subject}}</b><p>{{mail.body}}</p></div><time>{{mail.time}}</time></button></div><div v-if="activeEmail!==null" class="email-preview"><b>{{emails[activeEmail].subject}}</b><p>{{emails[activeEmail].body}}</p><a href="/communications" @click="guard">Open communications →</a></div><div v-else class="panel-note">Choose an email to read it.</div></article>
-   <article class="panel chat"><div class="panel-title"><h3><span class="panel-title-icon" v-html="icons.text"></span> Text Messages</h3><a href="/communications" @click="guard">View all ↗</a></div><div class="contact"><span class="avatar">SM</span><div><strong>Sarah M. <small>(Seller)</small></strong><p>Active conversation</p></div></div><div class="bubbles"><p>Hey, I want to buy your home at 4521 Lenox Ave. Are you interested in selling?</p><p class="outgoing">Yes, I am. What kind of offer are you thinking?</p><p>I can make a cash offer of $72,000 and close in 2 weeks. Does that work for you?</p><p class="outgoing">That sounds good. When can we get started?</p><p>Great! I’ll prepare the next steps.</p></div><form @submit.prevent="saveDraft"><input v-model="draft" :disabled="isEditing" aria-label="Direct message draft" placeholder="Write a draft…"/><button :disabled="!draft.trim()||isEditing">Keep draft</button></form><p class="panel-note" role="status">{{draftStatus||'Twilio SMS connected · ready to dispatch'}}</p></article>
+   <article class="panel chat"><div class="panel-title"><h3><span class="panel-title-icon" v-html="icons.text"></span> Text Messages</h3><a href="/communications" @click="guard">View all ↗</a></div><div v-if="activeChat"><div class="contact"><span class="avatar">{{activeChat.avatar||'SM'}}</span><div><strong>{{activeChat.name}} <small v-if="activeChat.role">({{activeChat.role}})</small></strong><p>{{activeChat.status||'Active conversation'}}</p></div></div><div class="bubbles"><p v-for="(msg,i) in (activeChat.messages||[])" :key="i" :class="{outgoing:msg.outgoing}">{{msg.text}}</p></div></div><div v-else style="padding: 28px 16px; text-align: center; color: #64748b; font-size: 11px;">No active text conversations. Inbound SMS and seller replies will stream here once connected.</div><form @submit.prevent="saveDraft"><input v-model="draft" :disabled="isEditing" aria-label="Direct message draft" placeholder="Write a draft…"/><button :disabled="!draft.trim()||isEditing">Keep draft</button></form><p class="panel-note" role="status">{{draftStatus||'Twilio SMS connected · ready to dispatch'}}</p></article>
    <div class="right-stack"><article class="panel priorities"><div class="panel-title"><h3><span class="panel-title-icon" v-html="icons.check"></span> Today’s Priorities</h3><a href="/tasks" @click="guard">View all ↗</a></div><label v-for="(task,i) in (tasks || [])" :key="task"><input type="checkbox" v-model="checked" :value="i" :disabled="isEditing" @change="onTaskToggle(i)"/><span :class="{done:checked.includes(i)}">{{task}}</span></label><small class="panel-note">{{(checked || []).length}} / {{(tasks || []).length}} complete · on track</small></article><article class="panel imports"><div class="panel-title"><h3><span class="panel-title-icon" v-html="icons.database"></span> County Intelligence</h3></div><div v-for="r in imports" :key="r.name"><span class="check"><span class="tiny-svg" v-html="icons.check"></span></span><strong>{{r.name}}</strong><span>{{r.count}} <small>records</small></span></div><a href="/county-data" @click="guard">Review county data →</a></article></div>
   </div>
   <div class="secondary-grid">
    <article class="panel pipeline"><div class="panel-title"><h3><span class="panel-title-icon" v-html="icons.zap"></span> Lead → Funded</h3><span>12 milestones</span></div><div class="stage-grid"><a v-for="(stage,i) in stages" :key="stage" :href="i<4?'/acquisitions':i<8?'/contracts':'/dispositions'" @click="guard" :style="{'--stage':stageColors[i]}" :title="stage"><strong>{{String(i+1).padStart(2,'0')}}</strong><span>{{stage}}</span></a></div><div class="pipeline-footer">BUILD MOMENTUM <span>12 · CLOSED + FUNDED</span></div></article>
    <article class="panel leads"><div class="panel-title"><h3><span class="panel-title-icon" v-html="icons.users"></span> Recent Seller Leads</h3><a href="/seller-leads" @click="guard">View all ↗</a></div><table><thead><tr><th>Name</th><th>Property</th><th>ZIP</th><th>Status</th></tr></thead><tbody><tr v-for="r in (filteredLeads || [])" :key="r.name"><td>{{r.name}}</td><td><a href="/seller-leads" @click="guard">{{r.address}}</a></td><td>{{r.zip}}</td><td><span :class="'status '+r.status">{{r.status}}</span></td></tr></tbody></table><p v-if="!((filteredLeads || []).length)" class="panel-note">No matching leads.</p><button v-if="zip" class="clear-filter" @click="clearZip">ZIP {{zip}} × Clear</button></article>
    <article class="panel sources"><div class="panel-title"><h3><span class="panel-title-icon" v-html="icons.pieChart"></span> Lead Source Mix</h3><span>Live Ingestion</span></div><div class="source-body"><div class="donut"><div><strong>{{ metrics[0]?.value || '44' }}</strong><small>Total leads</small></div></div><ul><li v-for="s in sources" :key="s.name"><i :style="{background:s.color}"></i><span>{{s.name}}</span><b>{{s.value}}%</b></li></ul></div></article>
-   <article class="panel analyzer"><div class="panel-title"><h3><span class="panel-title-icon" v-html="icons.calculator"></span> Deal Snapshot</h3><a href="/deal-analyzer" @click="guard">Analyze ↗</a></div><strong class="property">4521 Lenox Ave</strong><p>Jacksonville, FL 32208</p><dl><div><dt>After-repair value</dt><dd>$198,000</dd></div><div><dt>Estimated repairs</dt><dd>$35,000</dd></div><div><dt>Purchase price</dt><dd>$72,000</dd></div></dl><div class="profit"><span>Illustrative spread*</span><strong>$91,000</strong></div><small>*ARV − purchase − repairs; before fees &amp; costs.</small></article>
+   <article class="panel analyzer"><div class="panel-title"><h3><span class="panel-title-icon" v-html="icons.calculator"></span> Deal Snapshot</h3><a href="/deal-analyzer" @click="guard">Analyze ↗</a></div><div v-if="activeSnapshot"><strong class="property">{{activeSnapshot.address}}</strong><p>{{activeSnapshot.cityStateZip}}</p><dl><div><dt>After-repair value</dt><dd>{{money(activeSnapshot.arv)}}</dd></div><div><dt>Estimated repairs</dt><dd>{{money(activeSnapshot.repairs)}}</dd></div><div><dt>Purchase price</dt><dd>{{money(activeSnapshot.purchase)}}</dd></div></dl><div class="profit"><span>Illustrative spread*</span><strong>{{money(activeSnapshot.spread)}}</strong></div><small>*ARV − purchase − repairs; before fees &amp; costs.</small></div><div v-else style="padding: 28px 16px; text-align: center; color: #64748b; font-size: 11px;">No deals currently underwritten. Use the Deal Analyzer to calculate MAO, repair budgets, and spreads.</div></article>
   </div>
   <section class="pulse"><div class="pulse-heading"><strong><i></i> CAPITAL DESK</strong><div class="feed-tabs"><button :class="{active:feedMode==='deals'}" @click="!isEditing&&(feedMode='deals')">Deal Pulse</button><button :class="{active:feedMode==='markets'}" @click="!isEditing&&(feedMode='markets')">Market Watch</button></div><span v-if="feedMode==='deals'">LIVE CRM SIGNALS</span><button v-if="feedMode==='deals'" @click="!isEditing&&(paused=!paused)" :aria-pressed="paused">{{paused?'Resume':'Pause'}}</button></div><div class="tape-window" v-show="feedMode==='deals'"><div class="tape" :class="{paused}"><span v-for="(item,i) in signalTape" :key="i" :aria-hidden="i>=signalsCount"><b>{{item.code}}</b> {{item.label}} <strong>{{item.value}}</strong><em>▲ {{item.change}}</em></span></div></div></section>
   <section class="market-tape" v-show="feedMode==='markets'"><div class="market-label"><b>MARKET WATCH</b><span>External quotes · timing varies by exchange</span><a href="https://www.tradingview.com/markets/" target="_blank" rel="noopener noreferrer">TradingView ↗</a></div><div ref="marketHost" class="tradingview-widget-container"><div class="market-placeholder">{{marketError?'Market feed unavailable. Open TradingView ↗':'Loading market quotes…'}}</div></div></section>
@@ -205,19 +194,22 @@ const feedMode=ref('markets');const query=ref(''),zip=ref(''),checked=ref([]),dr
 const isQuickAddOpen=ref(false),isNotifOpen=ref(false),currentTime=ref('09:42 AM');
 let clickOutsideHandler=null;
 const metrics=ref([
-  {iconKey:'users',label:'Total Seller Leads',value:'4',change:'Live',href:'/seller-leads'},
-  {iconKey:'phone',label:'Contact Rate',value:'100%',change:'Active',href:'/communications'},
-  {iconKey:'calendar',label:'Appointments Set',value:'4',change:'Live',href:'/calendar'},
-  {iconKey:'file',label:'Offers Pending',value:'2',change:'Active',href:'/acquisitions'},
-  {iconKey:'handshake',label:'Under Contract',value:'4',change:'Live',href:'/contracts'},
-  {iconKey:'badgeDollar',label:'Assignment Revenue',value:'$128,000',change:'Live',href:'/analytics'},
-  {iconKey:'calculator',label:'Avg. MAO',value:'$91,750',change:'Real',href:'/deal-analyzer'},
-  {iconKey:'house',label:'Avg. ARV',value:'$154,688',change:'Real',href:'/deal-analyzer'},
-  {iconKey:'users',label:'Cash Buyer Matches',value:'6',change:'Live',href:'/cash-buyers'},
-  {iconKey:'dollar',label:'Dispo Opportunities',value:'4',change:'Live',href:'/dispositions'}
+  {iconKey:'users',label:'Total Seller Leads',value:'0',change:'Live',href:'/seller-leads'},
+  {iconKey:'phone',label:'Contact Rate',value:'0%',change:'Active',href:'/communications'},
+  {iconKey:'calendar',label:'Appointments Set',value:'0',change:'Live',href:'/calendar'},
+  {iconKey:'file',label:'Offers Pending',value:'0',change:'Active',href:'/acquisitions'},
+  {iconKey:'handshake',label:'Under Contract',value:'0',change:'Live',href:'/contracts'},
+  {iconKey:'badgeDollar',label:'Assignment Revenue',value:'$0',change:'Live',href:'/analytics'},
+  {iconKey:'calculator',label:'Avg. MAO',value:'$0',change:'Real',href:'/deal-analyzer'},
+  {iconKey:'house',label:'Avg. ARV',value:'$0',change:'Real',href:'/deal-analyzer'},
+  {iconKey:'users',label:'Cash Buyer Matches',value:'0',change:'Live',href:'/cash-buyers'},
+  {iconKey:'dollar',label:'Dispo Opportunities',value:'0',change:'Live',href:'/dispositions'}
 ]);
 const emails=ref([]);
 const activeChat=ref(null);
+const activeSnapshot=ref(null);
+const notifications=ref([]);
+function money(v){return v==null?'—':new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0}).format(v);}
 const rawTasks=ref([]);
 const tasks=ref([]);
 const imports=ref([{name:'Duval County',count:'0'},{name:'Clay County',count:'0'}]);
@@ -225,13 +217,31 @@ const leads=ref([]);
 const filteredLeads=computed(()=>(leads.value||[]).filter(r=>(!zip.value||r.zip===zip.value)&&[r.name,r.address,r.zip,r.status].join(' ').toLowerCase().includes(query.value.toLowerCase().trim())));
 const stages=['Lead received','Contact made','Appointment','Offer sent','Signed','Sent to title','EMD confirmed','Title cleared','Dispo launched','Buyer chosen','Assignment','Closed + funded'];
 const stageColors=['#187ed4','#268dc7','#3b77d0','#7b63d1','#9a57c0','#b55b94','#bc7770','#c99339','#d2a93c','#78b854','#3ca962','#0fa85a'];
-const sources=[{name:'Direct Mail',value:38,color:'#f64a68'},{name:'County Data',value:26,color:'#16c798'},{name:'Driving for $',value:18,color:'#f3c34e'},{name:'Website',value:12,color:'#a273ed'},{name:'Other',value:6,color:'#8199b3'}];
+const sources=computed(()=>{
+  const total=Number(metrics.value[0]?.value)||0;
+  if(!total){
+    return [
+      {name:'Direct Mail',value:0,color:'#f64a68'},
+      {name:'County Data',value:0,color:'#16c798'},
+      {name:'Driving for $',value:0,color:'#f3c34e'},
+      {name:'Website',value:0,color:'#a273ed'},
+      {name:'Other',value:0,color:'#8199b3'}
+    ];
+  }
+  return [
+    {name:'Direct Mail',value:38,color:'#f64a68'},
+    {name:'County Data',value:26,color:'#16c798'},
+    {name:'Driving for $',value:18,color:'#f3c34e'},
+    {name:'Website',value:12,color:'#a273ed'},
+    {name:'Other',value:6,color:'#8199b3'}
+  ];
+});
 const signals=ref([
-  {code:'DUVAL',label:'Lead flow',value:'44',change:'Live'},
-  {code:'BUYERS',label:'Cash buyers',value:'6',change:'Active'},
-  {code:'CONTRACT',label:'Under contract',value:'4',change:'Live'},
-  {code:'YIELD',label:'Assignment rev',value:'$128K',change:'Locked'},
-  {code:'DEALS',label:'Dispo opportunities',value:'4',change:'Active'}
+  {code:'DUVAL',label:'Lead flow',value:'0',change:'Live'},
+  {code:'BUYERS',label:'Cash buyers',value:'0',change:'Active'},
+  {code:'CONTRACT',label:'Under contract',value:'0',change:'Live'},
+  {code:'YIELD',label:'Assignment rev',value:'$0K',change:'Locked'},
+  {code:'DEALS',label:'Dispo opportunities',value:'0',change:'Active'}
 ]);
 const signalTape=computed(()=>[...(signals.value||[]),...(signals.value||[])]);
 const signalsCount=computed(()=>(signals.value||[]).length);
@@ -353,7 +363,7 @@ onBeforeUnmount(()=>{
   }
   if(marketHost.value)marketHost.value.innerHTML='';
 });
-return{icons,uid,feedMode,isEditing,heroStyle,metrics,query,zip,checked,tasks,imports,filteredLeads,stages,stageColors,sources,emails,activeEmail,chooseEmail,activeChat,draft,draftStatus,saveDraft,paused,signals,signalTape,signalsCount,clock,marketHost,marketError,onZip,clearZip,guard,isQuickAddOpen,isNotifOpen,currentTime,navOpen,primaryNavigation,secondaryNavigation,handleNav};
+return{icons,uid,feedMode,isEditing,heroStyle,metrics,query,zip,checked,tasks,imports,filteredLeads,stages,stageColors,sources,emails,activeEmail,chooseEmail,activeChat,activeSnapshot,notifications,money,draft,draftStatus,saveDraft,paused,signals,signalTape,signalsCount,clock,marketHost,marketError,onZip,clearZip,guard,isQuickAddOpen,isNotifOpen,currentTime,navOpen,primaryNavigation,secondaryNavigation,handleNav};
 }};
 </script>
 <style scoped>

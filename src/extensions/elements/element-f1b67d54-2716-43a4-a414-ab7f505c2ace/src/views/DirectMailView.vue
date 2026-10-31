@@ -96,6 +96,11 @@
             </tr>
           </thead>
           <tbody>
+            <tr v-if="filteredBatches.length === 0">
+              <td colspan="9" style="text-align: center; color: #64748b; padding: 36px;">
+                No direct mail campaign batches found. Click "Launch Mail Drop" to schedule your first postcard or letter drop.
+              </td>
+            </tr>
             <tr v-for="b in filteredBatches" :key="b.id">
               <td>
                 <div class="batch-title-cell">
@@ -221,17 +226,11 @@ export default {
       statusFilter: '',
       formatFilter: '',
       isAddModalOpen: false,
-      metrics: [
-        { label: 'Total Pieces Mailed', value: '14,250', change: '+2,500 this drop', icon: 'mail' },
-        { label: 'Inbound Seller Calls', value: '259 Calls', change: '1.82% response rate', icon: 'phone' },
-        { label: 'Avg Cost Per Call', value: '$24.71', change: 'Record low', icon: 'dollar' },
-        { label: 'Closed Wholesale Gross', value: '$228,000', change: '9 Deals closed', icon: 'badgeDollar' }
-      ],
       newBatch: {
         name: '',
         audience: '',
         format: '4x6 Postcard',
-        quantity: 2500,
+        quantity: 0,
         zips: '32208, 32209',
         trackingPhone: '(904) 555-0144',
         copy: ''
@@ -240,6 +239,23 @@ export default {
     };
   },
   computed: {
+    metrics() {
+      const batches = this.mailBatches || [];
+      const totalPieces = batches.reduce((sum, b) => sum + (Number(b.quantity) || 0), 0);
+      const totalCalls = batches.reduce((sum, b) => sum + (Number(b.calls) || 0), 0);
+      const totalCost = batches.reduce((sum, b) => sum + (Number(b.cost) || 0), 0);
+      const avgCostPerCall = totalCalls > 0 ? '$' + (totalCost / totalCalls).toFixed(2) : '$0.00';
+      const dealsClosed = batches.reduce((sum, b) => sum + (Number(b.deals) || 0), 0);
+      const wholesaleGross = batches.reduce((sum, b) => sum + (Number(b.grossRevenue) || 0), 0);
+      const responseRate = totalPieces > 0 ? ((totalCalls / totalPieces) * 100).toFixed(2) + '%' : '0%';
+
+      return [
+        { label: 'Total Pieces Mailed', value: totalPieces.toLocaleString(), change: totalPieces ? 'Active' : '0 mailed', icon: 'mail' },
+        { label: 'Inbound Seller Calls', value: totalCalls + ' Calls', change: `${responseRate} response rate`, icon: 'phone' },
+        { label: 'Avg Cost Per Call', value: avgCostPerCall, change: '0%', icon: 'dollar' },
+        { label: 'Closed Wholesale Gross', value: `$${wholesaleGross.toLocaleString()}`, change: `${dealsClosed} Deals closed`, icon: 'badgeDollar' }
+      ];
+    },
     hasActiveFilters() {
       return Boolean(this.searchQuery || this.statusFilter || this.formatFilter);
     },
@@ -266,18 +282,7 @@ export default {
   },
   methods: {
     updateMetrics() {
-      const batches = this.mailBatches || [];
-      const totalPieces = batches.reduce((sum, b) => sum + (Number(b.quantity) || 0), 0);
-      const totalCalls = batches.reduce((sum, b) => sum + (Number(b.calls) || 0), 0);
-      const totalCost = batches.reduce((sum, b) => sum + (Number(b.cost) || 0), 0);
-      const avgCostPerCall = totalCalls > 0 ? '$' + (totalCost / totalCalls).toFixed(2) : '$24.71';
-
-      this.metrics = [
-        { label: 'Total Pieces Mailed', value: totalPieces.toLocaleString(), change: '+2,500 this drop', icon: 'mail' },
-        { label: 'Inbound Seller Calls', value: totalCalls + ' Calls', change: '1.82% response rate', icon: 'phone' },
-        { label: 'Avg Cost Per Call', value: avgCostPerCall, change: 'Record low', icon: 'dollar' },
-        { label: 'Closed Wholesale Gross', value: '$228,000', change: '9 Deals closed', icon: 'badgeDollar' }
-      ];
+      // Metrics are now automatically computed
     },
 
     async loadDirectMail() {
