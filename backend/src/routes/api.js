@@ -1869,7 +1869,7 @@ apiRouter.get('/settings', (req, res) => {
 apiRouter.post('/settings', (req, res) => {
     try {
         db.data.settings = { ...(db.data.settings || {}), ...req.body };
-        db.write();
+        db.persist();
         res.json({ ok: true, settings: db.data.settings });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -1901,7 +1901,7 @@ apiRouter.post('/automations', (req, res) => {
             createdAt: new Date().toISOString()
         };
         db.data.automations.unshift(rule);
-        db.write();
+        db.persist();
         res.status(201).json(rule);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -1914,7 +1914,7 @@ apiRouter.patch('/automations/:id', (req, res) => {
         const idx = db.data.automations.findIndex(a => String(a.id) === String(req.params.id));
         if (idx === -1) return res.status(404).json({ error: 'Automation rule not found' });
         db.data.automations[idx] = { ...db.data.automations[idx], ...req.body };
-        db.write();
+        db.persist();
         res.json(db.data.automations[idx]);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -1925,7 +1925,7 @@ apiRouter.delete('/automations/:id', (req, res) => {
     try {
         if (!db.data.automations) db.data.automations = [];
         db.data.automations = db.data.automations.filter(a => String(a.id) !== String(req.params.id));
-        db.write();
+        db.persist();
         res.json({ ok: true });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -2037,7 +2037,7 @@ apiRouter.post('/marketing', (req, res) => {
             createdAt: new Date().toISOString()
         };
         db.data.marketing_campaigns.unshift(campaign);
-        db.write();
+        db.persist();
         res.status(201).json(campaign);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -2065,7 +2065,7 @@ apiRouter.post('/deal-analysis', (req, res) => {
             savedAt: new Date().toISOString()
         };
         db.data.deal_analyses.unshift(analysis);
-        db.write();
+        db.persist();
         res.status(201).json(analysis);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -2133,6 +2133,7 @@ apiRouter.post('/admin/reset-database', (req, res) => {
             db.data.core.tasks = [];
             db.data.core.interactions = [];
             db.data.core.pillar_events = [];
+            db.data.core.properties = [];
         }
         if (db.data.crm) {
             db.data.crm.buyers = [];
@@ -2148,7 +2149,9 @@ apiRouter.post('/admin/reset-database', (req, res) => {
         db.data.automations = [];
         db.data.marketing_campaigns = [];
         db.data.deal_analyses = [];
-        db.write();
+        if (typeof db.persist === 'function') {
+            db.persist();
+        }
 
         res.json({
             ok: true,
