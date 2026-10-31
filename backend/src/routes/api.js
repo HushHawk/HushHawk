@@ -1794,17 +1794,17 @@ apiRouter.get("/dashboard/metrics", (req, res) => {
         const tasks = db.data.core?.tasks || [];
         const communications = db.data.crm.communications || [];
 
-        const totalLeads = coreLeads.length || (leads.length + contacts.filter(c => c.type === "Seller" || c.role === "Seller").length) || 44;
-        const totalAppointments = calendar.length || 4;
-        const totalUnderContract = contracts.length || 4;
-        const totalAssignmentRevenue = contracts.reduce((sum, c) => sum + (c.fee || 0), 0) || 128000;
+        const totalLeads = coreLeads.length;
+        const totalAppointments = calendar.length;
+        const totalUnderContract = contracts.length;
+        const totalAssignmentRevenue = contracts.reduce((sum, c) => sum + (c.fee || 0), 0);
         const totalBuyVolume = contracts.reduce((sum, c) => sum + (c.buyPrice || 0), 0);
-        const avgMAO = contracts.length ? Math.round(totalBuyVolume / contracts.length) : 91750;
-        const avgARV = contracts.length ? Math.round((totalBuyVolume + totalAssignmentRevenue) * 1.25 / contracts.length) : 154688;
-        const totalBuyers = buyers.length || 6;
-        const dispoOpps = contracts.filter(c => c.status !== "Closed/Funded").length || 4;
-        const offersPending = contracts.filter(c => c.status === "PSA" || (c.status && c.status.toLowerCase().includes("pending"))).length || 2;
-        const contactRate = Math.min(100, Math.round(((communications.length + 2) / Math.max(1, totalLeads + 2)) * 100)) + "%";
+        const avgMAO = contracts.length ? Math.round(totalBuyVolume / contracts.length) : 0;
+        const avgARV = contracts.length ? Math.round((totalBuyVolume + totalAssignmentRevenue) * 1.25 / contracts.length) : 0;
+        const totalBuyers = buyers.length;
+        const dispoOpps = contracts.filter(c => c.status !== "Closed/Funded").length;
+        const offersPending = contracts.filter(c => c.status === "PSA" || (c.status && c.status.toLowerCase().includes("pending"))).length;
+        const contactRate = totalLeads ? Math.min(100, Math.round((communications.length / totalLeads) * 100)) + "%" : "0%";
 
         const countyIntelligence = [
             { name: "Duval County", count: String(coreLeads.length || 44) },
@@ -2083,11 +2083,11 @@ apiRouter.get('/analytics', (req, res) => {
         const mailBatches = db.data.crm?.direct_mail || [];
         const fbLeads = db.data.crm?.facebook_leads || [];
 
-        const totalLeads = leads.length || 44;
-        const totalClosed = contracts.filter(c => c.status === 'Closed' || c.status === 'Closed/Funded').length || 2;
-        const totalUnderContract = contracts.length || 4;
-        const totalRevenue = contracts.reduce((sum, c) => sum + (c.fee || 0), 0) || 128000;
-        const avgSpread = contracts.length ? Math.round(totalRevenue / contracts.length) : 24850;
+        const totalLeads = leads.length;
+        const totalClosed = contracts.filter(c => c.status === 'Closed' || c.status === 'Closed/Funded').length;
+        const totalUnderContract = contracts.length;
+        const totalRevenue = contracts.reduce((sum, c) => sum + (c.fee || 0), 0);
+        const avgSpread = contracts.length ? Math.round(totalRevenue / contracts.length) : 0;
 
         res.json({
             kpis: {
@@ -2116,6 +2116,44 @@ apiRouter.get('/analytics', (req, res) => {
                 { zip: '32254', area: 'Lackawanna / Paxon', deals: 4, avgSpread: 22100, totalRev: 88400, dom: 6.3 },
                 { zip: '32206', area: 'Springfield / Eastside', deals: 3, avgSpread: 19800, totalRev: 59400, dom: 5.5 }
             ]
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// ============================================================================
+// SYSTEM RESET / WIPE API (Start completely fresh)
+// ============================================================================
+apiRouter.post('/admin/reset-database', (req, res) => {
+    try {
+        // Clear all operational CRM records while preserving architectural schema & reference lookup tables
+        if (db.data.core) {
+            db.data.core.leads = [];
+            db.data.core.tasks = [];
+            db.data.core.interactions = [];
+            db.data.core.pillar_events = [];
+        }
+        if (db.data.crm) {
+            db.data.crm.buyers = [];
+            db.data.crm.contracts = [];
+            db.data.crm.contacts = [];
+            db.data.crm.facebook_leads = [];
+            db.data.crm.follow_ups = [];
+            db.data.crm.direct_mail = [];
+            db.data.crm.communications = [];
+            db.data.crm.calendar_events = [];
+            db.data.crm.skip_traces = [];
+        }
+        db.data.automations = [];
+        db.data.marketing_campaigns = [];
+        db.data.deal_analyses = [];
+        db.write();
+
+        res.json({
+            ok: true,
+            message: 'All mock and sample records cleared. Database is 100% clean and fresh.',
+            timestamp: new Date().toISOString()
         });
     } catch (err) {
         res.status(500).json({ error: err.message });
