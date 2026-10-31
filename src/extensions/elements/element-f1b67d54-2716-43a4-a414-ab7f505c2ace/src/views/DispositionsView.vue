@@ -413,7 +413,7 @@ export default {
       try {
         const res = await fetch(API_BASE + '/contracts');
         const data = await res.json();
-        if (data.contracts && data.contracts.length > 0) {
+        if (data) {
           // Merge dynamic contracts with dispo attributes
           const mapped = data.contracts.map(c => ({
             id: c.id,
@@ -445,128 +445,7 @@ export default {
       loadDispoContracts();
     });
 
-    const contracts = ref([
-      {
-        id: 'c1',
-        address: '4531 Lenox Ave',
-        zip: '32210',
-        crownKey: 'DUV-091823-0000',
-        beds: 3,
-        baths: 2,
-        sqft: 1420,
-        contractPrice: 125000,
-        askingPrice: 165000,
-        titleCompany: 'First American Title Jax',
-        emdStatus: 'Verified ($2,500)',
-        daysLeft: 8,
-        matchedBuyersCount: 12,
-        status: 'Under Contract',
-        statusClass: 'status-contract',
-        milestones: [
-          { title: 'Executed Purchase Agreement', detail: 'Signed by seller 3 days ago', done: true },
-          { title: 'EMD Deposited with Escrow', detail: 'Escrow receipt FAT-9921', done: true },
-          { title: 'Title Search & Lien Exam', detail: 'Clean title commitment issued', done: true },
-          { title: 'Assignment Agreement Executed', detail: 'Buyer signature pending', done: false },
-          { title: 'Clear to Close & Funded', detail: 'Scheduled for next Thursday', done: false }
-        ]
-      },
-      {
-        id: 'c2',
-        address: '7810 Moncrief Rd',
-        zip: '32209',
-        crownKey: 'DUV-041829-0010',
-        beds: 4,
-        baths: 2,
-        sqft: 1840,
-        contractPrice: 92000,
-        askingPrice: 125000,
-        titleCompany: 'Florida Crown Title',
-        emdStatus: 'Verified ($2,000)',
-        daysLeft: 4,
-        matchedBuyersCount: 16,
-        status: 'Marketing',
-        statusClass: 'status-marketing',
-        milestones: [
-          { title: 'Executed Purchase Agreement', detail: 'Signed by seller', done: true },
-          { title: 'EMD Deposited with Escrow', detail: 'Florida Crown confirmation #882', done: true },
-          { title: 'Title Search & Lien Exam', detail: 'Exam in progress', done: false },
-          { title: 'Assignment Agreement Executed', detail: 'Open to VIP cash buyers', done: false },
-          { title: 'Clear to Close & Funded', detail: 'Estimated closing in 12 days', done: false }
-        ]
-      },
-      {
-        id: 'c3',
-        address: '2834 W 21st St',
-        zip: '32209',
-        crownKey: 'DUV-083102-0000',
-        beds: 3,
-        baths: 1,
-        sqft: 1150,
-        contractPrice: 65000,
-        askingPrice: 95000,
-        titleCompany: 'Landmark Title Jax',
-        emdStatus: 'Verified ($1,500)',
-        daysLeft: 12,
-        matchedBuyersCount: 9,
-        status: 'Buyer Selected',
-        statusClass: 'status-buyer',
-        milestones: [
-          { title: 'Executed Purchase Agreement', detail: 'Signed', done: true },
-          { title: 'EMD Deposited with Escrow', detail: 'Receipt on file', done: true },
-          { title: 'Title Search & Lien Exam', detail: 'Clear title', done: true },
-          { title: 'Assignment Agreement Executed', detail: 'Mike Williams Capital signed', done: true },
-          { title: 'Clear to Close & Funded', detail: 'Closing Friday 10:00 AM', done: false }
-        ]
-      },
-      {
-        id: 'c4',
-        address: '6243 Winton Dr',
-        zip: '32208',
-        crownKey: 'DUV-019824-0040',
-        beds: 3,
-        baths: 2,
-        sqft: 1380,
-        contractPrice: 85000,
-        askingPrice: 110000,
-        titleCompany: 'First American Title Jax',
-        emdStatus: 'Verified ($2,000)',
-        daysLeft: 15,
-        matchedBuyersCount: 14,
-        status: 'In Escrow',
-        statusClass: 'status-escrow',
-        milestones: [
-          { title: 'Executed Purchase Agreement', detail: 'Signed', done: true },
-          { title: 'EMD Deposited with Escrow', detail: 'Deposit confirmed', done: true },
-          { title: 'Title Search & Lien Exam', detail: 'Lien search completed', done: true },
-          { title: 'Assignment Agreement Executed', detail: 'Mitchell Investments assigned', done: true },
-          { title: 'Clear to Close & Funded', detail: 'Wire instruction sent', done: false }
-        ]
-      },
-      {
-        id: 'c5',
-        address: '3227 Cleveland Rd',
-        zip: '32254',
-        crownKey: 'DUV-071923-0010',
-        beds: 4,
-        baths: 2,
-        sqft: 1650,
-        contractPrice: 110000,
-        askingPrice: 150000,
-        titleCompany: 'Landmark Title Jax',
-        emdStatus: 'Verified ($3,000)',
-        daysLeft: 3,
-        matchedBuyersCount: 8,
-        status: 'Closed',
-        statusClass: 'status-closed',
-        milestones: [
-          { title: 'Executed Purchase Agreement', detail: 'Executed', done: true },
-          { title: 'EMD Deposited with Escrow', detail: 'Verified', done: true },
-          { title: 'Title Search & Lien Exam', detail: 'Clear', done: true },
-          { title: 'Assignment Agreement Executed', detail: 'Executed', done: true },
-          { title: 'Clear to Close & Funded', detail: 'Funded! $40,000 fee received', done: true }
-        ]
-      }
-    ]);
+    const contracts = ref([]);;
 
     const topBuyerMatches = [
       { id: 'b1', name: 'Mike Williams', company: 'Mike Williams Capital', max: 300000, types: 'SFR, Cash, Fast Close', matchScore: 98 },

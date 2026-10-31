@@ -231,73 +231,7 @@ export default {
       { channel: 'Google Search PPC', spend: 2200, leads: 50, deals: 1, roi: '620%', percent: 30 }
     ];
 
-    const campaigns = ref([
-      {
-        id: 'm1',
-        name: 'Duval High Equity Absentee Postcards #109',
-        channel: 'Direct Mail',
-        targetAudience: 'Absentee Owners 50%+ Equity (32208, 32209, 32210)',
-        spend: 4200,
-        leads: 214,
-        cpl: 19.62,
-        contracts: 5,
-        roi: 1380,
-        status: 'Active',
-        dateRange: 'Apr 1 – Present'
-      },
-      {
-        id: 'm2',
-        name: 'Jacksonville Foreclosure & Inheritance Inbound',
-        channel: 'Facebook Ads',
-        targetAudience: 'Duval County 35-65yo Homeowners in Distress',
-        spend: 3400,
-        leads: 198,
-        cpl: 17.17,
-        contracts: 4,
-        roi: 1140,
-        status: 'Active',
-        dateRange: 'Apr 5 – Present'
-      },
-      {
-        id: 'm3',
-        name: 'Clay & Duval Tax Delinquent Cold Calling',
-        channel: 'Cold Calling',
-        targetAudience: '2+ Years Delinquent Property Taxes',
-        spend: 2800,
-        leads: 124,
-        cpl: 22.58,
-        contracts: 3,
-        roi: 950,
-        status: 'Active',
-        dateRange: 'Apr 10 – Present'
-      },
-      {
-        id: 'm4',
-        name: 'Westside Distressed Driving for Dollars',
-        channel: 'Driving for Dollars',
-        targetAudience: 'Boarded, Overgrown, Code Violations in 32254',
-        spend: 1200,
-        leads: 62,
-        cpl: 19.35,
-        contracts: 2,
-        roi: 1420,
-        status: 'Active',
-        dateRange: 'Apr 12 – Present'
-      },
-      {
-        id: 'm5',
-        name: 'We Buy Houses Jacksonville FL Google PPC',
-        channel: 'Google PPC',
-        targetAudience: 'High Intent Motivated Seller Search Keywords',
-        spend: 2200,
-        leads: 50,
-        cpl: 44.00,
-        contracts: 1,
-        roi: 620,
-        status: 'Paused',
-        dateRange: 'Mar 15 – Apr 1'
-      }
-    ]);
+    const campaigns = ref([]);;
 
     const searchQuery = ref('');
     const channelFilter = ref('');
@@ -349,7 +283,7 @@ export default {
         const res = await fetch('/api/v1/marketing');
         if (res.ok) {
           const data = await res.json();
-          if (data.campaigns && data.campaigns.length > 0) {
+          if (data) {
             campaigns.value = data.campaigns;
           }
         }

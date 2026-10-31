@@ -218,92 +218,7 @@ export default {
         { label: 'Inspection Request', text: 'Good morning! Our field underwriter would like to schedule a 15-minute walkthrough of the property tomorrow between 1-3 PM. Does that time work?' },
         { label: 'Buyer Deal Blast', text: 'VIP INVESTOR ALERT: Off-market duplex in 32208 locked at $110,000. ARV $210,000. Clean title in escrow. Reply for walkthrough lockbox code.' }
       ],
-      threads: [
-        {
-          id: 1,
-          contact: 'Ronald Campbell',
-          role: 'Distressed Seller',
-          type: 'SMS',
-          unread: true,
-          time: '10:14 AM',
-          phone: '(904) 555-0182',
-          address: '4812 Moncrief Rd, Jacksonville, FL 32208',
-          parcelId: 'DUV-091823-0001',
-          stage: 'Under Contract',
-          lastOffer: 110000,
-          arv: 215000,
-          rep: 'Marcus Vance',
-          repInitials: 'MV',
-          lastMessage: 'I reviewed the contract and signed through DocuSign. When does the earnest deposit go to First American?',
-          messages: [
-            { sender: 'Marcus Vance', time: 'Yesterday 3:15 PM', text: 'Ronald, sending over the Purchase and Sale Agreement with $110,000 cash purchase price and 10-day inspection period.', outgoing: true },
-            { sender: 'System', time: 'Yesterday 3:16 PM', text: 'DocuSign PSA #2026-084 envelope delivered to r.campbell@att.net', system: true },
-            { sender: 'Ronald Campbell', time: '10:14 AM', text: 'I reviewed the contract and signed through DocuSign. When does the earnest deposit go to First American?', outgoing: false }
-          ]
-        },
-        {
-          id: 2,
-          contact: 'Apex Jacksonville Holdings (David Ross)',
-          role: 'VIP Buyer',
-          type: 'SMS',
-          unread: false,
-          time: '9:30 AM',
-          phone: '(904) 555-8911',
-          address: '1540 W 23rd St, Jacksonville, FL 32209',
-          parcelId: 'DUV-084721-0034',
-          stage: 'Dispo Active',
-          lastOffer: 95000,
-          arv: 195000,
-          rep: 'Sarah Jenkins',
-          repInitials: 'SJ',
-          lastMessage: 'We inspected 23rd St this morning. We can take it at $132,000 cash with $5k non-refundable EMD today.',
-          messages: [
-            { sender: 'Sarah Jenkins', time: '8:45 AM', text: 'David, lockbox code for 1540 W 23rd St is 4921. Full packet attached in your email.', outgoing: true },
-            { sender: 'Apex Holdings (David Ross)', time: '9:30 AM', text: 'We inspected 23rd St this morning. We can take it at $132,000 cash with $5k non-refundable EMD today.', outgoing: false }
-          ]
-        },
-        {
-          id: 3,
-          contact: 'Evelyn Richardson',
-          role: 'Distressed Seller',
-          type: 'Calls',
-          unread: false,
-          time: 'Yesterday',
-          phone: '(904) 555-0143',
-          address: '4218 Commonwealth Ave, Jacksonville, FL 32254',
-          parcelId: 'DUV-091822-0001',
-          stage: 'Offer Sent',
-          lastOffer: 138000,
-          arv: 245000,
-          rep: 'Marcus Vance',
-          repInitials: 'MV',
-          lastMessage: 'Inbound call recorded (4m 12s). Seller agreed to $138k net cash offer.',
-          messages: [
-            { sender: 'Evelyn Richardson', time: 'Yesterday 2:00 PM', text: 'Inbound Call Connected', callDuration: '4m 12s', outgoing: false },
-            { sender: 'Marcus Vance', time: 'Yesterday 2:05 PM', text: 'Thank you for your time Evelyn. Preparing the formal agreement for Commonwealth Ave now.', outgoing: true }
-          ]
-        },
-        {
-          id: 4,
-          contact: 'First Coast Title & Escrow',
-          role: 'Title Partner',
-          type: 'Email',
-          unread: false,
-          time: '2 days ago',
-          phone: '(904) 555-3300',
-          address: '3819 University Blvd S, Jacksonville, FL 32216',
-          parcelId: 'DUV-071192-0012',
-          stage: 'In Escrow',
-          lastOffer: 165000,
-          arv: 280000,
-          rep: 'Sarah Jenkins',
-          repInitials: 'SJ',
-          lastMessage: 'Title commitment clear of municipal liens. Closing scheduled for Thursday 2:00 PM.',
-          messages: [
-            { sender: 'First Coast Title', time: '2 days ago', text: 'Title commitment clear of municipal liens. Closing scheduled for Thursday 2:00 PM.', outgoing: false }
-          ]
-        }
-      ]
+      threads: []
     };
   },
   computed: {
@@ -342,7 +257,7 @@ export default {
       try {
         const res = await fetch('/api/v1/communications');
         const data = await res.json();
-        if (data.threads && data.threads.length > 0) {
+        if (data) {
           this.threads = data.threads;
           if (!this.activeThread) this.activeThread = data.threads[0];
         }

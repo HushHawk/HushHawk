@@ -236,73 +236,7 @@ export default {
         trackingPhone: '(904) 555-0144',
         copy: ''
       },
-      mailBatches: [
-        {
-          id: 1,
-          batchCode: 'DM-2026-B108',
-          name: 'Duval Tax Certificate Absentee Drop',
-          audience: 'Tax Delinquent > 2 Years + Out of State Owners',
-          zips: '32208, 32209, 32254',
-          format: '4x6 Postcard',
-          quantity: 3500,
-          cost: 1540,
-          calls: 78,
-          responseRate: '2.23',
-          status: 'Responding'
-        },
-        {
-          id: 2,
-          batchCode: 'DM-2026-B107',
-          name: 'Clay County Probate & Inherited Deeds',
-          audience: 'Inherited Properties & Personal Representative Petitions',
-          zips: '32065, 32073, 32003',
-          format: 'Handwritten Letter',
-          quantity: 1800,
-          cost: 1224,
-          calls: 42,
-          responseRate: '2.33',
-          status: 'Responding'
-        },
-        {
-          id: 3,
-          batchCode: 'DM-2026-B109',
-          name: 'Duval Vacant & Code Violation Scrub',
-          audience: 'Tall Grass / Boarded Facade Magistrate Notices',
-          zips: '32206, 32208, 32209',
-          format: 'Official Notice',
-          quantity: 2400,
-          cost: 1776,
-          calls: 51,
-          responseRate: '2.12',
-          status: 'In Delivery'
-        },
-        {
-          id: 4,
-          batchCode: 'DM-2026-B110',
-          name: 'Westside High Equity Senior Homeowners',
-          audience: 'Owned 20+ Years, 100% Free & Clear Equity',
-          zips: '32210, 32244, 32221',
-          format: '4x6 Postcard',
-          quantity: 4000,
-          cost: 1760,
-          calls: 64,
-          responseRate: '1.60',
-          status: 'Printing'
-        },
-        {
-          id: 5,
-          batchCode: 'DM-2026-B106',
-          name: 'Arlington Pre-Foreclosure NOD Sprint',
-          audience: 'Lis Pendens Filed within Last 60 Days',
-          zips: '32211, 32277',
-          format: 'Handwritten Letter',
-          quantity: 1250,
-          cost: 850,
-          calls: 24,
-          responseRate: '1.92',
-          status: 'Completed'
-        }
-      ]
+      mailBatches: []
     };
   },
   computed: {
@@ -350,7 +284,7 @@ export default {
       try {
         const res = await fetch('/api/v1/direct-mail');
         const data = await res.json();
-        if (data.mailBatches && data.mailBatches.length > 0) {
+        if (data) {
           this.mailBatches = data.mailBatches;
         }
       } catch (err) {

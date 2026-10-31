@@ -406,7 +406,7 @@ export default {
       try {
         const res = await fetch(API_BASE + '/buyers');
         const data = await res.json();
-        if (data.buyers && data.buyers.length > 0) {
+        if (data) {
           buyers.value = data.buyers;
           if (!selectedBuyer.value) selectedBuyer.value = data.buyers[0];
         }
@@ -419,116 +419,7 @@ export default {
       loadBuyers();
     });
 
-    const buyers = ref([
-      {
-        id: 'b1',
-        name: 'Mike Williams',
-        company: 'Mike Williams Capital',
-        phone: '(904) 555-2187',
-        email: 'mike@mwcapitaljax.com',
-        location: 'Jacksonville, FL',
-        zips: ['32204', '32210', '32218', '32209', '32254'],
-        min: 50000,
-        max: 350000,
-        types: 'SFR, Duplex, Cash',
-        pofVerified: true,
-        response: 92,
-        dealsClosed: 8,
-        tier: 'VIP Tier 1',
-        tierClass: 'tier-gold',
-        notes: 'Top tier cash buyer in Westside and Northside Jacksonville. Closes in 7-10 days with clean title. Has $500K cash escrow ready.'
-      },
-      {
-        id: 'b2',
-        name: 'Sarah Mitchell',
-        company: 'Mitchell Investments',
-        phone: '(904) 555-2288',
-        email: 'sarah@mitchellinv.com',
-        location: 'Jacksonville, FL',
-        zips: ['32073', '32225', '32226', '32211'],
-        min: 75000,
-        max: 500000,
-        types: 'SFR, Multifamily',
-        pofVerified: true,
-        response: 84,
-        dealsClosed: 5,
-        tier: 'VIP Tier 1',
-        tierClass: 'tier-gold',
-        notes: 'Loves turnkey or light cosmetic rehab in Arlington and East Jax. Never asks for inspection concessions if repair numbers match.'
-      },
-      {
-        id: 'b3',
-        name: 'David Chen',
-        company: 'Chen Capital Group',
-        phone: '(904) 555-2389',
-        email: 'david@chencapital.net',
-        location: 'Jacksonville, FL',
-        zips: ['32207', '32256', '32257'],
-        min: 100000,
-        max: 750000,
-        types: 'SFR, Multi, Value-Add',
-        pofVerified: true,
-        response: 88,
-        dealsClosed: 6,
-        tier: 'VIP Tier 1',
-        tierClass: 'tier-gold',
-        notes: 'Focus on Southside and San Marco. Prefers off-market properties with heavy equity spread.'
-      },
-      {
-        id: 'b4',
-        name: 'Tasha Brown',
-        company: 'Brown Family Homes LLC',
-        phone: '(904) 555-2490',
-        email: 'tasha@brownfamilyhomes.com',
-        location: 'Jacksonville, FL',
-        zips: ['32208', '32209', '32254'],
-        min: 40000,
-        max: 250000,
-        types: 'SFR, As-Is',
-        pofVerified: true,
-        response: 76,
-        dealsClosed: 3,
-        tier: 'Active VIP',
-        tierClass: 'tier-blue',
-        notes: 'Buy and hold landlord specializing in Northside rentals. Fast decision maker once photos are provided.'
-      },
-      {
-        id: 'b5',
-        name: 'Marcus Hill',
-        company: 'Hill Property Solutions',
-        phone: '(904) 555-2591',
-        email: 'marcus@hillprops.com',
-        location: 'Jacksonville, FL',
-        zips: ['32216', '32211', '32246'],
-        min: 60000,
-        max: 420000,
-        types: 'SFR, Duplex, Fix & Flip',
-        pofVerified: false,
-        response: 68,
-        dealsClosed: 2,
-        tier: 'Active VIP',
-        tierClass: 'tier-blue',
-        notes: 'General contractor and flipper looking for distressed single families in 32211 and 32216.'
-      },
-      {
-        id: 'b6',
-        name: 'Kevin Patel',
-        company: 'Patel Holdings LLC',
-        phone: '(904) 555-2692',
-        email: 'kevin@patelholdings.com',
-        location: 'St. Johns / Duval',
-        zips: ['32068', '32081', '32259'],
-        min: 150000,
-        max: 1200000,
-        types: 'Multifamily, New Build',
-        pofVerified: true,
-        response: 82,
-        dealsClosed: 4,
-        tier: 'VIP Tier 1',
-        tierClass: 'tier-gold',
-        notes: 'High net worth investor with proof of funds on file for $1.5M. Looking for 4-plexes or land assemblies.'
-      }
-    ]);
+    const buyers = ref([]);
 
     const propertyInventory = [
       { address: '4531 Lenox Ave', zip: '32210', price: 165000, arv: 285000 },

@@ -324,12 +324,7 @@ export default {
           enabled: true
         }
       ],
-      teamMembers: [
-        { name: 'Marcus Vance', email: 'marcus@hushhawk.com', role: 'Sr. Acquisitions Specialist', perm: 'Full Deal Admin', initials: 'MV' },
-        { name: 'Sarah Jenkins', email: 'sarah@hushhawk.com', role: 'Dispositions Director', perm: 'Dispo & Contracts', initials: 'SJ' },
-        { name: 'Elena Rostova', email: 'elena@hushhawk.com', role: 'Lead Qualifier', perm: 'Leads & Follow-up', initials: 'ER' },
-        { name: 'System Admin', email: 'admin@hushhawk.com', role: 'Super Administrator', perm: 'Full System Root', initials: 'SA' }
-      ]
+      teamMembers: []
     };
   },
   mounted() {

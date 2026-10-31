@@ -327,7 +327,7 @@ export default {
       try {
         const res = await fetch(API_BASE + '/contracts');
         const data = await res.json();
-        if (data.contracts && data.contracts.length > 0) {
+        if (data) {
           contracts.value = data.contracts;
           if (!selectedContract.value) selectedContract.value = data.contracts[0];
         }
@@ -340,118 +340,7 @@ export default {
       loadContracts();
     });
 
-    const contracts = ref([
-      {
-        id: 'c1',
-        code: 'PSA-2026-084',
-        address: '4531 Lenox Ave',
-        zip: '32210',
-        type: 'PSA',
-        seller: 'Thomas Richards',
-        buyer: 'Mike Williams Capital LLC',
-        buyPrice: 125000,
-        fee: 40000,
-        titleAgency: 'First American Title Jax',
-        fileNumber: 'FAT-2026-9921',
-        closingDate: '2026-05-08',
-        status: 'Clear to Close',
-        statusClass: 'status-clear',
-        milestones: [
-          { name: 'Purchase & Sale Executed', detail: 'Executed on Apr 18', completed: true },
-          { name: 'Seller EMD Verified', detail: '$2,500 deposited in escrow', completed: true },
-          { name: 'Title Commitment & Municipal Lien Search', detail: 'Issued clean schedule B', completed: true },
-          { name: 'Assignment of Contract Executed', detail: 'Signed with $40K fee locked', completed: true },
-          { name: 'Buyer EMD ($5,000) Received', detail: 'Held in escrow', completed: true },
-          { name: 'Final Settlement Statement Approved', detail: 'ALTA signed by parties', completed: true }
-        ],
-        docs: [
-          { name: 'Executed_PSA_4531Lenox.pdf' },
-          { name: 'Title_Commitment_FAT.pdf' },
-          { name: 'Assignment_Agreement_Signed.pdf' }
-        ]
-      },
-      {
-        id: 'c2',
-        code: 'PSA-2026-085',
-        address: '7810 Moncrief Rd',
-        zip: '32209',
-        type: 'PSA',
-        seller: 'Estate of Dorothy Jenkins',
-        buyer: '',
-        buyPrice: 92000,
-        fee: 33000,
-        titleAgency: 'Florida Crown Title',
-        fileNumber: 'FCT-8812',
-        closingDate: '2026-05-14',
-        status: 'In Escrow',
-        statusClass: 'status-escrow',
-        milestones: [
-          { name: 'Purchase & Sale Executed', detail: 'Executed on Apr 21', completed: true },
-          { name: 'Seller EMD Verified', detail: '$2,000 deposited', completed: true },
-          { name: 'Title Commitment & Municipal Lien Search', detail: 'Title exam in progress', completed: false },
-          { name: 'Assignment of Contract Executed', detail: 'In dispo to buyers', completed: false },
-          { name: 'Buyer EMD Received', detail: 'Pending assignment', completed: false }
-        ],
-        docs: [
-          { name: 'Executed_PSA_7810Moncrief.pdf' },
-          { name: 'Probate_Letters_Administration.pdf' }
-        ]
-      },
-      {
-        id: 'c3',
-        code: 'ASN-2026-039',
-        address: '2834 W 21st St',
-        zip: '32209',
-        type: 'Assignment',
-        seller: 'Robert L. Henderson',
-        buyer: 'Mitchell Investments LLC',
-        buyPrice: 65000,
-        fee: 30000,
-        titleAgency: 'Landmark Title Jax',
-        fileNumber: 'LT-2026-4412',
-        closingDate: '2026-05-02',
-        status: 'Clear to Close',
-        statusClass: 'status-clear',
-        milestones: [
-          { name: 'Purchase & Sale Executed', detail: 'Signed', completed: true },
-          { name: 'Seller EMD Verified', detail: 'Held in escrow', completed: true },
-          { name: 'Title Commitment Clear', detail: 'Clean title', completed: true },
-          { name: 'Assignment Signed', detail: 'Mitchell Inv verified', completed: true },
-          { name: 'Buyer EMD ($5,000) Deposited', detail: 'Confirmed', completed: true },
-          { name: 'Clear to Close', detail: 'Funding scheduled', completed: true }
-        ],
-        docs: [
-          { name: 'PSA_2834W21st.pdf' },
-          { name: 'Assignment_MitchellInvestments.pdf' },
-          { name: 'Wire_Instructions_Landmark.pdf' }
-        ]
-      },
-      {
-        id: 'c4',
-        code: 'PSA-2026-086',
-        address: '6243 Winton Dr',
-        zip: '32208',
-        type: 'PSA',
-        seller: 'Marcus Washington',
-        buyer: 'Chen Capital Group',
-        buyPrice: 85000,
-        fee: 25000,
-        titleAgency: 'First American Title Jax',
-        fileNumber: 'FAT-2026-9988',
-        closingDate: '2026-05-20',
-        status: 'In Escrow',
-        statusClass: 'status-escrow',
-        milestones: [
-          { name: 'Purchase & Sale Executed', detail: 'Signed Apr 24', completed: true },
-          { name: 'Seller EMD Verified', detail: 'Deposited', completed: true },
-          { name: 'Title Commitment & Municipal Lien Search', detail: 'In progress', completed: false },
-          { name: 'Assignment of Contract Executed', detail: 'Drafted', completed: true }
-        ],
-        docs: [
-          { name: 'Executed_PSA_6243Winton.pdf' }
-        ]
-      }
-    ]);
+    const contracts = ref([]);
 
     const searchQuery = ref('');
     const typeFilter = ref('');

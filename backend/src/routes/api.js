@@ -2124,6 +2124,8 @@ apiRouter.post('/admin/reset-database', (req, res) => {
             db.data.core.interactions = [];
             db.data.core.pillar_events = [];
             db.data.core.properties = [];
+            db.data.core.people = [];
+            db.data.core.businesses = [];
         }
         if (db.data.crm) {
             db.data.crm.buyers = [];
