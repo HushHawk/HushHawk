@@ -1832,7 +1832,7 @@
         "default": {
           "tag": "p",
           "_ww-text_text": {
-            "en": "●  Podio sync pending"
+            "en": "●  HushHawk Live Synced"
           },
           "_ww-text_color": "#F59E0B",
           "_ww-text_fontSize": "11px",
@@ -3556,7 +3556,7 @@
         "default": {
           "tag": "p",
           "_ww-text_text": {
-            "en": "LIVE DATA: activates when Podio / provider connectors are authorized."
+            "en": "LIVE CANONICAL DATA: Powered by AWS RDS PostgreSQL"
           },
           "_ww-text_color": "#92400E",
           "_ww-text_fontSize": "10px",

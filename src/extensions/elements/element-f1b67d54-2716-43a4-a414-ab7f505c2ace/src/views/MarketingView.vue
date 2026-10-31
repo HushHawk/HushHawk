@@ -217,7 +217,7 @@ export default {
   setup() {
     const metrics = [
       { label: 'Total Marketing Spend', value: '$24,800', change: '+14%', note: 'budget pacing', icon: 'dollar' },
-      { label: 'Total Leads Generated', value: '1,247', change: '+28%', note: 'lead velocity', icon: 'users' },
+      { label: 'Total Leads Generated', value: '44', change: '+28%', note: 'lead velocity', icon: 'users' },
       { label: 'Avg. Cost Per Lead', value: '$19.88', change: '-12%', note: 'efficiency gain', icon: 'chart' },
       { label: 'Contracts Acquired', value: '28', change: '+27%', note: 'under contract', icon: 'file' },
       { label: 'Blended Marketing ROI', value: '1,154%', change: '+42%', note: 'revenue / spend', icon: 'crown' }

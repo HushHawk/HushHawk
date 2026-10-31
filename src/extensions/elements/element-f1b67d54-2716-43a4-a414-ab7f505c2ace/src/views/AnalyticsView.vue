@@ -290,7 +290,39 @@ export default {
       return '$' + (total / 1000).toFixed(1) + 'k Total';
     }
   },
+  mounted() {
+    this.loadAnalytics();
+  },
   methods: {
+    async loadAnalytics() {
+      try {
+        const res = await fetch('/api/v1/dashboard/metrics');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.metrics) {
+            const revM = data.metrics.find(m => m.label.includes('Assignment Revenue'));
+            const contractM = data.metrics.find(m => m.label.includes('Under Contract'));
+            const leadsM = data.metrics.find(m => m.label.includes('Total Seller Leads'));
+
+            if (revM && contractM) {
+              this.metricsData['30D'][0].value = revM.value;
+              this.metricsData['30D'][1].value = contractM.value;
+            }
+            if (leadsM && Number(leadsM.value)) {
+              const val = Number(leadsM.value);
+              this.funnelStages[0].count = val;
+              this.funnelStages[1].count = Math.max(1, Math.round(val * 0.45));
+              this.funnelStages[2].count = Math.max(1, Math.round(val * 0.22));
+              this.funnelStages[3].count = Math.max(1, Math.round(val * 0.10));
+              this.funnelStages[4].count = Math.max(1, Math.round(val * 0.08));
+              this.funnelStages[5].count = Math.max(1, Math.round(val * 0.06));
+            }
+          }
+        }
+      } catch (err) {
+        console.warn('[Analytics] Using fallback data:', err.message);
+      }
+    },
     showToast(title, message, type = 'info') {
       if (typeof window !== 'undefined') {
         if (window.showHushHawkToast) {

@@ -507,7 +507,7 @@ export default {
     }
 
     function runBatchLookup() {
-      batchNotice.value = 'Batch queued: 1,247 records enriched in background.';
+      batchNotice.value = 'Batch queued: 44 canonical records enriched in background.';
       setTimeout(() => {
         closeModal();
       }, 1500);

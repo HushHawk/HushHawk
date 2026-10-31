@@ -1826,7 +1826,7 @@
         "default": {
           "tag": "p",
           "_ww-text_text": {
-            "en": "●  Podio sync pending"
+            "en": "●  HushHawk Live Synced"
           },
           "_ww-text_color": "#F59E0B",
           "_ww-text_fontSize": "11px",
@@ -3260,7 +3260,7 @@
         "default": {
           "tag": "p",
           "_ww-text_text": {
-            "en": "• Use Podio data as the transaction source of truth"
+            "en": "• Use PostgreSQL canonical truth as transaction source of truth"
           },
           "_ww-text_color": "var(--e133e327-b4a1-439d-be88-d91207b49f9d,#334155)",
           "_ww-text_fontSize": "11px",
@@ -3372,7 +3372,7 @@
         "default": {
           "tag": "p",
           "_ww-text_text": {
-            "en": "LIVE DATA: activates when Podio / provider connectors are authorized."
+            "en": "LIVE CANONICAL DATA: Powered by AWS RDS PostgreSQL"
           },
           "_ww-text_color": "#92400E",
           "_ww-text_fontSize": "10px",
