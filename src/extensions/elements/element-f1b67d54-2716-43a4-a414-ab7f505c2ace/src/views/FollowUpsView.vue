@@ -437,134 +437,7 @@ export default {
         { label: 'Overdue Touches', value: '3', change: '-4 cleared', icon: 'bell' },
         { label: 'Completed This Week', value: '62', change: '+22% pace', icon: 'check' }
       ],
-      followUps: [
-        {
-          id: 1,
-          seller: 'Evelyn Richardson',
-          address: '4218 Commonwealth Ave, Jacksonville, FL 32254',
-          parcelId: 'DUV-091822-0001',
-          phone: '(904) 555-0143',
-          email: 'evelyn.richardson@att.net',
-          cadenceStage: 'Day 1 Post-Offer',
-          attemptCount: 2,
-          dueStatus: 'Today',
-          dueText: 'Due in 2 hrs',
-          channel: 'Call',
-          lastOffer: 138000,
-          arv: 245000,
-          stage: 'Offer Sent',
-          motivation: 'Hot',
-          rep: 'Marcus Vance',
-          repInitials: 'MV',
-          done: false,
-          notes: 'Inherited house from parents. Wants to close before 15th to avoid duplicate insurance payment. Spoke yesterday, reviewing offer with sister.'
-        },
-        {
-          id: 2,
-          seller: 'Derrick Simmons',
-          address: '1540 W 23rd St, Jacksonville, FL 32209',
-          parcelId: 'DUV-084721-0034',
-          phone: '(904) 555-8910',
-          email: 'dsimmons904@gmail.com',
-          cadenceStage: 'Day 3 Review',
-          attemptCount: 3,
-          dueStatus: 'Overdue',
-          dueText: 'Overdue 1 day',
-          channel: 'SMS',
-          lastOffer: 95000,
-          arv: 195000,
-          stage: 'Counter Pending',
-          motivation: 'Hot',
-          rep: 'Sarah Jenkins',
-          repInitials: 'SJ',
-          done: false,
-          notes: 'Told us $95k is close but wants $105k to clear mortgage. Sent SMS offering to cover $2,500 seller closing costs.'
-        },
-        {
-          id: 3,
-          seller: 'Patricia Delgado',
-          address: '8824 Normandy Blvd, Jacksonville, FL 32221',
-          parcelId: 'DUV-041920-0112',
-          phone: '(904) 555-3382',
-          email: 'pdelgado@bellsouth.net',
-          cadenceStage: 'Day 7 Check-in',
-          attemptCount: 4,
-          dueStatus: 'Today',
-          dueText: 'Today 3:00 PM',
-          channel: 'Call',
-          lastOffer: 172000,
-          arv: 290000,
-          stage: 'Inspection Done',
-          motivation: 'Warm',
-          rep: 'Marcus Vance',
-          repInitials: 'MV',
-          done: false,
-          notes: 'Roof has minor leak in back bedroom. Contractor bid came back at $7,800. Checking if she will accept $168,000 net cash.'
-        },
-        {
-          id: 4,
-          seller: 'Harold Green',
-          address: '2931 University Blvd N, Jacksonville, FL 32211',
-          parcelId: 'DUV-072319-0099',
-          phone: '(904) 555-9012',
-          email: 'hgreen.jax@yahoo.com',
-          cadenceStage: 'Day 14 Counter',
-          attemptCount: 5,
-          dueStatus: 'Tomorrow',
-          dueText: 'Tomorrow 10:00 AM',
-          channel: 'SMS',
-          lastOffer: 115000,
-          arv: 210000,
-          stage: 'Follow-Up Drip',
-          motivation: 'Warm',
-          rep: 'Elena Rostova',
-          repInitials: 'ER',
-          done: false,
-          notes: 'Tenant moved out last weekend. Property is completely vacant now. Sent updated video walkthrough to cash buyer VIP pool.'
-        },
-        {
-          id: 5,
-          seller: 'Barbara Higgins',
-          address: '614 Oceanway Ave, Jacksonville, FL 32218',
-          parcelId: 'DUV-038291-0044',
-          phone: '(904) 555-4811',
-          email: 'bhiggins@comcast.net',
-          cadenceStage: 'Day 30 Drip',
-          attemptCount: 6,
-          dueStatus: 'Upcoming',
-          dueText: 'In 3 days',
-          channel: 'Email',
-          lastOffer: 195000,
-          arv: 320000,
-          stage: 'Nurture',
-          motivation: 'Cold',
-          rep: 'Sarah Jenkins',
-          repInitials: 'SJ',
-          done: false,
-          notes: 'Needs to find replacement manufactured home first before selling. Keep in bi-weekly automated market check.'
-        },
-        {
-          id: 6,
-          seller: 'Kenneth Washington',
-          address: '1105 Dunn Ave, Jacksonville, FL 32218',
-          parcelId: 'DUV-062810-0019',
-          phone: '(904) 555-7281',
-          email: 'kwash904@gmail.com',
-          cadenceStage: 'Day 1 Post-Offer',
-          attemptCount: 1,
-          dueStatus: 'Today',
-          dueText: 'Due now',
-          channel: 'Call',
-          lastOffer: 165000,
-          arv: 275000,
-          stage: 'Offer Sent',
-          motivation: 'Hot',
-          rep: 'Marcus Vance',
-          repInitials: 'MV',
-          done: false,
-          notes: 'Code enforcement notice received for overgrown lot and damaged fascia. Urgent to sell before Duval magistrate hearing.'
-        }
-      ]
+      followUps: []
     };
   },
   computed: {
@@ -598,7 +471,7 @@ export default {
       try {
         const res = await fetch('/api/v1/follow-ups');
         const data = await res.json();
-        if (data.followUps && data.followUps.length > 0) {
+        if (data) {
           this.followUps = data.followUps;
           if (!this.selectedFollowUp) this.selectedFollowUp = data.followUps[0];
         }

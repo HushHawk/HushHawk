@@ -270,80 +270,7 @@ export default {
         phone: '',
         notes: ''
       },
-      events: [
-        {
-          id: 1,
-          date: '2026-10-26',
-          dayNum: '26',
-          dateString: 'Monday, Oct 26',
-          time: '11:00 AM',
-          title: 'Distressed Seller Home Inspection & Offer',
-          address: '4218 Commonwealth Ave, Jacksonville, FL 32254',
-          parcelId: 'DUV-091822-0001',
-          type: 'Seller Walkthrough',
-          color: '#c084fc',
-          rep: 'Marcus Vance',
-          repInitials: 'MV',
-          contactName: 'Evelyn Richardson',
-          phone: '(904) 555-0143',
-          lockbox: 'MasterLock 2841',
-          notes: 'Walk interior with contractor to finalize repair estimate on rear bedroom ceiling leak.'
-        },
-        {
-          id: 2,
-          date: '2026-10-26',
-          dayNum: '26',
-          dateString: 'Monday, Oct 26',
-          time: '2:30 PM',
-          title: 'VIP Buyer Showing (River City Flip Fund)',
-          address: '1540 W 23rd St, Jacksonville, FL 32209',
-          parcelId: 'DUV-084721-0034',
-          type: 'Buyer Showing',
-          color: '#38bdf8',
-          rep: 'Sarah Jenkins',
-          repInitials: 'SJ',
-          contactName: 'David Ross',
-          phone: '(904) 555-8911',
-          lockbox: '4921',
-          notes: 'Buyer verified $160k liquid funds. Looking for 65% ARV margin for rental portfolio.'
-        },
-        {
-          id: 3,
-          date: '2026-10-27',
-          dayNum: '27',
-          dateString: 'Tuesday, Oct 27',
-          time: '10:00 AM',
-          title: 'Precision Roofing Contractor Estimate',
-          address: '8824 Normandy Blvd, Jacksonville, FL 32221',
-          parcelId: 'DUV-041920-0112',
-          type: 'Inspection',
-          color: '#fb923c',
-          rep: 'Marcus Vance',
-          repInitials: 'MV',
-          contactName: 'Patricia Delgado',
-          phone: '(904) 555-3382',
-          lockbox: 'Gate code #9041',
-          notes: 'Evaluate complete shingle tear-off vs architectural overlay.'
-        },
-        {
-          id: 4,
-          date: '2026-10-29',
-          dayNum: '29',
-          dateString: 'Thursday, Oct 29',
-          time: '2:00 PM',
-          title: 'Title Wire Disbursal & Deed Recording',
-          address: '4812 Moncrief Rd, Jacksonville, FL 32208',
-          parcelId: 'DUV-091823-0001',
-          type: 'Title Closing',
-          color: '#4ade80',
-          rep: 'Sarah Jenkins',
-          repInitials: 'SJ',
-          contactName: 'Crown Escrow (Lisa Miller)',
-          phone: '(904) 555-2100',
-          lockbox: '',
-          notes: '$32,500 net assignment wire scheduled to HushHawk Capital operating account.'
-        }
-      ]
+      events: []
     };
   },
   computed: {
@@ -361,7 +288,7 @@ export default {
       try {
         const res = await fetch('/api/v1/calendar');
         const data = await res.json();
-        if (data.events && data.events.length > 0) {
+        if (data) {
           this.events = data.events;
         }
       } catch (err) {

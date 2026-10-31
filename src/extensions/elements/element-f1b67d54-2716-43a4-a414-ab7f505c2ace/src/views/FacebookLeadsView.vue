@@ -287,92 +287,7 @@ export default {
         { label: 'Qualified Motivation Rate', value: '62%', change: '71 Hot/Warm', icon: 'trendingUp' },
         { label: 'Contracts Executed', value: '6 Deals', change: '$148k projected', icon: 'badgeDollar' }
       ],
-      leads: [
-        {
-          id: 1,
-          name: 'Travis Holloway',
-          phone: '(904) 555-7741',
-          email: 't.holloway@gmail.com',
-          address: '5318 Moncrief Rd W, Jacksonville, FL 32209',
-          parcelId: 'DUV-091823-0092',
-          campaign: 'Duval Inherited & Probate',
-          adSet: 'Meta-JAX-Inherited-V3',
-          score: 94,
-          timeframe: 'Immediate (< 14 days)',
-          repairs: 28000,
-          repairDetails: 'Needs roof replacement & cosmetic update',
-          occupancy: 'Vacant (Key in lockbox)',
-          mortgage: 0,
-          equity: 100,
-          arv: 215000,
-          stage: 'New Ingestion',
-          reason: 'Inherited from grandmother. Living in Orlando and cannot manage Jacksonville maintenance.',
-          submitted: '32 mins ago'
-        },
-        {
-          id: 2,
-          name: 'Deanne Walker',
-          phone: '(904) 555-4819',
-          email: 'deanne.walker@yahoo.com',
-          address: '1724 W 14th St, Jacksonville, FL 32209',
-          parcelId: 'DUV-084721-0199',
-          campaign: 'Pre-Foreclosure Fast Cash',
-          adSet: 'Meta-PreForeclosure-Auction-V1',
-          score: 88,
-          timeframe: '30 Days',
-          repairs: 15000,
-          repairDetails: 'AC compressor down, interior paint',
-          occupancy: 'Owner Occupied',
-          mortgage: 62000,
-          equity: 68,
-          arv: 195000,
-          stage: 'Contacted',
-          reason: 'Behind 3 months on mortgage. Received notice of default from lender.',
-          submitted: '3 hrs ago'
-        },
-        {
-          id: 3,
-          name: 'Carlos Mendez',
-          phone: '(904) 555-8930',
-          email: 'cmendez904@gmail.com',
-          address: '7412 103rd St, Jacksonville, FL 32210',
-          parcelId: 'DUV-041920-0834',
-          campaign: 'Fixer-Upper Tired Landlord',
-          adSet: 'Meta-TiredLandlord-Duplex',
-          score: 76,
-          timeframe: '30-60 Days',
-          repairs: 35000,
-          repairDetails: 'Tenants stopped paying, plumbing damage',
-          occupancy: 'Tenant Occupied (Eviction in progress)',
-          mortgage: 85000,
-          equity: 63,
-          arv: 230000,
-          stage: 'New Ingestion',
-          reason: 'Tired of managing bad tenants. Wants clean cash exit.',
-          submitted: 'Yesterday'
-        },
-        {
-          id: 4,
-          name: 'Mildred Vance',
-          phone: '(904) 555-1129',
-          email: 'mvance@comcast.net',
-          address: '3819 University Blvd N, Jacksonville, FL 32211',
-          parcelId: 'DUV-072319-0412',
-          campaign: 'Duval Inherited & Probate',
-          adSet: 'Meta-JAX-Inherited-V3',
-          score: 91,
-          timeframe: 'Immediate (< 14 days)',
-          repairs: 20000,
-          repairDetails: 'Original 1972 kitchen and bathrooms',
-          occupancy: 'Vacant',
-          mortgage: 0,
-          equity: 100,
-          arv: 240000,
-          stage: 'Pushed to Pipeline',
-          reason: 'Moving into assisted living facility in St. Johns County.',
-          submitted: '2 days ago'
-        }
-      ]
+      leads: []
     };
   },
   computed: {
@@ -408,7 +323,7 @@ export default {
       try {
         const res = await fetch('/api/v1/facebook-leads');
         const data = await res.json();
-        if (data.leads && data.leads.length > 0) {
+        if (data) {
           this.leads = data.leads;
           if (!this.selectedLead) this.selectedLead = data.leads[0];
         }

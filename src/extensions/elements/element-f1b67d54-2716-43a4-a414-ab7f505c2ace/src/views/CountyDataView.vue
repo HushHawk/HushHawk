@@ -253,7 +253,7 @@ export default {
       try {
         const res = await fetch(API_BASE + '/county-records');
         const data = await res.json();
-        if (data.records && data.records.length > 0) {
+        if (data) {
           records.value = data.records;
           if (!selectedRecord.value) selectedRecord.value = data.records[0];
         }
@@ -266,98 +266,7 @@ export default {
       loadCountyRecords();
     });
 
-    const records = ref([
-      {
-        id: 'r1',
-        crownKey: 'DUV-091823-0000',
-        address: '4521 Lenox Ave',
-        zip: '32208',
-        owner: 'Robert T. Henderson',
-        mailingAddress: '1428 Peachtree St, Atlanta GA 30309',
-        isAbsentee: true,
-        assessedValue: 124500,
-        equityPercent: 88,
-        distress: 'Tax Delinquent',
-        distressClass: 'distress-tax',
-        delinquentAmount: 4850,
-        lastFiling: '2026-03-12',
-        skipStatus: 'Enriched',
-        county: 'Duval',
-        legalDescription: 'LOT 14 BLK 2 LENOX PARK SEC 1 PB 12-48 DUVAL COUNTY FL'
-      },
-      {
-        id: 'r2',
-        crownKey: 'DUV-049182-0020',
-        address: '2834 W 21st St',
-        zip: '32209',
-        owner: 'Estate of Dorothy Mae Jenkins',
-        mailingAddress: '2834 W 21st St, Jacksonville FL 32209',
-        isAbsentee: false,
-        assessedValue: 86400,
-        equityPercent: 100,
-        distress: 'Probate',
-        distressClass: 'distress-probate',
-        delinquentAmount: 1820,
-        lastFiling: '2026-02-18',
-        skipStatus: 'Pending',
-        county: 'Duval',
-        legalDescription: 'SUB OF BLK 15 MONCRIEF HGTS LOT 8 PB 8-22 DUVAL COUNTY FL'
-      },
-      {
-        id: 'r3',
-        crownKey: 'DUV-071842-0000',
-        address: '1910 Edgewood Ave',
-        zip: '32210',
-        owner: 'Gulf Coast Property Ventures LLC',
-        mailingAddress: '984 Ocean Dr, Miami FL 33139',
-        isAbsentee: true,
-        assessedValue: 168000,
-        equityPercent: 65,
-        distress: 'Code Violation',
-        distressClass: 'distress-code',
-        delinquentAmount: 3200,
-        lastFiling: '2026-04-02',
-        skipStatus: 'Enriched',
-        county: 'Duval',
-        legalDescription: 'EDGEWOOD MANOR S/D LOT 4 BLK 11 REC DUVAL COUNTY'
-      },
-      {
-        id: 'r4',
-        crownKey: 'DUV-019284-0010',
-        address: '6234 Moncrief Rd',
-        zip: '32209',
-        owner: 'Charles E. Washington',
-        mailingAddress: '8842 W Beaver St, Jacksonville FL 32220',
-        isAbsentee: true,
-        assessedValue: 92000,
-        equityPercent: 92,
-        distress: 'Absentee',
-        distressClass: 'distress-absentee',
-        delinquentAmount: 640,
-        lastFiling: '2026-01-20',
-        skipStatus: 'Pending',
-        county: 'Duval',
-        legalDescription: 'GRAND PARK LOT 22 BLK 4 REPLAT PB 6-18 DUVAL COUNTY FL'
-      },
-      {
-        id: 'r5',
-        crownKey: 'DUV-084920-0030',
-        address: '7801 Merrill Rd',
-        zip: '32277',
-        owner: 'Patricia Anne Miller',
-        mailingAddress: '7801 Merrill Rd, Jacksonville FL 32277',
-        isAbsentee: false,
-        assessedValue: 194000,
-        equityPercent: 45,
-        distress: 'Pre-Foreclosure',
-        distressClass: 'distress-foreclosure',
-        delinquentAmount: 14200,
-        lastFiling: '2026-04-14',
-        skipStatus: 'Enriched',
-        county: 'Duval',
-        legalDescription: 'ARLINGTON MANOR SEC 4 LOT 19 BLK 3 DUVAL COUNTY FL'
-      }
-    ]);
+    const records = ref([]);;
 
     const searchQuery = ref('');
     const countyFilter = ref('Duval');

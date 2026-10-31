@@ -309,78 +309,7 @@ export default {
         tagsInput: '',
         notes: ''
       },
-      contacts: [
-        {
-          id: 1,
-          name: 'Ronald Campbell',
-          company: '',
-          type: 'Distressed Seller',
-          phone: '(904) 555-0182',
-          email: 'r.campbell@att.net',
-          tags: ['Probate', 'Duval 32208', 'Vacant'],
-          property: '4812 Moncrief Rd, Jacksonville, FL',
-          status: 'Under Contract',
-          initials: 'RC',
-          lastTouch: 'Today 10:14 AM',
-          notes: 'Inherited from parents. Agreed to $110k cash offer. In escrow with First American.'
-        },
-        {
-          id: 2,
-          name: 'David Ross',
-          company: 'Apex Jacksonville Holdings LLC',
-          type: 'Cash Buyer',
-          phone: '(904) 555-8911',
-          email: 'dross@apexjaxholdings.com',
-          tags: ['VIP Buyer', 'Duval', 'Cash Fast Close', 'BRRRR'],
-          property: '1540 W 23rd St, Jacksonville, FL',
-          status: 'VIP Verified',
-          initials: 'DR',
-          lastTouch: 'Today 9:30 AM',
-          notes: '$250k liquid POF on file. Looking for 3/1 or 3/2 SFRs in 32208/32209 under $135k.'
-        },
-        {
-          id: 3,
-          name: 'Lisa Miller',
-          company: 'First American Title / Crown Escrow',
-          type: 'Title Officer',
-          phone: '(904) 555-2100',
-          email: 'lmiller@firstam.com',
-          tags: ['Title Partner', 'Assignment Friendly', 'Double Close'],
-          property: '',
-          status: 'Active',
-          initials: 'LM',
-          lastTouch: 'Yesterday 3:30 PM',
-          notes: 'Primary title agent for HushHawk wholesale assignments. Understands double closes and assignment contracts.'
-        },
-        {
-          id: 4,
-          name: 'Greg Thornton',
-          company: 'First Coast Hard Money Partners',
-          type: 'Lender',
-          phone: '(904) 555-9080',
-          email: 'greg@firstcoasthml.com',
-          tags: ['100% Rehab', '10.5% Rate', '48hr Close'],
-          property: '',
-          status: 'Active',
-          initials: 'GT',
-          lastTouch: 'Last week',
-          notes: 'Funds our VIP buyers at 90% purchase / 100% rehab. Fast approval without appraisal.'
-        },
-        {
-          id: 5,
-          name: 'Evelyn Richardson',
-          company: '',
-          type: 'Distressed Seller',
-          phone: '(904) 555-0143',
-          email: 'evelyn.richardson@att.net',
-          tags: ['Tax Delinquent', 'Commonwealth', 'Duval 32254'],
-          property: '4218 Commonwealth Ave, Jacksonville, FL',
-          status: 'Active',
-          initials: 'ER',
-          lastTouch: 'Yesterday 2:05 PM',
-          notes: 'Motivated to close before end of month. Offered $138k net cash.'
-        }
-      ]
+      contacts: []
     };
   },
   computed: {
@@ -414,7 +343,7 @@ export default {
       try {
         const res = await fetch('/api/v1/contacts');
         const data = await res.json();
-        if (data.contacts && data.contacts.length > 0) {
+        if (data) {
           this.contacts = data.contacts;
         }
       } catch (err) {

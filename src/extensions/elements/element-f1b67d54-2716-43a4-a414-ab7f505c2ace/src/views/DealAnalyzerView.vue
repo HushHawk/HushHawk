@@ -275,11 +275,7 @@ export default {
         { name: 'Plumbing & Electrical', desc: 'Panel upgrade & PEX water lines', cost: 3500 },
         { name: 'Contingency / Misc', desc: 'Unforeseen structural / permits buffer', cost: 4000 }
       ],
-      comps: [
-        { address: '4904 Moncrief Rd', bedsBaths: '3/2', sqft: 1450, dist: '0.1 mi', soldPrice: 245000 },
-        { address: '1612 W 38th St', bedsBaths: '3/1.5', sqft: 1380, dist: '0.3 mi', soldPrice: 232000 },
-        { address: '4620 Golfair Blvd', bedsBaths: '3/2', sqft: 1510, dist: '0.4 mi', soldPrice: 252000 }
-      ]
+      comps: []
     };
   },
   computed: {

@@ -355,7 +355,7 @@ export default {
       try {
         const res = await fetch(API_BASE + '/skip-tracing');
         const data = await res.json();
-        if (data.traces && data.traces.length > 0) {
+        if (data) {
           traces.value = data.traces;
           if (!selectedTrace.value) selectedTrace.value = data.traces[0];
         }
@@ -368,78 +368,7 @@ export default {
       loadTraces();
     });
 
-    const traces = ref([
-      {
-        id: 't1',
-        ownerName: 'Robert Henderson',
-        age: 64,
-        deceased: false,
-        address: '4521 Lenox Ave',
-        zip: '32208',
-        mailingAddress: '1428 Peachtree St, Atlanta GA 30309',
-        score: 96,
-        primaryPhone: '(904) 555-8120',
-        alternatePhone: '(904) 555-8121',
-        email: 'rhenderson@gmail.com',
-        dncFlag: false,
-        relatives: [
-          { name: 'Marcus Henderson', relationship: 'Son', phone: '(904) 555-9012' },
-          { name: 'Angela Henderson', relationship: 'Daughter', phone: '(904) 555-9014' }
-        ]
-      },
-      {
-        id: 't2',
-        ownerName: 'Dorothy Mae Jenkins (Estate)',
-        age: 78,
-        deceased: true,
-        address: '2834 W 21st St',
-        zip: '32209',
-        mailingAddress: '2834 W 21st St, Jacksonville FL 32209',
-        score: 92,
-        primaryPhone: '(904) 555-3419',
-        alternatePhone: '(904) 555-3420',
-        email: 'jenkins.family@att.net',
-        dncFlag: false,
-        relatives: [
-          { name: 'Tyrone Jenkins', relationship: 'Executor / Heir', phone: '(904) 555-7781' },
-          { name: 'Keisha Jenkins', relationship: 'Heir', phone: '(904) 555-7784' }
-        ]
-      },
-      {
-        id: 't3',
-        ownerName: 'Patricia Anne Miller',
-        age: 58,
-        deceased: false,
-        address: '7801 Merrill Rd',
-        zip: '32277',
-        mailingAddress: '7801 Merrill Rd, Jacksonville FL 32277',
-        score: 88,
-        primaryPhone: '(904) 555-9921',
-        alternatePhone: '',
-        email: 'pmiller58@yahoo.com',
-        dncFlag: false,
-        relatives: [
-          { name: 'James Miller', relationship: 'Spouse', phone: '(904) 555-9922' }
-        ]
-      },
-      {
-        id: 't4',
-        ownerName: 'Charles E. Washington',
-        age: 62,
-        deceased: false,
-        address: '6234 Moncrief Rd',
-        zip: '32209',
-        mailingAddress: '8842 W Beaver St, Jacksonville FL 32220',
-        score: 84,
-        primaryPhone: '(904) 555-4412',
-        alternatePhone: '(904) 555-4413',
-        email: 'cwashington@outlook.com',
-        dncFlag: true,
-        relatives: [
-          { name: 'Evelyn Washington', relationship: 'Daughter', phone: '(904) 555-4419' }
-        ]
-      }
-    ]);
+    const traces = ref([]);;
 
     const searchQuery = ref('');
     const qualityFilter = ref('');

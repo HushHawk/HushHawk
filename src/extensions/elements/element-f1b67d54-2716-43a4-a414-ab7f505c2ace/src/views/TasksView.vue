@@ -273,92 +273,7 @@ export default {
         assignee: 'Marcus Vance',
         description: ''
       },
-      tasks: [
-        {
-          id: 1,
-          title: 'Deposit $2,500 Earnest Money (EMD) to First American',
-          description: 'Wire confirmation must be uploaded to title portal for PSA-2026-084.',
-          deal: '4812 Moncrief Rd, Jacksonville, FL 32208',
-          parcel: 'DUV-091823-0001',
-          category: 'Title & Escrow',
-          dueDate: 'Today 2:00 PM',
-          dueStatus: 'urgent',
-          priority: 'Urgent',
-          assignee: 'Sarah Jenkins',
-          repInitials: 'SJ',
-          done: false
-        },
-        {
-          id: 2,
-          title: 'Verify Cash Buyer Proof of Funds ($160k liquid)',
-          description: 'River City Flip Fund submitted letter of intent for 23rd St.',
-          deal: '1540 W 23rd St, Jacksonville, FL 32209',
-          parcel: 'DUV-084721-0034',
-          category: 'Dispositions',
-          dueDate: 'Today 4:30 PM',
-          dueStatus: 'today',
-          priority: 'High',
-          assignee: 'Sarah Jenkins',
-          repInitials: 'SJ',
-          done: false
-        },
-        {
-          id: 3,
-          title: 'Contractor Walkthrough & Roof Leak Estimate',
-          description: 'Meet Precision Roofing Jax at property to inspect rear bedroom slope.',
-          deal: '4218 Commonwealth Ave, Jacksonville, FL 32254',
-          parcel: 'DUV-091822-0001',
-          category: 'Underwriting',
-          dueDate: 'Tomorrow 10:00 AM',
-          dueStatus: 'upcoming',
-          priority: 'High',
-          assignee: 'Marcus Vance',
-          repInitials: 'MV',
-          done: false
-        },
-        {
-          id: 4,
-          title: 'Order Duval County Code Enforcement Estoppel',
-          description: 'Check municipal weed lien status and magistrate fine schedule.',
-          deal: '1105 Dunn Ave, Jacksonville, FL 32218',
-          parcel: 'DUV-062810-0019',
-          category: 'Title & Escrow',
-          dueDate: 'Overdue 1 day',
-          dueStatus: 'overdue',
-          priority: 'Urgent',
-          assignee: 'Elena Rostova',
-          repInitials: 'ER',
-          done: false
-        },
-        {
-          id: 5,
-          title: 'Send Assignment Contract for E-Signature to Apex Holdings',
-          description: '$37,000 wholesale assignment spread. $5,000 non-refundable deposit.',
-          deal: '1540 W 23rd St, Jacksonville, FL 32209',
-          parcel: 'DUV-084721-0034',
-          category: 'Dispositions',
-          dueDate: 'Today 6:00 PM',
-          dueStatus: 'today',
-          priority: 'High',
-          assignee: 'Sarah Jenkins',
-          repInitials: 'SJ',
-          done: false
-        },
-        {
-          id: 6,
-          title: 'Pull Recent Cash Sales Comps within 0.5-Mile Radius',
-          description: 'Normandy Blvd area has had 3 wholesale flips recorded in last 45 days.',
-          deal: '8824 Normandy Blvd, Jacksonville, FL 32221',
-          parcel: 'DUV-041920-0112',
-          category: 'Acquisitions',
-          dueDate: 'Friday',
-          dueStatus: 'upcoming',
-          priority: 'Medium',
-          assignee: 'Elena Rostova',
-          repInitials: 'ER',
-          done: true
-        }
-      ]
+      tasks: []
     };
   },
   computed: {
@@ -392,7 +307,7 @@ export default {
       try {
         const res = await fetch('/api/v1/tasks');
         const data = await res.json();
-        if (data.tasks && data.tasks.length > 0) {
+        if (data) {
           this.tasks = data.tasks;
         }
       } catch (err) {
