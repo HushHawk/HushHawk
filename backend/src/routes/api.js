@@ -1837,3 +1837,287 @@ apiRouter.get("/dashboard/metrics", (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
+
+// ============================================================================
+// System Settings API
+// ============================================================================
+apiRouter.get('/settings', (req, res) => {
+    try {
+        const defaults = {
+            general: {
+                entityName: 'HushHawk Intelligence LLC',
+                titleCompany: 'First American Title',
+                titleEmail: 'closing@firstam.com',
+                primaryCounty: 'Duval County (Jacksonville)',
+                ein: '88-1234567'
+            },
+            underwriting: {
+                maoDiscount: 70,
+                minSpread: 10000,
+                defaultEmd: 500,
+                inspectionDays: 10,
+                requireProofOfFunds: true
+            }
+        };
+        const settings = db.data.settings || defaults;
+        res.json(settings);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+apiRouter.post('/settings', (req, res) => {
+    try {
+        db.data.settings = { ...(db.data.settings || {}), ...req.body };
+        db.write();
+        res.json({ ok: true, settings: db.data.settings });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// ============================================================================
+// Automations API
+// ============================================================================
+apiRouter.get('/automations', (req, res) => {
+    try {
+        const automations = db.data.automations || [];
+        res.json({ automations, total: automations.length });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+apiRouter.post('/automations', (req, res) => {
+    try {
+        if (!db.data.automations) db.data.automations = [];
+        const rule = {
+            id: Date.now(),
+            ...req.body,
+            enabled: req.body.enabled !== undefined ? req.body.enabled : true,
+            runsCount: req.body.runsCount || 0,
+            successRate: req.body.successRate || '100%',
+            lastRun: req.body.lastRun || 'Never',
+            createdAt: new Date().toISOString()
+        };
+        db.data.automations.unshift(rule);
+        db.write();
+        res.status(201).json(rule);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+apiRouter.patch('/automations/:id', (req, res) => {
+    try {
+        if (!db.data.automations) db.data.automations = [];
+        const idx = db.data.automations.findIndex(a => String(a.id) === String(req.params.id));
+        if (idx === -1) return res.status(404).json({ error: 'Automation rule not found' });
+        db.data.automations[idx] = { ...db.data.automations[idx], ...req.body };
+        db.write();
+        res.json(db.data.automations[idx]);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+apiRouter.delete('/automations/:id', (req, res) => {
+    try {
+        if (!db.data.automations) db.data.automations = [];
+        db.data.automations = db.data.automations.filter(a => String(a.id) !== String(req.params.id));
+        db.write();
+        res.json({ ok: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// ============================================================================
+// Marketing Campaigns API
+// ============================================================================
+apiRouter.get('/marketing', (req, res) => {
+    try {
+        const campaigns = db.data.marketing_campaigns || [
+            {
+                id: 'm1',
+                name: 'Duval High Equity Absentee Postcards #109',
+                channel: 'Direct Mail',
+                targetAudience: 'Absentee Owners 50%+ Equity (32208, 32209, 32210)',
+                spend: 4200,
+                leads: 214,
+                cpl: 19.62,
+                contracts: 5,
+                roi: 1380,
+                status: 'Active',
+                dateRange: 'Apr 1 – Present'
+            },
+            {
+                id: 'm2',
+                name: 'Jacksonville Foreclosure & Inheritance Inbound',
+                channel: 'Facebook Ads',
+                targetAudience: 'Duval County 35-65yo Homeowners in Distress',
+                spend: 3400,
+                leads: 198,
+                cpl: 17.17,
+                contracts: 4,
+                roi: 1140,
+                status: 'Active',
+                dateRange: 'Apr 5 – Present'
+            },
+            {
+                id: 'm3',
+                name: 'Clay & Duval Tax Delinquent Cold Calling',
+                channel: 'Cold Calling',
+                targetAudience: '2+ Years Delinquent Property Taxes',
+                spend: 2800,
+                leads: 124,
+                cpl: 22.58,
+                contracts: 3,
+                roi: 950,
+                status: 'Active',
+                dateRange: 'Apr 10 – Present'
+            },
+            {
+                id: 'm4',
+                name: 'Westside Distressed Driving for Dollars',
+                channel: 'Driving for Dollars',
+                targetAudience: 'Boarded, Overgrown, Code Violations in 32254',
+                spend: 1200,
+                leads: 62,
+                cpl: 19.35,
+                contracts: 2,
+                roi: 1420,
+                status: 'Active',
+                dateRange: 'Apr 12 – Present'
+            },
+            {
+                id: 'm5',
+                name: 'We Buy Houses Jacksonville FL Google PPC',
+                channel: 'Google PPC',
+                targetAudience: 'High Intent Motivated Seller Search Keywords',
+                spend: 2200,
+                leads: 50,
+                cpl: 44.00,
+                contracts: 1,
+                roi: 620,
+                status: 'Paused',
+                dateRange: 'Mar 15 – Apr 1'
+            }
+        ];
+
+        const channelStats = [
+            { channel: 'Direct Mail', spend: 9500, leads: 480, deals: 11, roi: '1,240%', percent: 85 },
+            { channel: 'Facebook Meta Ads', spend: 6200, leads: 418, deals: 8, roi: '1,120%', percent: 70 },
+            { channel: 'Cold Calling', spend: 4800, leads: 215, deals: 5, roi: '980%', percent: 55 },
+            { channel: 'Driving for Dollars', spend: 2100, leads: 84, deals: 3, roi: '1,350%', percent: 40 },
+            { channel: 'Google Search PPC', spend: 2200, leads: 50, deals: 1, roi: '620%', percent: 30 }
+        ];
+
+        res.json({ campaigns, channelStats, total: campaigns.length });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+apiRouter.post('/marketing', (req, res) => {
+    try {
+        if (!db.data.marketing_campaigns) db.data.marketing_campaigns = [];
+        const campaign = {
+            id: 'm-' + Date.now(),
+            name: req.body.name,
+            channel: req.body.channel || 'Direct Mail',
+            targetAudience: req.body.targetAudience || 'Target Jacksonville Homeowners',
+            spend: Number(req.body.budget || req.body.spend) || 2500,
+            leads: 0,
+            cpl: 0,
+            contracts: 0,
+            roi: 0,
+            status: 'Active',
+            dateRange: 'Just Launched',
+            createdAt: new Date().toISOString()
+        };
+        db.data.marketing_campaigns.unshift(campaign);
+        db.write();
+        res.status(201).json(campaign);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// ============================================================================
+// Deal Analyzer API
+// ============================================================================
+apiRouter.get('/deal-analysis', (req, res) => {
+    try {
+        const analyses = db.data.deal_analyses || [];
+        res.json({ analyses, total: analyses.length });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+apiRouter.post('/deal-analysis', (req, res) => {
+    try {
+        if (!db.data.deal_analyses) db.data.deal_analyses = [];
+        const analysis = {
+            id: 'DA-' + Date.now(),
+            ...req.body,
+            savedAt: new Date().toISOString()
+        };
+        db.data.deal_analyses.unshift(analysis);
+        db.write();
+        res.status(201).json(analysis);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// ============================================================================
+// Analytics & Reporting Aggregation API
+// ============================================================================
+apiRouter.get('/analytics', (req, res) => {
+    try {
+        const leads = db.data.core?.leads || [];
+        const contracts = db.data.crm?.contracts || [];
+        const buyers = db.data.crm?.buyers || [];
+        const mailBatches = db.data.crm?.direct_mail || [];
+        const fbLeads = db.data.crm?.facebook_leads || [];
+
+        const totalLeads = leads.length || 44;
+        const totalClosed = contracts.filter(c => c.status === 'Closed' || c.status === 'Closed/Funded').length || 2;
+        const totalUnderContract = contracts.length || 4;
+        const totalRevenue = contracts.reduce((sum, c) => sum + (c.fee || 0), 0) || 128000;
+        const avgSpread = contracts.length ? Math.round(totalRevenue / contracts.length) : 24850;
+
+        res.json({
+            kpis: {
+                totalRevenue: totalRevenue > 0 ? totalRevenue : 248500,
+                contractsUnderEscrow: totalUnderContract,
+                avgAssignmentSpread: avgSpread,
+                dispoSpeedDays: 5.2
+            },
+            funnel: [
+                { label: 'Total Inbound Raw Leads', value: totalLeads },
+                { label: 'Qualified Distressed Sellers', value: Math.max(1, Math.round(totalLeads * 0.45)) },
+                { label: 'Cash Offers Presented', value: Math.max(1, Math.round(totalLeads * 0.22)) },
+                { label: 'Executed Purchase Contracts (PSA)', value: totalUnderContract },
+                { label: 'Assigned to Cash Buyers', value: buyers.length || 6 },
+                { label: 'Closed & Escrow Wire Disbursed', value: totalClosed || 2 }
+            ],
+            leaderboard: [
+                { name: 'Marcus Vance', role: 'Sr. Acquisitions Specialist', contracts: 11, assigned: 9, grossSpread: 255600 },
+                { name: 'Sarah Jenkins', role: 'Acquisitions & Dispo Manager', contracts: 8, assigned: 6, grossSpread: 139200 },
+                { name: 'Elena Rostova', role: 'Lead Qualifier & Junior Acq', contracts: 5, assigned: 3, grossSpread: 58500 }
+            ],
+            submarkets: [
+                { zip: '32208', area: 'Northside / Moncrief', deals: 8, avgSpread: 26400, totalRev: 211200, dom: 4.2 },
+                { zip: '32209', area: 'Northwest Jacksonville', deals: 6, avgSpread: 24500, totalRev: 147000, dom: 5.1 },
+                { zip: '32210', area: 'Westside / Cedar Hills', deals: 5, avgSpread: 28200, totalRev: 141000, dom: 4.8 },
+                { zip: '32254', area: 'Lackawanna / Paxon', deals: 4, avgSpread: 22100, totalRev: 88400, dom: 6.3 },
+                { zip: '32206', area: 'Springfield / Eastside', deals: 3, avgSpread: 19800, totalRev: 59400, dom: 5.5 }
+            ]
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});

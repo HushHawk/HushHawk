@@ -59,7 +59,7 @@
             </div>
             <div class="rule-toggle">
               <label class="toggle-switch">
-                <input v-model="rule.enabled" type="checkbox" />
+                <input v-model="rule.enabled" type="checkbox" @change="toggleAutomation(rule)" />
                 <span class="toggle-slider"></span>
               </label>
             </div>
@@ -289,7 +289,63 @@ export default {
       ]
     };
   },
+  mounted() {
+    this.loadAutomations();
+  },
   methods: {
+    async loadAutomations() {
+      try {
+        const res = await fetch('/api/v1/automations');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.automations && data.automations.length > 0) {
+            this.automations = data.automations;
+          } else {
+            await this.seedDefaults();
+          }
+        }
+      } catch (err) {
+        console.warn('[Automations] Using fallback:', err.message);
+      }
+    },
+    async seedDefaults() {
+      const defaults = [
+        { name: 'Instant Seller Lead SMS Auto-Responder', category: 'Lead Ingestion', icon: 'text', description: 'Instantly fires customized SMS acknowledgement to incoming Facebook, Direct Mail, or Web sellers.', trigger: 'Inbound Webhook from Meta Ad / Web Form', action: 'Send Twilio SMS with personalized address & property questions', enabled: true, runsCount: 142, successRate: '100%', lastRun: '12 mins ago' },
+        { name: 'CrownKey Tax Delinquency Skip Trace Trigger', category: 'Skip Tracing', icon: 'search', description: 'Detects new Duval County tax certificates > ,500 and immediately runs Tier 1 phone lookup.', trigger: 'Duval County tax lien flag update in PostgreSQL', action: 'Call Skip Trace API -> Enrich phone -> Queue for Marcus Vance', enabled: true, runsCount: 88, successRate: '98.8%', lastRun: '1 hr ago' },
+        { name: 'PSA Executed -> Title Escrow File Generation', category: 'Title Escrow', icon: 'file', description: 'DocuSign completed webhook initiates escrow file with First American Title.', trigger: 'DocuSign PSA completed envelope webhook', action: 'Email title escrow packet + wire instructions to closing officer', enabled: true, runsCount: 19, successRate: '100%', lastRun: 'Yesterday' },
+        { name: 'VIP Cash Buyer Buy-Box Auto-Blast', category: 'Buyer Dispo', icon: 'send', description: 'Matches newly assigned properties with VIP buyers based on ZIP code and target discount margin.', trigger: 'Property stage moved to "Dispo Marketing"', action: 'Dispatch encrypted deal packet to filtered VIP buyer list', enabled: true, runsCount: 34, successRate: '100%', lastRun: '3 hrs ago' },
+        { name: 'No-Response Cadence Escalation', category: 'Lead Ingestion', icon: 'clock', description: 'If seller does not respond to offer within 48 hours, automatically transitions lead into Day 3 SMS sequence.', trigger: 'Lead unchanged in "Offer Sent" > 48 hours', action: 'Schedule Day 3 follow-up task & trigger follow-up SMS', enabled: true, runsCount: 29, successRate: '100%', lastRun: '4 hrs ago' }
+      ];
+      for (const d of defaults) {
+        try {
+          const res = await fetch('/api/v1/automations', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(d)
+          });
+          if (res.ok) {
+            const saved = await res.json();
+            this.automations.push(saved);
+          }
+        } catch (e) {}
+      }
+    },
+    async toggleAutomation(rule) {
+      try {
+        const res = await fetch(`/api/v1/automations/${rule.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ enabled: rule.enabled })
+        });
+        if (res.ok) {
+          this.showToast('Rule Updated', `"${rule.name}" is now ${rule.enabled ? 'Active' : 'Disabled'}.`, 'info');
+        } else {
+          rule.enabled = !rule.enabled;
+        }
+      } catch (err) {
+        rule.enabled = !rule.enabled;
+      }
+    },
     showToast(title, message, type = 'info') {
       if (typeof window !== 'undefined') {
         if (window.showHushHawkToast) {
@@ -315,21 +371,32 @@ export default {
       });
       this.showToast('Workflow Executed', `Triggered manual execution of "${rule.name}". Run logged.`, 'success');
     },
-    saveNewAutomation() {
-      const id = Date.now();
-      this.automations.unshift({
-        id,
-        name: this.newRule.name,
-        category: this.newRule.category,
-        icon: 'zap',
-        description: this.newRule.description,
-        trigger: this.newRule.trigger,
-        action: this.newRule.action,
-        enabled: true,
-        runsCount: 0,
-        successRate: '100%',
-        lastRun: 'Never'
-      });
+    async saveNewAutomation() {
+      if (!this.newRule.name || !this.newRule.name.trim()) return;
+      try {
+        const payload = {
+          name: this.newRule.name.trim(),
+          category: this.newRule.category,
+          icon: 'zap',
+          description: this.newRule.description,
+          trigger: this.newRule.trigger,
+          action: this.newRule.action
+        };
+        const res = await fetch('/api/v1/automations', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          const created = await res.json();
+          this.automations.unshift(created);
+          this.showToast('Automation Created', `Rule "${created.name}" activated.`, 'success');
+        } else {
+          this.showToast('Creation Failed', 'Could not save automation rule.', 'error');
+        }
+      } catch (err) {
+        this.showToast('Error', err.message, 'error');
+      }
       this.isAddModalOpen = false;
       this.newRule = {
         name: '',

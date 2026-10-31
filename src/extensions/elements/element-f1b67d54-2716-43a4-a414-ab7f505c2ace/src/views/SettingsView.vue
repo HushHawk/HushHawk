@@ -332,9 +332,41 @@ export default {
       ]
     };
   },
+  mounted() {
+    this.loadSettings();
+  },
   methods: {
-    saveAllSettings() {
-      this.showToast('System settings and underwriting rules saved successfully.');
+    async loadSettings() {
+      try {
+        const res = await fetch('/api/v1/settings');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.general) Object.assign(this.general, data.general);
+          if (data.underwriting) Object.assign(this.underwriting, data.underwriting);
+        }
+      } catch (err) {
+        console.warn('[Settings] Using defaults:', err.message);
+      }
+    },
+    async saveAllSettings() {
+      try {
+        const payload = {
+          general: this.general,
+          underwriting: this.underwriting
+        };
+        const res = await fetch('/api/v1/settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          this.showToast('System settings and underwriting rules saved successfully to canonical database.', 'success');
+        } else {
+          this.showToast('Failed to save settings to server.', 'error');
+        }
+      } catch (err) {
+        this.showToast('Error saving settings: ' + err.message, 'error');
+      }
     },
     testIntegrations() {
       this.showToast('All 5 external API handshakes returned HTTP 200 OK.');

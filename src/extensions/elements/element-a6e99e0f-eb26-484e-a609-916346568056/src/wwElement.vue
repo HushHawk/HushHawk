@@ -192,8 +192,44 @@ export default {
      hour12:true
    });
  }
+ async function loadDeals() {
+   try {
+     const res = await fetch('/api/v1/seller-leads');
+     if (res.ok) {
+       const data = await res.json();
+       const leads = data.leads || data;
+       if (leads && leads.length) {
+         const stageMap = {
+           'New': 0, 'Contacted': 1, 'Appointment Set': 2, 'Offer Sent': 3,
+           'Under Contract': 4, 'Dispo Marketing': 5, 'Sold': 6, 'Dead': 7
+         };
+         deals.value = leads.slice(0, 24).map((lead, i) => ({
+           id: lead.crownKey || ('lead-' + i),
+           address: lead.address || ((lead.street_address || 'Property') + ', Jacksonville FL'),
+           zip: lead.zipCode || lead.zip || '32206',
+           owner: lead.ownerName || lead.name || 'Unknown Owner',
+           phone: lead.phone || '—',
+           email: lead.email || '—',
+           arv: lead.arv || null,
+           repairs: lead.estimatedRepairs || null,
+           mao: lead.mao || null,
+           fee: lead.assignmentFee || null,
+           note: lead.notes || '',
+           source: lead.source || 'Direct Mail',
+           agent: 'Marcus Vance',
+           stage: stageMap[lead.status] !== undefined ? stageMap[lead.status] : (i % 6),
+           completed: lead.status === 'Sold'
+         }));
+       }
+     }
+   } catch(e) {
+     console.warn('[Acquisitions] Using sample deals:', e.message);
+   }
+ }
+
  onMounted(()=>{
    updateClock();
+   loadDeals();
    timeInterval=setInterval(updateClock,30000);
    clickOutsideHandler=(e)=>{
      if(!e.target.closest('.quick-add-wrap')){
@@ -232,7 +268,19 @@ export default {
  watch(selected, d=>{draft.value=drafts[d?.id]||'';note.value=d?.note||'';notice.value='';},{immediate:true});
  function startDrag(e,d){if(isEditing.value){e.preventDefault();return;}dragged.value=d.id;e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',d.id);}
  function dropDeal(stage){if(dragged.value)moveDeal(dragged.value,stage);dragged.value='';}
- function moveDeal(id,stage){if(isEditing.value||!Number.isInteger(stage)||stage<0||stage>=stages.length)return;const d=deals.value.find(d=>d.id===id);if(d)d.stage=stage;}
+ function moveDeal(id,stage){
+   if(isEditing.value||!Number.isInteger(stage)||stage<0||stage>=stages.length)return;
+   const d=deals.value.find(d=>d.id===id);
+   if(d){
+     d.stage=stage;
+     const stageNames=['New','Contacted','Appointment Set','Offer Sent','Under Contract','Dispo Marketing','Sold','Dead'];
+     fetch('/api/v1/leads/' + encodeURIComponent(d.id) + '/stage', {
+       method: 'PATCH',
+       headers: { 'Content-Type': 'application/json' },
+       body: JSON.stringify({ stage: stageNames[stage] || 'New' })
+     }).catch(()=>{});
+   }
+ }
  function completeTask(){if(!isEditing.value&&selected.value)selected.value.completed=!selected.value.completed;}
  function setTab(t){if(!isEditing.value){tab.value=t;notice.value='';}}
  function saveDraft(){if(isEditing.value||!selected.value)return;drafts[selected.value.id]=draft.value;notice.value='Draft saved in this page session · Not sent';}

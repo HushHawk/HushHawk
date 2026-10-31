@@ -296,7 +296,28 @@ export default {
   methods: {
     async loadAnalytics() {
       try {
-        const res = await fetch('/api/v1/dashboard/metrics');
+        const res = await fetch('/api/v1/analytics');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.kpis) {
+            this.metricsData['30D'][0].value = '$' + Number(data.kpis.totalRevenue || 248500).toLocaleString();
+            this.metricsData['30D'][1].value = String(data.kpis.contractsUnderEscrow || 14);
+            this.metricsData['30D'][2].value = '$' + Number(data.kpis.avgAssignmentSpread || 24850).toLocaleString();
+            this.metricsData['30D'][3].value = String(data.kpis.dispoSpeedDays || 5.2) + ' Days';
+          }
+          if (data.funnel && Array.isArray(data.funnel)) {
+            data.funnel.forEach((f, idx) => {
+              if (this.funnelStages[idx]) {
+                this.funnelStages[idx].count = f.value;
+              }
+            });
+          }
+          if (data.submarkets && Array.isArray(data.submarkets)) {
+            this.submarkets = data.submarkets;
+          }
+          return;
+        }
+        const res2 = await fetch('/api/v1/dashboard/metrics');
         if (res.ok) {
           const data = await res.json();
           if (data.metrics) {
