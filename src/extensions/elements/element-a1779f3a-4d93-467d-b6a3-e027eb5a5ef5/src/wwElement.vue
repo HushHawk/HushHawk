@@ -217,9 +217,10 @@ const metrics=ref([
   {iconKey:'dollar',label:'Dispo Opportunities',value:'4',change:'Live',href:'/dispositions'}
 ]);
 const emails=ref([]);
+const activeChat=ref(null);
 const rawTasks=ref([]);
 const tasks=ref([]);
-const imports=ref([{name:'Duval County',count:'44'},{name:'Clay County',count:'18'}]);
+const imports=ref([{name:'Duval County',count:'0'},{name:'Clay County',count:'0'}]);
 const leads=ref([]);
 const filteredLeads=computed(()=>(leads.value||[]).filter(r=>(!zip.value||r.zip===zip.value)&&[r.name,r.address,r.zip,r.status].join(' ').toLowerCase().includes(query.value.toLowerCase().trim())));
 const stages=['Lead received','Contact made','Appointment','Offer sent','Signed','Sent to title','EMD confirmed','Title cleared','Dispo launched','Buyer chosen','Assignment','Closed + funded'];
@@ -352,7 +353,7 @@ onBeforeUnmount(()=>{
   }
   if(marketHost.value)marketHost.value.innerHTML='';
 });
-return{icons,uid,feedMode,isEditing,heroStyle,metrics,query,zip,checked,tasks,imports,filteredLeads,stages,stageColors,sources,emails,activeEmail,chooseEmail,draft,draftStatus,saveDraft,paused,signals,signalTape,signalsCount,clock,marketHost,marketError,onZip,clearZip,guard,isQuickAddOpen,isNotifOpen,currentTime,navOpen,primaryNavigation,secondaryNavigation,handleNav};
+return{icons,uid,feedMode,isEditing,heroStyle,metrics,query,zip,checked,tasks,imports,filteredLeads,stages,stageColors,sources,emails,activeEmail,chooseEmail,activeChat,draft,draftStatus,saveDraft,paused,signals,signalTape,signalsCount,clock,marketHost,marketError,onZip,clearZip,guard,isQuickAddOpen,isNotifOpen,currentTime,navOpen,primaryNavigation,secondaryNavigation,handleNav};
 }};
 </script>
 <style scoped>

@@ -191,7 +191,7 @@ function updateClock(){
   });
 }
 const liveRows=ref([]);
-const mode=ref('live'),previewRows=ref(sampleLeads.map(r=>({...r,tags:[...r.tags]}))),query=ref(''),stage=ref('all'),statusFilter=ref(''),sourceFilter=ref(''),zipFilter=ref(''),sortKey=ref('date'),sortAscending=ref(false),extraFilters=ref(false),checked=ref(['lead-01']),selectedId=ref('lead-01'),navOpen=ref(false),photoFailed=ref(false);
+const mode=ref('live'),previewRows=ref([]),query=ref(''),stage=ref('all'),statusFilter=ref(''),sourceFilter=ref(''),zipFilter=ref(''),sortKey=ref('date'),sortAscending=ref(false),extraFilters=ref(false),checked=ref(['lead-01']),selectedId=ref('lead-01'),navOpen=ref(false),photoFailed=ref(false);
 
 async function loadSellerLeads() {
   try {
@@ -237,7 +237,7 @@ const columns=[{key:'name',label:'Name'},{key:'address',label:'Address'},{key:'c
 function normalizeStatus(v){const t=String(v||'New').toLowerCase();return({'new lead':'New','new':'New','contacted':'Contacted','qualified':'Contacted','appointment':'Appointment','appointment set':'Appointment','offer sent':'Offer Made','offer made':'Offer Made','under contract':'Under Contract','closed':'Closed','closed won':'Closed','lost':'Lost','follow up':'Follow Up','follow-up':'Follow Up'})[t]||String(v);}
 const read=(r,key,fallback)=>wwLib.wwUtils.resolveObjectPropertyPath(r,props.content?.[key+'Property']||fallback);
 const savedRows=computed(()=>(Array.isArray(props.content?.records)?props.content?.records:[]).map((r,i)=>({id:String(read(r,'id','id')??'saved-'+i),name:read(r,'name','seller_name')||'Unnamed seller',address:read(r,'address','property_address')||'No address',city:read(r,'city','city')||'—',zip:String(read(r,'zip','zip_code')||''),phone:String(read(r,'phone','phone')||''),email:read(r,'email','email')||'',source:read(r,'source','source')||'Other',status:normalizeStatus(read(r,'status','lead_status')),date:read(r,'date','createdAt'),type:read(r,'type','property_type'),score:read(r,'score','lead_score'),assignee:read(r,'assignee','assigned_to'),notes:read(r,'notes','notes'),photo:read(r,'photo','image_url'),arv:read(r,'arv','arv'),repairs:read(r,'repairs','repairs'),mao:read(r,'mao','mao'),equity:read(r,'equity','equity'),tags:[]})));
-const rows=computed(()=>liveRows.value.length ? liveRows.value : (mode.value==='saved'?savedRows.value:previewRows.value));
+const rows=computed(()=>liveRows.value);
 const tabStatus={new:'New',contacted:'Contacted',appointments:'Appointment',offers:'Offer Made',contract:'Under Contract',closed:'Closed'};
 const filtered=computed(()=>{const q=query.value.trim().toLowerCase();return rows.value.filter(r=>(!q||[r.name,r.address,r.city,r.zip,r.phone,r.email,r.source].join(' ').toLowerCase().includes(q))&&(stage.value==='all'||r.status===tabStatus[stage.value])&&(!statusFilter.value||r.status===statusFilter.value)&&(!sourceFilter.value||r.source===sourceFilter.value)&&(!zipFilter.value||r.zip.includes(zipFilter.value))).slice().sort((a,b)=>{const av=String(a[sortKey.value]??''),bv=String(b[sortKey.value]??'');return av.localeCompare(bv,undefined,{numeric:true})*(sortAscending.value?1:-1);});});
 const selected=computed(()=>filtered.value.find(r=>r.id===selectedId.value)||null),selectedIndex=computed(()=>filtered.value.findIndex(r=>r.id===selectedId.value));

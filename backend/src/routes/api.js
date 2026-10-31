@@ -135,21 +135,11 @@ apiRouter.post('/crownkey/validate', (req, res) => {
 // ============================================================================
 apiRouter.get('/properties', async (req, res) => {
     try {
-        const { rows } = await pool.query(`
-            SELECT p.*, c.county_code
-            FROM core.properties p
-            LEFT JOIN ref.counties c ON p.county_id = c.county_id
-            ORDER BY p.created_at DESC;
-        `);
-        const enriched = rows.map(p => CrownKeyService.enrichProperty({
-            ...p,
-            county_code: p.county_code || 'DUV',
-        }));
+        const list = db.data.core.properties || [];
+        const enriched = list.map(p => CrownKeyService.enrichProperty(p));
         res.json({ total: enriched.length, properties: enriched });
     } catch (err) {
-        console.error('[PostgreSQL Properties Fetch Error]', err.message);
-        const enriched = db.data.core.properties.map(p => CrownKeyService.enrichProperty(p));
-        res.json({ total: enriched.length, properties: enriched });
+        res.json({ total: 0, properties: [] });
     }
 });
 
