@@ -1920,6 +1920,14 @@ apiRouter.get('/settings', (req, res) => {
                 defaultEmd: 500,
                 inspectionDays: 10,
                 requireProofOfFunds: true
+            },
+            podio: {
+                applicationName: 'Hush Hawk Integration',
+                clientId: 'Hush Hawk Integration',
+                clientSecret: '5XcEYszn4UxM0cwR3aMJLvsJzxuHSGWh5b5s0iSaXYk1HjnUuLiqseIyyOdwNF39',
+                status: 'CONNECTED',
+                webhookUrl: 'https://hushhawk-kohl.vercel.app/api/v1/webhooks/podio',
+                lastSync: new Date().toISOString()
             }
         };
         const settings = db.data.settings || defaults;

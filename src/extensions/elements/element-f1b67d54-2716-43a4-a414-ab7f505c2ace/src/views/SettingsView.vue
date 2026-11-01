@@ -291,9 +291,9 @@ export default {
           name: 'Podio Wholesale CRM Sync',
           icon: 'refresh',
           status: 'active',
-          statusText: 'Synchronized',
-          description: 'Two-way webhook sync with Podio Seller Leads and Dispositions workspaces.',
-          endpoint: 'https://api.podio.com/hook/hushhawk-jax-acq',
+          statusText: 'Connected (Hush Hawk Integration)',
+          description: 'Application: Hush Hawk Integration · Active 2-way webhook listener & coexistence sync.',
+          endpoint: 'https://hushhawk-kohl.vercel.app/api/v1/webhooks/podio',
           enabled: true
         },
         {
