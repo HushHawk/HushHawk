@@ -52,16 +52,32 @@ function runPrerender() {
             timeout,
         });
 
-        if (!result.error && result.status === 0) return;
+        if (!result.error && result.status === 0) {
+            syncHomeRoute();
+            return;
+        }
 
         console.warn('[weweb-prerender] static rendering failed; preserving the CSR build', {
             message: result.error?.message,
             signal: result.signal,
             status: result.status,
         });
+        syncHomeRoute();
     } catch (error) {
         console.warn('[weweb-prerender] unable to start static rendering; preserving the CSR build', {
             message: error instanceof Error ? error.message : `${error}`,
         });
+        syncHomeRoute();
+    }
+}
+
+function syncHomeRoute() {
+    try {
+        if (fs.existsSync('./dist/index.html')) {
+            fs.mkdirSync('./dist/home', { recursive: true });
+            fs.copyFileSync('./dist/index.html', './dist/home/index.html');
+        }
+    } catch (e) {
+        console.warn('Failed to sync /home route:', e.message);
     }
 }
