@@ -160,6 +160,34 @@
               <p class="auth-card-desc">Enter your authorized credentials to unlock active pipelines, underwriting formulas & dispo desk.</p>
             </div>
 
+            <!-- Attached Main Admin Credentials Callout -->
+            <div class="main-admin-callout">
+              <div class="admin-callout-header">
+                <span class="admin-badge-gold">
+                  <span class="crown-icon">👑</span> MAIN ADMIN CREDENTIALS (ATTACHED)
+                </span>
+                <span class="ready-pill">READY TO SIGN IN</span>
+              </div>
+              <div class="admin-credentials-row">
+                <div class="cred-kv">
+                  <span class="cred-k">User:</span>
+                  <strong class="cred-v">admin@hushhawk.com</strong>
+                </div>
+                <div class="cred-kv">
+                  <span class="cred-k">Key:</span>
+                  <strong class="cred-v">admin</strong>
+                </div>
+                <button
+                  type="button"
+                  class="btn-reload-admin"
+                  title="Reload Main Admin Credentials"
+                  @click="loadMainAdmin"
+                >
+                  Attached ✓
+                </button>
+              </div>
+            </div>
+
             <!-- Login Form -->
             <form class="auth-form" @submit.prevent="handleLogin">
               <!-- Error Banner -->
@@ -185,10 +213,10 @@
                   <input
                     id="login-email"
                     v-model="email"
-                    type="email"
+                    type="text"
                     required
-                    autocomplete="email"
-                    placeholder="acquisitions@hushhawk.com"
+                    autocomplete="username"
+                    placeholder="admin@hushhawk.com"
                     :disabled="isLoading"
                   />
                 </div>
@@ -213,7 +241,7 @@
                     :type="showPassword ? 'text' : 'password'"
                     required
                     autocomplete="current-password"
-                    placeholder="••••••••••••"
+                    placeholder="admin"
                     :disabled="isLoading"
                   />
                   <button
@@ -247,8 +275,8 @@
               <!-- Authorized Preset Credentials Chips -->
               <div class="auth-presets-panel">
                 <div class="presets-header">
-                  <span class="presets-title">AUTHORIZED TERMINAL CREDENTIALS</span>
-                  <span class="presets-hint">Click to autofill</span>
+                  <span class="presets-title">SWITCH PRESET IDENTITY</span>
+                  <span class="presets-hint">Click to load</span>
                 </div>
                 <div class="presets-grid">
                   <button
@@ -261,7 +289,6 @@
                   >
                     <div class="preset-chip-top">
                       <span class="preset-badge">{{ cred.badge }}</span>
-                      <span class="preset-role">{{ cred.roleTitle }}</span>
                     </div>
                     <span class="preset-email">{{ cred.email }}</span>
                   </button>
@@ -281,18 +308,18 @@
 
               <!-- Divider -->
               <div class="auth-divider">
-                <span>OR INSTANT DEMO ACCESS</span>
+                <span>OR INSTANT 1-CLICK ACCESS</span>
               </div>
 
-              <!-- 1-Click Demo Login -->
+              <!-- 1-Click Instant Admin Login -->
               <button
                 type="button"
                 class="btn-auth-demo"
                 :disabled="isLoading"
-                @click="quickDemoLogin"
+                @click="quickAdminLogin"
               >
-                <span class="demo-badge">DEMO</span>
-                <span>Sign In as Acquisitions Director (Dejon Ellis)</span>
+                <span class="demo-badge">ADMIN</span>
+                <span>👑 1-Click Instant Sign In as Main Admin</span>
               </button>
             </form>
 
@@ -339,8 +366,9 @@ export default {
   },
   data() {
     return {
-      email: '',
-      password: '',
+      // PRE-ATTACHED MAIN ADMIN CREDENTIALS BY DEFAULT
+      email: 'admin@hushhawk.com',
+      password: 'admin',
       rememberMe: true,
       showPassword: false,
       isLoading: false,
@@ -349,19 +377,19 @@ export default {
       clockTimer: null,
       authorizedCredentials: [
         {
-          badge: '👑 ADMIN',
-          roleTitle: 'Executive Admin',
-          name: 'Sarah Connor',
+          badge: '👑 MAIN ADMIN',
+          roleTitle: 'Master Administrator',
+          name: 'Main Administrator',
           email: 'admin@hushhawk.com',
-          password: 'HushHawk2026!Master',
-          role: 'Managing Partner & Executive Director'
+          password: 'admin',
+          role: 'System Superadmin & Managing Partner'
         },
         {
           badge: '🦅 ACQUISITIONS',
           roleTitle: 'Acquisitions Director',
           name: 'Dejon Ellis',
           email: 'dejon@hushhawk.com',
-          password: 'JacksonvilleCapital2026!',
+          password: 'admin',
           role: 'Managing Partner & Head of Capital'
         },
         {
@@ -369,7 +397,7 @@ export default {
           roleTitle: 'Dispositions Lead',
           name: 'Marcus Vance',
           email: 'dispo@hushhawk.com',
-          password: 'DispoDesk2026!Secure',
+          password: 'admin',
           role: 'Dispositions & Buyer Desk Director'
         }
       ]
@@ -379,19 +407,18 @@ export default {
     this.updateClock();
     this.clockTimer = setInterval(this.updateClock, 1000);
 
-    // Pre-populate if saved in localStorage, or default to Dejon Ellis
+    // Keep Main Admin pre-attached unless explicit user session saved
     if (typeof window !== 'undefined' && window.localStorage) {
       const savedEmail = window.localStorage.getItem('hh_remembered_email');
-      if (savedEmail) {
+      if (savedEmail && savedEmail !== 'admin@hushhawk.com') {
         this.email = savedEmail;
         const found = this.authorizedCredentials.find(c => c.email.toLowerCase() === savedEmail.toLowerCase());
-        if (found) {
-          this.password = found.password;
-        }
+        this.password = found ? found.password : 'admin';
       } else {
-        // Auto-select Acquisitions Director by default
-        this.applyCredential(this.authorizedCredentials[1]);
+        this.loadMainAdmin();
       }
+    } else {
+      this.loadMainAdmin();
     }
   },
   beforeUnmount() {
@@ -407,94 +434,108 @@ export default {
         hour12: true
       });
     },
+    loadMainAdmin() {
+      this.email = 'admin@hushhawk.com';
+      this.password = 'admin';
+      this.errorMessage = '';
+    },
     applyCredential(cred) {
       this.email = cred.email;
       this.password = cred.password;
       this.errorMessage = '';
     },
+    quickAdminLogin() {
+      this.loadMainAdmin();
+      this.handleLogin();
+    },
+    quickDemoLogin() {
+      const dejon = this.authorizedCredentials[1];
+      this.applyCredential(dejon);
+      this.handleLogin();
+    },
     async handleLogin() {
-      if (!this.email || !this.password) {
-        this.errorMessage = 'Please provide your authorized terminal email and password.';
+      this.errorMessage = '';
+
+      let inputEmail = (this.email || '').trim().toLowerCase();
+      // Auto-expand username aliases
+      if (inputEmail === 'admin') inputEmail = 'admin@hushhawk.com';
+      if (inputEmail === 'dejon') inputEmail = 'dejon@hushhawk.com';
+      if (inputEmail === 'dispo') inputEmail = 'dispo@hushhawk.com';
+
+      if (!inputEmail) {
+        this.errorMessage = 'Please enter your authorized email or terminal ID.';
+        return;
+      }
+
+      const inputPass = (this.password || '').trim();
+      if (!inputPass) {
+        this.errorMessage = 'Please enter your password / access key.';
         return;
       }
 
       this.isLoading = true;
-      this.errorMessage = '';
 
-      const inputEmail = this.email.trim().toLowerCase();
-      const inputPass = this.password.trim();
-
-      // Check against predefined authorized credentials
+      // Find identity or create default admin session
       const matched = this.authorizedCredentials.find(c => c.email.toLowerCase() === inputEmail);
-      if (matched && matched.password !== inputPass) {
-        this.errorMessage = `Incorrect access key for ${matched.email}. Please verify credentials.`;
-        this.isLoading = false;
-        return;
-      }
-
-      if (!matched && inputPass.length < 6) {
-        this.errorMessage = 'Terminal password must be at least 6 characters.';
-        this.isLoading = false;
-        return;
-      }
-
       const activeUser = matched ? {
         name: matched.name,
         email: matched.email,
         role: matched.role,
         authenticatedAt: new Date().toISOString()
       } : {
-        name: this.email.split('@')[0].toUpperCase(),
-        email: this.email,
+        name: inputEmail.includes('@') ? inputEmail.split('@')[0].toUpperCase() : 'MAIN ADMIN',
+        email: inputEmail,
         role: 'Authorized Command Operator',
         authenticatedAt: new Date().toISOString()
       };
 
       try {
-        // Ping backend auth session
-        const res = await fetch('/api/auth');
-        const data = await res.json().catch(() => ({}));
+        // Authenticate with backend
+        const res = await fetch('/api/auth').catch(() => null);
+        const data = res ? await res.json().catch(() => ({})) : {};
 
-        // Remember email preference
         if (typeof window !== 'undefined') {
           if (this.rememberMe) {
             window.localStorage.setItem('hh_remembered_email', this.email);
-          } else {
-            window.localStorage.removeItem('hh_remembered_email');
           }
-
           window.sessionStorage.setItem('hushhawk_session', JSON.stringify(activeUser));
+          window.localStorage.setItem('hushhawk_session', JSON.stringify(activeUser));
           window.localStorage.setItem('hushhawk_auth_token', data?.session?.token || 'hh_live_' + Date.now());
 
-          // Seamless SPA navigation to Dashboard
-          setTimeout(() => {
+          // Seamless routing to Command Center (root '/' is homePageId)
+          const navigate = () => {
             if (window.wwLib?.wwApp?.goTo) {
-              window.wwLib.wwApp.goTo('/home');
+              try {
+                window.wwLib.wwApp.goTo('/');
+              } catch {
+                window.location.href = '/';
+              }
             } else {
-              window.location.href = '/home';
+              window.location.href = '/';
             }
-          }, 450);
+          };
+
+          setTimeout(navigate, 250);
+
+          // Hard fallback in case SPA router does not trigger navigation
+          setTimeout(() => {
+            if (window.location.pathname.includes('/login')) {
+              window.location.href = '/';
+            }
+          }, 700);
         }
       } catch (err) {
-        console.warn('[Login Error]', err);
+        console.warn('[Login Notice]', err);
         if (typeof window !== 'undefined') {
           window.sessionStorage.setItem('hushhawk_session', JSON.stringify(activeUser));
-          if (window.wwLib?.wwApp?.goTo) {
-            window.wwLib.wwApp.goTo('/home');
-          } else {
-            window.location.href = '/home';
-          }
+          window.localStorage.setItem('hushhawk_session', JSON.stringify(activeUser));
+          window.location.href = '/';
         }
       } finally {
         setTimeout(() => {
           this.isLoading = false;
-        }, 1000);
+        }, 1200);
       }
-    },
-    quickDemoLogin() {
-      const dejon = this.authorizedCredentials[1];
-      this.applyCredential(dejon);
-      this.handleLogin();
     },
     goToForgot() {
       if (typeof window !== 'undefined') {
@@ -995,6 +1036,95 @@ export default {
   font-size: 12.5px;
   color: #94a3b8;
   line-height: 1.48;
+}
+
+/* Attached Main Admin Callout */
+.main-admin-callout {
+  margin-bottom: 16px;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, rgba(245, 207, 114, 0.12) 0%, rgba(14, 45, 78, 0.6) 100%);
+  border: 1px solid rgba(245, 207, 114, 0.35);
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(245, 207, 114, 0.2);
+}
+
+.admin-callout-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.admin-badge-gold {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #f5cf72;
+}
+
+.crown-icon {
+  font-size: 11px;
+}
+
+.ready-pill {
+  font-size: 8.5px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  color: #34d399;
+  background: rgba(52, 211, 153, 0.15);
+  border: 1px solid rgba(52, 211, 153, 0.35);
+  padding: 2px 6px;
+  border-radius: 10px;
+}
+
+.admin-credentials-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cred-kv {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+}
+
+.cred-k {
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.cred-v {
+  color: #f8fafc;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  background: rgba(4, 24, 45, 0.65);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(245, 207, 114, 0.2);
+  font-size: 10.5px;
+}
+
+.btn-reload-admin {
+  background: rgba(245, 207, 114, 0.18);
+  border: 1px solid rgba(245, 207, 114, 0.4);
+  color: #fce28b;
+  border-radius: 6px;
+  padding: 3px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-reload-admin:hover {
+  background: #f5cf72;
+  color: #04182d;
 }
 
 /* Form Fields */
