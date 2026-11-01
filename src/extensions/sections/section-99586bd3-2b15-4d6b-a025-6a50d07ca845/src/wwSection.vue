@@ -679,6 +679,7 @@ export default {
 .gold-gradient-text {
   background: linear-gradient(135deg, #FFFBEB 0%, #F5D075 50%, #D97706 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   filter: drop-shadow(0 2px 10px rgba(245, 207, 114, 0.3));
 }
