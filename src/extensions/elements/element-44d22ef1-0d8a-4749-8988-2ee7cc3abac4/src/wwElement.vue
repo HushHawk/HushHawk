@@ -3,6 +3,19 @@
  <aside class="sidebar">
   <a href="/home" class="brand" @click="handleNav('/home', $event)"><span class="brand-icon" v-html="icons.logo"></span><strong>HUSHHAWK<br>INTELLIGENCE</strong><small>PEOPLE • PROPERTIES • PROSPERITY</small></a>
   <nav aria-label="HushHawk navigation"><a v-for="(item,i) in navigation.slice(0,11)" :key="item.path" :href="item.path" :class="{active:item.name==='Seller Leads'}" @click="handleNav(item.path, $event)"><span class="icon" v-html="icons[item.icon] || icons.house"></span>{{item.name}}</a><details class="more-workspaces" open><summary>More Workspaces</summary><a v-for="item in navigation.slice(11)" :key="item.path" :href="item.path" :class="{active:item.name==='Seller Leads'}" @click="handleNav(item.path, $event)"><span class="icon" v-html="icons[item.icon] || icons.file"></span>{{item.name}}</a></details></nav>
+  
+  <!-- Sidebar Quick Logout Button -->
+  <div class="sidebar-logout-section">
+    <button type="button" class="sidebar-logout-btn" @click="handleLogout" title="Sign out of HushHawk Command Center">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+        <polyline points="16 17 21 12 16 7"/>
+        <line x1="21" y1="12" x2="9" y2="12"/>
+      </svg>
+      <span>Sign Out / Log Out</span>
+    </button>
+  </div>
+
   <div class="brand-bottom"><p>“REAL ESTATE<br>CREATES FREEDOM.”</p><span>HUSHHAWK • BUILT TO CLOSE</span><small>HushHawk Property Intelligence</small></div>
  </aside>
  <main class="workspace">
@@ -94,14 +107,58 @@
         </div>
       </div>
 
-      <a href="/settings" class="user-identity" @click="guard" title="HushHawk Acquisitions Command">
-        <span class="identity-logo" v-html="icons.logo"></span>
-        <div class="identity-text">
-          <strong>HushHawk</strong>
-          <small>Acquisitions Command</small>
+      <!-- User Identity Menu & Logout Option -->
+      <div class="user-identity-wrap">
+        <button
+          type="button"
+          class="user-identity"
+          @click.stop="isUserMenuOpen = !isUserMenuOpen"
+          title="Admin Session &amp; Account Options"
+          :aria-expanded="isUserMenuOpen"
+        >
+          <span class="identity-logo" v-html="icons.logo"></span>
+          <div class="identity-text">
+            <strong>{{ activeUserName }}</strong>
+            <small>{{ activeUserRole }}</small>
+          </div>
+          <span class="identity-caret">⌄</span>
+        </button>
+
+        <!-- User Dropdown Menu with One-Click Logout -->
+        <div v-if="isUserMenuOpen" class="user-menu-dropdown" @click.stop>
+          <div class="user-menu-header">
+            <span class="user-menu-badge">👑 MAIN ADMIN</span>
+            <strong class="user-menu-name">{{ activeUserName }}</strong>
+            <span class="user-menu-email">{{ activeUserEmail }}</span>
+            <span class="user-menu-status">
+              <span class="status-indicator">●</span> SESSION ACTIVE
+            </span>
+          </div>
+
+          <div class="user-menu-divider"></div>
+
+          <a href="/settings" class="user-menu-item" @click="guard($event); isUserMenuOpen = false;">
+            <span class="menu-icon" v-html="icons.settings"></span>
+            <span>System Configuration</span>
+          </a>
+
+          <a href="/team" class="user-menu-item" @click="guard($event); isUserMenuOpen = false;">
+            <span class="menu-icon" v-html="icons.users"></span>
+            <span>Team &amp; Access Controls</span>
+          </a>
+
+          <div class="user-menu-divider"></div>
+
+          <button type="button" class="btn-menu-logout" @click="handleLogout">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+              <polyline points="16 17 21 12 16 7"/>
+              <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+            <span>Log Out &amp; Lock Terminal</span>
+          </button>
         </div>
-        <span class="identity-caret">⌄</span>
-      </a>
+      </div>
     </div>
   </div>
   <div class="seller-content">
@@ -169,6 +226,28 @@ const isEditing=computed(()=>{return false;});
 const {getIcon}=wwLib.useIcons();const icons=ref({ ...masterIcons });let iconVersion=0;
 watch(()=>Object.keys(iconDefaults).map(k=>props.content?.['icon_'+k]||iconDefaults[k]),async values=>{const version=++iconVersion;const pairs=await Promise.all(Object.keys(iconDefaults).map(async(k,i)=>{try{return[k,await getIcon(values[i])]}catch(e){return[k,'']}}));if(version===iconVersion)icons.value={ ...masterIcons, ...Object.fromEntries(pairs) };},{immediate:true});
 const isQuickAddOpen=ref(false),isNotifOpen=ref(false),currentTime=ref('09:42 AM');
+const isUserMenuOpen=ref(false),activeUser=ref(null);
+const activeUserName=computed(()=>activeUser.value?.name||'Main Administrator');
+const activeUserRole=computed(()=>activeUser.value?.role||'Superadmin & Managing Partner');
+const activeUserEmail=computed(()=>activeUser.value?.email||'admin@hushhawk.com');
+
+function handleLogout() {
+  if (typeof window !== 'undefined') {
+    if (typeof window.hushhawkLogout === 'function') {
+      window.hushhawkLogout();
+      return;
+    }
+    try {
+      window.sessionStorage.removeItem('hushhawk_session');
+      window.localStorage.removeItem('hushhawk_session');
+      window.localStorage.removeItem('ww-auth-session');
+      window.localStorage.removeItem('hushhawk_auth_token');
+    } catch (e) {
+      console.error('Logout error:', e);
+    }
+    window.location.href = '/login';
+  }
+}
 let timeInterval=null,clickOutsideHandler=null;
 function updateClock(){
   const now=new Date();
@@ -213,9 +292,20 @@ onMounted(()=>{
     if(!e.target.closest('.notif-dropdown')&&!e.target.closest('.notification-btn')){
       isNotifOpen.value=false;
     }
+    if(!e.target.closest('.user-identity-wrap')){
+      isUserMenuOpen.value=false;
+    }
   };
   if(typeof document!=='undefined'){
     document.addEventListener('click',clickOutsideHandler);
+  }
+  if(typeof window!=='undefined'){
+    try{
+      const raw=window.sessionStorage.getItem('hushhawk_session')||window.localStorage.getItem('hushhawk_session');
+      if(raw){
+        activeUser.value=JSON.parse(raw);
+      }
+    }catch(e){}
   }
 });
 onBeforeUnmount(()=>{
@@ -333,16 +423,56 @@ function addPreview(){if(isEditing.value||!newLead.name.trim()||!newLead.address
 function addTag(){if(!selected.value||!tagDraft.value.trim())return;if(!selected.value.tags)selected.value.tags=[];if(!selected.value.tags.includes(tagDraft.value.trim()))selected.value.tags.push(tagDraft.value.trim());const r=previewRows.value.find(r=>r.id===selectedId.value);if(r&&!r.tags.includes(tagDraft.value.trim()))r.tags.push(tagDraft.value.trim());closeModal();}
 function keepEmail(){if(isEditing.value)return;drafts['email-'+selectedId.value]={subject:emailSubject.value,body:emailDraft.value};emailNotice.value='Draft kept on this page · not sent';}
 function keepOffer(){if(isEditing.value||offerMAO.value==null)return;drafts['offer-'+selectedId.value]={...offerValues,mao:offerMAO.value};offerNotice.value='Worksheet kept on this page · no offer sent';}
-return{uid,isEditing,icons,navigation,navOpen,heroStyle,mode,metrics,tabs,columns,statuses,query,stage,statusFilter,sourceFilter,zipFilter,sortKey,sortAscending,extraFilters,checked,filtered,selected,selectedIndex,photoUrl,photoFailed,availableSources,sourceChart,donutGradient,allChecked,number,money,dateLabel,statusClass,initials,guard,handleNav,resetFilters,setMode,setStage,metricAction,sortBy,selectLead,stepLead,toggleRow,toggleAll,changeStatus,onZip,chooseSource,firstName,messages,smsInput,smsDraft,draftNotice,focusDraft,keepDraft,modal,modalTitle,modalBox,closeButton,openModal,closeModal,modalKeys,newLead,addPreview,sourceNames,tagDraft,addTag,emailSubject,emailDraft,emailNotice,keepEmail,offerValues,offerMAO,offerNotice,keepOffer,rows,isQuickAddOpen,isNotifOpen,currentTime,notifications};
+return{uid,isEditing,icons,navigation,navOpen,heroStyle,mode,metrics,tabs,columns,statuses,query,stage,statusFilter,sourceFilter,zipFilter,sortKey,sortAscending,extraFilters,checked,filtered,selected,selectedIndex,photoUrl,photoFailed,availableSources,sourceChart,donutGradient,allChecked,number,money,dateLabel,statusClass,initials,guard,handleNav,resetFilters,setMode,setStage,metricAction,sortBy,selectLead,stepLead,toggleRow,toggleAll,changeStatus,onZip,chooseSource,firstName,messages,smsInput,smsDraft,draftNotice,focusDraft,keepDraft,modal,modalTitle,modalBox,closeButton,openModal,closeModal,modalKeys,newLead,addPreview,sourceNames,tagDraft,addTag,emailSubject,emailDraft,emailNotice,keepEmail,offerValues,offerMAO,offerNotice,keepOffer,rows,isQuickAddOpen,isNotifOpen,currentTime,notifications,isUserMenuOpen,activeUserName,activeUserRole,activeUserEmail,handleLogout};
 }};
 </script>
 <style scoped>
 .seller-app{--navy:var(--702de9b1-4d57-47c9-8102-295901b861fa,#0A1128);--white:var(--1a7bb57f-a485-47e0-8fed-98ad7f553b6c,#fff);--blue:var(--17e69283-d00e-40b2-8a7e-1f2bcc91e18a,#1D4ED8);--edge:#205386;--cyan:#59c9fb;--gold:#edcf7c;display:grid!important;grid-template-columns:210px minmax(0,1fr)!important;width:100%!important;min-width:0!important;background:#04182d;color:var(--white);font-family:'Plus Jakarta Sans',Arial,sans-serif;line-height:1.35;min-height:100vh}
 .seller-app *{box-sizing:border-box}.seller-app a{color:#64c7f6;text-decoration:none}.seller-app button,.seller-app input,.seller-app select,.seller-app textarea{font:inherit}.seller-app button,.seller-app a,.seller-app select{cursor:pointer}.seller-app button{color:inherit}.seller-app button:disabled,.seller-app select:disabled{cursor:default;opacity:.55}.seller-app button:focus-visible,.seller-app a:focus-visible,.seller-app input:focus-visible,.seller-app select:focus-visible,.seller-app textarea:focus-visible,.seller-app tr:focus-visible{outline:2px solid #ffe093;outline-offset:2px}
 .icon{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;flex-shrink:0}.icon :deep(svg),.kpi-icon :deep(svg),.brand-icon :deep(svg),.identity-logo :deep(svg){display:block;width:100%;height:100%}
-.sidebar{width:210px!important;min-width:210px!important;max-width:210px!important;background:radial-gradient(circle at 85% 0%,#075199 0%,transparent 25%),linear-gradient(180deg,#08274a,#041a33 80%);border-right:1px solid #23568a;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;overflow:auto;box-sizing:border-box}
+.sidebar{width:210px!important;min-width:210px!important;max-width:210px!important;background:radial-gradient(circle at 85% 0%,#075199 0%,transparent 25%),linear-gradient(180deg,#08274a,#041a33 80%);border-right:1px solid #23568a;position:sticky;top:0;height:100vh;max-height:100vh;display:flex;flex-direction:column;overflow-y:auto!important;overflow-x:hidden!important;overscroll-behavior:contain;box-sizing:border-box;z-index:50;scrollbar-width:thin;scrollbar-color:#1b4a78 transparent}
+.sidebar::-webkit-scrollbar{width:5px}
+.sidebar::-webkit-scrollbar-track{background:rgba(4,24,45,0.4)}
+.sidebar::-webkit-scrollbar-thumb{background:#1b4a78;border-radius:3px}
+.sidebar::-webkit-scrollbar-thumb:hover{background:#f5cf72}
 .brand{height:182px;min-height:182px;display:flex;align-items:center;justify-content:center;flex-direction:column;color:white!important;border-bottom:1px solid #1b4a78;padding:15px 8px 12px;text-align:center}.brand-icon{display:block;width:98px;height:92px;filter:drop-shadow(0 3px 6px #001528)}.brand strong{font-size:15px;font-weight:850;line-height:1.04;margin-top:6px}.brand small{font-size:5.5px;letter-spacing:1px;margin-top:7px}
-.sidebar nav{padding:5px 4px;flex:1}.sidebar nav a{display:flex;align-items:center;gap:14px;padding:10px 13px;min-height:40px;font-size:12px;color:#eef4fb;white-space:nowrap;border:1px solid transparent;border-radius:5px}.sidebar nav a.active{background:linear-gradient(130deg,#fff0ab22,#d4ac47 55%,#a07d2d);border-color:#edce81;box-shadow:inset 0 0 10px #fff8,0 0 12px #e5c66a30;color:#fff;font-weight:700}.sidebar nav a:hover{background-color:#2b6fa633}.sidebar nav .icon{width:21px;height:21px}.sidebar nav a.secondary{font-size:11px;min-height:34px;padding-top:7px;padding-bottom:7px}.brand-bottom{text-align:center;padding:10px 12px;color:#e4d39b}.brand-bottom p{border-top:2px solid #c8b471;padding-top:14px;font-size:9px;letter-spacing:2px;line-height:1.7;margin:0 0 6px}.brand-bottom>span{font-size:7px;letter-spacing:1px}.brand-bottom small{display:block;font-size:8px;margin-top:30px;color:#adc1d6}
+.sidebar nav{padding:5px 4px;flex:1}.sidebar nav a{display:flex;align-items:center;gap:14px;padding:10px 13px;min-height:40px;font-size:12px;color:#eef4fb;white-space:nowrap;border:1px solid transparent;border-radius:5px}.sidebar nav a.active{background:linear-gradient(130deg,#fff0ab22,#d4ac47 55%,#a07d2d);border-color:#edce81;box-shadow:inset 0 0 10px #fff8,0 0 12px #e5c66a30;color:#fff;font-weight:700}.sidebar nav a:hover{background-color:#2b6fa633}.sidebar nav .icon{width:21px;height:21px}.sidebar nav a.secondary{font-size:11px;min-height:34px;padding-top:7px;padding-bottom:7px}
+.sidebar-logout-section {
+  padding: 8px 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  margin-top: auto;
+}
+.sidebar-logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 10px;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-radius: 6px;
+  color: #fca5a5;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.sidebar-logout-btn:hover {
+  background: rgba(239, 68, 68, 0.18);
+  border-color: rgba(239, 68, 68, 0.45);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
+}
+.sidebar-logout-btn svg {
+  flex-shrink: 0;
+  stroke: #fca5a5;
+  transition: stroke 0.2s ease;
+}
+.sidebar-logout-btn:hover svg {
+  stroke: #ffffff;
+}
+.brand-bottom{text-align:center;padding:10px 12px;color:#e4d39b}.brand-bottom p{border-top:2px solid #c8b471;padding-top:14px;font-size:9px;letter-spacing:2px;line-height:1.7;margin:0 0 6px}.brand-bottom>span{font-size:7px;letter-spacing:1px}.brand-bottom small{display:block;font-size:8px;margin-top:30px;color:#adc1d6}
 .workspace{min-width:0!important;flex:1 1 0%!important;background:radial-gradient(ellipse at 55% 0%,#123965,#061c34 65%,#04182d);display:flex;flex-direction:column;overflow-x:hidden}
 .seller-content{container-type:inline-size;padding:0 9px 8px;flex:1;min-width:0;box-sizing:border-box}
 .gold{background:linear-gradient(135deg,#f8dfa0,#bc9240);border:1px solid #e4c778;border-radius:5px;color:#13202c!important;font-weight:800;box-shadow:inset 0 1px #fff7}
@@ -630,6 +760,10 @@ return{uid,isEditing,icons,navigation,navOpen,heroStyle,mode,metrics,tabs,column
   color: #38bdf8;
 }
 
+.user-identity-wrap {
+  position: relative;
+}
+
 .user-identity {
   display: inline-flex;
   align-items: center;
@@ -639,11 +773,148 @@ return{uid,isEditing,icons,navigation,navOpen,heroStyle,mode,metrics,tabs,column
   cursor: pointer;
   padding: 4px 6px;
   border-radius: 6px;
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  text-align: left;
   transition: background 0.15s ease;
 }
 
 .user-identity:hover {
   background: rgba(255, 255, 255, 0.06);
+}
+
+.user-menu-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 250px;
+  background: #061e38;
+  border: 1px solid #1b4a78;
+  border-radius: 8px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.65);
+  z-index: 1000;
+  padding: 10px;
+  animation: fadeInMenu 0.15s ease-out;
+}
+
+@keyframes fadeInMenu {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.user-menu-header {
+  padding: 6px 6px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.user-menu-badge {
+  display: inline-block;
+  align-self: flex-start;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  color: #04182d;
+  background: #f5cf72;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-bottom: 3px;
+}
+
+.user-menu-name {
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.user-menu-email {
+  color: #94a3b8;
+  font-size: 11px;
+}
+
+.user-menu-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  color: #34d399;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin-top: 4px;
+}
+
+.status-indicator {
+  font-size: 8px;
+  color: #34d399;
+  animation: pulseStatus 2s infinite;
+}
+
+@keyframes pulseStatus {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.user-menu-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 6px 0;
+}
+
+.user-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px;
+  font-size: 12px;
+  color: #cbd5e1;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: all 0.15s ease;
+}
+
+.user-menu-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #f5cf72;
+}
+
+.user-menu-item .menu-icon {
+  width: 14px;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  color: #94a3b8;
+}
+
+.btn-menu-logout {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 10px;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 6px;
+  color: #fca5a5;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 2px;
+}
+
+.btn-menu-logout:hover {
+  background: #dc2626;
+  border-color: #ef4444;
+  color: #ffffff;
+  box-shadow: 0 2px 10px rgba(220, 38, 38, 0.35);
+}
+
+.btn-menu-logout svg {
+  flex-shrink: 0;
+  stroke: currentColor;
 }
 
 .identity-logo {
