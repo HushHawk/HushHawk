@@ -37,6 +37,18 @@
       </details>
     </nav>
 
+    <!-- Sidebar Quick Logout Button -->
+    <div class="sidebar-logout-section">
+      <button type="button" class="sidebar-logout-btn" @click="handleLogout" title="Sign out of HushHawk Command Center">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+        <span>Sign Out / Log Out</span>
+      </button>
+    </div>
+
     <div class="brand-bottom">
       <p>“REAL ESTATE<br>CREATES FREEDOM.”</p>
       <span>HUSHHAWK • BUILT TO CLOSE</span>
@@ -134,14 +146,58 @@
         </div>
       </div>
 
-      <a href="/settings" class="user-identity" @click="guard" title="HushHawk Acquisitions Command">
-        <span class="identity-logo" v-html="icons.logo"></span>
-        <div class="identity-text">
-          <strong>HushHawk</strong>
-          <small>Acquisitions Command</small>
+      <!-- User Identity Menu & Logout Option -->
+      <div class="user-identity-wrap">
+        <button
+          type="button"
+          class="user-identity"
+          @click.stop="isUserMenuOpen = !isUserMenuOpen"
+          title="Admin Session &amp; Account Options"
+          :aria-expanded="isUserMenuOpen"
+        >
+          <span class="identity-logo" v-html="icons.logo"></span>
+          <div class="identity-text">
+            <strong>{{ activeUserName }}</strong>
+            <small>{{ activeUserRole }}</small>
+          </div>
+          <span class="identity-caret">⌄</span>
+        </button>
+
+        <!-- User Dropdown Menu with One-Click Logout -->
+        <div v-if="isUserMenuOpen" class="user-menu-dropdown" @click.stop>
+          <div class="user-menu-header">
+            <span class="user-menu-badge">👑 MAIN ADMIN</span>
+            <strong class="user-menu-name">{{ activeUserName }}</strong>
+            <span class="user-menu-email">{{ activeUserEmail }}</span>
+            <span class="user-menu-status">
+              <span class="status-indicator">●</span> SESSION ACTIVE
+            </span>
+          </div>
+
+          <div class="user-menu-divider"></div>
+
+          <a href="/settings" class="user-menu-item" @click="guard($event); isUserMenuOpen = false;">
+            <span class="menu-icon" v-html="icons.settings"></span>
+            <span>System Configuration</span>
+          </a>
+
+          <a href="/team" class="user-menu-item" @click="guard($event); isUserMenuOpen = false;">
+            <span class="menu-icon" v-html="icons.users"></span>
+            <span>Team &amp; Access Controls</span>
+          </a>
+
+          <div class="user-menu-divider"></div>
+
+          <button type="button" class="btn-menu-logout" @click="handleLogout">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+              <polyline points="16 17 21 12 16 7"/>
+              <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+            <span>Log Out &amp; Lock Terminal</span>
+          </button>
         </div>
-        <span class="identity-caret">⌄</span>
-      </a>
+      </div>
     </div>
   </div>
   <div class="command">
@@ -199,6 +255,28 @@ function handleNav(path, e) {
 const heroStyle=computed(()=>({backgroundImage:'linear-gradient(90deg,#06182ef5 0%,#06182ede 36%,#06182e20 76%),url("'+(props.content?.skyline||'')+'")'}));
 const feedMode=ref('markets');const query=ref(''),zip=ref(''),checked=ref([]),draft=ref(''),draftStatus=ref(''),paused=ref(false),activeEmail=ref(null),clock=ref(''),marketHost=ref(null),marketError=ref(false);let timer,marketTimer;
 const isQuickAddOpen=ref(false),isNotifOpen=ref(false),currentTime=ref('09:42 AM');
+const isUserMenuOpen=ref(false),activeUser=ref(null);
+const activeUserName=computed(()=>activeUser.value?.name||'Main Administrator');
+const activeUserRole=computed(()=>activeUser.value?.role||'Superadmin & Managing Partner');
+const activeUserEmail=computed(()=>activeUser.value?.email||'admin@hushhawk.com');
+
+function handleLogout() {
+  if (typeof window !== 'undefined') {
+    if (typeof window.hushhawkLogout === 'function') {
+      window.hushhawkLogout();
+      return;
+    }
+    try {
+      window.sessionStorage.removeItem('hushhawk_session');
+      window.localStorage.removeItem('hushhawk_session');
+      window.localStorage.removeItem('ww-auth-session');
+      window.localStorage.removeItem('hushhawk_auth_token');
+    } catch (e) {
+      console.error('Logout error:', e);
+    }
+    window.location.href = '/login';
+  }
+}
 let clickOutsideHandler=null;
 const metrics=ref([
   {iconKey:'users',label:'Total Seller Leads',value:'0',change:'Live',href:'/seller-leads'},
@@ -358,9 +436,20 @@ onMounted(()=>{
     if(!e.target.closest('.notif-dropdown')&&!e.target.closest('.notification-btn')){
       isNotifOpen.value=false;
     }
+    if(!e.target.closest('.user-identity-wrap')){
+      isUserMenuOpen.value=false;
+    }
   };
   if(typeof document!=='undefined'){
     document.addEventListener('click',clickOutsideHandler);
+  }
+  if(typeof window!=='undefined'){
+    try{
+      const raw=window.sessionStorage.getItem('hushhawk_session')||window.localStorage.getItem('hushhawk_session');
+      if(raw){
+        activeUser.value=JSON.parse(raw);
+      }
+    }catch(e){}
   }
   try{draft.value=wwLib.getFrontWindow().sessionStorage.getItem('elite-dashboard-draft')||'';}catch(e){}
 if(isEditing.value)return;
@@ -379,7 +468,7 @@ onBeforeUnmount(()=>{
   }
   if(marketHost.value)marketHost.value.innerHTML='';
 });
-return{icons,uid,feedMode,isEditing,heroStyle,metrics,query,zip,checked,tasks,imports,filteredLeads,stages,stageColors,sources,emails,activeEmail,chooseEmail,activeChat,activeSnapshot,notifications,money,draft,draftStatus,saveDraft,paused,signals,signalTape,signalsCount,clock,marketHost,marketError,onZip,clearZip,guard,isQuickAddOpen,isNotifOpen,currentTime,navOpen,primaryNavigation,secondaryNavigation,handleNav};
+return{icons,uid,feedMode,isEditing,heroStyle,metrics,query,zip,checked,tasks,imports,filteredLeads,stages,stageColors,sources,emails,activeEmail,chooseEmail,activeChat,activeSnapshot,notifications,money,draft,draftStatus,saveDraft,paused,signals,signalTape,signalsCount,clock,marketHost,marketError,onZip,clearZip,guard,isQuickAddOpen,isNotifOpen,currentTime,navOpen,primaryNavigation,secondaryNavigation,handleNav,isUserMenuOpen,activeUserName,activeUserRole,activeUserEmail,handleLogout};
 }};
 </script>
 <style scoped>
@@ -388,11 +477,13 @@ return{icons,uid,feedMode,isEditing,heroStyle,metrics,query,zip,checked,tasks,im
   grid-template-columns: 210px minmax(0, 1fr) !important;
   width: 100% !important;
   min-width: 0 !important;
+  height: 100vh !important;
+  max-height: 100vh !important;
+  overflow: hidden !important;
   background: #04182d;
   color: #f8fafc;
   font-family: 'Plus Jakarta Sans', Arial, sans-serif;
   line-height: 1.4;
-  min-height: 100vh;
 }
 
 .hushhawk-command-center * {
@@ -422,14 +513,31 @@ return{icons,uid,feedMode,isEditing,heroStyle,metrics,query,zip,checked,tasks,im
   background: radial-gradient(circle at 85% 0%, #075199 0%, transparent 25%),
               linear-gradient(180deg, #08274a, #041a33 80%);
   border-right: 1px solid #23568a;
-  position: sticky;
-  top: 0;
-  height: 100vh;
+  position: relative;
+  height: 100vh !important;
+  max-height: 100vh !important;
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
   box-sizing: border-box;
   z-index: 50;
+  scrollbar-width: thin;
+  scrollbar-color: #1b4a78 transparent;
+}
+
+.sidebar::-webkit-scrollbar {
+  width: 5px;
+}
+.sidebar::-webkit-scrollbar-track {
+  background: rgba(4, 24, 45, 0.4);
+}
+.sidebar::-webkit-scrollbar-thumb {
+  background: #1b4a78;
+  border-radius: 3px;
+}
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: #f5cf72;
 }
 
 .brand {
@@ -530,6 +638,46 @@ return{icons,uid,feedMode,isEditing,heroStyle,metrics,query,zip,checked,tasks,im
   font-weight: 700;
 }
 
+.sidebar-logout-section {
+  padding: 8px 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  margin-top: auto;
+}
+
+.sidebar-logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 10px;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-radius: 6px;
+  color: #fca5a5;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sidebar-logout-btn:hover {
+  background: rgba(239, 68, 68, 0.18);
+  border-color: rgba(239, 68, 68, 0.45);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
+}
+
+.sidebar-logout-btn svg {
+  flex-shrink: 0;
+  stroke: #fca5a5;
+  transition: stroke 0.2s ease;
+}
+
+.sidebar-logout-btn:hover svg {
+  stroke: #ffffff;
+}
+
 .brand-bottom {
   text-align: center;
   padding: 10px;
@@ -561,10 +709,29 @@ return{icons,uid,feedMode,isEditing,heroStyle,metrics,query,zip,checked,tasks,im
 .workspace {
   min-width: 0 !important;
   flex: 1 1 0% !important;
+  height: 100vh !important;
+  max-height: 100vh !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
   background: radial-gradient(ellipse at 55% 0%, #123965, #061c34 65%, #04182d);
   display: flex;
   flex-direction: column;
-  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: #1b4a78 transparent;
+}
+
+.workspace::-webkit-scrollbar {
+  width: 6px;
+}
+.workspace::-webkit-scrollbar-track {
+  background: rgba(4, 24, 45, 0.4);
+}
+.workspace::-webkit-scrollbar-thumb {
+  background: #1b4a78;
+  border-radius: 3px;
+}
+.workspace::-webkit-scrollbar-thumb:hover {
+  background: #f5cf72;
 }
 
 .mobile-menu {
@@ -577,10 +744,15 @@ return{icons,uid,feedMode,isEditing,heroStyle,metrics,query,zip,checked,tasks,im
 
 @media (max-width: 860px) {
   .hushhawk-command-center {
-    grid-template-columns: minmax(0, 1fr) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    height: auto !important;
+    max-height: unset !important;
+    overflow: visible !important;
   }
   .sidebar {
     display: none;
+    height: 100vh !important;
   }
   .nav-open .sidebar {
     display: flex;
@@ -588,7 +760,13 @@ return{icons,uid,feedMode,isEditing,heroStyle,metrics,query,zip,checked,tasks,im
     left: 0;
     top: 0;
     bottom: 0;
+    z-index: 9999;
     box-shadow: 10px 0 30px rgba(0, 0, 0, 0.8);
+  }
+  .workspace {
+    height: auto !important;
+    max-height: unset !important;
+    overflow-y: visible !important;
   }
   .mobile-menu {
     display: block;
@@ -883,6 +1061,10 @@ return{icons,uid,feedMode,isEditing,heroStyle,metrics,query,zip,checked,tasks,im
   color: #38bdf8;
 }
 
+.user-identity-wrap {
+  position: relative;
+}
+
 .user-identity {
   display: inline-flex;
   align-items: center;
@@ -892,11 +1074,148 @@ return{icons,uid,feedMode,isEditing,heroStyle,metrics,query,zip,checked,tasks,im
   cursor: pointer;
   padding: 4px 6px;
   border-radius: 6px;
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  text-align: left;
   transition: background 0.15s ease;
 }
 
 .user-identity:hover {
   background: rgba(255, 255, 255, 0.06);
+}
+
+.user-menu-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 250px;
+  background: #061e38;
+  border: 1px solid #1b4a78;
+  border-radius: 8px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.65);
+  z-index: 1000;
+  padding: 10px;
+  animation: fadeInMenu 0.15s ease-out;
+}
+
+@keyframes fadeInMenu {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.user-menu-header {
+  padding: 6px 6px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.user-menu-badge {
+  display: inline-block;
+  align-self: flex-start;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  color: #04182d;
+  background: #f5cf72;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-bottom: 3px;
+}
+
+.user-menu-name {
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.user-menu-email {
+  color: #94a3b8;
+  font-size: 11px;
+}
+
+.user-menu-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  color: #34d399;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin-top: 4px;
+}
+
+.status-indicator {
+  font-size: 8px;
+  color: #34d399;
+  animation: pulseStatus 2s infinite;
+}
+
+@keyframes pulseStatus {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.user-menu-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 6px 0;
+}
+
+.user-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px;
+  font-size: 12px;
+  color: #cbd5e1;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: all 0.15s ease;
+}
+
+.user-menu-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #f5cf72;
+}
+
+.user-menu-item .menu-icon {
+  width: 14px;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  color: #94a3b8;
+}
+
+.btn-menu-logout {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 10px;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 6px;
+  color: #fca5a5;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 2px;
+}
+
+.btn-menu-logout:hover {
+  background: #dc2626;
+  border-color: #ef4444;
+  color: #ffffff;
+  box-shadow: 0 2px 10px rgba(220, 38, 38, 0.35);
+}
+
+.btn-menu-logout svg {
+  flex-shrink: 0;
+  stroke: currentColor;
 }
 
 .identity-logo {
