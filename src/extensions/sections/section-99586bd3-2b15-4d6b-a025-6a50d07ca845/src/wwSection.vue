@@ -565,7 +565,17 @@ export default {
 /* ================= WEWEB WORKSPACE LAYOUT ================= */
 .section-base {
   width: 100%;
-  height: 100%;
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
+}
+
+@media (max-width: 860px) {
+  .section-base {
+    height: auto;
+    max-height: unset;
+    overflow: visible;
+  }
 }
 
 /* ================= BASE WRAPPER & BACKGROUND LAYERS ================= */

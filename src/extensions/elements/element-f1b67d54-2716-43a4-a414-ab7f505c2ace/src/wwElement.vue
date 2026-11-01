@@ -653,11 +653,13 @@ export default {
   grid-template-columns: 210px minmax(0, 1fr) !important;
   width: 100% !important;
   min-width: 0 !important;
+  height: 100vh !important;
+  max-height: 100vh !important;
+  overflow: hidden !important;
   background: #04182d;
   color: #f8fafc;
   font-family: 'Plus Jakarta Sans', Arial, sans-serif;
   line-height: 1.4;
-  min-height: 100vh;
 }
 
 .hushhawk-command-center * {
@@ -687,14 +689,31 @@ export default {
   background: radial-gradient(circle at 85% 0%, #075199 0%, transparent 25%),
               linear-gradient(180deg, #08274a, #041a33 80%);
   border-right: 1px solid #23568a;
-  position: sticky;
-  top: 0;
-  height: 100vh;
+  position: relative;
+  height: 100vh !important;
+  max-height: 100vh !important;
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
   box-sizing: border-box;
   z-index: 50;
+  scrollbar-width: thin;
+  scrollbar-color: #1b4a78 transparent;
+}
+
+.sidebar::-webkit-scrollbar {
+  width: 5px;
+}
+.sidebar::-webkit-scrollbar-track {
+  background: rgba(4, 24, 45, 0.4);
+}
+.sidebar::-webkit-scrollbar-thumb {
+  background: #1b4a78;
+  border-radius: 3px;
+}
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: #f5cf72;
 }
 
 .brand {
@@ -867,10 +886,29 @@ export default {
 .workspace {
   min-width: 0 !important;
   flex: 1 1 0% !important;
+  height: 100vh !important;
+  max-height: 100vh !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
   background: radial-gradient(ellipse at 55% 0%, #123965, #061c34 65%, #04182d);
   display: flex;
   flex-direction: column;
-  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: #1b4a78 transparent;
+}
+
+.workspace::-webkit-scrollbar {
+  width: 6px;
+}
+.workspace::-webkit-scrollbar-track {
+  background: rgba(4, 24, 45, 0.4);
+}
+.workspace::-webkit-scrollbar-thumb {
+  background: #1b4a78;
+  border-radius: 3px;
+}
+.workspace::-webkit-scrollbar-thumb:hover {
+  background: #f5cf72;
 }
 
 /* Topbar */
@@ -1595,10 +1633,15 @@ export default {
 
 @media (max-width: 860px) {
   .hushhawk-command-center {
-    grid-template-columns: minmax(0, 1fr) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    height: auto !important;
+    max-height: unset !important;
+    overflow: visible !important;
   }
   .sidebar {
     display: none;
+    height: 100vh !important;
   }
   .nav-open .sidebar {
     display: flex;
@@ -1606,7 +1649,13 @@ export default {
     left: 0;
     top: 0;
     bottom: 0;
+    z-index: 9999;
     box-shadow: 10px 0 30px rgba(0, 0, 0, 0.8);
+  }
+  .workspace {
+    height: auto !important;
+    max-height: unset !important;
+    overflow-y: visible !important;
   }
   .mobile-menu {
     display: block;
