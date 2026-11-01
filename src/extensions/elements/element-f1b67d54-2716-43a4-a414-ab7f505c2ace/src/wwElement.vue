@@ -37,6 +37,18 @@
         </details>
       </nav>
 
+      <!-- Sidebar Quick Logout Button -->
+      <div class="sidebar-logout-section">
+        <button type="button" class="sidebar-logout-btn" @click="handleLogout" title="Sign out of HushHawk Command Center">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline points="16 17 21 12 16 7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+          <span>Sign Out / Log Out</span>
+        </button>
+      </div>
+
       <div class="brand-bottom">
         <p>“REAL ESTATE<br>CREATES FREEDOM.”</p>
         <span>HUSHHAWK • BUILT TO CLOSE</span>
@@ -145,14 +157,58 @@
             </div>
           </div>
 
-          <a href="/settings" class="user-identity" @click="handleNav('/settings', $event)" title="HushHawk Acquisitions Command">
-            <span class="identity-logo" v-html="icons.logo"></span>
-            <div class="identity-text">
-              <strong>HushHawk</strong>
-              <small>Acquisitions Command</small>
+          <!-- User Identity Menu & Logout Option -->
+          <div class="user-identity-wrap">
+            <button
+              type="button"
+              class="user-identity"
+              @click.stop="isUserMenuOpen = !isUserMenuOpen"
+              title="Admin Session &amp; Account Options"
+              :aria-expanded="isUserMenuOpen"
+            >
+              <span class="identity-logo" v-html="icons.logo"></span>
+              <div class="identity-text">
+                <strong>{{ activeUserName }}</strong>
+                <small>{{ activeUserRole }}</small>
+              </div>
+              <span class="identity-caret">⌄</span>
+            </button>
+
+            <!-- User Dropdown Menu with One-Click Logout -->
+            <div v-if="isUserMenuOpen" class="user-menu-dropdown" @click.stop>
+              <div class="user-menu-header">
+                <span class="user-menu-badge">👑 MAIN ADMIN</span>
+                <strong class="user-menu-name">{{ activeUserName }}</strong>
+                <span class="user-menu-email">{{ activeUserEmail }}</span>
+                <span class="user-menu-status">
+                  <span class="status-indicator">●</span> SESSION ACTIVE
+                </span>
+              </div>
+
+              <div class="user-menu-divider"></div>
+
+              <a href="/settings" class="user-menu-item" @click="handleNav('/settings', $event); isUserMenuOpen = false;">
+                <span class="menu-icon" v-html="icons.settings"></span>
+                <span>System Configuration</span>
+              </a>
+
+              <a href="/team" class="user-menu-item" @click="handleNav('/team', $event); isUserMenuOpen = false;">
+                <span class="menu-icon" v-html="icons.users"></span>
+                <span>Team &amp; Access Controls</span>
+              </a>
+
+              <div class="user-menu-divider"></div>
+
+              <button type="button" class="btn-menu-logout" @click="handleLogout">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                  <polyline points="16 17 21 12 16 7"/>
+                  <line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>
+                <span>Log Out &amp; Lock Terminal</span>
+              </button>
             </div>
-            <span class="identity-caret">⌄</span>
-          </a>
+          </div>
         </div>
       </div>
 
@@ -275,6 +331,8 @@ export default {
       searchQuery: '',
       isQuickAddOpen: false,
       isNotifOpen: false,
+      isUserMenuOpen: false,
+      activeUser: null,
       currentTime: '09:42 AM',
       timeInterval: null,
       selectedSection: null,
@@ -283,6 +341,15 @@ export default {
     };
   },
   computed: {
+    activeUserName() {
+      return this.activeUser?.name || 'Main Administrator';
+    },
+    activeUserRole() {
+      return this.activeUser?.role || 'Superadmin & Managing Partner';
+    },
+    activeUserEmail() {
+      return this.activeUser?.email || 'admin@hushhawk.com';
+    },
     primaryNavigation() {
       return this.navigation.slice(0, 11);
     },
@@ -471,9 +538,23 @@ export default {
       if (!e.target.closest('.notif-dropdown') && !e.target.closest('.notification-btn')) {
         this.isNotifOpen = false;
       }
+      if (!e.target.closest('.user-identity-wrap')) {
+        this.isUserMenuOpen = false;
+      }
     };
     if (typeof document !== 'undefined') {
       document.addEventListener('click', this.clickOutsideHandler);
+    }
+
+    if (typeof window !== 'undefined') {
+      try {
+        const raw = window.sessionStorage.getItem('hushhawk_session') || window.localStorage.getItem('hushhawk_session');
+        if (raw) {
+          this.activeUser = JSON.parse(raw);
+        }
+      } catch (err) {
+        console.warn('Session parse error:', err);
+      }
     }
 
     this.toastListener = (e) => {
@@ -544,6 +625,23 @@ export default {
       this.toastTimer = setTimeout(() => {
         this.toast.show = false;
       }, 3500);
+    },
+    handleLogout() {
+      if (typeof window !== 'undefined') {
+        if (typeof window.hushhawkLogout === 'function') {
+          window.hushhawkLogout();
+          return;
+        }
+        try {
+          window.sessionStorage.removeItem('hushhawk_session');
+          window.localStorage.removeItem('hushhawk_session');
+          window.localStorage.removeItem('ww-auth-session');
+          window.localStorage.removeItem('hushhawk_auth_token');
+        } catch (e) {
+          console.error('Logout storage clear error:', e);
+        }
+        window.location.href = '/login';
+      }
     }
   }
 };
@@ -695,6 +793,46 @@ export default {
   color: #edcf7c;
   padding: 6px 10px;
   font-weight: 700;
+}
+
+.sidebar-logout-section {
+  padding: 8px 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  margin-top: auto;
+}
+
+.sidebar-logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 10px;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-radius: 6px;
+  color: #fca5a5;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sidebar-logout-btn:hover {
+  background: rgba(239, 68, 68, 0.18);
+  border-color: rgba(239, 68, 68, 0.45);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
+}
+
+.sidebar-logout-btn svg {
+  flex-shrink: 0;
+  stroke: #fca5a5;
+  transition: stroke 0.2s ease;
+}
+
+.sidebar-logout-btn:hover svg {
+  stroke: #ffffff;
 }
 
 .brand-bottom {
@@ -1010,6 +1148,10 @@ export default {
   color: #38bdf8;
 }
 
+.user-identity-wrap {
+  position: relative;
+}
+
 .user-identity {
   display: inline-flex;
   align-items: center;
@@ -1019,11 +1161,148 @@ export default {
   cursor: pointer;
   padding: 4px 6px;
   border-radius: 6px;
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  text-align: left;
   transition: background 0.15s ease;
 }
 
 .user-identity:hover {
   background: rgba(255, 255, 255, 0.06);
+}
+
+.user-menu-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 250px;
+  background: #061e38;
+  border: 1px solid #1b4a78;
+  border-radius: 8px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.65);
+  z-index: 1000;
+  padding: 10px;
+  animation: fadeInMenu 0.15s ease-out;
+}
+
+@keyframes fadeInMenu {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.user-menu-header {
+  padding: 6px 6px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.user-menu-badge {
+  display: inline-block;
+  align-self: flex-start;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  color: #04182d;
+  background: #f5cf72;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-bottom: 3px;
+}
+
+.user-menu-name {
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.user-menu-email {
+  color: #94a3b8;
+  font-size: 11px;
+}
+
+.user-menu-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  color: #34d399;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin-top: 4px;
+}
+
+.status-indicator {
+  font-size: 8px;
+  color: #34d399;
+  animation: pulseStatus 2s infinite;
+}
+
+@keyframes pulseStatus {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.user-menu-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 6px 0;
+}
+
+.user-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px;
+  font-size: 12px;
+  color: #cbd5e1;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: all 0.15s ease;
+}
+
+.user-menu-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #f5cf72;
+}
+
+.user-menu-item .menu-icon {
+  width: 14px;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  color: #94a3b8;
+}
+
+.btn-menu-logout {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 10px;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 6px;
+  color: #fca5a5;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 2px;
+}
+
+.btn-menu-logout:hover {
+  background: #dc2626;
+  border-color: #ef4444;
+  color: #ffffff;
+  box-shadow: 0 2px 10px rgba(220, 38, 38, 0.35);
+}
+
+.btn-menu-logout svg {
+  flex-shrink: 0;
+  stroke: currentColor;
 }
 
 .identity-logo {
