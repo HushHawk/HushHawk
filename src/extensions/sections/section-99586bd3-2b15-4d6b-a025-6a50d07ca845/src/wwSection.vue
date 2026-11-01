@@ -1,143 +1,177 @@
 <template>
   <div class="hushhawk-auth-wrapper">
-    <!-- Atmospheric Ambient Backgrounds -->
-    <div class="auth-bg-radial"></div>
-    <div class="auth-grid-overlay"></div>
+    <!-- Cinematic Jacksonville Skyline & Ambient Lighting Backdrop -->
+    <div class="auth-skyline-bg"></div>
+    <div class="auth-ambient-glows"></div>
+    <div class="auth-fine-grid"></div>
 
-    <!-- Top Security Bar -->
+    <!-- Top Security Header -->
     <header class="auth-topbar">
       <div class="auth-top-left">
         <span class="auth-pulse-dot"></span>
-        <span class="auth-top-label">HUSHHAWK GATEWAY · 256-BIT ENCRYPTION ACTIVE</span>
+        <span class="auth-top-tag">JACKSONVILLE WHOLESALE GATEWAY</span>
+        <span class="auth-divider-pipe">|</span>
+        <span class="auth-top-enc">256-BIT ZERO-TRUST ENCRYPTED</span>
       </div>
       <div class="auth-clock">
+        <span class="clock-icon">🕒</span>
         <span class="clock-label">ET (Jacksonville):</span>
         <strong class="font-mono">{{ currentTime }}</strong>
       </div>
     </header>
 
-    <!-- Main Horizontal Split Content -->
+    <!-- Main 2-Column Split Content -->
     <main class="auth-main-container">
       <div class="auth-split-grid">
-        <!-- ================= LEFT COLUMN: HERO & INTELLIGENCE NARRATIVE ================= -->
+        <!-- ================= LEFT COLUMN: BRAND NARRATIVE & MARKET RADAR ================= -->
         <section class="auth-hero-col">
-          <!-- Crest & Branding -->
+          <!-- Crest & Jacksonville Eyebrow -->
           <div class="hero-brand-row">
             <div class="hero-logo-wrap">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36" width="46" height="46" fill="none">
-                <rect width="36" height="36" rx="8" fill="#0A1128"/>
-                <rect x="1" y="1" width="34" height="34" rx="7" stroke="url(#hhGoldGradHero)" stroke-width="1.2" stroke-opacity="0.9"/>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36" width="50" height="50" fill="none">
+                <rect width="36" height="36" rx="8" fill="#081022"/>
+                <rect x="1" y="1" width="34" height="34" rx="7" stroke="url(#hhGoldGradHero2)" stroke-width="1.2" stroke-opacity="0.95"/>
                 <defs>
-                  <linearGradient id="hhGoldGradHero" x1="4" y1="4" x2="32" y2="32" gradientUnits="userSpaceOnUse">
-                    <stop offset="0%" stop-color="#FDE68A"/>
-                    <stop offset="35%" stop-color="#D4AF37"/>
-                    <stop offset="70%" stop-color="#B45309"/>
+                  <linearGradient id="hhGoldGradHero2" x1="4" y1="4" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stop-color="#FFFBEB"/>
+                    <stop offset="25%" stop-color="#FDE68A"/>
+                    <stop offset="55%" stop-color="#D4AF37"/>
+                    <stop offset="85%" stop-color="#92400E"/>
                     <stop offset="100%" stop-color="#F59E0B"/>
                   </linearGradient>
-                  <linearGradient id="hhCrownGradHero" x1="10" y1="5" x2="26" y2="14" gradientUnits="userSpaceOnUse">
-                    <stop offset="0%" stop-color="#FFFBEB"/>
-                    <stop offset="60%" stop-color="#F59E0B"/>
-                    <stop offset="100%" stop-color="#D97706"/>
+                  <linearGradient id="hhCrownGradHero2" x1="10" y1="5" x2="26" y2="14" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stop-color="#FFFFFF"/>
+                    <stop offset="40%" stop-color="#FDE68A"/>
+                    <stop offset="80%" stop-color="#D97706"/>
+                    <stop offset="100%" stop-color="#78350F"/>
                   </linearGradient>
                 </defs>
-                <path d="M12 9.5L14 13.5L18 7.5L22 13.5L24 9.5L25 15.5H11L12 9.5Z" fill="url(#hhCrownGradHero)"/>
-                <circle cx="18" cy="11.5" r="1.2" fill="#0A1128"/>
-                <path d="M6 14.5C10 16 14 19 16.5 22L13 23C9 20 6.5 17 6 14.5Z" fill="url(#hhGoldGradHero)"/>
-                <path d="M7.5 19C10.5 20.5 14 23 15.5 25L13.5 26C10 23.5 8 21 7.5 19Z" fill="url(#hhGoldGradHero)" fill-opacity="0.9"/>
-                <path d="M30 14.5C26 16 22 19 19.5 22L23 23C27 20 29.5 17 30 14.5Z" fill="url(#hhGoldGradHero)"/>
-                <path d="M28.5 19C25.5 20.5 22 23 20.5 25L22.5 26C26 23.5 28 21 28.5 19Z" fill="url(#hhGoldGradHero)" fill-opacity="0.9"/>
-                <path d="M18 14L15.5 19.5L18 29L20.5 19.5L18 14Z" fill="url(#hhGoldGradHero)"/>
+                <path d="M12 9.5L14 13.5L18 7.5L22 13.5L24 9.5L25 15.5H11L12 9.5Z" fill="url(#hhCrownGradHero2)"/>
+                <circle cx="18" cy="11.5" r="1.2" fill="#081022"/>
+                <path d="M6 14.5C10 16 14 19 16.5 22L13 23C9 20 6.5 17 6 14.5Z" fill="url(#hhGoldGradHero2)"/>
+                <path d="M7.5 19C10.5 20.5 14 23 15.5 25L13.5 26C10 23.5 8 21 7.5 19Z" fill="url(#hhGoldGradHero2)" fill-opacity="0.9"/>
+                <path d="M30 14.5C26 16 22 19 19.5 22L23 23C27 20 29.5 17 30 14.5Z" fill="url(#hhGoldGradHero2)"/>
+                <path d="M28.5 19C25.5 20.5 22 23 20.5 25L22.5 26C26 23.5 28 21 28.5 19Z" fill="url(#hhGoldGradHero2)" fill-opacity="0.9"/>
+                <path d="M18 14L15.5 19.5L18 29L20.5 19.5L18 14Z" fill="url(#hhGoldGradHero2)"/>
                 <path d="M18 15.5L16.8 19L18 22L19.2 19L18 15.5Z" fill="#FFFBEB"/>
-                <circle cx="18" cy="18.5" r="1" fill="#0A1128"/>
-                <path d="M17.5 19.5H18.5L18.8 22H17.2L17.5 19.5Z" fill="#0A1128"/>
-                <path d="M16 29L18 31.5L20 29H16Z" fill="url(#hhGoldGradHero)"/>
+                <circle cx="18" cy="18.5" r="1" fill="#081022"/>
+                <path d="M17.5 19.5H18.5L18.8 22H17.2L17.5 19.5Z" fill="#081022"/>
+                <path d="M16 29L18 31.5L20 29H16Z" fill="url(#hhGoldGradHero2)"/>
               </svg>
             </div>
             <div class="hero-brand-text">
-              <span class="brand-eyebrow">JACKSONVILLE WHOLESALE INTELLIGENCE</span>
+              <div class="hero-pill-badge">
+                <span class="badge-dot-gold"></span>
+                <span>NORTHEAST FLORIDA OFF-MARKET INTELLIGENCE</span>
+              </div>
               <div class="brand-motto-inline">
-                <span>PEOPLE</span>
-                <span class="motto-sep">•</span>
-                <span>PROPERTIES</span>
-                <span class="motto-sep">•</span>
-                <span>PROSPERITY</span>
+                <span class="motto-word">PEOPLE</span>
+                <span class="motto-sep">✦</span>
+                <span class="motto-word">PROPERTIES</span>
+                <span class="motto-sep">✦</span>
+                <span class="motto-word">PROSPERITY</span>
               </div>
             </div>
           </div>
 
-          <!-- Main Hero Headings -->
+          <!-- Hero Headline with Warm Contrast -->
           <div class="hero-text-block">
             <h1 class="hero-headline">
               The Institutional Wholesale <br class="hidden-sm" />
               <span class="gold-gradient-text">Command Center.</span>
             </h1>
             <p class="hero-subheading">
-              Empowering acquisitions leaders, underwriting directors, and dispositions desks with deterministic CrownKey™ parcel provenance, real-time cash buyer matching, and automated Duval & Clay county deal velocity.
+              Empowering acquisitions leaders, underwriting directors, and dispositions desks with deterministic CrownKey™ parcel provenance, instant institutional buyer matching, and automated Duval & Clay county deal velocity.
             </p>
           </div>
 
-          <!-- 3 Capability Pillar Cards -->
+          <!-- 3 Distinct Feature Pillars with Color Accents -->
           <div class="hero-pillars">
-            <div class="pillar-card">
-              <div class="pillar-icon-box">
+            <!-- Pillar 1: Warm Gold / Provenance -->
+            <div class="pillar-card pillar-gold">
+              <div class="pillar-icon-box icon-gold">
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#f5cf72" stroke-width="2">
                   <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
                 </svg>
               </div>
               <div class="pillar-content">
+                <div class="pillar-tag-row">
+                  <span class="pillar-tag tag-gold">PARCEL PROVENANCE</span>
+                </div>
                 <h4>Deterministic CrownKey™ GIS</h4>
-                <p>Immutable parcel identity architecture tracking county tax rolls with zero false entity merges.</p>
+                <p>Single source-of-truth parcel identifier tracking Duval & Clay County tax rolls with zero false entity merges.</p>
               </div>
             </div>
 
-            <div class="pillar-card">
-              <div class="pillar-icon-box">
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#59c9fb" stroke-width="2">
-                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+            <!-- Pillar 2: Emerald Green / Speed to Close -->
+            <div class="pillar-card pillar-emerald">
+              <div class="pillar-icon-box icon-emerald">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#22c55e" stroke-width="2">
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
                 </svg>
               </div>
               <div class="pillar-content">
+                <div class="pillar-tag-row">
+                  <span class="pillar-tag tag-emerald">INSTITUTIONAL SPEED</span>
+                </div>
                 <h4>Algorithmic Dispositions Matching</h4>
-                <p>Instant contract distribution to pre-vetted institutional buyers with strict buy-box parameters.</p>
+                <p>Sub-minute distribution of off-market contracts against verified cash buyers with locked buy-box criteria.</p>
               </div>
             </div>
 
-            <div class="pillar-card">
-              <div class="pillar-icon-box">
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#22c55e" stroke-width="2">
+            <!-- Pillar 3: Cyan / Florida Compliance -->
+            <div class="pillar-card pillar-cyan">
+              <div class="pillar-icon-box icon-cyan">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#38bdf8" stroke-width="2">
                   <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                   <path d="m9 12 2 2 4-4"/>
                 </svg>
               </div>
               <div class="pillar-content">
-                <h4>Florida DNC & Compliance Gate</h4>
-                <p>Automated suppression filter blocking litigators and DNC registrations before any outbound touch.</p>
+                <div class="pillar-tag-row">
+                  <span class="pillar-tag tag-cyan">COMPLIANCE SHIELD</span>
+                </div>
+                <h4>Florida DNC & Title Gate</h4>
+                <p>Automated suppression filter blocking litigators and DNC registrations before any outbound contact.</p>
               </div>
             </div>
           </div>
 
-          <!-- Market Coverage Micro-Stats Strip -->
-          <div class="hero-metrics-strip">
-            <div class="metric-item">
-              <span class="metric-val">100%</span>
-              <span class="metric-lbl">Duval & Clay Coverage</span>
+          <!-- Live Market Radar Strip (Warm Contrast) -->
+          <div class="hero-radar-card">
+            <div class="radar-header">
+              <div class="radar-pulse-wrap">
+                <span class="radar-ping"></span>
+                <span class="radar-dot"></span>
+                <span class="radar-title">DUVAL & CLAY LIVE RADAR</span>
+              </div>
+              <span class="radar-badge-live">24 Underwritten Today</span>
             </div>
-            <div class="metric-divider"></div>
-            <div class="metric-item">
-              <span class="metric-val">$18.4K</span>
-              <span class="metric-lbl">Avg. Assignment Spread</span>
-            </div>
-            <div class="metric-divider"></div>
-            <div class="metric-item">
-              <span class="metric-val">0.45s</span>
-              <span class="metric-lbl">Graph Event Stream</span>
+            <div class="radar-metrics-row">
+              <div class="radar-metric">
+                <span class="metric-val text-emerald">100%</span>
+                <span class="metric-lbl">Active Coverage</span>
+              </div>
+              <div class="radar-sep"></div>
+              <div class="radar-metric">
+                <span class="metric-val text-gold">$18,450</span>
+                <span class="metric-lbl">Avg. Assignment MAO</span>
+              </div>
+              <div class="radar-sep"></div>
+              <div class="radar-metric">
+                <span class="metric-val text-cyan">0.45s</span>
+                <span class="metric-lbl">Graph Event Sync</span>
+              </div>
             </div>
           </div>
         </section>
 
-        <!-- ================= RIGHT COLUMN: AUTHENTICATION CARD ================= -->
+        <!-- ================= RIGHT COLUMN: FROSTED OBSIDIAN AUTH CARD ================= -->
         <section class="auth-form-col">
           <div class="auth-card">
+            <!-- Top Gold Accent Rim -->
+            <div class="card-gold-accent-line"></div>
+
             <!-- Card Header -->
             <div class="auth-card-top">
               <div class="auth-card-badge-row">
@@ -145,10 +179,16 @@
                   <span class="chip-dot"></span>
                   OPERATIONAL GATEWAY
                 </span>
-                <span class="auth-ip-chip">TERMINAL VERIFIED</span>
+                <span class="auth-ip-chip">
+                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="m9 12 2 2 4-4"/>
+                  </svg>
+                  TERMINAL VERIFIED
+                </span>
               </div>
               <h2 class="auth-card-title">Terminal Authentication</h2>
-              <p class="auth-card-desc">Enter your authorized credentials to unlock active pipelines, underwriting formulas & dispo desk.</p>
+              <p class="auth-card-desc">Enter your authorized credentials to unlock live pipelines, underwriting formulas & dispo desk.</p>
             </div>
 
             <!-- Login Form -->
@@ -230,17 +270,22 @@
                 <label class="custom-checkbox">
                   <input v-model="rememberMe" type="checkbox" />
                   <span class="checkbox-indicator"></span>
-                  <span class="checkbox-label">Remember terminal session</span>
+                  <span class="checkbox-label">Remember terminal (30 days)</span>
                 </label>
-                <span class="auth-chip-secure">SSL Encrypted</span>
+                <span class="auth-chip-secure">
+                  <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                  </svg>
+                  TLS Encrypted
+                </span>
               </div>
 
-              <!-- Submit Button -->
+              <!-- Primary Submit Button -->
               <button type="submit" class="btn-auth-gold" :disabled="isLoading">
                 <span v-if="isLoading" class="auth-spinner"></span>
                 <span v-else class="btn-text-content">
                   Sign In to Command Center
-                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5">
                     <path d="M5 12h14M12 5l7 7-7 7"/>
                   </svg>
                 </span>
@@ -259,28 +304,31 @@
                 @click="quickDemoLogin"
               >
                 <span class="demo-badge">DEMO</span>
-                <span>Sign In as Acquisitions Director (Dejon Ellis)</span>
+                <span class="demo-label">Sign In as Acquisitions Director (Dejon Ellis)</span>
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="m9 18 6-6-6-6"/>
+                </svg>
               </button>
             </form>
 
             <!-- Card Bottom Trust Badges -->
             <div class="auth-card-footer">
               <div class="security-badges">
-                <div class="sec-badge">
+                <div class="sec-badge badge-green">
                   <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#22c55e" stroke-width="2">
                     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                   </svg>
                   <span>256-Bit SSL</span>
                 </div>
-                <div class="sec-badge">
-                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#59c9fb" stroke-width="2">
+                <div class="sec-badge badge-blue">
+                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#38bdf8" stroke-width="2">
                     <ellipse cx="12" cy="5" rx="9" ry="3"/>
                     <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
                     <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
                   </svg>
                   <span>AWS RDS</span>
                 </div>
-                <div class="sec-badge">
+                <div class="sec-badge badge-gold">
                   <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#f5cf72" stroke-width="2">
                     <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
                   </svg>
@@ -288,7 +336,7 @@
                 </div>
               </div>
               <p class="auth-disclaimer">
-                Authorized Personnel Only · All sessions audited to ops.audit_events
+                Authorized Personnel Only · Cryptographically audited to <code>ops.audit_events</code>
               </p>
             </div>
           </div>
@@ -422,12 +470,12 @@ export default {
 </script>
 
 <style scoped>
-/* Base Wrapper & Ambient Backdrop */
+/* ================= BASE WRAPPER & CINEMATIC BACKDROP ================= */
 .hushhawk-auth-wrapper {
   position: relative;
   min-height: 100vh;
   width: 100%;
-  background-color: #04182d;
+  background-color: #020914;
   color: #f8fafc;
   font-family: -apple-system, BlinkMacSystemFont, "Plus Jakarta Sans", "Segoe UI", Roboto, sans-serif;
   overflow-x: hidden;
@@ -435,31 +483,48 @@ export default {
   flex-direction: column;
 }
 
-.auth-bg-radial {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  background: 
-    radial-gradient(circle 900px at 15% 25%, rgba(14, 58, 102, 0.45) 0%, transparent 70%),
-    radial-gradient(circle 750px at 85% 75%, rgba(245, 207, 114, 0.08) 0%, transparent 65%),
-    radial-gradient(circle 600px at 50% 50%, rgba(8, 32, 60, 0.6) 0%, transparent 80%);
-  z-index: 0;
-}
-
-.auth-grid-overlay {
+/* Jacksonville Twilight Riverfront Skyline Backdrop */
+.auth-skyline-bg {
   position: fixed;
   inset: 0;
   pointer-events: none;
   background-image: 
-    linear-gradient(rgba(245, 207, 114, 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(245, 207, 114, 0.035) 1px, transparent 1px);
-  background-size: 48px 48px;
-  mask-image: radial-gradient(ellipse 90% 75% at 50% 50%, #000 60%, transparent 100%);
-  -webkit-mask-image: radial-gradient(ellipse 90% 75% at 50% 50%, #000 60%, transparent 100%);
+    linear-gradient(135deg, rgba(2, 9, 20, 0.93) 0%, rgba(3, 14, 30, 0.88) 45%, rgba(5, 18, 38, 0.94) 100%),
+    url("https://u.realgeeks.media/nuviewrealty/Jacksonville_Skyline_Sunset_2.jpeg");
+  background-size: cover;
+  background-position: center bottom;
+  background-attachment: fixed;
+  z-index: 0;
+  filter: saturate(1.15) contrast(1.1);
+}
+
+/* Atmospheric Warm Gold & Deep Obsidian Glows */
+.auth-ambient-glows {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: 
+    radial-gradient(circle 900px at 10% 20%, rgba(217, 119, 6, 0.12) 0%, transparent 60%),
+    radial-gradient(circle 750px at 85% 80%, rgba(245, 207, 114, 0.08) 0%, transparent 65%),
+    radial-gradient(circle 700px at 50% 40%, rgba(34, 197, 94, 0.05) 0%, transparent 70%);
   z-index: 1;
 }
 
-/* Top Security Header */
+/* Subtle Geometric Architectural Overlay */
+.auth-fine-grid {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: 
+    linear-gradient(rgba(245, 207, 114, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(245, 207, 114, 0.025) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 90% 75% at 50% 50%, #000 50%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 90% 75% at 50% 50%, #000 50%, transparent 100%);
+  z-index: 2;
+}
+
+/* ================= TOP SECURITY HEADER ================= */
 .auth-topbar {
   position: relative;
   z-index: 10;
@@ -467,10 +532,11 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 32px;
-  border-bottom: 1px solid rgba(22, 69, 115, 0.4);
-  background: rgba(4, 24, 45, 0.7);
-  backdrop-filter: blur(10px);
+  padding: 0 36px;
+  border-bottom: 1px solid rgba(245, 207, 114, 0.15);
+  background: rgba(3, 11, 23, 0.85);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
 
 .auth-top-left {
@@ -490,36 +556,52 @@ export default {
 
 @keyframes pulseDot {
   0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(0.85); }
+  50% { opacity: 0.45; transform: scale(0.85); }
 }
 
-.auth-top-label {
+.auth-top-tag {
   font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 1.2px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: #f5cf72;
+}
+
+.auth-divider-pipe {
+  color: #334155;
+  font-size: 12px;
+}
+
+.auth-top-enc {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
   color: #94a3b8;
 }
 
 .auth-clock {
-  font-size: 11.5px;
-  color: #94a3b8;
+  font-size: 12px;
+  color: #cbd5e1;
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
+.clock-icon {
+  font-size: 12px;
+}
+
 .clock-label {
-  color: #64748b;
+  color: #94a3b8;
   font-size: 11px;
 }
 
 .font-mono {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  color: #59c9fb;
-  font-weight: 600;
+  color: #f5cf72;
+  font-weight: 700;
 }
 
-/* Main Container (Horizontal Split) */
+/* ================= MAIN CONTAINER & 2-COLUMN SPLIT ================= */
 .auth-main-container {
   position: relative;
   z-index: 5;
@@ -527,24 +609,24 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 40px 24px;
+  padding: 44px 28px;
 }
 
 .auth-split-grid {
   width: 100%;
-  max-width: 1240px;
+  max-width: 1260px;
   display: grid;
-  grid-template-columns: 1.15fr 0.95fr;
-  gap: 56px;
+  grid-template-columns: 1.18fr 0.92fr;
+  gap: 64px;
   align-items: center;
 }
 
-/* ================= LEFT HERO STYLING ================= */
+/* ================= LEFT HERO COLUMN ================= */
 .auth-hero-col {
   display: flex;
   flex-direction: column;
-  gap: 28px;
-  padding-right: 12px;
+  gap: 26px;
+  padding-right: 16px;
 }
 
 .hero-brand-row {
@@ -559,37 +641,53 @@ export default {
   align-items: center;
   justify-content: center;
   border-radius: 12px;
-  background: #0a1128;
+  background: #081022;
   padding: 2px;
-  box-shadow: 0 8px 24px rgba(245, 207, 114, 0.2);
+  box-shadow: 0 0 28px rgba(245, 207, 114, 0.28);
 }
 
 .hero-brand-text {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 5px;
 }
 
-.brand-eyebrow {
-  font-size: 11px;
+.hero-pill-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10.5px;
   font-weight: 800;
-  letter-spacing: 2px;
+  letter-spacing: 1.5px;
   color: #f5cf72;
+  background: rgba(245, 207, 114, 0.08);
+  border: 1px solid rgba(245, 207, 114, 0.25);
+  padding: 3px 9px;
+  border-radius: 20px;
+  width: fit-content;
+}
+
+.badge-dot-gold {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #f5cf72;
+  box-shadow: 0 0 6px #f5cf72;
 }
 
 .brand-motto-inline {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 10px;
-  letter-spacing: 2.2px;
-  color: #94a3b8;
-  font-weight: 600;
+  font-size: 10.5px;
+  letter-spacing: 2px;
+  color: #cbd5e1;
+  font-weight: 700;
 }
 
 .motto-sep {
-  color: #f5cf72;
-  font-size: 10px;
+  color: #d97706;
+  font-size: 8px;
 }
 
 .hero-text-block {
@@ -601,15 +699,16 @@ export default {
 .hero-headline {
   margin: 0;
   font-family: Georgia, Cambria, "Times New Roman", Times, serif;
-  font-size: 40px;
-  line-height: 1.18;
+  font-size: 42px;
+  line-height: 1.15;
   font-weight: 700;
   color: #ffffff;
   letter-spacing: -0.5px;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.6);
 }
 
 .gold-gradient-text {
-  background: linear-gradient(135deg, #fef3c7 0%, #f5cf72 50%, #cf9c34 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #fde68a 35%, #f5cf72 70%, #d97706 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -618,11 +717,12 @@ export default {
   margin: 0;
   font-size: 15px;
   line-height: 1.6;
-  color: #94a3b8;
-  max-width: 540px;
+  color: #cbd5e1;
+  max-width: 560px;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
 }
 
-/* Feature Pillar Cards */
+/* ================= 3 FEATURE PILLARS WITH COLOR ACCENTS ================= */
 .hero-pillars {
   display: flex;
   flex-direction: column;
@@ -632,87 +732,227 @@ export default {
 .pillar-card {
   display: flex;
   align-items: flex-start;
-  gap: 14px;
+  gap: 15px;
   padding: 14px 18px;
-  border-radius: 10px;
-  background: rgba(8, 32, 60, 0.45);
-  border: 1px solid rgba(22, 69, 115, 0.5);
-  transition: transform 0.2s, border-color 0.2s, background 0.2s;
+  border-radius: 12px;
+  background: rgba(8, 18, 34, 0.72);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  transition: transform 0.2s, background 0.2s, border-color 0.2s, box-shadow 0.2s;
 }
 
 .pillar-card:hover {
   transform: translateX(4px);
-  background: rgba(12, 44, 80, 0.65);
-  border-color: rgba(245, 207, 114, 0.4);
+  background: rgba(12, 26, 48, 0.88);
+}
+
+/* Pillar 1: Gold */
+.pillar-gold {
+  border-left: 3px solid #f5cf72;
+}
+.pillar-gold:hover {
+  border-color: rgba(245, 207, 114, 0.45);
+  box-shadow: 0 8px 28px rgba(245, 207, 114, 0.12);
+}
+.icon-gold {
+  background: rgba(245, 207, 114, 0.12);
+  border: 1px solid rgba(245, 207, 114, 0.35);
+}
+.tag-gold {
+  background: rgba(245, 207, 114, 0.12);
+  color: #fde68a;
+  border: 1px solid rgba(245, 207, 114, 0.3);
+}
+
+/* Pillar 2: Emerald */
+.pillar-emerald {
+  border-left: 3px solid #22c55e;
+}
+.pillar-emerald:hover {
+  border-color: rgba(34, 197, 94, 0.45);
+  box-shadow: 0 8px 28px rgba(34, 197, 94, 0.12);
+}
+.icon-emerald {
+  background: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.35);
+}
+.tag-emerald {
+  background: rgba(34, 197, 94, 0.12);
+  color: #4ade80;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+/* Pillar 3: Cyan */
+.pillar-cyan {
+  border-left: 3px solid #38bdf8;
+}
+.pillar-cyan:hover {
+  border-color: rgba(56, 189, 248, 0.45);
+  box-shadow: 0 8px 28px rgba(56, 189, 248, 0.12);
+}
+.icon-cyan {
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+}
+.tag-cyan {
+  background: rgba(56, 189, 248, 0.12);
+  color: #7dd3fc;
+  border: 1px solid rgba(56, 189, 248, 0.3);
 }
 
 .pillar-icon-box {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  background: rgba(4, 24, 45, 0.8);
-  border: 1px solid rgba(22, 69, 115, 0.8);
+  width: 38px;
+  height: 38px;
+  border-radius: 9px;
   flex-shrink: 0;
 }
 
+.pillar-content {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.pillar-tag-row {
+  margin-bottom: 2px;
+}
+
+.pillar-tag {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
 .pillar-content h4 {
-  margin: 0 0 4px 0;
-  font-size: 13.5px;
+  margin: 0;
+  font-size: 14px;
   font-weight: 700;
-  color: #f1f5f9;
-  letter-spacing: 0.2px;
+  color: #ffffff;
 }
 
 .pillar-content p {
   margin: 0;
   font-size: 12px;
   line-height: 1.45;
-  color: #8fa3bf;
+  color: #94a3b8;
 }
 
-/* Market Metrics Strip */
-.hero-metrics-strip {
+/* ================= LIVE MARKET RADAR CARD ================= */
+.hero-radar-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 20px;
+  border-radius: 12px;
+  background: rgba(6, 14, 26, 0.85);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(245, 207, 114, 0.22);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+}
+
+.radar-header {
   display: flex;
   align-items: center;
-  gap: 20px;
-  padding: 16px 20px;
-  border-radius: 10px;
-  background: rgba(4, 24, 45, 0.7);
-  border: 1px solid rgba(245, 207, 114, 0.18);
-  width: fit-content;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 8px;
 }
 
-.metric-item {
+.radar-pulse-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.radar-ping {
+  position: absolute;
+  left: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  animation: radarPing 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes radarPing {
+  75%, 100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+.radar-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 8px #22c55e;
+}
+
+.radar-title {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  color: #f5cf72;
+}
+
+.radar-badge-live {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #4ade80;
+  background: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.radar-metrics-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.radar-metric {
   display: flex;
   flex-direction: column;
   gap: 2px;
 }
 
 .metric-val {
-  font-size: 17px;
+  font-size: 18px;
   font-weight: 800;
-  color: #f5cf72;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
+.text-emerald { color: #4ade80; }
+.text-gold { color: #fde68a; }
+.text-cyan { color: #7dd3fc; }
+
 .metric-lbl {
   font-size: 10px;
-  color: #64748b;
+  color: #94a3b8;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.6px;
   font-weight: 600;
 }
 
-.metric-divider {
+.radar-sep {
   width: 1px;
   height: 28px;
-  background: rgba(22, 69, 115, 0.6);
+  background: rgba(255, 255, 255, 0.1);
 }
 
-/* ================= RIGHT FORM STYLING ================= */
+/* ================= RIGHT FORM COLUMN (FROSTED OBSIDIAN CARD) ================= */
 .auth-form-col {
   display: flex;
   justify-content: center;
@@ -720,19 +960,30 @@ export default {
 }
 
 .auth-card {
+  position: relative;
   width: 100%;
   max-width: 460px;
-  background: rgba(7, 26, 48, 0.85);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(243, 214, 140, 0.22);
-  border-radius: 16px;
+  background: rgba(6, 14, 26, 0.88);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid rgba(245, 207, 114, 0.28);
+  border-radius: 18px;
   padding: 34px 30px;
   box-shadow: 
-    0 24px 60px rgba(0, 0, 0, 0.55),
-    0 0 0 1px rgba(255, 255, 255, 0.04),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    0 30px 80px rgba(0, 0, 0, 0.75),
+    0 0 50px rgba(245, 207, 114, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
   box-sizing: border-box;
+  overflow: hidden;
+}
+
+.card-gold-accent-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #f5cf72 30%, #fde68a 50%, #d97706 70%, transparent);
 }
 
 .auth-card-top {
@@ -754,10 +1005,10 @@ export default {
   font-weight: 800;
   letter-spacing: 1.2px;
   color: #22c55e;
-  background: rgba(34, 197, 94, 0.1);
+  background: rgba(34, 197, 94, 0.12);
   padding: 3px 8px;
   border-radius: 20px;
-  border: 1px solid rgba(34, 197, 94, 0.25);
+  border: 1px solid rgba(34, 197, 94, 0.3);
 }
 
 .chip-dot {
@@ -768,15 +1019,18 @@ export default {
 }
 
 .auth-ip-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   font-size: 9.5px;
   font-weight: 700;
-  color: #59c9fb;
+  color: #38bdf8;
   letter-spacing: 1px;
 }
 
 .auth-card-title {
   margin: 0 0 6px 0;
-  font-size: 20px;
+  font-size: 21px;
   font-weight: 700;
   color: #ffffff;
   letter-spacing: -0.2px;
@@ -785,7 +1039,7 @@ export default {
 .auth-card-desc {
   margin: 0;
   font-size: 12.5px;
-  color: #94a3b8;
+  color: #cbd5e1;
   line-height: 1.45;
 }
 
@@ -801,8 +1055,8 @@ export default {
   align-items: center;
   gap: 10px;
   padding: 10px 14px;
-  background: rgba(239, 68, 68, 0.15);
-  border: 1px solid rgba(239, 68, 68, 0.35);
+  background: rgba(239, 68, 68, 0.18);
+  border: 1px solid rgba(239, 68, 68, 0.45);
   border-radius: 8px;
   color: #fca5a5;
   font-size: 12px;
@@ -823,7 +1077,7 @@ export default {
 .form-field label {
   font-size: 11.5px;
   font-weight: 600;
-  color: #cbd5e1;
+  color: #e2e8f0;
   letter-spacing: 0.2px;
 }
 
@@ -859,8 +1113,8 @@ export default {
   width: 100%;
   height: 42px;
   padding: 0 40px 0 38px;
-  background: rgba(8, 32, 60, 0.85);
-  border: 1px solid #163e66;
+  background: rgba(4, 11, 22, 0.92);
+  border: 1px solid #1a3350;
   border-radius: 8px;
   color: #ffffff;
   font-size: 13px;
@@ -872,8 +1126,8 @@ export default {
 .input-wrap input:focus {
   outline: none;
   border-color: #f5cf72;
-  box-shadow: 0 0 0 3px rgba(245, 207, 114, 0.18);
-  background: rgba(8, 32, 60, 0.98);
+  box-shadow: 0 0 0 3px rgba(245, 207, 114, 0.22);
+  background: rgba(4, 11, 22, 0.98);
 }
 
 .input-wrap input::placeholder {
@@ -895,7 +1149,7 @@ export default {
 }
 
 .input-action-btn:hover {
-  color: #94a3b8;
+  color: #cbd5e1;
 }
 
 /* Options Row */
@@ -921,9 +1175,9 @@ export default {
 .checkbox-indicator {
   width: 16px;
   height: 16px;
-  border: 1px solid #27527a;
+  border: 1px solid #2a4768;
   border-radius: 4px;
-  background: rgba(7, 26, 48, 0.8);
+  background: rgba(5, 13, 25, 0.85);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -939,7 +1193,7 @@ export default {
   content: '';
   width: 4px;
   height: 8px;
-  border: solid #04182d;
+  border: solid #041424;
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
   margin-bottom: 2px;
@@ -947,16 +1201,19 @@ export default {
 
 .checkbox-label {
   font-size: 11.5px;
-  color: #94a3b8;
+  color: #cbd5e1;
 }
 
 .auth-chip-secure {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   font-size: 10px;
   padding: 2px 7px;
   border-radius: 10px;
-  background: rgba(89, 201, 251, 0.12);
-  color: #59c9fb;
-  border: 1px solid rgba(89, 201, 251, 0.25);
+  background: rgba(56, 189, 248, 0.12);
+  color: #7dd3fc;
+  border: 1px solid rgba(56, 189, 248, 0.28);
   font-weight: 600;
 }
 
@@ -964,17 +1221,17 @@ export default {
 .btn-auth-gold {
   height: 44px;
   width: 100%;
-  background: linear-gradient(135deg, #f5cf72 0%, #cf9c34 100%);
+  background: linear-gradient(135deg, #fde68a 0%, #f5cf72 40%, #d97706 100%);
   border: 1px solid #fed7aa;
   border-radius: 8px;
-  color: #04182d;
+  color: #041220;
   font-size: 13.5px;
-  font-weight: 700;
+  font-weight: 800;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 14px rgba(245, 207, 114, 0.3);
+  box-shadow: 0 4px 16px rgba(245, 207, 114, 0.35);
   transition: transform 0.15s, box-shadow 0.15s, filter 0.15s;
   margin-top: 4px;
 }
@@ -982,7 +1239,7 @@ export default {
 .btn-auth-gold:hover:not(:disabled) {
   filter: brightness(1.08);
   transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(245, 207, 114, 0.45);
+  box-shadow: 0 6px 20px rgba(245, 207, 114, 0.5);
 }
 
 .btn-auth-gold:disabled {
@@ -999,8 +1256,8 @@ export default {
 .auth-spinner {
   width: 18px;
   height: 18px;
-  border: 2px solid rgba(4, 24, 45, 0.25);
-  border-top-color: #04182d;
+  border: 2px solid rgba(4, 18, 32, 0.25);
+  border-top-color: #041220;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -1015,7 +1272,7 @@ export default {
   align-items: center;
   text-align: center;
   margin: 4px 0;
-  color: #475569;
+  color: #64748b;
   font-size: 9.5px;
   letter-spacing: 1.5px;
   font-weight: 700;
@@ -1025,51 +1282,57 @@ export default {
 .auth-divider::after {
   content: '';
   flex: 1;
-  border-bottom: 1px solid #163659;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .auth-divider span {
   padding: 0 10px;
 }
 
-/* Demo Button */
+/* 1-Click Demo Button */
 .btn-auth-demo {
-  height: 38px;
+  height: 40px;
   width: 100%;
-  background: rgba(14, 48, 82, 0.6);
-  border: 1px solid #1f4f80;
+  background: rgba(10, 22, 38, 0.8);
+  border: 1px solid rgba(245, 207, 114, 0.3);
   border-radius: 8px;
-  color: #cbd5e1;
+  color: #f1f5f9;
   font-size: 11.5px;
   font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
+  justify-content: space-between;
+  padding: 0 14px;
   transition: background 0.15s, border-color 0.15s, color 0.15s;
 }
 
 .btn-auth-demo:hover:not(:disabled) {
-  background: rgba(22, 69, 115, 0.85);
-  border-color: #59c9fb;
+  background: rgba(16, 34, 60, 0.95);
+  border-color: #f5cf72;
   color: #ffffff;
 }
 
 .demo-badge {
   background: #f5cf72;
-  color: #04182d;
+  color: #041220;
   font-size: 9px;
   font-weight: 800;
   padding: 2px 6px;
   border-radius: 4px;
 }
 
+.demo-label {
+  flex: 1;
+  text-align: left;
+  margin-left: 8px;
+}
+
 /* Card Bottom Footer */
 .auth-card-footer {
   margin-top: 22px;
   padding-top: 18px;
-  border-top: 1px solid rgba(22, 69, 115, 0.4);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
   text-align: center;
 }
 
@@ -1087,15 +1350,23 @@ export default {
   align-items: center;
   gap: 5px;
   font-size: 10.5px;
-  color: #94a3b8;
   font-weight: 500;
 }
+
+.badge-green { color: #4ade80; }
+.badge-blue { color: #7dd3fc; }
+.badge-gold { color: #fde68a; }
 
 .auth-disclaimer {
   margin: 0;
   font-size: 9.5px;
-  line-height: 1.4;
-  color: #64748b;
+  line-height: 1.45;
+  color: #94a3b8;
+}
+
+.auth-disclaimer code {
+  color: #f5cf72;
+  font-family: ui-monospace, SFMono-Regular, monospace;
 }
 
 /* ================= RESPONSIVE ADJUSTMENTS ================= */
@@ -1114,7 +1385,7 @@ export default {
     justify-content: center;
   }
   .hero-headline {
-    font-size: 32px;
+    font-size: 34px;
   }
   .hero-subheading {
     max-width: 100%;
@@ -1123,14 +1394,20 @@ export default {
     width: 100%;
     text-align: left;
   }
-  .hero-metrics-strip {
-    margin: 0 auto;
+  .hero-radar-card {
+    width: 100%;
   }
 }
 
 @media (max-width: 640px) {
   .auth-topbar {
     padding: 0 16px;
+  }
+  .auth-top-enc {
+    display: none;
+  }
+  .auth-divider-pipe {
+    display: none;
   }
   .auth-main-container {
     padding: 24px 16px;
@@ -1139,13 +1416,10 @@ export default {
     padding: 24px 18px;
   }
   .hero-headline {
-    font-size: 26px;
+    font-size: 28px;
   }
-  .hero-metrics-strip {
-    width: 100%;
-    justify-content: space-around;
-    padding: 12px 10px;
-    gap: 10px;
+  .radar-metrics-row {
+    gap: 8px;
   }
   .metric-val {
     font-size: 15px;
