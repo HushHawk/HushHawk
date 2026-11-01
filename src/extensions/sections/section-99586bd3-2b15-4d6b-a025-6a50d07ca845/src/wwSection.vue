@@ -272,29 +272,6 @@
                 <span class="auth-chip-secure">SSL Encrypted</span>
               </div>
 
-              <!-- Authorized Preset Credentials Chips -->
-              <div class="auth-presets-panel">
-                <div class="presets-header">
-                  <span class="presets-title">SWITCH PRESET IDENTITY</span>
-                  <span class="presets-hint">Click to load</span>
-                </div>
-                <div class="presets-grid">
-                  <button
-                    type="button"
-                    v-for="cred in authorizedCredentials"
-                    :key="cred.email"
-                    class="preset-chip"
-                    :class="{ 'is-selected': email === cred.email }"
-                    @click="applyCredential(cred)"
-                  >
-                    <div class="preset-chip-top">
-                      <span class="preset-badge">{{ cred.badge }}</span>
-                    </div>
-                    <span class="preset-email">{{ cred.email }}</span>
-                  </button>
-                </div>
-              </div>
-
               <!-- Submit Button -->
               <button type="submit" class="btn-auth-gold" :disabled="isLoading">
                 <span v-if="isLoading" class="auth-spinner"></span>
@@ -304,22 +281,6 @@
                     <path d="M5 12h14M12 5l7 7-7 7"/>
                   </svg>
                 </span>
-              </button>
-
-              <!-- Divider -->
-              <div class="auth-divider">
-                <span>OR INSTANT 1-CLICK ACCESS</span>
-              </div>
-
-              <!-- 1-Click Instant Admin Login -->
-              <button
-                type="button"
-                class="btn-auth-demo"
-                :disabled="isLoading"
-                @click="quickAdminLogin"
-              >
-                <span class="demo-badge">ADMIN</span>
-                <span>👑 1-Click Instant Sign In as Main Admin</span>
               </button>
             </form>
 
@@ -1298,96 +1259,6 @@ export default {
   font-weight: 600;
 }
 
-/* Authorized Presets Panel */
-.auth-presets-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 10px 12px;
-  border-radius: 10px;
-  background: rgba(3, 16, 32, 0.7);
-  border: 1px solid rgba(245, 207, 114, 0.2);
-}
-
-.presets-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.presets-title {
-  font-size: 9px;
-  font-weight: 800;
-  letter-spacing: 1.2px;
-  color: #f5cf72;
-}
-
-.presets-hint {
-  font-size: 9px;
-  color: #64748b;
-  font-style: italic;
-}
-
-.presets-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
-}
-
-.preset-chip {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 3px;
-  padding: 6px 8px;
-  background: rgba(7, 26, 48, 0.7);
-  border: 1px solid #1a4369;
-  border-radius: 6px;
-  cursor: pointer;
-  text-align: left;
-  transition: all 0.15s ease;
-}
-
-.preset-chip:hover {
-  background: rgba(14, 45, 78, 0.85);
-  border-color: #f5cf72;
-  transform: translateY(-1px);
-}
-
-.preset-chip.is-selected {
-  background: rgba(245, 207, 114, 0.12);
-  border-color: #f5cf72;
-  box-shadow: 0 0 10px rgba(245, 207, 114, 0.2);
-}
-
-.preset-chip-top {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  width: 100%;
-}
-
-.preset-badge {
-  font-size: 8px;
-  font-weight: 800;
-  color: #f5cf72;
-  white-space: nowrap;
-}
-
-.preset-role {
-  display: none;
-}
-
-.preset-email {
-  font-size: 9.5px;
-  color: #cbd5e1;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  width: 100%;
-}
-
 /* Buttons */
 .btn-auth-gold {
   height: 44px;
@@ -1435,62 +1306,6 @@ export default {
 
 @keyframes spin {
   to { transform: rotate(360deg); }
-}
-
-/* Divider */
-.auth-divider {
-  display: flex;
-  align-items: center;
-  text-align: center;
-  margin: 4px 0;
-  color: #64748b;
-  font-size: 9.5px;
-  letter-spacing: 1.5px;
-  font-weight: 700;
-}
-
-.auth-divider::before,
-.auth-divider::after {
-  content: '';
-  flex: 1;
-  border-bottom: 1px solid rgba(245, 207, 114, 0.15);
-}
-
-.auth-divider span {
-  padding: 0 10px;
-}
-
-/* Demo Button */
-.btn-auth-demo {
-  height: 38px;
-  width: 100%;
-  background: rgba(14, 40, 68, 0.7);
-  border: 1px solid rgba(245, 207, 114, 0.25);
-  border-radius: 8px;
-  color: #cbd5e1;
-  font-size: 11.5px;
-  font-weight: 600;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  transition: background 0.15s, border-color 0.15s, color 0.15s;
-}
-
-.btn-auth-demo:hover:not(:disabled) {
-  background: rgba(20, 56, 94, 0.85);
-  border-color: #f5cf72;
-  color: #ffffff;
-}
-
-.demo-badge {
-  background: #f5cf72;
-  color: #04182d;
-  font-size: 9px;
-  font-weight: 800;
-  padding: 2px 6px;
-  border-radius: 4px;
 }
 
 /* Card Bottom Footer */
