@@ -529,6 +529,17 @@ export default {
     }
   },
   mounted() {
+    if (typeof window !== 'undefined') {
+      if ('scrollRestoration' in window.history) {
+        window.history.scrollRestoration = 'manual';
+      }
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      requestAnimationFrame(() => {
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+        const navEl = document.querySelector('.sidebar nav');
+        if (navEl) navEl.scrollTop = 0;
+      });
+    }
     this.updateClock();
     this.timeInterval = setInterval(this.updateClock, 30000);
     this.clickOutsideHandler = (e) => {
@@ -649,8 +660,7 @@ export default {
 
 <style scoped>
 .hushhawk-command-center {
-  display: grid !important;
-  grid-template-columns: 210px minmax(0, 1fr) !important;
+  display: block !important;
   width: 100% !important;
   min-width: 0 !important;
   background: #04182d;
@@ -658,6 +668,7 @@ export default {
   font-family: 'Plus Jakarta Sans', Arial, sans-serif;
   line-height: 1.4;
   min-height: 100vh;
+  position: relative;
 }
 
 .hushhawk-command-center * {
@@ -679,7 +690,7 @@ export default {
   height: 100%;
 }
 
-/* Sidebar Styling */
+/* Sidebar Styling - Locked & Fixed on Viewport */
 .sidebar {
   width: 210px !important;
   min-width: 210px !important;
@@ -687,19 +698,21 @@ export default {
   background: radial-gradient(circle at 85% 0%, #075199 0%, transparent 25%),
               linear-gradient(180deg, #08274a, #041a33 80%);
   border-right: 1px solid #23568a;
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  max-height: 100vh;
-  display: flex;
-  flex-direction: column;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  bottom: 0 !important;
+  height: 100vh !important;
+  max-height: 100vh !important;
+  display: flex !important;
+  flex-direction: column !important;
   overflow: hidden !important;
-  box-sizing: border-box;
-  z-index: 50;
+  box-sizing: border-box !important;
+  z-index: 1000 !important;
 }
 
 .brand {
-  flex-shrink: 0;
+  flex-shrink: 0 !important;
   height: 182px;
   min-height: 182px;
   display: flex;
@@ -896,12 +909,14 @@ export default {
 
 /* Workspace Layout */
 .workspace {
+  margin-left: 210px !important;
+  width: calc(100% - 210px) !important;
   min-width: 0 !important;
-  flex: 1 1 0% !important;
+  min-height: 100vh;
   background: radial-gradient(ellipse at 55% 0%, #123965, #061c34 65%, #04182d);
-  display: flex;
-  flex-direction: column;
-  overflow-x: hidden;
+  display: flex !important;
+  flex-direction: column !important;
+  box-sizing: border-box !important;
 }
 
 /* Topbar */
@@ -1626,22 +1641,26 @@ export default {
 }
 
 @media (max-width: 860px) {
-  .hushhawk-command-center {
-    grid-template-columns: minmax(0, 1fr) !important;
-  }
   .sidebar {
-    display: none;
+    display: none !important;
+    left: -210px !important;
   }
   .nav-open .sidebar {
-    display: flex;
-    position: fixed;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.8);
+    display: flex !important;
+    position: fixed !important;
+    left: 0 !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    z-index: 2000 !important;
+    width: 210px !important;
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.8) !important;
+  }
+  .workspace {
+    margin-left: 0 !important;
+    width: 100% !important;
   }
   .mobile-menu {
-    display: block;
+    display: block !important;
   }
   .hero h1 {
     font-size: 24px;

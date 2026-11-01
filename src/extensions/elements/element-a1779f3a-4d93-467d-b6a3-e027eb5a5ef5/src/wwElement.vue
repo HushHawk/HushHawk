@@ -429,9 +429,20 @@ onMounted(()=>{
   tick();
   loadDashboardData();
   if (typeof window !== 'undefined') {
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-    const navEl = document.querySelector('.sidebar nav');
-    if (navEl) navEl.scrollTop = 0;
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      const navEl = document.querySelector('.sidebar nav');
+      if (navEl) navEl.scrollTop = 0;
+    });
+    setTimeout(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      const navEl = document.querySelector('.sidebar nav');
+      if (navEl) navEl.scrollTop = 0;
+    }, 150);
   }
   timer=setInterval(tick,30000);
   clickOutsideHandler=(e)=>{
@@ -462,6 +473,11 @@ const doc=wwLib.getFrontDocument(),host=marketHost.value;if(!host)return;
 const widget=doc.createElement('div');widget.className='tradingview-widget-container__widget';host.appendChild(widget);
 const script=doc.createElement('script');script.type='text/javascript';script.src='https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js';script.async=true;
 script.textContent=JSON.stringify({symbols:[{proName:'NASDAQ:NVDA',title:'NVIDIA'},{proName:'NASDAQ:AAPL',title:'Apple'},{proName:'NASDAQ:MSFT',title:'Microsoft'},{proName:'NASDAQ:TSLA',title:'Tesla'},{proName:'AMEX:SPY',title:'S&P 500 ETF'},{proName:'AMEX:VNQ',title:'Real Estate ETF'},{proName:'BITSTAMP:BTCUSD',title:'Bitcoin'}],colorTheme:'dark',locale:'en',isTransparent:true,showSymbolLogo:true,displayMode:'adaptive'});
+script.onload=()=>{
+  if (typeof window !== 'undefined') {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }
+};
 script.onerror=()=>marketError.value=true;host.appendChild(script);
 marketTimer=setTimeout(()=>{if(!host.querySelector('iframe'))marketError.value=true;},15000);
 });
@@ -478,8 +494,7 @@ return{icons,uid,feedMode,isEditing,heroStyle,metrics,query,zip,checked,tasks,im
 </script>
 <style scoped>
 .hushhawk-command-center {
-  display: grid !important;
-  grid-template-columns: 210px minmax(0, 1fr) !important;
+  display: block !important;
   width: 100% !important;
   min-width: 0 !important;
   background: #04182d;
@@ -487,6 +502,7 @@ return{icons,uid,feedMode,isEditing,heroStyle,metrics,query,zip,checked,tasks,im
   font-family: 'Plus Jakarta Sans', Arial, sans-serif;
   line-height: 1.4;
   min-height: 100vh;
+  position: relative;
 }
 
 .hushhawk-command-center * {
@@ -508,7 +524,7 @@ return{icons,uid,feedMode,isEditing,heroStyle,metrics,query,zip,checked,tasks,im
   height: 100%;
 }
 
-/* Sidebar Styling */
+/* Sidebar Styling - Locked & Fixed on Viewport */
 .sidebar {
   width: 210px !important;
   min-width: 210px !important;
@@ -516,19 +532,21 @@ return{icons,uid,feedMode,isEditing,heroStyle,metrics,query,zip,checked,tasks,im
   background: radial-gradient(circle at 85% 0%, #075199 0%, transparent 25%),
               linear-gradient(180deg, #08274a, #041a33 80%);
   border-right: 1px solid #23568a;
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  max-height: 100vh;
-  display: flex;
-  flex-direction: column;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  bottom: 0 !important;
+  height: 100vh !important;
+  max-height: 100vh !important;
+  display: flex !important;
+  flex-direction: column !important;
   overflow: hidden !important;
-  box-sizing: border-box;
-  z-index: 50;
+  box-sizing: border-box !important;
+  z-index: 1000 !important;
 }
 
 .brand {
-  flex-shrink: 0;
+  flex-shrink: 0 !important;
   height: 182px;
   min-height: 182px;
   display: flex;
@@ -724,12 +742,14 @@ return{icons,uid,feedMode,isEditing,heroStyle,metrics,query,zip,checked,tasks,im
 }
 
 .workspace {
+  margin-left: 210px !important;
+  width: calc(100% - 210px) !important;
   min-width: 0 !important;
-  flex: 1 1 0% !important;
+  min-height: 100vh;
   background: radial-gradient(ellipse at 55% 0%, #123965, #061c34 65%, #04182d);
-  display: flex;
-  flex-direction: column;
-  overflow-x: hidden;
+  display: flex !important;
+  flex-direction: column !important;
+  box-sizing: border-box !important;
 }
 
 .mobile-menu {
@@ -741,22 +761,25 @@ return{icons,uid,feedMode,isEditing,heroStyle,metrics,query,zip,checked,tasks,im
 }
 
 @media (max-width: 860px) {
-  .hushhawk-command-center {
-    grid-template-columns: minmax(0, 1fr) !important;
-  }
   .sidebar {
-    display: none;
+    display: none !important;
+    left: -210px !important;
   }
   .nav-open .sidebar {
-    display: flex;
-    position: fixed;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.8);
+    display: flex !important;
+    position: fixed !important;
+    left: 0 !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    z-index: 2000 !important;
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.8) !important;
+  }
+  .workspace {
+    margin-left: 0 !important;
+    width: 100% !important;
   }
   .mobile-menu {
-    display: block;
+    display: block !important;
   }
 }
 
