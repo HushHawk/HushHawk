@@ -244,6 +244,30 @@
                 <span class="auth-chip-secure">SSL Encrypted</span>
               </div>
 
+              <!-- Authorized Preset Credentials Chips -->
+              <div class="auth-presets-panel">
+                <div class="presets-header">
+                  <span class="presets-title">AUTHORIZED TERMINAL CREDENTIALS</span>
+                  <span class="presets-hint">Click to autofill</span>
+                </div>
+                <div class="presets-grid">
+                  <button
+                    type="button"
+                    v-for="cred in authorizedCredentials"
+                    :key="cred.email"
+                    class="preset-chip"
+                    :class="{ 'is-selected': email === cred.email }"
+                    @click="applyCredential(cred)"
+                  >
+                    <div class="preset-chip-top">
+                      <span class="preset-badge">{{ cred.badge }}</span>
+                      <span class="preset-role">{{ cred.roleTitle }}</span>
+                    </div>
+                    <span class="preset-email">{{ cred.email }}</span>
+                  </button>
+                </div>
+              </div>
+
               <!-- Submit Button -->
               <button type="submit" class="btn-auth-gold" :disabled="isLoading">
                 <span v-if="isLoading" class="auth-spinner"></span>
@@ -322,18 +346,51 @@ export default {
       isLoading: false,
       errorMessage: '',
       currentTime: '09:42 AM',
-      clockTimer: null
+      clockTimer: null,
+      authorizedCredentials: [
+        {
+          badge: '👑 ADMIN',
+          roleTitle: 'Executive Admin',
+          name: 'Sarah Connor',
+          email: 'admin@hushhawk.com',
+          password: 'HushHawk2026!Master',
+          role: 'Managing Partner & Executive Director'
+        },
+        {
+          badge: '🦅 ACQUISITIONS',
+          roleTitle: 'Acquisitions Director',
+          name: 'Dejon Ellis',
+          email: 'dejon@hushhawk.com',
+          password: 'JacksonvilleCapital2026!',
+          role: 'Managing Partner & Head of Capital'
+        },
+        {
+          badge: '⚡ DISPO',
+          roleTitle: 'Dispositions Lead',
+          name: 'Marcus Vance',
+          email: 'dispo@hushhawk.com',
+          password: 'DispoDesk2026!Secure',
+          role: 'Dispositions & Buyer Desk Director'
+        }
+      ]
     };
   },
   mounted() {
     this.updateClock();
     this.clockTimer = setInterval(this.updateClock, 1000);
 
-    // Pre-populate if saved in localStorage
+    // Pre-populate if saved in localStorage, or default to Dejon Ellis
     if (typeof window !== 'undefined' && window.localStorage) {
       const savedEmail = window.localStorage.getItem('hh_remembered_email');
       if (savedEmail) {
         this.email = savedEmail;
+        const found = this.authorizedCredentials.find(c => c.email.toLowerCase() === savedEmail.toLowerCase());
+        if (found) {
+          this.password = found.password;
+        }
+      } else {
+        // Auto-select Acquisitions Director by default
+        this.applyCredential(this.authorizedCredentials[1]);
       }
     }
   },
@@ -350,6 +407,11 @@ export default {
         hour12: true
       });
     },
+    applyCredential(cred) {
+      this.email = cred.email;
+      this.password = cred.password;
+      this.errorMessage = '';
+    },
     async handleLogin() {
       if (!this.email || !this.password) {
         this.errorMessage = 'Please provide your authorized terminal email and password.';
@@ -358,6 +420,35 @@ export default {
 
       this.isLoading = true;
       this.errorMessage = '';
+
+      const inputEmail = this.email.trim().toLowerCase();
+      const inputPass = this.password.trim();
+
+      // Check against predefined authorized credentials
+      const matched = this.authorizedCredentials.find(c => c.email.toLowerCase() === inputEmail);
+      if (matched && matched.password !== inputPass) {
+        this.errorMessage = `Incorrect access key for ${matched.email}. Please verify credentials.`;
+        this.isLoading = false;
+        return;
+      }
+
+      if (!matched && inputPass.length < 6) {
+        this.errorMessage = 'Terminal password must be at least 6 characters.';
+        this.isLoading = false;
+        return;
+      }
+
+      const activeUser = matched ? {
+        name: matched.name,
+        email: matched.email,
+        role: matched.role,
+        authenticatedAt: new Date().toISOString()
+      } : {
+        name: this.email.split('@')[0].toUpperCase(),
+        email: this.email,
+        role: 'Authorized Command Operator',
+        authenticatedAt: new Date().toISOString()
+      };
 
       try {
         // Ping backend auth session
@@ -372,14 +463,7 @@ export default {
             window.localStorage.removeItem('hh_remembered_email');
           }
 
-          // Store session
-          const sessionUser = {
-            name: this.email.includes('dejon') ? 'Dejon Ellis' : 'Acquisitions Officer',
-            email: this.email,
-            role: 'Managing Partner & Head of Capital',
-            authenticatedAt: new Date().toISOString()
-          };
-          window.sessionStorage.setItem('hushhawk_session', JSON.stringify(sessionUser));
+          window.sessionStorage.setItem('hushhawk_session', JSON.stringify(activeUser));
           window.localStorage.setItem('hushhawk_auth_token', data?.session?.token || 'hh_live_' + Date.now());
 
           // Seamless SPA navigation to Dashboard
@@ -393,13 +477,8 @@ export default {
         }
       } catch (err) {
         console.warn('[Login Error]', err);
-        // Fallback smooth entry into command center
         if (typeof window !== 'undefined') {
-          window.sessionStorage.setItem('hushhawk_session', JSON.stringify({
-            name: 'Dejon Ellis',
-            email: this.email,
-            role: 'Acquisitions Command'
-          }));
+          window.sessionStorage.setItem('hushhawk_session', JSON.stringify(activeUser));
           if (window.wwLib?.wwApp?.goTo) {
             window.wwLib.wwApp.goTo('/home');
           } else {
@@ -413,8 +492,8 @@ export default {
       }
     },
     quickDemoLogin() {
-      this.email = 'dejon@hushhawk.com';
-      this.password = 'JacksonvilleCapital2026!';
+      const dejon = this.authorizedCredentials[1];
+      this.applyCredential(dejon);
       this.handleLogin();
     },
     goToForgot() {
@@ -1087,6 +1166,96 @@ export default {
   color: #38bdf8;
   border: 1px solid rgba(56, 189, 248, 0.3);
   font-weight: 600;
+}
+
+/* Authorized Presets Panel */
+.auth-presets-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(3, 16, 32, 0.7);
+  border: 1px solid rgba(245, 207, 114, 0.2);
+}
+
+.presets-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.presets-title {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  color: #f5cf72;
+}
+
+.presets-hint {
+  font-size: 9px;
+  color: #64748b;
+  font-style: italic;
+}
+
+.presets-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.preset-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  padding: 6px 8px;
+  background: rgba(7, 26, 48, 0.7);
+  border: 1px solid #1a4369;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s ease;
+}
+
+.preset-chip:hover {
+  background: rgba(14, 45, 78, 0.85);
+  border-color: #f5cf72;
+  transform: translateY(-1px);
+}
+
+.preset-chip.is-selected {
+  background: rgba(245, 207, 114, 0.12);
+  border-color: #f5cf72;
+  box-shadow: 0 0 10px rgba(245, 207, 114, 0.2);
+}
+
+.preset-chip-top {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+}
+
+.preset-badge {
+  font-size: 8px;
+  font-weight: 800;
+  color: #f5cf72;
+  white-space: nowrap;
+}
+
+.preset-role {
+  display: none;
+}
+
+.preset-email {
+  font-size: 9.5px;
+  color: #cbd5e1;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
 }
 
 /* Buttons */
