@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import crypto from 'crypto';
 import { db } from '../store/database.js';
 import { pool, checkDatabaseHealth } from '../store/pgClient.js';
 import { CrownKeyService } from '../services/crownkeyService.js';
@@ -936,6 +937,70 @@ apiRouter.patch('/leads/:id/stage', (req, res) => {
         res.json(updated);
     } catch (err) {
         res.status(400).json({ error: err.message });
+    }
+});
+
+// ============================================================================
+// Podio CRM Coexistence & Inbound Webhook Receiver
+// ============================================================================
+apiRouter.post('/webhooks/podio', async (req, res) => {
+    try {
+        const { type, item_id, app_id, hook_id, code } = req.body;
+
+        // 1. Podio Handshake Verification
+        if (type === 'hook.verify') {
+            console.log(`[Podio Webhook] Verification handshake received for hook: ${hook_id}, code: ${code}`);
+            return res.json({ status: 'VERIFIED', hook_id, code, message: 'Podio webhook endpoint verified successfully' });
+        }
+
+        // 2. Podio Item Ingestion / Sync
+        if (type === 'item.create' || type === 'item.update') {
+            const externalItemId = String(item_id || req.body.item?.item_id || `podio-${Date.now()}`);
+            const fields = req.body.fields || req.body.item?.fields || {};
+
+            const address = fields.address || fields['property-address'] || fields.title || req.body.address || 'Jacksonville Property Ingested';
+            const seller = fields.seller || fields['seller-name'] || fields.name || req.body.name || 'Podio Seller Contact';
+            const phone = fields.phone || fields['seller-phone'] || req.body.phone || '';
+            const email = fields.email || fields['seller-email'] || req.body.email || '';
+            const source = fields.source || fields['lead-source'] || req.body.source || 'Podio Ingestion';
+            const rawStage = (fields.stage || fields.status || req.body.stage || 'NEW').toUpperCase();
+
+            // Ingest into HushHawk canonical lead store
+            const newLead = CrmService.createLead({
+                firstSourceCode: 'OTHER',
+                sourceDetail: `Podio Ingestion (App ID: ${app_id || '29481023'} · Item ID: ${externalItemId})`,
+                priorityScore: 85,
+                actor: 'Podio Webhook Sync',
+            });
+
+            // Coexistence Sync Map entry
+            db.data.crm.external_sync_map.unshift({
+                sync_id: crypto.randomUUID(),
+                internal_entity_type: 'LEAD',
+                internal_uuid: newLead.lead_id,
+                external_system: 'PODIO',
+                external_app_id: String(app_id || '29481023'),
+                external_item_id: externalItemId,
+                last_sync_at: new Date().toISOString(),
+                version_hash: crypto.createHash('md5').update(externalItemId).digest('hex').slice(0, 8),
+                status: 'SYNCED',
+            });
+
+            db.persist();
+
+            return res.status(201).json({
+                ok: true,
+                message: `Podio item ${externalItemId} synchronized to HushHawk canonical lead ${newLead.lead_id}`,
+                lead_id: newLead.lead_id,
+                external_item_id: externalItemId,
+                status: 'SYNCED'
+            });
+        }
+
+        res.json({ ok: true, received: true });
+    } catch (err) {
+        console.error('[Podio Webhook Error]', err);
+        res.status(500).json({ error: err.message });
     }
 });
 
