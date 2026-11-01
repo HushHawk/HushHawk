@@ -1,8 +1,8 @@
 <template>
 <section class="seller-app" :class="{'nav-open':navOpen}">
  <aside class="sidebar">
-  <a href="/home" class="brand" @click="guard"><span class="brand-icon" v-html="icons.logo"></span><strong>HUSHHAWK<br>INTELLIGENCE</strong><small>PEOPLE • PROPERTIES • PROSPERITY</small></a>
-  <nav aria-label="HushHawk navigation"><a v-for="(item,i) in navigation.slice(0,11)" :key="item.path" :href="item.path" :class="{active:item.name==='Seller Leads'}" @click="guard"><span class="icon" v-html="icons[item.icon] || icons.house"></span>{{item.name}}</a><details class="more-workspaces" open><summary>More Workspaces</summary><a v-for="item in navigation.slice(11)" :key="item.path" :href="item.path" :class="{active:item.name==='Seller Leads'}" @click="guard"><span class="icon" v-html="icons[item.icon] || icons.file"></span>{{item.name}}</a></details></nav>
+  <a href="/home" class="brand" @click="handleNav('/home', $event)"><span class="brand-icon" v-html="icons.logo"></span><strong>HUSHHAWK<br>INTELLIGENCE</strong><small>PEOPLE • PROPERTIES • PROSPERITY</small></a>
+  <nav aria-label="HushHawk navigation"><a v-for="(item,i) in navigation.slice(0,11)" :key="item.path" :href="item.path" :class="{active:item.name==='Seller Leads'}" @click="handleNav(item.path, $event)"><span class="icon" v-html="icons[item.icon] || icons.house"></span>{{item.name}}</a><details class="more-workspaces" open><summary>More Workspaces</summary><a v-for="item in navigation.slice(11)" :key="item.path" :href="item.path" :class="{active:item.name==='Seller Leads'}" @click="handleNav(item.path, $event)"><span class="icon" v-html="icons[item.icon] || icons.file"></span>{{item.name}}</a></details></nav>
   <div class="brand-bottom"><p>“REAL ESTATE<br>CREATES FREEDOM.”</p><span>HUSHHAWK • BUILT TO CLOSE</span><small>HushHawk Property Intelligence</small></div>
  </aside>
  <main class="workspace">
@@ -271,6 +271,24 @@ const donutGradient=computed(()=>{if(!sourceChart.value.length)return'#243a51';l
 const heroStyle=computed(()=>({backgroundImage:'linear-gradient(90deg,#051a33 0%,#051a33e6 30%,#051a3310 68%,#051a3355),url("'+(props.content?.skyline||'')+'")'}));
 const allChecked=computed(()=>filtered.value.length>0&&filtered.value.every(r=>checked.value.includes(r.id)));
 function guard(e){if(isEditing.value)e.preventDefault();}
+function handleNav(path, e) {
+  if (isEditing.value) {
+    if (e) e.preventDefault();
+    return;
+  }
+  isQuickAddOpen.value = false;
+  navOpen.value = false;
+  if (path === '/seller-leads' || (typeof window !== 'undefined' && path === window.location.pathname)) {
+    if (e) e.preventDefault();
+    return;
+  }
+  if (e) e.preventDefault();
+  if (typeof window !== 'undefined' && window.wwLib?.wwApp?.goTo) {
+    window.wwLib.wwApp.goTo(path);
+  } else if (typeof window !== 'undefined') {
+    window.location.href = path;
+  }
+}
 function resetFilters(){if(isEditing.value)return;query.value='';stage.value='all';statusFilter.value='';sourceFilter.value='';zipFilter.value='';}
 function setMode(v){if(isEditing.value)return;mode.value=v;checked.value=[];resetFilters();}
 function setStage(v){if(isEditing.value)return;stage.value=v;statusFilter.value='';}
@@ -306,7 +324,7 @@ function addPreview(){if(isEditing.value||!newLead.name.trim()||!newLead.address
 function addTag(){if(!selected.value||!tagDraft.value.trim())return;if(!selected.value.tags)selected.value.tags=[];if(!selected.value.tags.includes(tagDraft.value.trim()))selected.value.tags.push(tagDraft.value.trim());const r=previewRows.value.find(r=>r.id===selectedId.value);if(r&&!r.tags.includes(tagDraft.value.trim()))r.tags.push(tagDraft.value.trim());closeModal();}
 function keepEmail(){if(isEditing.value)return;drafts['email-'+selectedId.value]={subject:emailSubject.value,body:emailDraft.value};emailNotice.value='Draft kept on this page · not sent';}
 function keepOffer(){if(isEditing.value||offerMAO.value==null)return;drafts['offer-'+selectedId.value]={...offerValues,mao:offerMAO.value};offerNotice.value='Worksheet kept on this page · no offer sent';}
-return{uid,isEditing,icons,navigation,navOpen,heroStyle,mode,metrics,tabs,columns,statuses,query,stage,statusFilter,sourceFilter,zipFilter,sortKey,sortAscending,extraFilters,checked,filtered,selected,selectedIndex,photoUrl,photoFailed,availableSources,sourceChart,donutGradient,allChecked,number,money,dateLabel,statusClass,initials,guard,resetFilters,setMode,setStage,metricAction,sortBy,selectLead,stepLead,toggleRow,toggleAll,changeStatus,onZip,chooseSource,firstName,messages,smsInput,smsDraft,draftNotice,focusDraft,keepDraft,modal,modalTitle,modalBox,closeButton,openModal,closeModal,modalKeys,newLead,addPreview,sourceNames,tagDraft,addTag,emailSubject,emailDraft,emailNotice,keepEmail,offerValues,offerMAO,offerNotice,keepOffer,rows,isQuickAddOpen,isNotifOpen,currentTime,notifications};
+return{uid,isEditing,icons,navigation,navOpen,heroStyle,mode,metrics,tabs,columns,statuses,query,stage,statusFilter,sourceFilter,zipFilter,sortKey,sortAscending,extraFilters,checked,filtered,selected,selectedIndex,photoUrl,photoFailed,availableSources,sourceChart,donutGradient,allChecked,number,money,dateLabel,statusClass,initials,guard,handleNav,resetFilters,setMode,setStage,metricAction,sortBy,selectLead,stepLead,toggleRow,toggleAll,changeStatus,onZip,chooseSource,firstName,messages,smsInput,smsDraft,draftNotice,focusDraft,keepDraft,modal,modalTitle,modalBox,closeButton,openModal,closeModal,modalKeys,newLead,addPreview,sourceNames,tagDraft,addTag,emailSubject,emailDraft,emailNotice,keepEmail,offerValues,offerMAO,offerNotice,keepOffer,rows,isQuickAddOpen,isNotifOpen,currentTime,notifications};
 }};
 </script>
 <style scoped>

@@ -1,8 +1,8 @@
 <template>
 <section class="acq-app" :class="{'nav-open':navOpen}">
  <aside class="sidebar">
-  <a href="/home" class="brand" @click="guard"><span class="brand-icon" v-html="icons.logo"></span><strong>HUSHHAWK<br>INTELLIGENCE</strong><small>PEOPLE • PROPERTIES • PROSPERITY</small></a>
-  <nav aria-label="HushHawk navigation"><a v-for="(item,i) in navigation.slice(0,13)" :key="item.path" :href="item.path" :class="{active:item.name==='Acquisitions',secondary:i>12}" @click="guard"><span class="icon" v-html="icons[item.icon]"></span>{{item.name}}</a><details class="more-workspaces" open><summary>More workspaces</summary><a v-for="item in navigation.slice(13)" :key="item.path" :href="item.path" @click="guard"><span class="icon" v-html="icons[item.icon]"></span>{{item.name}}</a><a href="/deal-analyzer" @click="guard"><span class="icon" v-html="icons.chart"></span>Deal Analyzer</a></details></nav>
+  <a href="/home" class="brand" @click="handleNav('/home', $event)"><span class="brand-icon" v-html="icons.logo"></span><strong>HUSHHAWK<br>INTELLIGENCE</strong><small>PEOPLE • PROPERTIES • PROSPERITY</small></a>
+  <nav aria-label="HushHawk navigation"><a v-for="(item,i) in navigation.slice(0,13)" :key="item.path" :href="item.path" :class="{active:item.name==='Acquisitions',secondary:i>12}" @click="handleNav(item.path, $event)"><span class="icon" v-html="icons[item.icon] || icons.house"></span>{{item.name}}</a><details class="more-workspaces" open><summary>More workspaces</summary><a v-for="item in navigation.slice(13)" :key="item.path" :href="item.path" @click="handleNav(item.path, $event)"><span class="icon" v-html="icons[item.icon] || icons.file"></span>{{item.name}}</a><a href="/deal-analyzer" @click="handleNav('/deal-analyzer', $event)"><span class="icon" v-html="icons.chart"></span>Deal Analyzer</a></details></nav>
   <div class="brand-bottom"><p>“REAL ESTATE<br>CREATES FREEDOM.”</p><span>HUSHHAWK • BUILT TO CLOSE</span><small>HushHawk Property Intelligence</small></div>
  </aside>
  <main class="workspace">
@@ -270,6 +270,24 @@ export default {
  const photo=d=>props.content?.['photo'+(d.photo+1)]||props.content?.photo1||'';
  const money=v=>v==null?'—':new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0}).format(v);
  function guard(e){if(isEditing.value)e.preventDefault();}
+ function handleNav(path, e) {
+  if (isEditing.value) {
+    if (e) e.preventDefault();
+    return;
+  }
+  isQuickAddOpen.value = false;
+  navOpen.value = false;
+  if (path === '/acquisitions' || (typeof window !== 'undefined' && path === window.location.pathname)) {
+    if (e) e.preventDefault();
+    return;
+  }
+  if (e) e.preventDefault();
+  if (typeof window !== 'undefined' && window.wwLib?.wwApp?.goTo) {
+    window.wwLib.wwApp.goTo(path);
+  } else if (typeof window !== 'undefined') {
+    window.location.href = path;
+  }
+ }
  function imageFailed(e){e.target.style.visibility='hidden';}
  function shortStage(i){return ['New Lead','Calling','Contacted','Qualified','Appt Set','Offer Sent','Under Contract','Closed'][i];}
  function stageCount(i){return (deals.value||[]).filter(d=>d.stage===i).length;}
@@ -301,7 +319,7 @@ export default {
  function closeDialog(){dialog.value='';previousFocus?.focus?.();}
  function dialogKeys(e){if(e.key==='Escape'){e.preventDefault();closeDialog();}if(e.key==='Tab'){const nodes=Array.from(dialogEl.value?.querySelectorAll('button,a[href],input,select,textarea,[tabindex="0"]')||[]).filter(n=>!n.disabled);const first=nodes[0],last=nodes[nodes.length-1],active=wwLib.getFrontDocument()?.activeElement;if(e.shiftKey&&(active===first||active===dialogEl.value)){e.preventDefault();last?.focus();}else if(!e.shiftKey&&(active===last||active===dialogEl.value)){e.preventDefault();first?.focus();}}}
  function addDeal(){if(isEditing.value||!newAddress.value.trim()||!/^\d{5}$/.test(newZip.value))return;const d={...samples[0],id:'preview-'+Date.now(),address:newAddress.value.trim(),zip:newZip.value,owner:'Owner not entered',phone:'—',email:'—',arv:null,repairs:null,mao:null,fee:null,note:'',agent:'Elite Team',completed:false};deals.value.push(d);query.value='';selectedId.value=d.id;newAddress.value='';closeDialog();}
- return {icons,isEditing,navigation,stages,navOpen,query,selected,visible,heroStyle,metrics,activities,tabs,tab,draft,note,notice,dialog,dialogEl,dialogTitle,newAddress,newZip,dragged,photo,money,guard,imageFailed,shortStage,stageCount,clearSearch,selectDeal,closeDetail,startDrag,dropDeal,moveDeal,completeTask,setTab,saveDraft,saveNote,openDialog,closeDialog,dialogKeys,addDeal,isQuickAddOpen,isNotifOpen,currentTime,notifications};
+ return {icons,isEditing,navigation,stages,navOpen,query,selected,visible,heroStyle,metrics,activities,tabs,tab,draft,note,notice,dialog,dialogEl,dialogTitle,newAddress,newZip,dragged,photo,money,guard,handleNav,imageFailed,shortStage,stageCount,clearSearch,selectDeal,closeDetail,startDrag,dropDeal,moveDeal,completeTask,setTab,saveDraft,saveNote,openDialog,closeDialog,dialogKeys,addDeal,isQuickAddOpen,isNotifOpen,currentTime,notifications};
  }
 };
 </script>
