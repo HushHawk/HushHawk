@@ -2,19 +2,22 @@
     <wwPageLoadProgress />
      <div :ww-page-id="page.id" class="website-wrapper">
         <!-- __WW_PAGE_MADE_WITH_WEWEB__ -->
-        <div v-if="page && page.pageLoaded" class="sections-wrapper">
-            <template v-for="(section, index) in sections" :key="section.uid">
-                 <!-- wwFront:start -->
-                <div class="placeholder-section" :data-placeholder-section-uid="section.uid"></div>
-                <!-- wwFront:end -->
-                <wwSection
-                    :uid="section.uid"
-                    :section-index="index"
-                    :index="index"
-                    :ww-responsive="`ww-section-${index}`"
-                />
-            </template>
-          </div>
+        <transition name="hushhawk-page-fade" mode="out-in">
+            <div v-if="page && page.pageLoaded" key="loaded" class="sections-wrapper">
+                <template v-for="(section, index) in sections" :key="section.uid">
+                     <!-- wwFront:start -->
+                    <div class="placeholder-section" :data-placeholder-section-uid="section.uid"></div>
+                    <!-- wwFront:end -->
+                    <wwSection
+                        :uid="section.uid"
+                        :section-index="index"
+                        :index="index"
+                        :ww-responsive="`ww-section-${index}`"
+                    />
+                </template>
+            </div>
+            <HushHawkSkeleton v-else key="skeleton" />
+        </transition>
          <!-- POPUPS -->
         <transition name="ww-front-popups" tag="div">
             <wwLinkPopup
@@ -35,6 +38,7 @@
 import { computed, ref } from 'vue';
 import { mapGetters, useStore } from 'vuex';
 import wwPageLoadProgress from '@/_front/components/wwPageLoadProgress.vue';
+import HushHawkSkeleton from '@/_front/components/HushHawkSkeleton.vue';
 import { getBackgroundStyle } from '@/_front/helpers/wwBackgroungStyle.js';
 import { usePopupStore } from '@/pinia/popup.js';
 import wwFrontPopup from '@/_front/components/wwFrontPopup.vue';
@@ -48,6 +52,7 @@ import { useHead } from '@unhead/vue';
 export default {
     components: {
         wwPageLoadProgress,
+        HushHawkSkeleton,
         wwFrontPopup,
      },
     setup() {
@@ -218,6 +223,15 @@ export default {
     .ww-front-popups-leave-to {
         opacity: 0;
         transform: scale(0.95);
+    }
+
+    .hushhawk-page-fade-enter-active,
+    .hushhawk-page-fade-leave-active {
+        transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .hushhawk-page-fade-enter-from,
+    .hushhawk-page-fade-leave-to {
+        opacity: 0;
     }
 }
 
