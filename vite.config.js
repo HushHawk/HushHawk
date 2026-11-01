@@ -64,14 +64,30 @@ function devAuthPlugin() {
         name: 'dev-auth-plugin',
         configureServer(server) {
             server.middlewares.use((req, res, next) => {
-                if (req.url && (req.url === '/api/auth/get-session' || req.url.startsWith('/api/auth/get-session?'))) {
+                if (req.url && (
+                    req.url === '/api/auth' || 
+                    req.url.startsWith('/api/auth?') || 
+                    req.url === '/api/auth/get-session' || 
+                    req.url.startsWith('/api/auth/get-session?') ||
+                    req.url === '/api/auth/session' ||
+                    req.url.startsWith('/api/auth/session?')
+                )) {
                     res.setHeader('Content-Type', 'application/json');
                     res.end(JSON.stringify({
+                        session: {
+                            token: 'hh_token_live_' + Date.now(),
+                            user: {
+                                id: 'u-admin-1',
+                                name: 'Dejon Ellis',
+                                email: 'dejon@hushhawk.com',
+                                role: 'Managing Partner & Head of Capital',
+                            }
+                        },
                         user: {
                             id: 'u-admin-1',
-                            name: 'HushHawk Acquisitions Admin',
-                            email: 'admin@hushhawk.com',
-                            role: 'admin',
+                            name: 'Dejon Ellis',
+                            email: 'dejon@hushhawk.com',
+                            role: 'Managing Partner & Head of Capital',
                         },
                         authenticated: true,
                     }));
@@ -136,12 +152,28 @@ export default defineConfig(({ mode, isSsrBuild }) => {
             port: 8080,
             proxy: {
                 '/api': {
-                    target: 'http://localhost:3001',
+                    target: process.env.BACKEND_URL || 'http://3.148.218.118',
                     changeOrigin: true,
+                    configure: (proxy) => {
+                        proxy.on('error', (err, _req, res) => {
+                            if (!res.headersSent) {
+                                res.writeHead(502, { 'Content-Type': 'application/json' });
+                                res.end(JSON.stringify({ error: 'Backend proxy error', message: err.message }));
+                            }
+                        });
+                    },
                 },
                 '^/ww/': {
-                    target: 'http://localhost:3001',
+                    target: process.env.BACKEND_URL || 'http://3.148.218.118',
                     changeOrigin: true,
+                    configure: (proxy) => {
+                        proxy.on('error', (err, _req, res) => {
+                            if (!res.headersSent) {
+                                res.writeHead(502, { 'Content-Type': 'application/json' });
+                                res.end(JSON.stringify({ error: 'Backend proxy error', message: err.message }));
+                            }
+                        });
+                    },
                 },
             },
         },
