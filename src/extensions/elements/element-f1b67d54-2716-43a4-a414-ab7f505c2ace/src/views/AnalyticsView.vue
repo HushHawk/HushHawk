@@ -61,13 +61,13 @@
               <span class="step-name">{{ stage.name }}</span>
               <div class="step-stats">
                 <strong class="step-count">{{ stage.count }}</strong>
-                <span class="step-pct" v-if="idx > 0">({{ Math.round((stage.count / funnelStages[idx - 1].count) * 100) }}% pass)</span>
+                <span class="step-pct" v-if="idx > 0">({{ funnelStages[idx - 1]?.count ? Math.round((stage.count / funnelStages[idx - 1].count) * 100) : 0 }}% pass)</span>
               </div>
             </div>
             <div class="progress-bar-bg">
               <div
                 class="progress-bar-fill"
-                :style="{ width: (stage.count / funnelStages[0].count * 100) + '%', backgroundColor: stage.color }"
+                :style="{ width: (funnelStages[0]?.count ? (stage.count / funnelStages[0].count * 100) : 0) + '%', backgroundColor: stage.color }"
               ></div>
             </div>
           </div>
