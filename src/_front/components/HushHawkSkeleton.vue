@@ -51,7 +51,7 @@
 
       <!-- KPI Metrics Strip -->
       <div class="hh-skel-metrics">
-        <div v-for="m in 6" :key="'m-' + m" class="hh-skel-kpi-card">
+        <div v-for="m in 10" :key="'m-' + m" class="hh-skel-kpi-card">
           <div class="hh-skel-kpi-top">
             <div class="hh-skel-kpi-icon hh-shimmer"></div>
             <div class="hh-skel-kpi-pill hh-shimmer"></div>
@@ -340,8 +340,14 @@ export default {
 /* Metrics Row */
 .hh-skel-metrics {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 12px;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+}
+
+@media (max-width: 768px) {
+  .hh-skel-metrics {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 .hh-skel-kpi-card {
