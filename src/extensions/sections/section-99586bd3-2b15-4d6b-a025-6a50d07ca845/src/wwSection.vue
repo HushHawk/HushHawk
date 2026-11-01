@@ -1,5 +1,6 @@
 <template>
-  <div class="hushhawk-auth-wrapper">
+  <!-- 1. AUTHENTICATION GATEWAY (When unauthenticated or on /login) -->
+  <div v-if="showLoginUI" class="hushhawk-auth-wrapper">
     <!-- Atmospheric Skyline Background & Cinematic Overlays -->
     <div class="auth-bg-image"></div>
     <div class="auth-bg-gradient-overlay"></div>
@@ -317,6 +318,9 @@
       </div>
     </main>
   </div>
+
+  <!-- 2. HUSHHAWK INTELLIGENCE COMMAND CENTER / ADMIN PANEL (When authenticated) -->
+  <wwLayout v-else path="wwObjects" class="section-base"></wwLayout>
 </template>
 
 <script>
@@ -326,7 +330,16 @@ export default {
     content: { type: Object, default: () => ({}) }
   },
   data() {
+    let hasSession = false;
+    if (typeof window !== 'undefined') {
+      hasSession = !!(
+        window.sessionStorage.getItem('hushhawk_session') ||
+        window.localStorage.getItem('hushhawk_session') ||
+        window.localStorage.getItem('ww-auth-session')
+      );
+    }
     return {
+      isLoggedIn: hasSession,
       // PRE-ATTACHED MAIN ADMIN CREDENTIALS BY DEFAULT
       email: 'admin@hushhawk.com',
       password: 'admin',
@@ -364,12 +377,48 @@ export default {
       ]
     };
   },
+  computed: {
+    isLoginPage() {
+      if (typeof window === 'undefined') return false;
+      const path = (this.$route?.path || window.location.pathname || '').toLowerCase();
+      return path.includes('/login');
+    },
+    showLoginUI() {
+      // If user is on /login, show login form unless already logged in
+      if (this.isLoginPage) {
+        return !this.isLoggedIn;
+      }
+      // On all other routes (root '/', '/properties', etc.), require authentication
+      return !this.isLoggedIn;
+    }
+  },
   mounted() {
     this.updateClock();
     this.clockTimer = setInterval(this.updateClock, 1000);
 
-    // Keep Main Admin pre-attached unless explicit user session saved
-    if (typeof window !== 'undefined' && window.localStorage) {
+    if (typeof window !== 'undefined') {
+      const hasSession = !!(
+        window.sessionStorage.getItem('hushhawk_session') ||
+        window.localStorage.getItem('hushhawk_session') ||
+        window.localStorage.getItem('ww-auth-session')
+      );
+      this.isLoggedIn = hasSession;
+
+      // Global logout helper callable anytime
+      window.hushhawkLogout = () => {
+        window.sessionStorage.removeItem('hushhawk_session');
+        window.localStorage.removeItem('hushhawk_session');
+        window.localStorage.removeItem('ww-auth-session');
+        window.localStorage.removeItem('hushhawk_auth_token');
+        window.location.href = '/login';
+      };
+
+      // If user visits /login and is ALREADY authenticated, forward into dashboard
+      if (this.isLoginPage && this.isLoggedIn) {
+        window.location.href = '/';
+      }
+
+      // Keep Main Admin pre-attached unless explicit user session saved
       const savedEmail = window.localStorage.getItem('hh_remembered_email');
       if (savedEmail && savedEmail !== 'admin@hushhawk.com') {
         this.email = savedEmail;
@@ -439,21 +488,28 @@ export default {
       // Find identity or create default admin session
       const matched = this.authorizedCredentials.find(c => c.email.toLowerCase() === inputEmail);
       const activeUser = matched ? {
+        id: 'u-admin-1',
         name: matched.name,
         email: matched.email,
         role: matched.role,
         authenticatedAt: new Date().toISOString()
       } : {
+        id: 'u-admin-1',
         name: inputEmail.includes('@') ? inputEmail.split('@')[0].toUpperCase() : 'MAIN ADMIN',
         email: inputEmail,
         role: 'Authorized Command Operator',
         authenticatedAt: new Date().toISOString()
       };
 
+      const sessionObj = {
+        token: 'hh_token_live_' + Date.now(),
+        user: activeUser,
+        authenticated: true
+      };
+
       try {
-        // Authenticate with backend
-        const res = await fetch('/api/auth').catch(() => null);
-        const data = res ? await res.json().catch(() => ({})) : {};
+        // Authenticate with backend API
+        await fetch('/api/auth').catch(() => null);
 
         if (typeof window !== 'undefined') {
           if (this.rememberMe) {
@@ -461,35 +517,29 @@ export default {
           }
           window.sessionStorage.setItem('hushhawk_session', JSON.stringify(activeUser));
           window.localStorage.setItem('hushhawk_session', JSON.stringify(activeUser));
-          window.localStorage.setItem('hushhawk_auth_token', data?.session?.token || 'hh_live_' + Date.now());
+          window.localStorage.setItem('ww-auth-session', JSON.stringify(sessionObj));
+          window.localStorage.setItem('hushhawk_auth_token', sessionObj.token);
 
-          // Seamless routing to Command Center (root '/' is homePageId)
-          const navigate = () => {
-            if (window.wwLib?.wwApp?.goTo) {
-              try {
-                window.wwLib.wwApp.goTo('/');
-              } catch {
-                window.location.href = '/';
-              }
-            } else {
+          this.isLoggedIn = true;
+          this.isLoading = false;
+
+          // Seamless transition into the Command Center / Admin Panel
+          if (window.location.pathname.includes('/login')) {
+            window.location.href = '/';
+          } else {
+            // If already at '/', reload to cleanly hydrate the admin panel layout
+            setTimeout(() => {
               window.location.href = '/';
-            }
-          };
-
-          setTimeout(navigate, 250);
-
-          // Hard fallback in case SPA router does not trigger navigation
-          setTimeout(() => {
-            if (window.location.pathname.includes('/login')) {
-              window.location.href = '/';
-            }
-          }, 700);
+            }, 100);
+          }
         }
       } catch (err) {
         console.warn('[Login Notice]', err);
         if (typeof window !== 'undefined') {
           window.sessionStorage.setItem('hushhawk_session', JSON.stringify(activeUser));
           window.localStorage.setItem('hushhawk_session', JSON.stringify(activeUser));
+          window.localStorage.setItem('ww-auth-session', JSON.stringify(sessionObj));
+          this.isLoggedIn = true;
           window.location.href = '/';
         }
       } finally {
@@ -512,6 +562,12 @@ export default {
 </script>
 
 <style scoped>
+/* ================= WEWEB WORKSPACE LAYOUT ================= */
+.section-base {
+  width: 100%;
+  height: 100%;
+}
+
 /* ================= BASE WRAPPER & BACKGROUND LAYERS ================= */
 .hushhawk-auth-wrapper {
   position: relative;
