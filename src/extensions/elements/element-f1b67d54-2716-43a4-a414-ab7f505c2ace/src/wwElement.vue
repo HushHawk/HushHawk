@@ -183,12 +183,15 @@
         </div>
       </header>
 
-      <!-- Active Section View Component -->
+      <!-- Active Section View Component with Smooth Transitions -->
       <div class="workspace-content">
-        <component
-          :is="currentViewComponent"
-          :content="content"
-        />
+        <transition name="hushhawk-view-fade" mode="out-in">
+          <component
+            :is="currentViewComponent"
+            :key="activeSectionKey"
+            :content="content"
+          />
+        </transition>
       </div>
 
       <!-- Floating Toast Notification System -->
@@ -1247,6 +1250,21 @@ export default {
 .toast-slide-leave-to {
   transform: translateY(20px);
   opacity: 0;
+}
+
+.hushhawk-view-fade-enter-active,
+.hushhawk-view-fade-leave-active {
+  transition: opacity 0.15s cubic-bezier(0.4, 0, 0.2, 1), transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hushhawk-view-fade-enter-from {
+  opacity: 0;
+  transform: translateY(3px);
+}
+
+.hushhawk-view-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-3px);
 }
 
 /* Workspace View Wrapper */
