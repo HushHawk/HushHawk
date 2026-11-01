@@ -428,6 +428,11 @@ onMounted(()=>{
   };
   tick();
   loadDashboardData();
+  if (typeof window !== 'undefined') {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    const navEl = document.querySelector('.sidebar nav');
+    if (navEl) navEl.scrollTop = 0;
+  }
   timer=setInterval(tick,30000);
   clickOutsideHandler=(e)=>{
     if(!e.target.closest('.quick-add-wrap')){
@@ -517,30 +522,13 @@ return{icons,uid,feedMode,isEditing,heroStyle,metrics,query,zip,checked,tasks,im
   max-height: 100vh;
   display: flex;
   flex-direction: column;
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
-  overscroll-behavior: contain;
+  overflow: hidden !important;
   box-sizing: border-box;
   z-index: 50;
-  scrollbar-width: thin;
-  scrollbar-color: #1b4a78 transparent;
-}
-
-.sidebar::-webkit-scrollbar {
-  width: 5px;
-}
-.sidebar::-webkit-scrollbar-track {
-  background: rgba(4, 24, 45, 0.4);
-}
-.sidebar::-webkit-scrollbar-thumb {
-  background: #1b4a78;
-  border-radius: 3px;
-}
-.sidebar::-webkit-scrollbar-thumb:hover {
-  background: #f5cf72;
 }
 
 .brand {
+  flex-shrink: 0;
   height: 182px;
   min-height: 182px;
   display: flex;
@@ -579,10 +567,30 @@ return{icons,uid,feedMode,isEditing,heroStyle,metrics,query,zip,checked,tasks,im
 
 .sidebar nav {
   padding: 8px 6px;
-  flex: 1;
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  overscroll-behavior: contain;
   display: flex;
   flex-direction: column;
   gap: 2px;
+  scrollbar-width: thin;
+  scrollbar-color: #1b4a78 transparent;
+}
+
+.sidebar nav::-webkit-scrollbar {
+  width: 5px;
+}
+.sidebar nav::-webkit-scrollbar-track {
+  background: rgba(4, 24, 45, 0.4);
+}
+.sidebar nav::-webkit-scrollbar-thumb {
+  background: #1b4a78;
+  border-radius: 3px;
+}
+.sidebar nav::-webkit-scrollbar-thumb:hover {
+  background: #f5cf72;
 }
 
 .sidebar nav a {
@@ -639,6 +647,7 @@ return{icons,uid,feedMode,isEditing,heroStyle,metrics,query,zip,checked,tasks,im
 }
 
 .sidebar-logout-section {
+  flex-shrink: 0;
   padding: 8px 10px 10px;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   margin-top: auto;
@@ -686,6 +695,7 @@ return{icons,uid,feedMode,isEditing,heroStyle,metrics,query,zip,checked,tasks,im
 }
 
 .brand-bottom {
+  flex-shrink: 0;
   text-align: center;
   padding: 10px;
   color: #e4d39b;
@@ -757,7 +767,8 @@ return{icons,uid,feedMode,isEditing,heroStyle,metrics,query,zip,checked,tasks,im
 
 /* Topbar */
 .topbar {
-  position: relative;
+  position: sticky;
+  top: 0;
   z-index: 1000;
   height: 56px;
   display: flex;
