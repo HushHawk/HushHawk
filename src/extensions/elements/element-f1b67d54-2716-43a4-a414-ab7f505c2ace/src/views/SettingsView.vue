@@ -179,6 +179,40 @@
           </label>
         </div>
       </div>
+
+      <div class="settings-card security-session-card">
+        <div class="session-card-header">
+          <div>
+            <h3>Active Command Session &amp; Terminal Authentication</h3>
+            <p class="card-desc">Current authenticated administrator credentials and session token.</p>
+          </div>
+          <span class="session-badge-active">ACTIVE SESSION</span>
+        </div>
+        <div class="session-details-box">
+          <div class="session-detail-item">
+            <span class="detail-label">Current Identity:</span>
+            <strong class="detail-value text-gold">Main Administrator (Superadmin)</strong>
+          </div>
+          <div class="session-detail-item">
+            <span class="detail-label">Terminal ID:</span>
+            <code class="detail-code">admin@hushhawk.com</code>
+          </div>
+          <div class="session-detail-item">
+            <span class="detail-label">Security Protocol:</span>
+            <span class="detail-value text-emerald">256-Bit SSL/TLS • Terminal Token Locked</span>
+          </div>
+        </div>
+        <div class="session-actions">
+          <button type="button" class="btn btn-danger btn-logout-action" @click="handleLogout">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+              <polyline points="16 17 21 12 16 7"/>
+              <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+            <span>Log Out &amp; Terminate Session</span>
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- Tab 4: Team Roles & Access -->
@@ -387,6 +421,23 @@ export default {
       setTimeout(() => {
         this.toastMessage = '';
       }, 3500);
+    },
+    handleLogout() {
+      if (typeof window !== 'undefined') {
+        if (typeof window.hushhawkLogout === 'function') {
+          window.hushhawkLogout();
+          return;
+        }
+        try {
+          window.sessionStorage.removeItem('hushhawk_session');
+          window.localStorage.removeItem('hushhawk_session');
+          window.localStorage.removeItem('ww-auth-session');
+          window.localStorage.removeItem('hushhawk_auth_token');
+        } catch (e) {
+          console.error('Logout error:', e);
+        }
+        window.location.href = '/login';
+      }
     }
   }
 };
@@ -698,6 +749,98 @@ input:checked + .toggle-slider:before {
   border-radius: 50%;
   background: #4ade80;
   box-shadow: 0 0 8px #4ade80;
+}
+
+.security-session-card {
+  border: 1px solid rgba(239, 68, 68, 0.3) !important;
+  background: rgba(15, 23, 42, 0.75) !important;
+}
+
+.session-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 1rem;
+}
+
+.session-badge-active {
+  font-size: 10px;
+  font-weight: 800;
+  color: #34d399;
+  background: rgba(52, 211, 153, 0.12);
+  border: 1px solid rgba(52, 211, 153, 0.3);
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+}
+
+.session-details-box {
+  background: rgba(6, 23, 44, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 1.25rem;
+}
+
+.session-detail-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+}
+
+.detail-label {
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+.detail-value {
+  font-weight: 600;
+}
+
+.text-gold {
+  color: #f5cf72 !important;
+}
+
+.text-emerald {
+  color: #34d399 !important;
+}
+
+.detail-code {
+  font-family: monospace;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 2px 8px;
+  border-radius: 4px;
+  color: #e2e8f0;
+}
+
+.session-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-logout-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #dc2626 !important;
+  color: #ffffff !important;
+  border: 1px solid #ef4444 !important;
+  padding: 8px 16px !important;
+  border-radius: 6px !important;
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.btn-logout-action:hover {
+  background: #b91c1c !important;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.35) !important;
 }
 
 .toggle-list {
