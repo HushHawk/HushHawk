@@ -526,6 +526,13 @@ export default {
         if (typeof window !== 'undefined' && window.history && window.history.pushState) {
           window.history.pushState({ section }, '', path);
         }
+      } else {
+        if (e) e.preventDefault();
+        if (typeof window !== 'undefined' && window.wwLib?.wwApp?.goTo) {
+          window.wwLib.wwApp.goTo(path);
+        } else if (typeof window !== 'undefined') {
+          window.location.href = path;
+        }
       }
     },
     showToast(title, message, type = 'info') {

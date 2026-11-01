@@ -187,6 +187,13 @@ function handleNav(path, e) {
   navOpen.value = false;
   if (path === '/home' || (typeof window !== 'undefined' && path === window.location.pathname)) {
     if (e) e.preventDefault();
+    return;
+  }
+  if (e) e.preventDefault();
+  if (typeof window !== 'undefined' && window.wwLib?.wwApp?.goTo) {
+    window.wwLib.wwApp.goTo(path);
+  } else if (typeof window !== 'undefined') {
+    window.location.href = path;
   }
 }
 const heroStyle=computed(()=>({backgroundImage:'linear-gradient(90deg,#06182ef5 0%,#06182ede 36%,#06182e20 76%),url("'+(props.content?.skyline||'')+'")'}));
