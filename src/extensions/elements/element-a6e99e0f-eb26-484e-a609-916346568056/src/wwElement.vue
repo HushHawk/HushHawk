@@ -269,7 +269,16 @@ export default {
  const dialogTitle=computed(()=>({add:'Add Acquisition',notifications:'Notifications',deal:'Deal Actions',activity:"Today's Activity"}[dialog.value]||''));
  const photo=d=>props.content?.['photo'+(d.photo+1)]||props.content?.photo1||'';
  const money=v=>v==null?'—':new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0}).format(v);
- function guard(e){if(isEditing.value)e.preventDefault();}
+ function guard(e, customPath) {
+  if (isEditing.value) {
+    if (e) e.preventDefault();
+    return;
+  }
+  const href = customPath || e?.currentTarget?.getAttribute?.('href') || e?.target?.closest?.('a')?.getAttribute?.('href');
+  if (href && href.startsWith('/')) {
+    handleNav(href, e);
+  }
+}
  function handleNav(path, e) {
   if (isEditing.value) {
     if (e) e.preventDefault();
