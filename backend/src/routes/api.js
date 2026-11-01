@@ -9,6 +9,7 @@ import { ConnectorService } from '../services/connectorService.js';
 import { GraphService } from '../services/graphService.js';
 import { ComplianceService } from '../services/complianceService.js';
 import { CrmService } from '../services/crmService.js';
+import { PodioService } from '../services/podioService.js';
 import { renderCrownKey, validateCrownKeyFormat, normalizeParcelMatch } from '../../../packages/crownkey/index.js';
 
 export const apiRouter = Router();
@@ -1001,6 +1002,58 @@ apiRouter.post('/webhooks/podio', async (req, res) => {
     } catch (err) {
         console.error('[Podio Webhook Error]', err);
         res.status(500).json({ error: err.message });
+    }
+});
+
+// ============================================================================
+// Podio Direct API Connection & Sync
+// ============================================================================
+apiRouter.post('/integrations/podio/connect', async (req, res) => {
+    try {
+        const { appId, appToken, username, password } = req.body;
+        let authResult;
+
+        if (appId && appToken) {
+            authResult = await PodioService.authenticateApp(appId, appToken);
+        } else if (username && password) {
+            authResult = await PodioService.authenticateUser(username, password);
+        } else {
+            return res.status(400).json({ error: 'Provide either (appId + appToken) or (username + password)' });
+        }
+
+        const accessToken = authResult.access_token;
+        const webhookUrl = 'https://hushhawk-kohl.vercel.app/api/v1/webhooks/podio';
+
+        let webhookRegistered = false;
+        if (appId) {
+            try {
+                await PodioService.registerWebhook(accessToken, appId, webhookUrl);
+                webhookRegistered = true;
+            } catch (wErr) {
+                console.warn('[Podio Webhook Registration]', wErr.message);
+            }
+        }
+
+        db.data.settings = db.data.settings || {};
+        db.data.settings.podio = {
+            applicationName: 'Hush Hawk Integration',
+            clientId: PodioService.CLIENT_ID,
+            status: 'CONNECTED',
+            webhookUrl,
+            appId: appId || null,
+            lastConnected: new Date().toISOString()
+        };
+        db.persist();
+
+        res.json({
+            ok: true,
+            message: 'Successfully authenticated with Podio API',
+            webhookRegistered,
+            podio: db.data.settings.podio
+        });
+    } catch (err) {
+        console.error('[Podio Connect Error]', err.message);
+        res.status(400).json({ error: err.message });
     }
 });
 
