@@ -252,7 +252,16 @@ const signals=ref([
 ]);
 const signalTape=computed(()=>[...(signals.value||[]),...(signals.value||[])]);
 const signalsCount=computed(()=>(signals.value||[]).length);
-function guard(e){if(isEditing.value)e.preventDefault();}
+function guard(e, customPath) {
+  if (isEditing.value) {
+    if (e) e.preventDefault();
+    return;
+  }
+  const href = customPath || e?.currentTarget?.getAttribute?.('href') || e?.target?.closest?.('a')?.getAttribute?.('href');
+  if (href && href.startsWith('/')) {
+    handleNav(href, e);
+  }
+}
 function chooseEmail(i){if(!isEditing.value)activeEmail.value=activeEmail.value===i?null:i;}
 function saveDraft(){if(isEditing.value||!draft.value.trim())return;try{wwLib.getFrontWindow().sessionStorage.setItem('elite-dashboard-draft',draft.value);draftStatus.value='Draft saved to communications hub';}catch(e){draftStatus.value='Draft kept on this page';}}
 

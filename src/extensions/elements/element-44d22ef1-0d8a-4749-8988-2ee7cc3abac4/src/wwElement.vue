@@ -270,7 +270,16 @@ const sourceChart=computed(()=>{
 const donutGradient=computed(()=>{if(!sourceChart.value.length)return'#243a51';let a=0;return'conic-gradient('+sourceChart.value.map(s=>{const start=a;a+=s.count/sourceChart.value.reduce((sum,r)=>sum+r.count,0)*100;return s.color+' '+start+'% '+a+'%'}).join(',')+')';});
 const heroStyle=computed(()=>({backgroundImage:'linear-gradient(90deg,#051a33 0%,#051a33e6 30%,#051a3310 68%,#051a3355),url("'+(props.content?.skyline||'')+'")'}));
 const allChecked=computed(()=>filtered.value.length>0&&filtered.value.every(r=>checked.value.includes(r.id)));
-function guard(e){if(isEditing.value)e.preventDefault();}
+function guard(e, customPath) {
+  if (isEditing.value) {
+    if (e) e.preventDefault();
+    return;
+  }
+  const href = customPath || e?.currentTarget?.getAttribute?.('href') || e?.target?.closest?.('a')?.getAttribute?.('href');
+  if (href && href.startsWith('/')) {
+    handleNav(href, e);
+  }
+}
 function handleNav(path, e) {
   if (isEditing.value) {
     if (e) e.preventDefault();

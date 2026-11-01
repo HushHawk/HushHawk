@@ -49,7 +49,21 @@ const project=([x,y])=>[10+(x+87.65)*23,8+(31.05-y)*21],paths=floridaGeometry.fl
 const money=n=>n==null?'—':new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0}).format(n),dateLabel=s=>!s?'—':/^\d{4}-\d{2}-\d{2}$/.test(s)?new Date(s+'T12:00:00Z').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric',timeZone:'UTC'}):s;
 const statusClass=s=>s==='Contacted'?'contacted':s==='Follow Up'?'follow-up':'new',tagClass=t=>({'Absentee':'red','Tax Delinquent':'red','Vacant':'purple','Inherited':'purple','Probate':'blue-tag','High Equity':'teal'}[t]||'blue-tag');
 const dialogTitle=computed(()=>({import:'Import County Data',columns:'Table Columns',thread:'Text Conversation',campaigns:'Email Campaigns',campaign:'Campaign Preview',notifications:'Notifications'}[dialog.value]||'County Data'));
-function guard(e){if(isEditing.value)e.preventDefault();}
+function guard(e, customPath) {
+  if (isEditing.value) {
+    if (e) e.preventDefault();
+    return;
+  }
+  const href = customPath || e?.currentTarget?.getAttribute?.('href') || e?.target?.closest?.('a')?.getAttribute?.('href');
+  if (href && href.startsWith('/')) {
+    if (e) e.preventDefault();
+    if (typeof window !== 'undefined' && window.wwLib?.wwApp?.goTo) {
+      window.wwLib.wwApp.goTo(href);
+    } else if (typeof window !== 'undefined') {
+      window.location.href = href;
+    }
+  }
+}
 function changeCounty(v){if(isEditing.value)return;county.value=v;records.value=v==='Duval'?sampleRecords.map(r=>({...r,tags:[...r.tags]})):[];imported.value=false;pendingRows.value=[];importNotice.value='';importError.value='';resetFilters();selectedId.value='';draft.value='';draftNotice.value='';}
 function applyFilters(){if(isEditing.value)return;applied.value=[...pendingFilters.value];checked.value=[];}
 function resetFilters(){if(isEditing.value)return;pendingFilters.value=[];applied.value=[];query.value='';checked.value=[];notice.value='';}
