@@ -6,13 +6,13 @@
   
   <!-- Sidebar Quick Logout Button -->
   <div class="sidebar-logout-section">
-    <button type="button" class="sidebar-logout-btn" @click="handleLogout" title="Sign out of HushHawk Command Center">
-      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+    <button type="button" class="sidebar-logout-btn" @click="handleLogout" title="Log out of HushHawk Command Center" aria-label="Log out">
+      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
         <polyline points="16 17 21 12 16 7"/>
         <line x1="21" y1="12" x2="9" y2="12"/>
       </svg>
-      <span>Sign Out / Log Out</span>
+      <span>Log Out</span>
     </button>
   </div>
 
@@ -256,36 +256,43 @@ return{icons,isEditing,navigation,navOpen,query,county,records,imported,checked,
 }
 .brand-bottom{text-align:center;padding:10px 12px;color:#e4d39b}.brand-bottom p{border-top:2px solid #c8b471;padding-top:14px;font-size:9px;letter-spacing:2px;line-height:1.7;margin:0 0 6px}.brand-bottom>span{font-size:7px;letter-spacing:1px}.brand-bottom small{display:block;font-size:8px;margin-top:30px;color:#adc1d6}
 .sidebar-logout-section {
-  padding: 8px 10px;
+  padding: 8px 10px 10px;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   margin-top: auto;
 }
 .sidebar-logout-btn {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 9px;
   width: 100%;
-  padding: 8px 10px;
-  background: rgba(239, 68, 68, 0.08);
-  border: 1px solid rgba(239, 68, 68, 0.25);
+  height: 34px;
+  min-height: 34px;
+  padding: 0 12px;
+  background: rgba(239, 68, 68, 0.07);
+  border: 1px solid rgba(239, 68, 68, 0.2);
   border-radius: 6px;
   color: #fca5a5;
-  font-size: 11px;
+  font-family: inherit;
+  font-size: 11.5px;
   font-weight: 600;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.25px;
+  white-space: nowrap;
+  box-sizing: border-box;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 .sidebar-logout-btn:hover {
   background: rgba(239, 68, 68, 0.18);
   border-color: rgba(239, 68, 68, 0.45);
   color: #ffffff;
-  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.25);
 }
 .sidebar-logout-btn svg {
+  width: 15px;
+  height: 15px;
   flex-shrink: 0;
   stroke: #fca5a5;
-  transition: stroke 0.2s ease;
+  transition: stroke 0.15s ease;
 }
 .sidebar-logout-btn:hover svg {
   stroke: #ffffff;
