@@ -319,7 +319,48 @@
     </main>
   </div>
 
-  <!-- 2. HUSHHAWK INTELLIGENCE COMMAND CENTER / ADMIN PANEL (When authenticated) -->
+  <!-- 2. BRANDED FORWARDING / TRANSITION LOADER (When authenticated on auth routes or redirecting) -->
+  <div v-else-if="isAuthRoute || isRedirecting" class="hushhawk-auth-forwarding">
+    <div class="auth-forwarding-inner">
+      <div class="auth-forwarding-crest-wrap">
+        <div class="auth-forwarding-spinner"></div>
+        <div class="auth-forwarding-crest">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36" width="64" height="64" fill="none">
+            <rect width="36" height="36" rx="8" fill="#0A1128"/>
+            <rect x="1" y="1" width="34" height="34" rx="7" stroke="url(#hhGoldGradFwd)" stroke-width="1.4" stroke-opacity="0.95"/>
+            <defs>
+              <linearGradient id="hhGoldGradFwd" x1="4" y1="4" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#FDE68A"/>
+                <stop offset="35%" stop-color="#D4AF37"/>
+                <stop offset="70%" stop-color="#B45309"/>
+                <stop offset="100%" stop-color="#F59E0B"/>
+              </linearGradient>
+              <linearGradient id="hhCrownGradFwd" x1="10" y1="5" x2="26" y2="14" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#FFFBEB"/>
+                <stop offset="60%" stop-color="#F59E0B"/>
+                <stop offset="100%" stop-color="#D97706"/>
+              </linearGradient>
+            </defs>
+            <path d="M12 9.5L14 13.5L18 7.5L22 13.5L24 9.5L25 15.5H11L12 9.5Z" fill="url(#hhCrownGradFwd)"/>
+            <circle cx="18" cy="11.5" r="1.2" fill="#0A1128"/>
+            <path d="M6 14.5C10 16 14 19 16.5 22L13 23C9 20 6.5 17 6 14.5Z" fill="url(#hhGoldGradFwd)"/>
+            <path d="M7.5 19C10.5 20.5 14 23 15.5 25L13.5 26C10 23.5 8 21 7.5 19Z" fill="url(#hhGoldGradFwd)" fill-opacity="0.9"/>
+            <path d="M30 14.5C26 16 22 19 19.5 22L23 23C27 20 29.5 17 30 14.5Z" fill="url(#hhGoldGradFwd)"/>
+            <path d="M28.5 19C25.5 20.5 22 23 20.5 25L22.5 26C26 23.5 28 21 28.5 19Z" fill="url(#hhGoldGradFwd)" fill-opacity="0.9"/>
+            <path d="M18 17C16 17 14.5 18.5 14.5 20.5C14.5 21.8 15.2 22.9 16.2 23.5L15.5 29H20.5L19.8 23.5C20.8 22.9 21.5 21.8 21.5 20.5C21.5 18.5 20 17 18 17Z" fill="url(#hhGoldGradFwd)"/>
+            <circle cx="18" cy="20" r="1.3" fill="#0A1128"/>
+            <path d="M18 30L21 34H15L18 30Z" fill="url(#hhGoldGradFwd)"/>
+          </svg>
+        </div>
+      </div>
+      <div class="auth-forwarding-text">
+        <h3 class="auth-forwarding-title">SESSION AUTHENTICATED</h3>
+        <p class="auth-forwarding-sub">Entering HushHawk Command Center...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. HUSHHAWK INTELLIGENCE COMMAND CENTER / ADMIN PANEL (When authenticated on application routes) -->
   <wwLayout v-else path="wwObjects" class="section-base"></wwLayout>
 </template>
 
@@ -340,6 +381,7 @@ export default {
     }
     return {
       isLoggedIn: hasSession,
+      isRedirecting: false,
       email: '',
       password: '',
       rememberMe: true,
@@ -377,14 +419,20 @@ export default {
     };
   },
   computed: {
+    isAuthRoute() {
+      if (typeof window === 'undefined') return false;
+      const path = (this.$route?.path || window.location.pathname || '').toLowerCase();
+      return path.includes('/login') || path.includes('/signup') || path.includes('/forgot-password');
+    },
     isLoginPage() {
       if (typeof window === 'undefined') return false;
       const path = (this.$route?.path || window.location.pathname || '').toLowerCase();
       return path.includes('/login');
     },
     showLoginUI() {
-      // If user is on /login, show login form unless already logged in
-      if (this.isLoginPage) {
+      if (this.isRedirecting) return false;
+      // If user is on an auth route, show login form unless already logged in
+      if (this.isAuthRoute) {
         return !this.isLoggedIn;
       }
       // On all other routes (root '/', '/properties', etc.), require authentication
@@ -412,9 +460,10 @@ export default {
         window.location.href = '/login';
       };
 
-      // If user visits /login and is ALREADY authenticated, forward into dashboard
-      if (this.isLoginPage && this.isLoggedIn) {
-        window.location.href = '/';
+      // If user visits /login or any auth route and is ALREADY authenticated, forward into dashboard immediately
+      if (this.isAuthRoute && this.isLoggedIn) {
+        this.isRedirecting = true;
+        window.location.replace('/');
       }
 
       // Restore remembered email if present
@@ -514,15 +563,16 @@ export default {
           window.localStorage.setItem('hushhawk_auth_token', sessionObj.token);
 
           this.isLoggedIn = true;
-          this.isLoading = false;
+          this.isRedirecting = true;
+          this.isLoading = true;
 
           // Seamless transition into the Command Center / Admin Panel
-          if (window.location.pathname.includes('/login')) {
-            window.location.href = '/';
+          if (this.isAuthRoute) {
+            window.location.replace('/');
           } else {
             // If already at '/', reload to cleanly hydrate the admin panel layout
             setTimeout(() => {
-              window.location.href = '/';
+              window.location.replace('/');
             }, 100);
           }
         }
@@ -533,7 +583,8 @@ export default {
           window.localStorage.setItem('hushhawk_session', JSON.stringify(activeUser));
           window.localStorage.setItem('ww-auth-session', JSON.stringify(sessionObj));
           this.isLoggedIn = true;
-          window.location.href = '/';
+          this.isRedirecting = true;
+          window.location.replace('/');
         }
       } finally {
         setTimeout(() => {
@@ -1468,5 +1519,71 @@ export default {
   .metric-lbl {
     font-size: 8.5px;
   }
+}
+
+/* ================= FORWARDING / TRANSITION LOADER ================= */
+.hushhawk-auth-forwarding {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #04182D;
+  background: radial-gradient(circle at 50% 40%, rgba(20, 48, 80, 0.7) 0%, #04182D 75%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999999;
+}
+.auth-forwarding-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+  text-align: center;
+}
+.auth-forwarding-crest-wrap {
+  position: relative;
+  width: 110px;
+  height: 110px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.auth-forwarding-spinner {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 3px solid rgba(212, 175, 55, 0.15);
+  border-top-color: #D4AF37;
+  border-right-color: #F59E0B;
+  animation: authForwardingSpin 1.1s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+}
+.auth-forwarding-crest {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 0 18px rgba(212, 175, 55, 0.4));
+}
+@keyframes authForwardingSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.auth-forwarding-title {
+  margin: 0;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: #FDE68A;
+  text-transform: uppercase;
+}
+.auth-forwarding-sub {
+  margin: 8px 0 0 0;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: #94A3B8;
+  text-transform: uppercase;
 }
 </style>
