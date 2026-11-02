@@ -1,8 +1,8 @@
 import { db } from '../store/database.js';
 
 export class PodioService {
-    static CLIENT_ID = process.env.PODIO_CLIENT_ID || 'Hush Hawk Integration';
-    static CLIENT_SECRET = process.env.PODIO_CLIENT_SECRET || '5XcEYszn4UxM0cwR3aMJLvsJzxuHSGWh5b5s0iSaXYk1HjnUuLiqseIyyOdwNF39';
+    static CLIENT_ID = process.env.PODIO_CLIENT_ID || '';
+    static CLIENT_SECRET = process.env.PODIO_CLIENT_SECRET || '';
     static BASE_URL = 'https://api.podio.com';
 
     /**

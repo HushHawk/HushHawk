@@ -38,14 +38,21 @@
       </nav>
 
       <!-- Sidebar Quick Logout Button -->
-      <div class="sidebar-logout-section">
-        <button type="button" class="sidebar-logout-btn" @click="handleLogout" title="Log out of HushHawk Command Center" aria-label="Log out">
-          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <div class="sidebar-logout-section" style="display: flex !important; justify-content: center !important; align-items: center !important; width: 100% !important; box-sizing: border-box !important;">
+        <button
+          type="button"
+          class="sidebar-logout-btn"
+          style="display: flex !important; align-items: center !important; justify-content: center !important; text-align: center !important; width: 100% !important; margin: 0 auto !important;"
+          @click="handleLogout"
+          title="Log out of HushHawk Command Center"
+          aria-label="Log out"
+        >
+          <svg style="margin: 0 !important; flex-shrink: 0 !important;" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
             <polyline points="16 17 21 12 16 7"/>
             <line x1="21" y1="12" x2="9" y2="12"/>
           </svg>
-          <span>Log Out</span>
+          <span style="margin: 0 !important; text-align: center !important; display: inline-block !important; line-height: 1 !important;">Log Out</span>
         </button>
       </div>
 
@@ -522,7 +529,7 @@ export default {
       return metas[this.activeSectionKey] || metas['dispositions'];
     },
     heroStyle() {
-      const skylineUrl = this.content?.skyline || 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1600&q=80';
+      const skylineUrl = this.content?.skyline || 'https://u.realgeeks.media/nuviewrealty/Jacksonville_Skyline_Sunset_2.jpeg';
       return {
         backgroundImage: `linear-gradient(90deg, #03172fee 0%, #03172fc9 35%, #06244144 65%, #011a3440), url("${skylineUrl}")`
       };
@@ -840,19 +847,21 @@ export default {
 .sidebar-logout-btn {
   display: flex;
   align-items: center;
-  gap: 9px;
+  justify-content: center;
+  text-align: center;
+  gap: 8px;
   width: 100%;
-  height: 34px;
-  min-height: 34px;
-  padding: 0 12px;
-  background: rgba(239, 68, 68, 0.07);
-  border: 1px solid rgba(239, 68, 68, 0.2);
+  height: 35px;
+  min-height: 35px;
+  padding: 0 14px;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.28);
   border-radius: 6px;
   color: #fca5a5;
   font-family: inherit;
-  font-size: 11.5px;
+  font-size: 12px;
   font-weight: 600;
-  letter-spacing: 0.25px;
+  letter-spacing: 0.3px;
   white-space: nowrap;
   box-sizing: border-box;
   cursor: pointer;
@@ -860,10 +869,14 @@ export default {
 }
 
 .sidebar-logout-btn:hover {
-  background: rgba(239, 68, 68, 0.18);
-  border-color: rgba(239, 68, 68, 0.45);
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.55);
   color: #ffffff;
-  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.25);
+  box-shadow: 0 2px 10px rgba(239, 68, 68, 0.25);
+}
+
+.sidebar-logout-btn:active {
+  transform: scale(0.985);
 }
 
 .sidebar-logout-btn svg {

@@ -5,14 +5,21 @@
   <nav aria-label="HushHawk navigation"><a v-for="(item,i) in navigation.slice(0,13)" :key="item.path" :href="item.path" :class="{active:item.name==='County Data',secondary:i>12}" @click="guard"><span class="icon" v-html="icons[item.icon]"></span>{{item.name}}</a><details class="more-workspaces" open><summary>More workspaces</summary><a v-for="item in navigation.slice(13)" :key="item.path" :href="item.path" @click="guard"><span class="icon" v-html="icons[item.icon]"></span>{{item.name}}</a><a href="/deal-analyzer" @click="guard"><span class="icon" v-html="icons.chart"></span>Deal Analyzer</a></details></nav>
   
   <!-- Sidebar Quick Logout Button -->
-  <div class="sidebar-logout-section">
-    <button type="button" class="sidebar-logout-btn" @click="handleLogout" title="Log out of HushHawk Command Center" aria-label="Log out">
-      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <div class="sidebar-logout-section" style="display: flex !important; justify-content: center !important; align-items: center !important; width: 100% !important; box-sizing: border-box !important;">
+    <button
+      type="button"
+      class="sidebar-logout-btn"
+      style="display: flex !important; align-items: center !important; justify-content: center !important; text-align: center !important; width: 100% !important; margin: 0 auto !important;"
+      @click="handleLogout"
+      title="Log out of HushHawk Command Center"
+      aria-label="Log out"
+    >
+      <svg style="margin: 0 !important; flex-shrink: 0 !important;" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
         <polyline points="16 17 21 12 16 7"/>
         <line x1="21" y1="12" x2="9" y2="12"/>
       </svg>
-      <span>Log Out</span>
+      <span style="margin: 0 !important; text-align: center !important; display: inline-block !important; line-height: 1 !important;">Log Out</span>
     </button>
   </div>
 
@@ -283,29 +290,34 @@ return{icons,isEditing,navigation,navOpen,query,county,records,imported,checked,
 .sidebar-logout-btn {
   display: flex;
   align-items: center;
-  gap: 9px;
+  justify-content: center;
+  text-align: center;
+  gap: 8px;
   width: 100%;
-  height: 34px;
-  min-height: 34px;
-  padding: 0 12px;
-  background: rgba(239, 68, 68, 0.07);
-  border: 1px solid rgba(239, 68, 68, 0.2);
+  height: 35px;
+  min-height: 35px;
+  padding: 0 14px;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.28);
   border-radius: 6px;
   color: #fca5a5;
   font-family: inherit;
-  font-size: 11.5px;
+  font-size: 12px;
   font-weight: 600;
-  letter-spacing: 0.25px;
+  letter-spacing: 0.3px;
   white-space: nowrap;
   box-sizing: border-box;
   cursor: pointer;
   transition: all 0.15s ease;
 }
 .sidebar-logout-btn:hover {
-  background: rgba(239, 68, 68, 0.18);
-  border-color: rgba(239, 68, 68, 0.45);
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.55);
   color: #ffffff;
-  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.25);
+  box-shadow: 0 2px 10px rgba(239, 68, 68, 0.25);
+}
+.sidebar-logout-btn:active {
+  transform: scale(0.985);
 }
 .sidebar-logout-btn svg {
   width: 15px;

@@ -1334,8 +1334,8 @@ export default {
       selectedDetailPhoto: null,
       showPhotoAddedToast: false,
       lastAddedCount: 0,
-      defaultPhotoPlaceholder: 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=800&auto=format&fit=crop&q=80',
-      currentCameraFramePreview: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800&auto=format&fit=crop&q=80',
+      defaultPhotoPlaceholder: '',
+      currentCameraFramePreview: '',
 
       // Properties list
       properties: [],
@@ -1523,16 +1523,9 @@ export default {
       this.shutterFlashed = true;
       setTimeout(() => { this.shutterFlashed = false; }, 180);
 
-      const frameUrls = [
-        'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800&auto=format&fit=crop&q=80',
-        'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&auto=format&fit=crop&q=80',
-        'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=800&auto=format&fit=crop&q=80',
-        'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&auto=format&fit=crop&q=80'
-      ];
-      const nextIdx = this.capturedQueue.length % frameUrls.length;
-      const previewUrl = frameUrls[nextIdx];
       const seq = String(this.capturedQueue.length + 1).padStart(2, '0');
-      const filename = `framing-${seq}.jpg`;
+      const filename = `site-photo-${seq}.jpg`;
+      const previewUrl = '';
 
       this.capturedQueue.push({
         name: filename,

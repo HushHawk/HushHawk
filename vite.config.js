@@ -152,7 +152,7 @@ export default defineConfig(({ mode, isSsrBuild }) => {
             port: 8080,
             proxy: {
                 '/api': {
-                    target: process.env.BACKEND_URL || 'http://3.148.218.118',
+                    target: process.env.BACKEND_URL || 'http://localhost:3001',
                     changeOrigin: true,
                     configure: (proxy) => {
                         proxy.on('error', (err, _req, res) => {
@@ -164,7 +164,7 @@ export default defineConfig(({ mode, isSsrBuild }) => {
                     },
                 },
                 '^/ww/': {
-                    target: process.env.BACKEND_URL || 'http://3.148.218.118',
+                    target: process.env.BACKEND_URL || 'http://localhost:3001',
                     changeOrigin: true,
                     configure: (proxy) => {
                         proxy.on('error', (err, _req, res) => {
