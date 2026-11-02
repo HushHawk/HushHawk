@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { db } from '../src/store/database.js';
 import { PodioService } from '../src/services/podioService.js';
 import crypto from 'crypto';
