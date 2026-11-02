@@ -267,7 +267,7 @@ export default {
       "type": "Image",
       "section": "settings",
       "bindable": true,
-      "defaultValue": "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=240&h=240&q=85",
+      "defaultValue": "",
     },
     "sendIcon": {
       "label": {

@@ -5,14 +5,21 @@
   <nav aria-label="HushHawk navigation"><a v-for="(item,i) in navigation.slice(0,11)" :key="item.path" :href="item.path" :class="{active:item.name==='Seller Leads'}" @click="handleNav(item.path, $event)"><span class="icon" v-html="icons[item.icon] || icons.house"></span>{{item.name}}</a><details class="more-workspaces" open><summary>More Workspaces</summary><a v-for="item in navigation.slice(11)" :key="item.path" :href="item.path" :class="{active:item.name==='Seller Leads'}" @click="handleNav(item.path, $event)"><span class="icon" v-html="icons[item.icon] || icons.file"></span>{{item.name}}</a></details></nav>
   
   <!-- Sidebar Quick Logout Button -->
-  <div class="sidebar-logout-section">
-    <button type="button" class="sidebar-logout-btn" @click="handleLogout" title="Log out of HushHawk Command Center" aria-label="Log out">
-      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <div class="sidebar-logout-section" style="display: flex !important; justify-content: center !important; align-items: center !important; width: 100% !important; box-sizing: border-box !important;">
+    <button
+      type="button"
+      class="sidebar-logout-btn"
+      style="display: flex !important; align-items: center !important; justify-content: center !important; text-align: center !important; width: 100% !important; margin: 0 auto !important;"
+      @click="handleLogout"
+      title="Log out of HushHawk Command Center"
+      aria-label="Log out"
+    >
+      <svg style="margin: 0 !important; flex-shrink: 0 !important;" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
         <polyline points="16 17 21 12 16 7"/>
         <line x1="21" y1="12" x2="9" y2="12"/>
       </svg>
-      <span>Log Out</span>
+      <span style="margin: 0 !important; text-align: center !important; display: inline-block !important; line-height: 1 !important;">Log Out</span>
     </button>
   </div>
 
@@ -211,7 +218,7 @@
   <form v-else-if="modal==='email'" @submit.prevent="keepEmail"><p class="modal-notice">Compose email message draft for this lead.</p><label>To<input :value="selected?.email||''" readonly></label><label>Subject<input v-model="emailSubject"></label><label>Message<textarea v-model="emailDraft" rows="9"></textarea></label><button class="gold modal-primary">Keep draft</button><p role="status" class="draft-note">{{emailNotice}}</p></form>
   <form v-else-if="modal==='offer'" @submit.prevent="keepOffer"><p class="modal-notice">HushHawk MAO Wholesale Offer Calculation Worksheet.</p><div class="form-two"><label>ARV ($)<input v-model.number="offerValues.arv" type="number" min="0" required></label><label>Repair estimate ($)<input v-model.number="offerValues.repairs" type="number" min="0" required></label><label>Purchase factor (%)<input v-model.number="offerValues.factor" type="number" min="0" max="100" step="0.1" required></label><label>Desired assignment fee ($)<input v-model.number="offerValues.fee" type="number" min="0" required></label></div><div class="offer-result"><span>Maximum allowable offer</span><strong>{{money(offerMAO)}}</strong><small>ARV × factor − repairs − assignment fee</small></div><button class="gold modal-primary">Keep worksheet</button><p class="draft-note">{{offerNotice}}</p></form>
   <template v-else-if="modal==='sources'"><p class="modal-notice">Live canonical database source breakdown</p><div class="source-modal-row" v-for="s in sourceChart" :key="s.name"><i :style="{background:s.color}"></i><b>{{s.name}}</b><span>{{s.percent}}% · {{number(s.count)}} leads</span></div></template>
-  <template v-else-if="modal==='details'"><dl class="detail-list"><div><dt>Record</dt><dd>{{selected?.id}}</dd></div><div><dt>CrownKey</dt><dd>{{selected?.crownKey || 'Pending'}}</dd></div><div><dt>Source</dt><dd>{{selected?.source||'—'}}</dd></div><div><dt>Lead score</dt><dd>{{selected?.score??'88'}}</dd></div><div><dt>Assigned to</dt><dd>{{selected?.assignee||'Marcus Vance'}}</dd></div><div><dt>Notes</dt><dd>{{selected?.notes||'Canonical wholesale lead record in AWS RDS.'}}</dd></div></dl><p class="modal-notice">Live canonical record details from PostgreSQL database.</p></template>
+  <template v-else-if="modal==='details'"><dl class="detail-list"><div><dt>Record</dt><dd>{{selected?.id}}</dd></div><div><dt>CrownKey</dt><dd>{{selected?.crownKey || 'Pending'}}</dd></div><div><dt>Source</dt><dd>{{selected?.source||'—'}}</dd></div><div><dt>Lead score</dt><dd>{{selected?.score??'—'}}</dd></div><div><dt>Assigned to</dt><dd>{{selected?.assignee||'Unassigned'}}</dd></div><div><dt>Notes</dt><dd>{{selected?.notes||'—'}}</dd></div></dl><p class="modal-notice">Live canonical record details from PostgreSQL database.</p></template>
  </section></div>
 </section>
 </template>
@@ -335,7 +342,7 @@ const tabStatus={new:'New',contacted:'Contacted',appointments:'Appointment',offe
 const filtered=computed(()=>{const q=query.value.trim().toLowerCase();return rows.value.filter(r=>(!q||[r.name,r.address,r.city,r.zip,r.phone,r.email,r.source].join(' ').toLowerCase().includes(q))&&(stage.value==='all'||r.status===tabStatus[stage.value])&&(!statusFilter.value||r.status===statusFilter.value)&&(!sourceFilter.value||r.source===sourceFilter.value)&&(!zipFilter.value||r.zip.includes(zipFilter.value))).slice().sort((a,b)=>{const av=String(a[sortKey.value]??''),bv=String(b[sortKey.value]??'');return av.localeCompare(bv,undefined,{numeric:true})*(sortAscending.value?1:-1);});});
 const selected=computed(()=>filtered.value.find(r=>r.id===selectedId.value)||null),selectedIndex=computed(()=>filtered.value.findIndex(r=>r.id===selectedId.value));
 watch(filtered,r=>{if(!r.some(x=>x.id===selectedId.value))selectedId.value=r[0]?.id||'';checked.value=checked.value.filter(id=>rows.value.some(x=>x.id===id));},{immediate:true});
-const photoUrl=computed(()=>selected.value?.photo || props.content?.propertyPhoto);
+const photoUrl=computed(()=>selected.value?.photo || '');
 watch(photoUrl,()=>photoFailed.value=false);
 function countStage(key){
   if(key==='all') return rows.value.length;
@@ -521,29 +528,34 @@ return{uid,isEditing,icons,navigation,navOpen,heroStyle,mode,metrics,tabs,column
 .sidebar-logout-btn {
   display: flex;
   align-items: center;
-  gap: 9px;
+  justify-content: center;
+  text-align: center;
+  gap: 8px;
   width: 100%;
-  height: 34px;
-  min-height: 34px;
-  padding: 0 12px;
-  background: rgba(239, 68, 68, 0.07);
-  border: 1px solid rgba(239, 68, 68, 0.2);
+  height: 35px;
+  min-height: 35px;
+  padding: 0 14px;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.28);
   border-radius: 6px;
   color: #fca5a5;
   font-family: inherit;
-  font-size: 11.5px;
+  font-size: 12px;
   font-weight: 600;
-  letter-spacing: 0.25px;
+  letter-spacing: 0.3px;
   white-space: nowrap;
   box-sizing: border-box;
   cursor: pointer;
   transition: all 0.15s ease;
 }
 .sidebar-logout-btn:hover {
-  background: rgba(239, 68, 68, 0.18);
-  border-color: rgba(239, 68, 68, 0.45);
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.55);
   color: #ffffff;
-  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.25);
+  box-shadow: 0 2px 10px rgba(239, 68, 68, 0.25);
+}
+.sidebar-logout-btn:active {
+  transform: scale(0.985);
 }
 .sidebar-logout-btn svg {
   width: 15px;

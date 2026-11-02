@@ -877,18 +877,20 @@ apiRouter.get('/seller-leads', (req, res) => {
                 : 'New';
 
             const leadSource = sourceMap[lead.first_source_code] || lead.source || 'Direct Mail';
-            const arv = prop?.assessed_value ? Math.round(prop.assessed_value * 1.25) : (lead.arv || null);
+            const hasRealProp = prop && prop.address_line1 && !/^Jacksonville Property #\d+$/.test(prop.address_line1) && prop.address_line1 !== 'No Property Address on File';
+            const arv = hasRealProp && prop?.assessed_value ? Math.round(prop.assessed_value * 1.25) : (lead.arv || null);
             const repairs = lead.repairs || null;
             const mao = lead.mao || (arv && repairs ? Math.round(arv * 0.70 - repairs) : null);
-            const equity = prop?.estimated_equity || (lead.equity || null);
+            const equity = hasRealProp && prop?.estimated_equity ? prop.estimated_equity : (lead.equity || null);
+            const address = hasRealProp ? prop.address_line1 : (lead.address && !/^Jacksonville Property #\d+$/.test(lead.address) && lead.address !== 'No Property Address on File' ? lead.address : 'No Property Address on File');
 
             return {
                 id: lead.lead_id || `lead-${idx}`,
                 crownKey,
                 name: person?.full_name || lead.name || 'Unnamed Seller',
-                address: prop?.address_line1 || lead.address || 'Address Pending',
-                city: prop?.city || lead.city || 'Jacksonville',
-                zip: prop?.postal_code || lead.zip || '',
+                address,
+                city: hasRealProp ? (prop?.city || 'Jacksonville') : '',
+                zip: hasRealProp ? (prop?.postal_code || '') : '',
                 phone: person?.primary_phone || lead.phone || '',
                 email: person?.primary_email || lead.email || '',
                 source: leadSource,
@@ -898,9 +900,9 @@ apiRouter.get('/seller-leads', (req, res) => {
                 repairs,
                 mao,
                 equity,
-                tags: [prop?.county_code === 'DUV' ? 'Duval County' : 'Clay County', leadSource, 'Motivated Seller'],
-                type: prop?.property_type || 'Single Family Residential',
-                photo: prop?.photos?.[0]?.url || lead.photo || '',
+                tags: hasRealProp ? [prop?.county_code === 'DUV' ? 'Duval County' : 'Clay County', leadSource] : [leadSource],
+                type: hasRealProp ? (prop?.property_type || 'Single Family Residential') : '',
+                photo: hasRealProp ? (prop?.photos?.[0]?.url || lead.photo || '') : '',
                 score: lead.priority_score || 0,
                 assignee: lead.assigned_to || '',
                 notes: lead.notes || ''

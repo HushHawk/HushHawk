@@ -18,39 +18,39 @@ export default {
     },
     "photo1": {
       "label": {
-        "en": "Illustrative property photo 1"
+        "en": "Property photo 1"
       },
       "type": "Image",
       "section": "settings",
       "bindable": true,
-      "defaultValue": "https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=700&q=85",
+      "defaultValue": "",
     },
     "photo2": {
       "label": {
-        "en": "Illustrative property photo 2"
+        "en": "Property photo 2"
       },
       "type": "Image",
       "section": "settings",
       "bindable": true,
-      "defaultValue": "https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=700&q=85",
+      "defaultValue": "",
     },
     "photo3": {
       "label": {
-        "en": "Illustrative property photo 3"
+        "en": "Property photo 3"
       },
       "type": "Image",
       "section": "settings",
       "bindable": true,
-      "defaultValue": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=700&q=85",
+      "defaultValue": "",
     },
     "photo4": {
       "label": {
-        "en": "Illustrative property photo 4"
+        "en": "Property photo 4"
       },
       "type": "Image",
       "section": "settings",
       "bindable": true,
-      "defaultValue": "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=700&q=85",
+      "defaultValue": "",
     },
     "logoIcon": {
       "label": {

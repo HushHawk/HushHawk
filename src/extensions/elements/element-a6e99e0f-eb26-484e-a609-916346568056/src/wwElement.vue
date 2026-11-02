@@ -5,14 +5,21 @@
   <nav aria-label="HushHawk navigation"><a v-for="(item,i) in navigation.slice(0,13)" :key="item.path" :href="item.path" :class="{active:item.name==='Acquisitions',secondary:i>12}" @click="handleNav(item.path, $event)"><span class="icon" v-html="icons[item.icon] || icons.house"></span>{{item.name}}</a><details class="more-workspaces" open><summary>More workspaces</summary><a v-for="item in navigation.slice(13)" :key="item.path" :href="item.path" @click="handleNav(item.path, $event)"><span class="icon" v-html="icons[item.icon] || icons.file"></span>{{item.name}}</a><a href="/deal-analyzer" @click="handleNav('/deal-analyzer', $event)"><span class="icon" v-html="icons.chart"></span>Deal Analyzer</a></details></nav>
   
   <!-- Sidebar Quick Logout Button -->
-  <div class="sidebar-logout-section">
-    <button type="button" class="sidebar-logout-btn" @click="handleLogout" title="Log out of HushHawk Command Center" aria-label="Log out">
-      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <div class="sidebar-logout-section" style="display: flex !important; justify-content: center !important; align-items: center !important; width: 100% !important; box-sizing: border-box !important;">
+    <button
+      type="button"
+      class="sidebar-logout-btn"
+      style="display: flex !important; align-items: center !important; justify-content: center !important; text-align: center !important; width: 100% !important; margin: 0 auto !important;"
+      @click="handleLogout"
+      title="Log out of HushHawk Command Center"
+      aria-label="Log out"
+    >
+      <svg style="margin: 0 !important; flex-shrink: 0 !important;" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
         <polyline points="16 17 21 12 16 7"/>
         <line x1="21" y1="12" x2="9" y2="12"/>
       </svg>
-      <span>Log Out</span>
+      <span style="margin: 0 !important; text-align: center !important; display: inline-block !important; line-height: 1 !important;">Log Out</span>
     </button>
   </div>
 
@@ -173,7 +180,8 @@
        <h2>{{stage.name}} <b>{{stageCount(index)}}</b></h2>
        <div class="stage-cards">
         <button v-for="deal in (visible || []).filter(d=>d.stage===index)" :key="deal.id" class="deal-card" :class="{selected:selected?.id===deal.id}" :draggable="!isEditing" @dragstart="startDrag($event,deal)" @dragend="dragged=''" @click="selectDeal(deal)" :aria-pressed="selected?.id===deal.id">
-         <img :src="photo(deal)" alt="Illustrative house exterior" @error="imageFailed">
+         <img v-if="photo(deal)" :src="photo(deal)" alt="House exterior" @error="imageFailed">
+         <div v-else class="card-photo-placeholder"><span class="icon" v-html="icons.house"></span></div>
          <div class="card-body"><h3>{{deal.address}}</h3><p>Jacksonville, FL {{deal.zip}}</p>
           <dl><div><dt>ARV</dt><dd>{{money(deal.arv)}}</dd></div><div><dt>Repairs</dt><dd>{{money(deal.repairs)}}</dd></div><div><dt>MAO</dt><dd>{{money(deal.mao)}}</dd></div><div><dt>Est. Fee</dt><dd>{{money(deal.fee)}}</dd></div></dl>
           <div class="card-end"><span class="stage-badge">{{shortStage(index)}}</span><span v-if="deal.id==='deal-0-0'" class="hot">Hot</span><span v-else class="agent"><i>{{deal.agent.charAt(0)}}</i>{{deal.agent}}</span></div>
@@ -188,14 +196,14 @@
    </div>
    <aside v-if="selected" class="detail" aria-label="Selected property detail">
     <div class="detail-heading"><span class="icon" v-html="icons.calendar"></span><div><h2>{{selected.address}}</h2><p>Jacksonville, FL {{selected.zip}}</p></div><button @click="openDialog('deal')" aria-label="Deal actions">•••</button><button @click="closeDetail" aria-label="Close property details">×</button></div>
-    <div class="photo-layout"><div class="main-photo"><img :src="photo(selected)" alt="Illustrative property exterior" @error="imageFailed"><small>Illustrative photo</small></div><div class="photo-side"><span class="outline-badge" :style="{'--stage':stages[selected.stage].color}">{{stages[selected.stage].name}}</span><span class="potential">◆ High Potential</span><img :src="photo(selected)" alt="Current property preview" @error="imageFailed"><small>1 / 1</small></div></div>
+    <div class="photo-layout"><div class="main-photo"><img v-if="photo(selected)" :src="photo(selected)" alt="Property exterior" @error="imageFailed"><div v-else class="photo-placeholder"><span class="icon" v-html="icons.house"></span><span>No Property Photo</span></div><small v-if="photo(selected)">Property Photo</small></div><div class="photo-side"><span class="outline-badge" :style="{'--stage':stages[selected.stage].color}">{{stages[selected.stage].name}}</span><span class="potential">◆ Wholesale Lead</span><img v-if="photo(selected)" :src="photo(selected)" alt="Current property preview" @error="imageFailed"><div v-else class="photo-placeholder-side"><span class="icon" v-html="icons.house"></span></div><small v-if="photo(selected)">1 / 1</small></div></div>
     <div class="deal-metrics"><div v-for="m in [['ARV','arv'],['Repairs','repairs'],['MAO','mao'],['Est. Assignment Fee','fee']]" :key="m[1]"><small>{{m[0]}}</small><b>{{money(selected[m[1]])}}</b></div></div>
     <div class="address-row"><span class="icon" v-html="icons.pin"></span><span>{{selected.address}}, Jacksonville, FL {{selected.zip}}</span><a :href="'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(selected.address+', Jacksonville FL '+selected.zip)" target="_blank" rel="noopener noreferrer" @click="guard">View on Map</a></div>
     <section class="owner-box"><h3><span class="icon" v-html="icons.user"></span>Owner Information<a href="/skip-tracing" @click="guard">Skip Trace</a></h3><div class="owner-grid"><dl><div><dt>Name</dt><dd>{{selected.owner}}</dd></div><div><dt>Phone</dt><dd>{{selected.phone}}</dd></div><div><dt>Email</dt><dd>{{selected.email}}</dd></div></dl><dl><div><dt>Property Type</dt><dd>Single Family</dd></div><div><dt>Est. Equity</dt><dd>{{money(selected.arv==null||selected.mao==null?null:selected.arv-selected.mao)}}</dd></div><div><dt>Owner Status</dt><dd>Motivated</dd></div><div><dt>Lead Source</dt><dd>{{selected.source}}</dd></div></dl></div></section>
     <section class="next-step"><span class="icon" v-html="icons.calendar"></span><div><h3>Next Step</h3><p>{{selected.completed?'Completed in preview':'Follow up with owner tomorrow at 10:00 AM'}}</p></div><button class="gold" @click="completeTask">{{selected.completed?'Reopen':'Mark Complete'}}</button></section>
     <div class="detail-tabs" role="tablist" aria-label="Property workspace"><button v-for="t in tabs" :key="t" role="tab" :aria-selected="tab===t" :class="{active:tab===t}" @click="setTab(t)">{{t}}</button></div>
     <section class="tab-content">
-     <template v-if="tab==='Messages'"><div class="conversation"><div class="message-label">{{selected.owner}} <small>Active SMS Conversation</small></div><p class="bubble">Hi, I saw your postcard about buying houses. I'm interested in selling my property on {{selected.address}}. Can you tell me more?</p><p class="bubble outgoing">Yes, we buy houses as-is and can cover closing costs. Would you be open to a quick call today?</p><p class="bubble">That sounds good. I'm available after 5pm today. The house needs work, but I want a fair offer.</p><p class="bubble outgoing">Perfect. I'll call at 5pm. Looking forward to it!</p></div><form class="compose" @submit.prevent="saveDraft"><input v-model="draft" :disabled="isEditing" aria-label="Message draft" placeholder="Type a message draft…"><button>Save Draft</button></form><small class="draft-note">{{notice||'Twilio SMS dispatch ready'}}</small></template>
+     <template v-if="tab==='Messages'"><div class="conversation"><div class="message-label">{{selected.owner}} <small>SMS Conversation</small></div><div v-if="!selected.messages || !selected.messages.length" class="empty-conversation"><p class="no-messages-text">No SMS message history for this lead.</p><small class="no-messages-hint">Type a message below to draft an outbound message.</small></div><template v-else><p v-for="(m, mi) in selected.messages" :key="mi" class="bubble" :class="{ outgoing: m.direction === 'outbound' }">{{m.text}}</p></template></div><form class="compose" @submit.prevent="saveDraft"><input v-model="draft" :disabled="isEditing" aria-label="Message draft" placeholder="Type a message draft…"><button>Save Draft</button></form><small class="draft-note">{{notice||'Twilio SMS dispatch ready'}}</small></template>
      <template v-else-if="tab==='Notes'"><h3>Acquisition notes</h3><textarea v-model="note" :disabled="isEditing" aria-label="Property notes"></textarea><button class="gold small-action" @click="saveNote">Save Note</button><p class="draft-note">{{notice||'Acquisitions notes synchronized.'}}</p></template>
      <template v-else-if="tab==='Tasks'"><h3>Property follow-up</h3><label class="task-check"><input type="checkbox" :checked="selected.completed" :disabled="isEditing" @change="completeTask">Follow up with {{selected.owner}}</label><p>Tomorrow · 10:00 AM · Acquisitions team</p><small>Active task · Assigned to Acquisitions</small></template>
      <template v-else-if="tab==='Property Details'"><h3>Deal worksheet</h3><dl class="property-details"><div><dt>Property</dt><dd>{{selected.address}}</dd></div><div><dt>Market</dt><dd>Jacksonville · {{selected.zip}}</dd></div><div><dt>Type</dt><dd>Single Family</dd></div><div><dt>Source</dt><dd>{{selected.source}}</dd></div></dl><label class="move-stage">Pipeline stage<select :value="selected.stage" :disabled="isEditing" @change="moveDeal(selected.id,Number($event.target.value))"><option v-for="(s,i) in stages" :key="s.name" :value="i">{{s.name}}</option></select></label><small>Select stage to advance wholesale deal.</small></template>
@@ -290,20 +298,21 @@ export default {
          };
          deals.value = leads.slice(0, 24).map((lead, i) => ({
            id: lead.crownKey || ('lead-' + i),
-           address: lead.address || ((lead.street_address || 'Property') + ', Jacksonville FL'),
-           zip: lead.zipCode || lead.zip || '32206',
+           address: lead.address || 'No Property Address on File',
+           zip: lead.zip || '',
            owner: lead.ownerName || lead.name || 'Unknown Owner',
            phone: lead.phone || '—',
            email: lead.email || '—',
            arv: lead.arv || null,
-           repairs: lead.estimatedRepairs || null,
+           repairs: lead.estimatedRepairs || lead.repairs || null,
            mao: lead.mao || null,
            fee: lead.assignmentFee || null,
            note: lead.notes || '',
            source: lead.source || 'Direct Mail',
-           agent: 'Marcus Vance',
-           stage: stageMap[lead.status] !== undefined ? stageMap[lead.status] : (i % 6),
-           completed: lead.status === 'Sold'
+           agent: lead.assignee || 'Unassigned',
+           stage: stageMap[lead.status] !== undefined ? stageMap[lead.status] : 0,
+           completed: lead.status === 'Sold',
+           photo: lead.photo || ''
          }));
        }
      }
@@ -377,7 +386,7 @@ export default {
  ]);
  const tabs=['Messages','Notes','Tasks','Property Details','Comps'];
  const dialogTitle=computed(()=>({add:'Add Acquisition',notifications:'Notifications',deal:'Deal Actions',activity:"Today's Activity"}[dialog.value]||''));
- const photo=d=>props.content?.['photo'+(d.photo+1)]||props.content?.photo1||'';
+ const photo=d=>d?.photo || d?.image_url || '';
  const money=v=>v==null?'—':new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0}).format(v);
  function guard(e, customPath) {
   if (isEditing.value) {
@@ -527,29 +536,34 @@ export default {
 .sidebar-logout-btn {
   display: flex;
   align-items: center;
-  gap: 9px;
+  justify-content: center;
+  text-align: center;
+  gap: 8px;
   width: 100%;
-  height: 34px;
-  min-height: 34px;
-  padding: 0 12px;
-  background: rgba(239, 68, 68, 0.07);
-  border: 1px solid rgba(239, 68, 68, 0.2);
+  height: 35px;
+  min-height: 35px;
+  padding: 0 14px;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.28);
   border-radius: 6px;
   color: #fca5a5;
   font-family: inherit;
-  font-size: 11.5px;
+  font-size: 12px;
   font-weight: 600;
-  letter-spacing: 0.25px;
+  letter-spacing: 0.3px;
   white-space: nowrap;
   box-sizing: border-box;
   cursor: pointer;
   transition: all 0.15s ease;
 }
 .sidebar-logout-btn:hover {
-  background: rgba(239, 68, 68, 0.18);
-  border-color: rgba(239, 68, 68, 0.45);
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.55);
   color: #ffffff;
-  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.25);
+  box-shadow: 0 2px 10px rgba(239, 68, 68, 0.25);
+}
+.sidebar-logout-btn:active {
+  transform: scale(0.985);
 }
 .sidebar-logout-btn svg {
   width: 15px;
@@ -1042,7 +1056,16 @@ export default {
 .hero{margin:0 -9px;min-height:139px;padding:13px 24px 12px;display:flex;align-items:center;position:relative;background-size:cover;background-position:center 56%;overflow:hidden}.hero-copy{position:relative;z-index:1}.hero h1{font-size:42px;line-height:1.1;font-weight:800;letter-spacing:-.8px;margin:0 0 6px}.hero-copy>p{font-size:17px;margin:0;color:#e3eaf3}.principles{display:flex;align-items:center;gap:30px;margin-top:17px}.principles>span{display:flex;align-items:center;gap:12px;letter-spacing:1.5px;font-size:8px;color:#f1ead6}.principles .icon{width:26px;height:26px;color:#edc868}.jacksonville{position:absolute;left:41%;top:20px;text-align:center;transform:rotate(-5deg);text-shadow:0 3px 12px #001225}.jacksonville strong{display:block;font:italic 51px Georgia,serif;line-height:1.2;color:#f2d482}.jacksonville span{font-size:9px;letter-spacing:1px;color:#fff}.motto{margin-left:auto;align-self:flex-end;border-top:2px solid #dec675;padding-top:8px;font-size:8px;letter-spacing:2px;line-height:1.7;color:#edf1f5}
 
 .hero h1 em{font-style:normal;color:#efd17b}.hero-copy>p{font-size:21px;font-weight:700}.principles{font-size:8px;letter-spacing:1.5px;gap:0;margin-top:10px;color:#d1dbea}.hero{min-height:137px}.hero h1{font-size:40px}.sidebar nav a{min-height:40px;padding:9px 12px}.brand{height:179px;min-height:179px}.brand-bottom{margin-top:auto}.workspace{padding:0 8px 0}.acquisition-layout{display:grid;grid-template-columns:minmax(0,2.53fr) minmax(320px,1fr);gap:7px;align-items:start}.pipeline-side{min-width:0}.kpi-row{display:grid;grid-template-columns:1.14fr 1fr 1.04fr 1.04fr 1fr 1.16fr;gap:5px}.kpi{min-width:0;min-height:76px;display:flex;align-items:center;gap:12px;padding:9px;background:linear-gradient(130deg,#103557,#061b36);border:1px solid #205789;border-radius:5px;box-shadow:inset 0 1px 5px #2d689725}.kpi-icon{display:block;width:32px;height:32px;color:#64cff5;flex-shrink:0}.kpi:nth-child(5) .kpi-icon{color:#efd071}.kpi>div>span{display:block;font-size:8px;color:#c3d1e0;white-space:nowrap}.kpi strong{display:block;font-size:23px;line-height:1.4;white-space:nowrap;letter-spacing:-.8px}.kpi:last-child strong{font-size:20px}.kpi small{font-size:11px;color:#0de791;font-weight:800}.preview-line{display:flex;justify-content:space-between;gap:4px;align-items:center;height:17px;font-size:7px;color:#b6c7da;letter-spacing:.15px}.preview-line button{background:transparent;color:#6ed6ff;border:0;padding:0;font-size:8px}
-.board-scroll{overflow-x:auto;scrollbar-color:#3c6e9c #05223e;padding-bottom:3px}.board{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:4px;min-width:870px}.stage{min-width:0;border-radius:4px;background:#06264455}.stage h2{height:36px;font-size:10px;font-weight:750;letter-spacing:-.35px;display:flex;align-items:center;justify-content:space-between;gap:2px;margin:0 0 5px;padding:5px 6px;background:linear-gradient(110deg,color-mix(in srgb,var(--stage) 45%,#061a2e),#091d31);border:1px solid color-mix(in srgb,var(--stage) 65%,#102c48);border-radius:4px;box-shadow:inset 0 1px 4px #ffffff25}.stage h2 b{background:#ffffff16;border-radius:2px;padding:2px 4px;font-size:10px}.stage-cards{display:flex;flex-direction:column;gap:5px}.deal-card{display:block;width:100%;padding:3px;text-align:left;min-width:0;background:linear-gradient(145deg,#11324c,#051c33);border:1px solid #1c4364;border-radius:5px;box-shadow:0 2px 5px #0005;transition:border-color .15s,box-shadow .15s}.deal-card:hover{border-color:#78bff0;box-shadow:0 0 9px #3c9def44}.deal-card.selected{border:2px solid #ddc55d;padding:2px;box-shadow:0 0 9px #ebc44944}.deal-card>img{display:block;width:100%;height:56px;object-fit:cover;border-radius:2px;background:#144360}.card-body{padding:3px 2px 2px}.card-body h3{font-size:9px;font-weight:800;line-height:1.5;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.card-body>p{font-size:8px;margin:0 0 5px;color:#d3deeb;white-space:nowrap}.card-body dl{font-size:8px;margin:0;line-height:1.55}.card-body dl>div{display:flex;justify-content:space-between;gap:2px}.card-body dt{color:#aebed0}.card-body dd{margin:0;color:#eaf0f9}.card-end{display:flex;align-items:center;gap:3px;justify-content:space-between;margin-top:5px;min-height:20px}.stage-badge{background:var(--stage);padding:3px 5px;border-radius:4px;font-size:8px;color:white;white-space:nowrap;font-weight:700;box-shadow:inset 0 1px #ffffff30}.stage:nth-child(2) .stage-badge,.stage:nth-child(3) .stage-badge,.stage:nth-child(6) .stage-badge{color:#061829}.agent{font-size:6px;color:#d4dfec;display:flex;align-items:center;gap:3px;white-space:nowrap;overflow:hidden}.agent i{display:inline-flex;width:15px;height:15px;border-radius:50%;background:linear-gradient(140deg,#c49c7a,#274c79);justify-content:center;align-items:center;font-style:normal;font-size:8px;color:white;flex-shrink:0}.hot{background:#e32441;border-radius:4px;padding:3px 7px;font-size:8px}.empty-stage{color:#9bb0c8;font-size:10px;text-align:center;padding:20px 3px;border:1px dashed #28618c;border-radius:4px}
+.board-scroll{overflow-x:auto;scrollbar-color:#3c6e9c #05223e;padding-bottom:3px}.board{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:4px;min-width:870px}.stage{min-width:0;border-radius:4px;background:#06264455}.stage h2{height:36px;font-size:10px;font-weight:750;letter-spacing:-.35px;display:flex;align-items:center;justify-content:space-between;gap:2px;margin:0 0 5px;padding:5px 6px;background:linear-gradient(110deg,color-mix(in srgb,var(--stage) 45%,#061a2e),#091d31);border:1px solid color-mix(in srgb,var(--stage) 65%,#102c48);border-radius:4px;box-shadow:inset 0 1px 4px #ffffff25}.stage h2 b{background:#ffffff16;border-radius:2px;padding:2px 4px;font-size:10px}.stage-cards{display:flex;flex-direction:column;gap:5px}.deal-card{display:block;width:100%;padding:3px;text-align:left;min-width:0;background:linear-gradient(145deg,#11324c,#051c33);border:1px solid #1c4364;border-radius:5px;box-shadow:0 2px 5px #0005;transition:border-color .15s,box-shadow .15s}.deal-card:hover{border-color:#78bff0;box-shadow:0 0 9px #3c9def44}.deal-card.selected{border:2px solid #ddc55d;padding:2px;box-shadow:0 0 9px #ebc44944}.deal-card>img{display:block;width:100%;height:56px;object-fit:cover;border-radius:2px;background:#144360}
+.card-photo-placeholder{display:flex;align-items:center;justify-content:center;width:100%;height:56px;background:#0d2842;border-radius:2px;color:#356991}
+.card-photo-placeholder .icon{width:22px;height:22px}
+.photo-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;width:100%;height:100%;background:#0d2842;color:#5a84a6;font-size:10px}
+.photo-placeholder .icon{width:28px;height:28px;color:#3a6e99}
+.photo-placeholder-side{display:flex;align-items:center;justify-content:center;width:100%;height:60px;background:#0d2842;border-radius:4px;border:1px solid #1e4f82;color:#3a6e99}
+.photo-placeholder-side .icon{width:20px;height:20px}
+.empty-conversation{padding:25px 10px;text-align:center;color:#6d8aa8}
+.no-messages-text{margin:0 0 5px;font-size:11px;color:#94afc9}
+.no-messages-hint{font-size:9px;color:#57799c}.card-body{padding:3px 2px 2px}.card-body h3{font-size:9px;font-weight:800;line-height:1.5;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.card-body>p{font-size:8px;margin:0 0 5px;color:#d3deeb;white-space:nowrap}.card-body dl{font-size:8px;margin:0;line-height:1.55}.card-body dl>div{display:flex;justify-content:space-between;gap:2px}.card-body dt{color:#aebed0}.card-body dd{margin:0;color:#eaf0f9}.card-end{display:flex;align-items:center;gap:3px;justify-content:space-between;margin-top:5px;min-height:20px}.stage-badge{background:var(--stage);padding:3px 5px;border-radius:4px;font-size:8px;color:white;white-space:nowrap;font-weight:700;box-shadow:inset 0 1px #ffffff30}.stage:nth-child(2) .stage-badge,.stage:nth-child(3) .stage-badge,.stage:nth-child(6) .stage-badge{color:#061829}.agent{font-size:6px;color:#d4dfec;display:flex;align-items:center;gap:3px;white-space:nowrap;overflow:hidden}.agent i{display:inline-flex;width:15px;height:15px;border-radius:50%;background:linear-gradient(140deg,#c49c7a,#274c79);justify-content:center;align-items:center;font-style:normal;font-size:8px;color:white;flex-shrink:0}.hot{background:#e32441;border-radius:4px;padding:3px 7px;font-size:8px}.empty-stage{color:#9bb0c8;font-size:10px;text-align:center;padding:20px 3px;border:1px dashed #28618c;border-radius:4px}
 .activity{display:flex;align-items:center;gap:4px;margin-top:5px;border:1px solid #1d4874;border-radius:5px;background:#05182d;min-height:37px}.activity>strong{display:flex;align-items:center;font-size:11px;padding:4px 8px;gap:6px;white-space:nowrap}.activity>strong .icon{color:#ebc761}.activity>div{display:flex;align-items:center;gap:6px;border-left:1px solid #255173;padding:3px 10px;flex:1}.activity small{display:block;font-size:7px;color:#c6d3e0}.activity b{display:block;font-size:12px}.activity em{font-style:normal;font-size:6px;color:#04d888;margin-left:7px}.activity button{font-size:7px;background:transparent;border:0;color:#96c6e6;margin-left:auto;padding:5px}.activity .icon{width:18px;height:18px}
 .detail{border:1px solid #1e4f82;border-radius:6px;background:linear-gradient(145deg,#092641,#03182e);padding:7px;box-shadow:0 0 16px #020c1c55;min-width:0}.detail-heading{display:flex;align-items:center;gap:9px;padding:0 0 7px;border-bottom:1px solid #1c4165}.detail-heading>.icon{width:29px;height:29px}.detail-heading h2{margin:0;font-size:17px;line-height:1.3}.detail-heading p{margin:0;font-size:10px;color:#c5d1df;letter-spacing:.3px}.detail-heading>div{flex:1}.detail-heading button{background:none;border:0;padding:1px;font-size:20px;color:#c6d5e7}.photo-layout{display:grid;grid-template-columns:minmax(0,2.6fr) minmax(0,1fr);gap:7px;margin-top:6px}.main-photo{height:132px;position:relative;background:#133c58;border-radius:3px;overflow:hidden}.main-photo img{width:100%;height:100%;object-fit:cover}.main-photo small{position:absolute;bottom:3px;left:4px;background:#00172da8;padding:2px 4px;font-size:7px}.photo-side{display:flex;flex-direction:column;gap:5px;position:relative}.outline-badge{font-size:8px;font-weight:700;border:1px solid var(--stage);background:color-mix(in srgb,var(--stage) 25%,#061b30);padding:4px 5px;border-radius:4px}.potential{font-size:9px;padding:4px 5px;border:1px solid #d44c65;color:#ffe2c4;border-radius:4px;background:#40222c}.photo-side img{width:100%;height:60px;object-fit:cover;border-radius:4px;border:1px solid #356991}.photo-side>small{position:absolute;bottom:3px;left:5px;font-size:8px;background:#031529aa;padding:1px 4px}.deal-metrics{display:grid;grid-template-columns:.85fr .9fr .9fr 1.2fr;margin-top:6px;border-bottom:1px solid #163e66;padding-bottom:6px}.deal-metrics>div{padding:0 7px;border-right:1px solid #345877}.deal-metrics>div:first-child{padding-left:3px}.deal-metrics>div:last-child{border:0}.deal-metrics small{font-size:8px;color:#b7cbe1;display:block;white-space:nowrap}.deal-metrics b{font-size:15px;white-space:nowrap;display:block}.address-row{display:flex;align-items:center;gap:6px;font-size:8px;padding:7px 2px}.address-row>.icon{color:#e9c868;width:14px;height:14px}.address-row>a{margin-left:auto;font-size:8px;white-space:nowrap}.owner-box{border:1px solid #235582;border-radius:5px;padding:5px 7px}.owner-box h3{font-size:11px;display:flex;align-items:center;gap:6px;margin:0 0 5px}.owner-box h3>.icon{width:15px;height:15px}.owner-box h3>a{margin-left:auto;padding:3px 10px;font-size:8px;font-weight:400;border:1px solid #557698;border-radius:4px;color:#d7e1ef}.owner-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.owner-grid dl{margin:0;font-size:8px;line-height:1.7}.owner-grid dl>div{display:flex;gap:7px}.owner-grid dt{color:#b6c7dc;white-space:nowrap}.owner-grid dd{margin:0;overflow-wrap:anywhere}.next-step{display:flex;gap:8px;align-items:center;padding:7px 5px;margin:5px 0;border:1px solid #295482;border-radius:4px}.next-step>div{flex:1}.next-step h3{font-size:11px;margin:0 0 3px}.next-step p{font-size:8px;margin:0}.next-step button{padding:6px 9px;font-size:8px;white-space:nowrap}.detail-tabs{display:flex;align-items:center;border:1px solid #154671;border-radius:4px;overflow:hidden}.detail-tabs button{flex:1;padding:6px 2px;background:#06192d;border:0;border-right:1px solid #284463;font-size:8px;white-space:nowrap}.detail-tabs button.active{background:linear-gradient(#174b7f,#062444);box-shadow:inset 0 -2px #dfc671}.tab-content{min-height:221px;padding-top:5px;font-size:10px}.tab-content h3{font-size:12px;margin:8px 0}.conversation{display:flex;flex-direction:column;gap:5px}.message-label{font-size:8px;padding-left:5px;font-weight:700}.message-label small{margin-left:12px;font-weight:400;color:#94afc9;font-size:6px}.bubble{font-size:8px;line-height:1.35;padding:7px 9px;border-radius:5px;max-width:82%;margin:0;background:#2c425d;align-self:flex-start;position:relative}.bubble.outgoing{align-self:flex-end;background:linear-gradient(135deg,#078cff,#0665ed)}.compose{display:flex;gap:5px;margin-top:7px}.compose input{background:#061c31;border:1px solid #315776;border-radius:4px;padding:5px 7px;font-size:9px;color:white;min-width:0;flex:1}.compose button{background:linear-gradient(#159fff,#0063ed);border:1px solid #237dcc;border-radius:4px;font-size:9px;padding:5px 9px}.draft-note{font-size:7px;color:#b1c5dc;display:block;margin:5px 0 0}.tab-content textarea{min-height:115px;width:100%;color:white;background:#09233c;border:1px solid #356487;padding:8px;border-radius:4px;resize:vertical}.small-action{display:inline-block;padding:7px 12px;font-size:10px;margin-top:9px}.task-check{display:flex;gap:8px;align-items:center}.tab-content>p{line-height:1.65;color:#c8d7e7}.property-details{font-size:10px}.property-details>div{display:flex;justify-content:space-between;margin:7px 0}.property-details dd{margin:0}.move-stage{display:flex;flex-direction:column;gap:7px;font-size:11px;margin:10px 0}.move-stage select{padding:7px;color:#fff;background:#0b2a48;border:1px solid #346697;border-radius:4px}.tab-content>small{color:#a5bbd1;font-size:8px}.detail-closed{grid-template-columns:1fr}.footer{display:flex;justify-content:space-between;gap:10px;font-size:7px;color:#99afc5;padding:7px 5px}.footer b{margin:0 10px;color:#b99d53}.footer>span:nth-child(2){color:#dbc679;letter-spacing:1px;font-size:6px}
 .modal-backdrop{position:fixed;inset:0;background:#000a;z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}.dialog{position:relative;width:min(480px,100%);max-height:85vh;overflow:auto;padding:26px;background:linear-gradient(130deg,#103353,#05182d);border:1px solid #49789e;border-radius:10px;box-shadow:0 20px 60px #0009}.dialog h2{font-size:22px;color:#eed383;margin:0 0 16px}.dialog p,.dialog li{font-size:12px;line-height:1.7;color:#c6d6e7}.dialog label{display:flex;flex-direction:column;gap:6px;font-size:12px;margin:13px 0}.dialog input{color:white;padding:9px;background:#061b2f;border:1px solid #366384;border-radius:4px}.dialog-close{position:absolute;right:13px;top:7px;background:transparent;border:0;font-size:28px}.dialog a{font-size:12px}
