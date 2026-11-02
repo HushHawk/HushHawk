@@ -161,34 +161,6 @@
               <p class="auth-card-desc">Enter your authorized credentials to unlock active pipelines, underwriting formulas & dispo desk.</p>
             </div>
 
-            <!-- Attached Main Admin Credentials Callout -->
-            <div class="main-admin-callout">
-              <div class="admin-callout-header">
-                <span class="admin-badge-gold">
-                  <span class="crown-icon">👑</span> MAIN ADMIN CREDENTIALS (ATTACHED)
-                </span>
-                <span class="ready-pill">READY TO SIGN IN</span>
-              </div>
-              <div class="admin-credentials-row">
-                <div class="cred-kv">
-                  <span class="cred-k">User:</span>
-                  <strong class="cred-v">admin@hushhawk.com</strong>
-                </div>
-                <div class="cred-kv">
-                  <span class="cred-k">Key:</span>
-                  <strong class="cred-v">admin</strong>
-                </div>
-                <button
-                  type="button"
-                  class="btn-reload-admin"
-                  title="Reload Main Admin Credentials"
-                  @click="loadMainAdmin"
-                >
-                  Attached ✓
-                </button>
-              </div>
-            </div>
-
             <!-- Login Form -->
             <form class="auth-form" @submit.prevent="handleLogin">
               <!-- Error Banner -->
@@ -217,7 +189,7 @@
                     type="text"
                     required
                     autocomplete="username"
-                    placeholder="admin@hushhawk.com"
+                    placeholder="name@company.com"
                     :disabled="isLoading"
                   />
                 </div>
@@ -242,7 +214,7 @@
                     :type="showPassword ? 'text' : 'password'"
                     required
                     autocomplete="current-password"
-                    placeholder="admin"
+                    placeholder="••••••••"
                     :disabled="isLoading"
                   />
                   <button
@@ -340,9 +312,8 @@ export default {
     }
     return {
       isLoggedIn: hasSession,
-      // PRE-ATTACHED MAIN ADMIN CREDENTIALS BY DEFAULT
-      email: 'admin@hushhawk.com',
-      password: 'admin',
+      email: '',
+      password: '',
       rememberMe: true,
       showPassword: false,
       isLoading: false,
@@ -418,17 +389,11 @@ export default {
         window.location.href = '/';
       }
 
-      // Keep Main Admin pre-attached unless explicit user session saved
+      // Restore remembered email if present
       const savedEmail = window.localStorage.getItem('hh_remembered_email');
-      if (savedEmail && savedEmail !== 'admin@hushhawk.com') {
+      if (savedEmail) {
         this.email = savedEmail;
-        const found = this.authorizedCredentials.find(c => c.email.toLowerCase() === savedEmail.toLowerCase());
-        this.password = found ? found.password : 'admin';
-      } else {
-        this.loadMainAdmin();
       }
-    } else {
-      this.loadMainAdmin();
     }
   },
   beforeUnmount() {
