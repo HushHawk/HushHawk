@@ -697,6 +697,33 @@ export default {
   height: 100%;
 }
 
+.hushhawk-logo-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.45));
+}
+
+.hushhawk-logo-spinner :deep(svg) {
+  width: 48px;
+  height: 48px;
+}
+
+.hushhawk-logo-spinner-xs {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+}
+
+.hushhawk-logo-spinner-xs :deep(svg) {
+  width: 18px;
+  height: 18px;
+}
+
 /* Sidebar Styling - Locked & Fixed on Viewport */
 .sidebar {
   width: 210px !important;

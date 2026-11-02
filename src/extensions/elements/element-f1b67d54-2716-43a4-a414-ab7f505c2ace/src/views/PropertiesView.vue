@@ -52,7 +52,7 @@
           <p>No properties found</p>
         </div>
         <div v-if="loadingProperties" class="prop-loading-list">
-          <div class="spinner-sm"></div>
+          <div class="hushhawk-logo-spinner" v-html="icons.logoSpinner"></div>
           <span>Loading properties…</span>
         </div>
       </div>
@@ -252,7 +252,7 @@
         </div>
 
         <div v-if="loadingPhotos" class="loading-state">
-          <div class="spinner"></div>
+          <div class="hushhawk-logo-spinner" v-html="icons.logoSpinner"></div>
           <span>Loading photos from AWS S3 &amp; PostgreSQL...</span>
         </div>
 
@@ -310,7 +310,7 @@
         </div>
 
         <div v-if="loadingDocs" class="panel-loading">
-          <div class="spinner-md"></div>
+          <div class="hushhawk-logo-spinner" v-html="icons.logoSpinner"></div>
           <span>Loading documents…</span>
         </div>
 
@@ -372,7 +372,7 @@
         </div>
 
         <div v-if="loadingTasks" class="panel-loading">
-          <div class="spinner-md"></div>
+          <div class="hushhawk-logo-spinner" v-html="icons.logoSpinner"></div>
           <span>Loading tasks…</span>
         </div>
 
@@ -445,7 +445,7 @@
         </div>
 
         <div v-if="loadingExpenses" class="panel-loading">
-          <div class="spinner-md"></div>
+          <div class="hushhawk-logo-spinner" v-html="icons.logoSpinner"></div>
           <span>Loading expenses…</span>
         </div>
 
@@ -499,7 +499,7 @@
         </div>
 
         <div v-if="loadingContractors" class="panel-loading">
-          <div class="spinner-md"></div>
+          <div class="hushhawk-logo-spinner" v-html="icons.logoSpinner"></div>
           <span>Loading contractors…</span>
         </div>
 
@@ -548,7 +548,7 @@
         </div>
 
         <div v-if="loadingTimeline" class="panel-loading">
-          <div class="spinner-md"></div>
+          <div class="hushhawk-logo-spinner" v-html="icons.logoSpinner"></div>
           <span>Building chronological timeline…</span>
         </div>
 
@@ -1011,7 +1011,7 @@
             <span class="upl-icon">
               <svg v-if="r.status==='done'" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2ecc71" stroke-width="2.5"><polyline points="20,6 9,17 4,12"/></svg>
               <svg v-else-if="r.status==='error'" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#e74c3c" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-              <div v-else class="spinner-xs"></div>
+              <span v-else class="hushhawk-logo-spinner-xs" v-html="icons.logoSpinning"></span>
             </span>
             <span class="upl-name">{{ r.name }}</span>
           </div>
@@ -1310,6 +1310,7 @@
 </template>
 
 <script>
+import { icons } from '../icons.js';
 const API_BASE = '/api/v1';
 
 export default {
@@ -1317,6 +1318,7 @@ export default {
   props: { content: { type: Object, default: () => ({}) } },
   data() {
     return {
+      icons,
       // 8-step Photo & S3 workflow state
       showChooseOptionModal: false,
       modalStep: null,
@@ -2358,7 +2360,30 @@ export default {
 }
 .prop-empty, .prop-loading-list {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 8px; padding: 40px 16px; color: #4a6484; font-size: 13px; text-align: center;
+  gap: 12px; padding: 40px 16px; color: #f5cf72; font-size: 13px; text-align: center;
+}
+.hushhawk-logo-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.45));
+}
+.hushhawk-logo-spinner svg {
+  width: 48px;
+  height: 48px;
+}
+.hushhawk-logo-spinner-xs {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+}
+.hushhawk-logo-spinner-xs svg {
+  width: 18px;
+  height: 18px;
 }
 .spinner-sm {
   width: 20px; height: 20px;

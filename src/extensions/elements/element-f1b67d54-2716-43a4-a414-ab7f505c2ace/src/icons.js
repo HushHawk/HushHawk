@@ -50,5 +50,78 @@ export const icons = {
   archive: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><polyline points="21 8 21 21 3 21 3 8"/><rect width="22" height="5" x="1" y="3" rx="1"/><line x1="10" y1="12" x2="14" y2="12"/></svg>`,
   pieChart: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>`,
   copy: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>`,
-  info: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`
+  info: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`,
+
+  // Branded HushHawk Emblem Spinners
+  logoSpinner: `<svg class="hh-svg-spinner" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56" width="36" height="36" fill="none">
+    <defs>
+      <linearGradient id="hhGSpinOrb" x1="4" y1="4" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#FDE68A"/><stop offset="35%" stop-color="#D4AF37"/><stop offset="70%" stop-color="#B45309"/><stop offset="100%" stop-color="#F59E0B"/>
+      </linearGradient>
+      <linearGradient id="hhCSpinOrb" x1="10" y1="5" x2="26" y2="14" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#FFFBEB"/><stop offset="60%" stop-color="#F59E0B"/><stop offset="100%" stop-color="#D97706"/>
+      </linearGradient>
+      <linearGradient id="hhOrbTrackGrad" x1="0" y1="0" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#FDE68A"/>
+        <stop offset="45%" stop-color="#F59E0B"/>
+        <stop offset="100%" stop-color="transparent"/>
+      </linearGradient>
+      <style>
+        @keyframes hhSpinFast { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes hhSpinSlowRev { 0% { transform: rotate(360deg); } 100% { transform: rotate(0deg); } }
+        @keyframes hhCoreBreathe { 0%, 100% { transform: scale(1); filter: drop-shadow(0 0 4px rgba(245, 158, 11, 0.35)); } 50% { transform: scale(1.04); filter: drop-shadow(0 0 10px rgba(253, 230, 138, 0.75)); } }
+        .hh-spin-orbit { transform-origin: 28px 28px; animation: hhSpinFast 1s cubic-bezier(0.55, 0.15, 0.45, 0.85) infinite; }
+        .hh-spin-dash { transform-origin: 28px 28px; animation: hhSpinSlowRev 4.5s linear infinite; }
+        .hh-spin-emblem { transform-origin: 28px 28px; animation: hhCoreBreathe 2s ease-in-out infinite; }
+      </style>
+    </defs>
+    <circle cx="28" cy="28" r="25" stroke="rgba(212, 175, 55, 0.18)" stroke-width="2"/>
+    <circle cx="28" cy="28" r="25" stroke="url(#hhOrbTrackGrad)" stroke-width="2.6" stroke-linecap="round" stroke-dasharray="115 45" class="hh-spin-orbit"/>
+    <circle cx="28" cy="28" r="21" stroke="rgba(245, 158, 11, 0.35)" stroke-width="1.2" stroke-dasharray="3 4" class="hh-spin-dash"/>
+    <g class="hh-spin-emblem" transform="translate(10, 10)">
+      <rect width="36" height="36" rx="8" fill="#0A1128"/>
+      <rect x="1" y="1" width="34" height="34" rx="7" stroke="url(#hhGSpinOrb)" stroke-width="1.2" stroke-opacity="0.85"/>
+      <path d="M12 9.5L14 13.5L18 7.5L22 13.5L24 9.5L25 15.5H11L12 9.5Z" fill="url(#hhCSpinOrb)"/>
+      <circle cx="18" cy="11.5" r="1.2" fill="#0A1128"/>
+      <path d="M6 14.5C10 16 14 19 16.5 22L13 23C9 20 6.5 17 6 14.5Z" fill="url(#hhGSpinOrb)"/>
+      <path d="M7.5 19C10.5 20.5 14 23 15.5 25L13.5 26C10 23.5 8 21 7.5 19Z" fill="url(#hhGSpinOrb)" fill-opacity="0.9"/>
+      <path d="M30 14.5C26 16 22 19 19.5 22L23 23C27 20 29.5 17 30 14.5Z" fill="url(#hhGSpinOrb)"/>
+      <path d="M28.5 19C25.5 20.5 22 23 20.5 25L22.5 26C26 23.5 28 21 28.5 19Z" fill="url(#hhGSpinOrb)" fill-opacity="0.9"/>
+      <path d="M18 14L15.5 19.5L18 29L20.5 19.5L18 14Z" fill="url(#hhGSpinOrb)"/>
+      <path d="M18 15.5L16.8 19L18 22L19.2 19L18 15.5Z" fill="#FFFBEB"/>
+      <circle cx="18" cy="18.5" r="1" fill="#0A1128"/>
+      <path d="M17.5 19.5H18.5L18.8 22H17.2L17.5 19.5Z" fill="#0A1128"/>
+      <path d="M16 29L18 31.5L20 29H16Z" fill="url(#hhGSpinOrb)"/>
+    </g>
+  </svg>`,
+
+  logoSpinning: `<svg class="hh-svg-rotating" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36" width="36" height="36" fill="none">
+    <defs>
+      <linearGradient id="hhGDirectSpin" x1="4" y1="4" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#FDE68A"/><stop offset="35%" stop-color="#D4AF37"/><stop offset="70%" stop-color="#B45309"/><stop offset="100%" stop-color="#F59E0B"/>
+      </linearGradient>
+      <linearGradient id="hhCDirectSpin" x1="10" y1="5" x2="26" y2="14" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#FFFBEB"/><stop offset="60%" stop-color="#F59E0B"/><stop offset="100%" stop-color="#D97706"/>
+      </linearGradient>
+      <style>
+        @keyframes hhEmblemRotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .hh-rotating-shield { transform-origin: 18px 18px; animation: hhEmblemRotate 1.5s linear infinite; filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.5)); }
+      </style>
+    </defs>
+    <g class="hh-rotating-shield">
+      <rect width="36" height="36" rx="8" fill="#0A1128"/>
+      <rect x="1" y="1" width="34" height="34" rx="7" stroke="url(#hhGDirectSpin)" stroke-width="1.2" stroke-opacity="0.85"/>
+      <path d="M12 9.5L14 13.5L18 7.5L22 13.5L24 9.5L25 15.5H11L12 9.5Z" fill="url(#hhCDirectSpin)"/>
+      <circle cx="18" cy="11.5" r="1.2" fill="#0A1128"/>
+      <path d="M6 14.5C10 16 14 19 16.5 22L13 23C9 20 6.5 17 6 14.5Z" fill="url(#hhGDirectSpin)"/>
+      <path d="M7.5 19C10.5 20.5 14 23 15.5 25L13.5 26C10 23.5 8 21 7.5 19Z" fill="url(#hhGDirectSpin)" fill-opacity="0.9"/>
+      <path d="M30 14.5C26 16 22 19 19.5 22L23 23C27 20 29.5 17 30 14.5Z" fill="url(#hhGDirectSpin)"/>
+      <path d="M28.5 19C25.5 20.5 22 23 20.5 25L22.5 26C26 23.5 28 21 28.5 19Z" fill="url(#hhGDirectSpin)" fill-opacity="0.9"/>
+      <path d="M18 14L15.5 19.5L18 29L20.5 19.5L18 14Z" fill="url(#hhGDirectSpin)"/>
+      <path d="M18 15.5L16.8 19L18 22L19.2 19L18 15.5Z" fill="#FFFBEB"/>
+      <circle cx="18" cy="18.5" r="1" fill="#0A1128"/>
+      <path d="M17.5 19.5H18.5L18.8 22H17.2L17.5 19.5Z" fill="#0A1128"/>
+      <path d="M16 29L18 31.5L20 29H16Z" fill="url(#hhGDirectSpin)"/>
+    </g>
+  </svg>`
 };
