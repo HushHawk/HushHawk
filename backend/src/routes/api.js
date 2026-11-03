@@ -2242,11 +2242,11 @@ apiRouter.get('/ai/quick-prompts', (req, res) => {
     res.json({
         ok: true,
         prompts: [
-            { label: '🔍 Missing Data Audit', query: 'Which leads are missing phone or email addresses?' },
-            { label: '📜 Recent Audit Trail', query: 'Show me the audit trail and what changed recently' },
-            { label: '📋 Pending Tasks', query: 'What tasks are pending or high priority?' },
-            { label: '🏛️ System Blueprint Rules', query: 'Explain the CrownKey standard and non-merge rules' },
-            { label: '🦅 Executive Portfolio', query: 'Give me an executive summary of our active portfolio' }
+            { label: 'Missing Data Audit', query: 'Which leads are missing phone or email addresses?' },
+            { label: 'Recent Audit Trail', query: 'Show me the audit trail and what changed recently' },
+            { label: 'Pending Tasks Matrix', query: 'What tasks are pending or high priority?' },
+            { label: 'System Blueprint Rules', query: 'Explain the CrownKey standard and non-merge rules' },
+            { label: 'Executive Portfolio', query: 'Give me an executive summary of our active portfolio' }
         ]
     });
 });
