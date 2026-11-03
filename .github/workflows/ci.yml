@@ -1,0 +1,43 @@
+name: HushHawk CI & Core Foundation Checks
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  core-verification:
+    name: Core Foundation & Acceptance Checks
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20.x]
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Verify CrownKey Deterministic Standard
+        run: npm run test:crownkey
+
+      - name: Verify 12 Platform Acceptance Tests
+        run: npm run test:acceptance
+
+      - name: Run Milestone 1 Exit Check
+        run: npm run test:milestone1
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      - name: Build Production Frontend
+        run: npm run build

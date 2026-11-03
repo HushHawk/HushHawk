@@ -1,0 +1,1410 @@
+{
+  "metadata": {
+    "timestamp": "2026-11-03T04:55:55.574Z",
+    "version": "1.0.0",
+    "schemas": [
+      "core",
+      "crm",
+      "audit",
+      "ops",
+      "ref",
+      "rel",
+      "raw"
+    ],
+    "tableCount": 44
+  },
+  "tables": {
+    "audit.audit_events": {
+      "rowCount": 0,
+      "rows": []
+    },
+    "core.businesses": {
+      "rowCount": 1,
+      "rows": [
+        {
+          "business_id": "b1000000-0000-0000-0000-000000000001",
+          "legal_name": "Atlantic Coast Holdings LLC",
+          "entity_type": "LLC",
+          "jurisdiction": "FL",
+          "registration_id": "L21000394812",
+          "status": "ACTIVE",
+          "registered_agent": "Sunstate Registered Agents Inc.",
+          "created_at": "2026-10-28T06:59:13.397Z"
+        }
+      ]
+    },
+    "core.campaigns": {
+      "rowCount": 0,
+      "rows": []
+    },
+    "core.interactions": {
+      "rowCount": 0,
+      "rows": []
+    },
+    "core.leads": {
+      "rowCount": 0,
+      "rows": []
+    },
+    "core.people": {
+      "rowCount": 3,
+      "rows": [
+        {
+          "person_id": "ae100000-0000-0000-0000-000000000001",
+          "full_name": "Arthur Pendelton",
+          "first_name": "Arthur",
+          "last_name": "Pendelton",
+          "primary_phone": "(904) 555-0182",
+          "primary_email": "arthur.p@outlook.com",
+          "mailing_address": "1428 River City Blvd, Jacksonville, FL 32204",
+          "is_suppressed": false,
+          "verification_level": "VERIFIED_OWNER",
+          "created_at": "2026-10-28T06:58:18.495Z",
+          "updated_at": "2026-10-28T06:58:18.495Z"
+        },
+        {
+          "person_id": "ae200000-0000-0000-0000-000000000002",
+          "full_name": "Beatrice Montgomery",
+          "first_name": "Beatrice",
+          "last_name": "Montgomery",
+          "primary_phone": "(904) 555-0391",
+          "primary_email": "bmontgomery@gmail.com",
+          "mailing_address": "1240 Peachtree St NE, Atlanta, GA 30309",
+          "is_suppressed": false,
+          "verification_level": "VERIFIED_OWNER",
+          "created_at": "2026-10-28T06:58:18.815Z",
+          "updated_at": "2026-10-28T06:58:18.815Z"
+        },
+        {
+          "person_id": "ae300000-0000-0000-0000-000000000003",
+          "full_name": "James C. Halpert",
+          "first_name": "James",
+          "last_name": "Halpert",
+          "primary_phone": "(904) 555-0744",
+          "primary_email": "jchalpert@yahoo.com",
+          "mailing_address": "714 E 8th St, Jacksonville, FL 32206",
+          "is_suppressed": true,
+          "verification_level": "VERIFIED_OWNER",
+          "created_at": "2026-10-28T06:58:19.134Z",
+          "updated_at": "2026-10-28T06:58:19.134Z"
+        }
+      ]
+    },
+    "core.pillar_events": {
+      "rowCount": 0,
+      "rows": []
+    },
+    "core.properties": {
+      "rowCount": 18,
+      "rows": [
+        {
+          "property_id": "b0d10000-0000-0000-0000-0000c7f77394",
+          "county_id": "c1111111-1111-1111-1111-111111111111",
+          "parcel_raw": "PODIO-3354882964",
+          "parcel_match": "PODIO3354882964",
+          "address_line1": "10725 Meadowlea Dr",
+          "city": "Jacksonville",
+          "state_code": "FL",
+          "postal_code": "32218",
+          "property_type": "Single Family Residential",
+          "legal_description": "Sent offer to listing agent 8/23/26 Seller is an investment group out of Salt Lake City, Spent 9.4 M on properties in 2021.",
+          "assessed_value": "135000.00",
+          "created_at": "2026-11-02T15:03:55.642Z",
+          "updated_at": "2026-11-02T15:03:55.642Z"
+        },
+        {
+          "property_id": "b0d10000-0000-0000-0000-0000c6d9491b",
+          "county_id": "c1111111-1111-1111-1111-111111111111",
+          "parcel_raw": "PODIO-3336128795",
+          "parcel_match": "PODIO3336128795",
+          "address_line1": "1450 w 16th jacksonville",
+          "city": "Fl",
+          "state_code": "FL",
+          "postal_code": "32204",
+          "property_type": "Single Family Residential",
+          "legal_description": null,
+          "assessed_value": "49500.00",
+          "created_at": "2026-11-02T15:03:55.930Z",
+          "updated_at": "2026-11-02T15:03:55.930Z"
+        },
+        {
+          "property_id": "b0d10000-0000-0000-0000-0000c6d93e77",
+          "county_id": "c1111111-1111-1111-1111-111111111111",
+          "parcel_raw": "PODIO-3336126071",
+          "parcel_match": "PODIO3336126071",
+          "address_line1": "9606 Devonshire Blvd",
+          "city": "Jacksonville",
+          "state_code": "FL",
+          "postal_code": "32208",
+          "property_type": "Single Family Residential",
+          "legal_description": "Auction property",
+          "assessed_value": "102000.00",
+          "created_at": "2026-11-02T15:03:56.213Z",
+          "updated_at": "2026-11-02T15:03:56.213Z"
+        },
+        {
+          "property_id": "b0d10000-0000-0000-0000-0000c6adfdfe",
+          "county_id": "c1111111-1111-1111-1111-111111111111",
+          "parcel_raw": "PODIO-3333291518",
+          "parcel_match": "PODIO3333291518",
+          "address_line1": "1416 Kings Rd",
+          "city": "Jacksonville",
+          "state_code": "FL",
+          "postal_code": "32209",
+          "property_type": "Single Family Residential",
+          "legal_description": "This one came from Alec, They currently under negotiation at 34,000. Our price preferred is 32,000. This one is on a busy main road",
+          "assessed_value": "48000.00",
+          "created_at": "2026-11-02T15:03:56.497Z",
+          "updated_at": "2026-11-02T15:03:56.497Z"
+        },
+        {
+          "property_id": "b0d10000-0000-0000-0000-0000c6adf3eb",
+          "county_id": "c1111111-1111-1111-1111-111111111111",
+          "parcel_raw": "PODIO-3333288939",
+          "parcel_match": "PODIO3333288939",
+          "address_line1": "1411 Wilcox St j",
+          "city": "Jacksonville",
+          "state_code": "FL",
+          "postal_code": "32209",
+          "property_type": "Single Family Residential",
+          "legal_description": "This particular one was sent by a whole Saler name George from FB. The buyer paid 15,000 in 2024. The wholesaler does not have the deal Locked up due to him wanting to make a larger spread. I believe this one has not been locked up because previously he tried to dispo at 30,000. Imo , the seller will sell at 18-20k",
+          "assessed_value": "30750.00",
+          "created_at": "2026-11-02T15:03:56.781Z",
+          "updated_at": "2026-11-02T15:03:56.781Z"
+        },
+        {
+          "property_id": "b0d10000-0000-0000-0000-0000c6adddad",
+          "county_id": "c1111111-1111-1111-1111-111111111111",
+          "parcel_raw": "PODIO-3333283245",
+          "parcel_match": "PODIO3333283245",
+          "address_line1": "5757 Marigold Rd",
+          "city": "Jacksonville",
+          "state_code": "FL",
+          "postal_code": "32209",
+          "property_type": "Single Family Residential",
+          "legal_description": "The deals was sent by Colby at Prime Buyers based in Jacksonville, FL. Asking price price is 50,000comps 6151 Ardisia Rd-128,000, 5319 Bunche Dr $138,000, 2427 Lantana Ave- 140,000, 5430 Callaway ct $150,000",
+          "assessed_value": "52500.00",
+          "created_at": "2026-11-02T15:03:57.134Z",
+          "updated_at": "2026-11-02T15:03:57.134Z"
+        },
+        {
+          "property_id": "b0d10000-0000-0000-0000-0000c66194fe",
+          "county_id": "c1111111-1111-1111-1111-111111111111",
+          "parcel_raw": "PODIO-3328283902",
+          "parcel_match": "PODIO3328283902",
+          "address_line1": "3251 W Montcalm Dr",
+          "city": "Jacksonville",
+          "state_code": "FL",
+          "postal_code": "32208",
+          "property_type": "Single Family Residential",
+          "legal_description": null,
+          "assessed_value": "90000.00",
+          "created_at": "2026-11-02T15:03:57.418Z",
+          "updated_at": "2026-11-02T15:03:57.418Z"
+        },
+        {
+          "property_id": "b0d10000-0000-0000-0000-0000c5f49010",
+          "county_id": "c1111111-1111-1111-1111-111111111111",
+          "parcel_raw": "PODIO-3321139216",
+          "parcel_match": "PODIO3321139216",
+          "address_line1": "7120 Northland St",
+          "city": "Jacksonville",
+          "state_code": "FL",
+          "postal_code": "32208",
+          "property_type": "Single Family Residential",
+          "legal_description": "Purchased through Sage Acquisition (Colby Prime buyers)Assignment of contract to Ronenhova1 LLC",
+          "assessed_value": "45000.00",
+          "created_at": "2026-11-02T15:03:57.710Z",
+          "updated_at": "2026-11-02T15:03:57.710Z"
+        },
+        {
+          "property_id": "b0d10000-0000-0000-0000-0000c5e8a6eb",
+          "county_id": "c1111111-1111-1111-1111-111111111111",
+          "parcel_raw": "PODIO-3320358635",
+          "parcel_match": "PODIO3320358635",
+          "address_line1": "1636 W 36th St",
+          "city": "Jacksonville",
+          "state_code": "FL",
+          "postal_code": "32209",
+          "property_type": "Single Family Residential",
+          "legal_description": null,
+          "assessed_value": "30000.00",
+          "created_at": "2026-11-02T15:03:57.991Z",
+          "updated_at": "2026-11-02T15:03:57.991Z"
+        },
+        {
+          "property_id": "b0d10000-0000-0000-0000-0000c55f8da0",
+          "county_id": "c1111111-1111-1111-1111-111111111111",
+          "parcel_raw": "PODIO-3311373728",
+          "parcel_match": "PODIO3311373728",
+          "address_line1": "1549 W 35th St",
+          "city": "Jacksonville",
+          "state_code": "FL",
+          "postal_code": "32209",
+          "property_type": "Single Family Residential",
+          "legal_description": "Simply sell deal. Buyer is Rona . Tentative closing June 22ndNotes for Dejon on deals that have tax certificatesEnsure the tax certificate value is based off the end buyer dollar amount &amp; before payment ensure we have an extension on all contracts between us and the assigner and the A to B has an extension Verify $2,000 was credit to buyer on this transaction. Review HUD.This one is closed. End buyer price $64,586",
+          "assessed_value": "36000.00",
+          "created_at": "2026-11-02T15:03:58.273Z",
+          "updated_at": "2026-11-02T15:03:58.273Z"
+        },
+        {
+          "property_id": "b0d10000-0000-0000-0000-0000c55d03c8",
+          "county_id": "c1111111-1111-1111-1111-111111111111",
+          "parcel_raw": "PODIO-3311207368",
+          "parcel_match": "PODIO3311207368",
+          "address_line1": "2660 W 23rd St",
+          "city": "Jacksonville",
+          "state_code": "FL",
+          "postal_code": "32209",
+          "property_type": "Single Family Residential",
+          "legal_description": "Colby deal. Buyer is Rona . Closing date June 11. Assignment contract . No double closingDeal deal is a dead deal due to contract holder unable to get a hold of the home owner",
+          "assessed_value": "49500.00",
+          "created_at": "2026-11-02T15:03:58.555Z",
+          "updated_at": "2026-11-02T15:03:58.555Z"
+        },
+        {
+          "property_id": "b0d10000-0000-0000-0000-0000c55bfe84",
+          "county_id": "c1111111-1111-1111-1111-111111111111",
+          "parcel_raw": "PODIO-3311140484",
+          "parcel_match": "PODIO3311140484",
+          "address_line1": "270 E 46th St",
+          "city": "Jacksonville",
+          "state_code": "FL",
+          "postal_code": "32208",
+          "property_type": "Single Family Residential",
+          "legal_description": "Double close with new western. Dave will assist with funding side for double closeWaiting on extension from Cam for the 18th with 3 business day included for .Nick will need new contractThis contract took 60+ days. We all came to the agreement to terminate due to uncontrollable market value which declined while under contract. Key points- Our contract price was overstated by 13k. EMD due was return to buyer ( Caesar ) Nick",
+          "assessed_value": "85500.00",
+          "created_at": "2026-11-02T15:03:58.838Z",
+          "updated_at": "2026-11-02T15:03:58.838Z"
+        },
+        {
+          "property_id": "b0d10000-0000-0000-0000-0000c04861e0",
+          "county_id": "c1111111-1111-1111-1111-111111111111",
+          "parcel_raw": "PODIO-3225969120",
+          "parcel_match": "PODIO3225969120",
+          "address_line1": "10702 Arnez Rd",
+          "city": "Jacksonville",
+          "state_code": "FL",
+          "postal_code": "32218",
+          "property_type": "Single Family Residential",
+          "legal_description": "Double close",
+          "assessed_value": "47250.00",
+          "created_at": "2026-11-02T15:03:59.122Z",
+          "updated_at": "2026-11-02T15:03:59.122Z"
+        },
+        {
+          "property_id": "b0d10000-0000-0000-0000-0000bf6b033b",
+          "county_id": "c1111111-1111-1111-1111-111111111111",
+          "parcel_raw": "PODIO-3211461435",
+          "parcel_match": "PODIO3211461435",
+          "address_line1": "1226 35th St NW",
+          "city": "Winter Haven",
+          "state_code": "FL",
+          "postal_code": "33881",
+          "property_type": "Single Family Residential",
+          "legal_description": "Deal came from a whole Saler Price to us at 78K currently.  (404)775-1170",
+          "assessed_value": null,
+          "created_at": "2026-11-02T15:03:59.404Z",
+          "updated_at": "2026-11-02T15:03:59.404Z"
+        },
+        {
+          "property_id": "b0d10000-0000-0000-0000-0000bf09b593",
+          "county_id": "c1111111-1111-1111-1111-111111111111",
+          "parcel_raw": "PODIO-3205084563",
+          "parcel_match": "PODIO3205084563",
+          "address_line1": "2748 W 45th St",
+          "city": "Jacksonville",
+          "state_code": "FL",
+          "postal_code": "32209",
+          "property_type": "Single Family Residential",
+          "legal_description": "Deal was sent from a whole Saler based in Atlanta. Apt was canceled due to tenant being pregnant. Follow up in 14s (Dec 3)",
+          "assessed_value": null,
+          "created_at": "2026-11-02T15:03:59.687Z",
+          "updated_at": "2026-11-02T15:03:59.687Z"
+        },
+        {
+          "property_id": "b0d10000-0000-0000-0000-0000bf09ac7f",
+          "county_id": "c1111111-1111-1111-1111-111111111111",
+          "parcel_raw": "PODIO-3205082239",
+          "parcel_match": "PODIO3205082239",
+          "address_line1": "3037 Broadway Ave",
+          "city": "Jacksonville",
+          "state_code": "FL",
+          "postal_code": "32254",
+          "property_type": "Single Family Residential",
+          "legal_description": "Tenant occupied, Wholesaler out of California. Follow up after 14 days to verify if closed. Full rehab needed",
+          "assessed_value": null,
+          "created_at": "2026-11-02T15:03:59.970Z",
+          "updated_at": "2026-11-02T15:03:59.970Z"
+        },
+        {
+          "property_id": "b0d10000-0000-0000-0000-0000ba375c32",
+          "county_id": "c1111111-1111-1111-1111-111111111111",
+          "parcel_raw": "PODIO-3124190258",
+          "parcel_match": "PODIO3124190258",
+          "address_line1": "25 Union Square W",
+          "city": "New York",
+          "state_code": "NY",
+          "postal_code": "10003",
+          "property_type": "Multi-Family 2-4",
+          "legal_description": null,
+          "assessed_value": null,
+          "created_at": "2026-11-02T15:04:00.252Z",
+          "updated_at": "2026-11-02T15:04:00.252Z"
+        },
+        {
+          "property_id": "b0d10000-0000-0000-0000-0000b25a65e4",
+          "county_id": "c1111111-1111-1111-1111-111111111111",
+          "parcel_raw": "PODIO-2992268772",
+          "parcel_match": "PODIO2992268772",
+          "address_line1": "1 E 2nd St",
+          "city": "New York",
+          "state_code": "NY",
+          "postal_code": "10003",
+          "property_type": "Mobile Home/Mobile Home Park",
+          "legal_description": null,
+          "assessed_value": null,
+          "created_at": "2026-11-02T15:04:00.539Z",
+          "updated_at": "2026-11-02T15:04:00.539Z"
+        }
+      ]
+    },
+    "core.property_aliases": {
+      "rowCount": 0,
+      "rows": []
+    },
+    "core.property_contractors": {
+      "rowCount": 0,
+      "rows": []
+    },
+    "core.property_documents": {
+      "rowCount": 0,
+      "rows": []
+    },
+    "core.property_expenses": {
+      "rowCount": 0,
+      "rows": []
+    },
+    "core.property_photos": {
+      "rowCount": 0,
+      "rows": []
+    },
+    "core.tasks": {
+      "rowCount": 11,
+      "rows": [
+        {
+          "task_id": "3395654b-4731-4f38-8ff9-564163614569",
+          "title": "Call James R. Carter · 1234 Oak Ridge Dr (Foreclosure review)",
+          "due_date": null,
+          "status": "PENDING",
+          "owner_id": null,
+          "linked_entity_type": null,
+          "linked_entity_id": null,
+          "created_at": "2026-10-28T07:14:18.363Z",
+          "completed_at": null,
+          "category": "Acquisitions",
+          "priority": "High",
+          "is_completed": false,
+          "due_time": "2026-10-24"
+        },
+        {
+          "task_id": "bf69d8c3-a529-4871-9931-c20b3c2b0711",
+          "title": "Send purchase contract to Maria Gonzalez · 5678 Pine Crest Ln",
+          "due_date": null,
+          "status": "PENDING",
+          "owner_id": null,
+          "linked_entity_type": null,
+          "linked_entity_id": null,
+          "created_at": "2026-10-28T07:14:18.673Z",
+          "completed_at": null,
+          "category": "Contracts",
+          "priority": "High",
+          "is_completed": false,
+          "due_time": "2026-10-25"
+        },
+        {
+          "task_id": "6a64132f-364e-478d-8d19-2e1162191385",
+          "title": "Property walkthrough at 9102 Baymeadows Rd with Robert Wilson",
+          "due_date": null,
+          "status": "PENDING",
+          "owner_id": null,
+          "linked_entity_type": null,
+          "linked_entity_id": null,
+          "created_at": "2026-10-28T07:14:18.981Z",
+          "completed_at": null,
+          "category": "Appointments",
+          "priority": "Medium",
+          "is_completed": false,
+          "due_time": "2026-10-26"
+        },
+        {
+          "task_id": "13358bfd-e5f6-4843-884d-08d62959378c",
+          "title": "Follow up on EMD confirmation for 4521 Lenox Ave (,500 held)",
+          "due_date": null,
+          "status": "PENDING",
+          "owner_id": null,
+          "linked_entity_type": null,
+          "linked_entity_id": null,
+          "created_at": "2026-10-28T07:14:19.289Z",
+          "completed_at": null,
+          "category": "Title & Escrow",
+          "priority": "High",
+          "is_completed": false,
+          "due_time": "2026-10-27"
+        },
+        {
+          "task_id": "87da843e-b245-4916-b9cb-b1092e6feb12",
+          "title": "Cash Buyer match blast for 7890 Loneleaf Rd (Target: K assignment)",
+          "due_date": null,
+          "status": "PENDING",
+          "owner_id": null,
+          "linked_entity_type": null,
+          "linked_entity_id": null,
+          "created_at": "2026-10-28T07:14:19.597Z",
+          "completed_at": null,
+          "category": "Dispositions",
+          "priority": "Medium",
+          "is_completed": false,
+          "due_time": "2026-10-28"
+        },
+        {
+          "task_id": "a45b671c-f79b-4c4d-834d-eed0dcb13d64",
+          "title": "Duval County tax deed auction list review (Batch 09)",
+          "due_date": null,
+          "status": "PENDING",
+          "owner_id": null,
+          "linked_entity_type": null,
+          "linked_entity_id": null,
+          "created_at": "2026-10-28T07:14:19.905Z",
+          "completed_at": null,
+          "category": "Intelligence",
+          "priority": "Low",
+          "is_completed": false,
+          "due_time": "2026-10-29"
+        },
+        {
+          "task_id": "cae2d6a5-80ce-47f6-b666-57193956ee1c",
+          "title": "Direct Mail Batch 04 tracking verification with USPS Formax",
+          "due_date": null,
+          "status": "PENDING",
+          "owner_id": null,
+          "linked_entity_type": null,
+          "linked_entity_id": null,
+          "created_at": "2026-10-28T07:14:20.213Z",
+          "completed_at": null,
+          "category": "Marketing",
+          "priority": "Medium",
+          "is_completed": false,
+          "due_time": "2026-10-30"
+        },
+        {
+          "task_id": "ce1921f1-3b1e-473b-8d0d-f12ed98f1796",
+          "title": "Skip trace probate filings for Duval & Clay counties",
+          "due_date": null,
+          "status": "COMPLETED",
+          "owner_id": null,
+          "linked_entity_type": null,
+          "linked_entity_id": null,
+          "created_at": "2026-10-28T07:14:20.521Z",
+          "completed_at": null,
+          "category": "Skip Tracing",
+          "priority": "High",
+          "is_completed": true,
+          "due_time": "2026-10-24"
+        },
+        {
+          "task_id": "73ca1f89-a1d5-4253-aed7-b57366cf255c",
+          "title": "Closing and assignment funding for 3456 Cedar Point Dr (,400 fee)",
+          "due_date": null,
+          "status": "COMPLETED",
+          "owner_id": null,
+          "linked_entity_type": null,
+          "linked_entity_id": null,
+          "created_at": "2026-10-28T07:14:20.828Z",
+          "completed_at": null,
+          "category": "Closed",
+          "priority": "High",
+          "is_completed": true,
+          "due_time": "2026-10-22"
+        },
+        {
+          "task_id": "64c82306-4a84-4150-8d7d-c145eec0915d",
+          "title": "Review Duval Auction Lot 42 - Test from AWS RDS",
+          "due_date": null,
+          "status": "COMPLETED",
+          "owner_id": null,
+          "linked_entity_type": null,
+          "linked_entity_id": null,
+          "created_at": "2026-10-28T07:17:33.049Z",
+          "completed_at": "2026-10-28T07:17:33.350Z",
+          "category": "Acquisitions",
+          "priority": "High",
+          "is_completed": true,
+          "due_time": "2026-10-28"
+        },
+        {
+          "task_id": "96d56b46-977c-44e6-9434-a2a89e377b61",
+          "title": "Review roof inspection report",
+          "due_date": "2026-10-28T15:25:45.519Z",
+          "status": "PENDING",
+          "owner_id": null,
+          "linked_entity_type": "PROPERTY",
+          "linked_entity_id": "a4000000-0000-0000-0000-000000000004",
+          "created_at": "2026-10-28T15:25:45.658Z",
+          "completed_at": null,
+          "category": "General",
+          "priority": "High",
+          "is_completed": false,
+          "due_time": "05:00 PM"
+        }
+      ]
+    },
+    "core.users": {
+      "rowCount": 6,
+      "rows": [
+        {
+          "user_id": "01111111-1111-1111-1111-111111111111",
+          "email": "admin@hushhawk.internal",
+          "full_name": "Sarah Connor",
+          "role": "SUPER_ADMIN",
+          "status": "ACTIVE",
+          "created_at": "2026-10-28T06:57:17.427Z"
+        },
+        {
+          "user_id": "02222222-2222-2222-2222-222222222222",
+          "email": "manager@hushhawk.internal",
+          "full_name": "Marcus Vance",
+          "role": "MANAGER",
+          "status": "ACTIVE",
+          "created_at": "2026-10-28T06:57:17.738Z"
+        },
+        {
+          "user_id": "03333333-3333-3333-3333-333333333333",
+          "email": "acquisitions@hushhawk.internal",
+          "full_name": "Elena Rostova",
+          "role": "ACQUISITIONS",
+          "status": "ACTIVE",
+          "created_at": "2026-10-28T06:57:18.048Z"
+        },
+        {
+          "user_id": "04444444-4444-4444-4444-444444444444",
+          "email": "reviewer@hushhawk.internal",
+          "full_name": "David Sterling",
+          "role": "DATA_REVIEWER",
+          "status": "ACTIVE",
+          "created_at": "2026-10-28T06:57:18.359Z"
+        },
+        {
+          "user_id": "05555555-5555-5555-5555-555555555555",
+          "email": "marketing@hushhawk.internal",
+          "full_name": "Chloe Bennett",
+          "role": "MARKETING",
+          "status": "ACTIVE",
+          "created_at": "2026-10-28T06:57:18.670Z"
+        },
+        {
+          "user_id": "06666666-6666-6666-6666-666666666666",
+          "email": "ops@hushhawk.internal",
+          "full_name": "Alex Mercer",
+          "role": "DEVELOPER_OPS",
+          "status": "ACTIVE",
+          "created_at": "2026-10-28T06:57:18.981Z"
+        }
+      ]
+    },
+    "crm.cash_buyers": {
+      "rowCount": 5,
+      "rows": [
+        {
+          "id": "buy-1",
+          "full_name": "Marcus Vance",
+          "phone": "(904) 555-9101",
+          "email": "marcus@vancecapitalinvestments.com",
+          "company": "Vance Capital Holdings",
+          "status": "Active VIP Buyer",
+          "buy_box": "Duval County SFH K-K",
+          "created_at": "2026-10-28T07:14:23.603Z"
+        },
+        {
+          "id": "buy-2",
+          "full_name": "Elena Rostova",
+          "phone": "(904) 555-4422",
+          "email": "elena@apexfloridaproperties.com",
+          "company": "Apex Florida RE Group",
+          "status": "Active VIP Buyer",
+          "buy_box": "Arlington / Southside Rentals",
+          "created_at": "2026-10-28T07:14:23.913Z"
+        },
+        {
+          "id": "buy-3",
+          "full_name": "Darius Washington",
+          "phone": "(904) 555-7711",
+          "email": "dwashington@firstcoastflips.com",
+          "company": "First Coast Renovations LLC",
+          "status": "Active Cash Buyer",
+          "buy_box": "Heavy Fix & Flip 32208 / 32209",
+          "created_at": "2026-10-28T07:14:24.221Z"
+        },
+        {
+          "id": "buy-4",
+          "full_name": "Samantha Sterling",
+          "phone": "(904) 555-3838",
+          "email": "ssterling@sterlingequityfl.com",
+          "company": "Sterling Equity Partners",
+          "status": "Active Institutional Buyer",
+          "buy_box": "Turnkey & BRRRR 32256 / 32257",
+          "created_at": "2026-10-28T07:14:24.529Z"
+        },
+        {
+          "id": "buy-5",
+          "full_name": "Trevor McKnight",
+          "phone": "(904) 555-6600",
+          "email": "trevor@jaxmultifamilyfund.com",
+          "company": "Jax Multifamily Fund",
+          "status": "Active Buyer",
+          "buy_box": "Duplex / Quadplex K-K",
+          "created_at": "2026-10-28T07:14:24.837Z"
+        }
+      ]
+    },
+    "crm.external_sync_map": {
+      "rowCount": 0,
+      "rows": []
+    },
+    "crm.lead_stage_history": {
+      "rowCount": 0,
+      "rows": []
+    },
+    "crm.pipeline_stages": {
+      "rowCount": 8,
+      "rows": [
+        {
+          "stage_key": "NEW",
+          "stage_name": "New Lead",
+          "display_order": 1,
+          "description": "Fresh lead created; initial research and triage required"
+        },
+        {
+          "stage_key": "CONTACTED",
+          "stage_name": "Contacted",
+          "display_order": 2,
+          "description": "Successful two-way interaction with property owner or representative"
+        },
+        {
+          "stage_key": "QUALIFIED",
+          "stage_name": "Qualified",
+          "display_order": 3,
+          "description": "Seller motivation confirmed, condition assessed, MAO estimated"
+        },
+        {
+          "stage_key": "OFFER",
+          "stage_name": "Offer Made",
+          "display_order": 4,
+          "description": "Written purchase agreement or verbal offer presented to seller"
+        },
+        {
+          "stage_key": "CONTRACT",
+          "stage_name": "Under Contract",
+          "display_order": 5,
+          "description": "Executed contract signed; title search and disposition marketing active"
+        },
+        {
+          "stage_key": "CLOSED",
+          "stage_name": "Closed & Funded",
+          "display_order": 6,
+          "description": "Transaction completed at title company; wholesale assignment fee collected"
+        },
+        {
+          "stage_key": "FOLLOW_UP",
+          "stage_name": "Follow-Up",
+          "display_order": 7,
+          "description": "Long-term follow-up; seller not ready today but remains active opportunity"
+        },
+        {
+          "stage_key": "LOST",
+          "stage_name": "Disqualified / Lost",
+          "display_order": 8,
+          "description": "Deal dead, listed with realtor, unmotivated, or sold to third party"
+        }
+      ]
+    },
+    "crm.seller_contacts": {
+      "rowCount": 8,
+      "rows": [
+        {
+          "id": "sel-1",
+          "seller_name": "James R. Carter",
+          "phone": "(904) 555-0198",
+          "email": "jcarter@email.com",
+          "property_address": "1234 Oak Ridge Dr, Jacksonville, FL 32277",
+          "lead_status": "New",
+          "lead_score": 94,
+          "created_at": "2026-10-28T07:14:21.136Z"
+        },
+        {
+          "id": "sel-2",
+          "seller_name": "Maria L. Gonzalez",
+          "phone": "(904) 555-2234",
+          "email": "maria.gonzalez@example.com",
+          "property_address": "5678 Pine Crest Ln, Jacksonville, FL 32256",
+          "lead_status": "Contacted",
+          "lead_score": 88,
+          "created_at": "2026-10-28T07:14:21.446Z"
+        },
+        {
+          "id": "sel-3",
+          "seller_name": "Robert T. Wilson",
+          "phone": "(904) 555-6678",
+          "email": "robert.wilson@example.com",
+          "property_address": "9102 Baymeadows Rd, Jacksonville, FL 32256",
+          "lead_status": "Appointment Set",
+          "lead_score": 92,
+          "created_at": "2026-10-28T07:14:21.755Z"
+        },
+        {
+          "id": "sel-4",
+          "seller_name": "Denise M. Harris",
+          "phone": "(904) 555-7789",
+          "email": "denise.harris@example.com",
+          "property_address": "3456 Cedar Point Dr, Jacksonville, FL 32226",
+          "lead_status": "Under Contract",
+          "lead_score": 96,
+          "created_at": "2026-10-28T07:14:22.063Z"
+        },
+        {
+          "id": "sel-5",
+          "seller_name": "Anthony K. Brooks",
+          "phone": "(904) 555-1122",
+          "email": "anthony.brooks@example.com",
+          "property_address": "7890 Loneleaf Rd, Jacksonville, FL 32277",
+          "lead_status": "Offer Made",
+          "lead_score": 85,
+          "created_at": "2026-10-28T07:14:22.371Z"
+        },
+        {
+          "id": "sel-6",
+          "seller_name": "Patricia S. Adams",
+          "phone": "(904) 555-3344",
+          "email": "patricia.adams@example.com",
+          "property_address": "2468 Willow Oak Ln, Jacksonville, FL 32257",
+          "lead_status": "Contacted",
+          "lead_score": 79,
+          "created_at": "2026-10-28T07:14:22.680Z"
+        },
+        {
+          "id": "sel-7",
+          "seller_name": "Michael D. Thompson",
+          "phone": "(904) 555-5566",
+          "email": "michael.t@example.com",
+          "property_address": "1357 River Marsh Dr, Jacksonville, FL 32223",
+          "lead_status": "Follow Up",
+          "lead_score": 82,
+          "created_at": "2026-10-28T07:14:22.989Z"
+        },
+        {
+          "id": "sel-8",
+          "seller_name": "Linda F. White",
+          "phone": "(904) 555-8899",
+          "email": "linda.white@example.com",
+          "property_address": "9753 Hidden Creek Dr, Jacksonville, FL 32216",
+          "lead_status": "New",
+          "lead_score": 90,
+          "created_at": "2026-10-28T07:14:23.296Z"
+        }
+      ]
+    },
+    "crm.stage_overrides": {
+      "rowCount": 0,
+      "rows": []
+    },
+    "crm.suppression_records": {
+      "rowCount": 0,
+      "rows": []
+    },
+    "ops.event_counters": {
+      "rowCount": 0,
+      "rows": []
+    },
+    "ops.job_errors": {
+      "rowCount": 0,
+      "rows": []
+    },
+    "ops.job_runs": {
+      "rowCount": 0,
+      "rows": []
+    },
+    "ops.outbox_events": {
+      "rowCount": 0,
+      "rows": []
+    },
+    "ops.review_queue": {
+      "rowCount": 0,
+      "rows": []
+    },
+    "raw.attachments": {
+      "rowCount": 0,
+      "rows": []
+    },
+    "raw.connector_runs": {
+      "rowCount": 0,
+      "rows": []
+    },
+    "raw.source_record_versions": {
+      "rowCount": 0,
+      "rows": []
+    },
+    "raw.source_records": {
+      "rowCount": 0,
+      "rows": []
+    },
+    "ref.code_aliases": {
+      "rowCount": 0,
+      "rows": []
+    },
+    "ref.contact_methods": {
+      "rowCount": 7,
+      "rows": [
+        {
+          "method_code": "PHONE",
+          "method_name": "Voice Phone Call"
+        },
+        {
+          "method_code": "SMS",
+          "method_name": "SMS Text Message"
+        },
+        {
+          "method_code": "EMAIL",
+          "method_name": "Electronic Mail"
+        },
+        {
+          "method_code": "DIRECT_MAIL",
+          "method_name": "Physical Direct Mail / Yellow Letter / Postcard"
+        },
+        {
+          "method_code": "IN_PERSON",
+          "method_name": "In-Person Property Walkthrough / Meeting"
+        },
+        {
+          "method_code": "WEB_FORM",
+          "method_name": "Inbound Landing Page Form Submission"
+        },
+        {
+          "method_code": "FB_LEAD",
+          "method_name": "Facebook Lead Ad Instant Form"
+        }
+      ]
+    },
+    "ref.counties": {
+      "rowCount": 4,
+      "rows": [
+        {
+          "county_id": "c1111111-1111-1111-1111-111111111111",
+          "state_code": "FL",
+          "county_name": "Duval County",
+          "county_code": "DUV",
+          "status": "APPROVED",
+          "created_at": "2026-10-28T06:53:13.769Z"
+        },
+        {
+          "county_id": "c2222222-2222-2222-2222-222222222222",
+          "state_code": "FL",
+          "county_name": "St. Johns County",
+          "county_code": "STJ",
+          "status": "PROPOSED",
+          "created_at": "2026-10-28T06:53:13.769Z"
+        },
+        {
+          "county_id": "c3333333-3333-3333-3333-333333333333",
+          "state_code": "FL",
+          "county_name": "Clay County",
+          "county_code": "CLY",
+          "status": "PROPOSED",
+          "created_at": "2026-10-28T06:53:13.769Z"
+        },
+        {
+          "county_id": "c4444444-4444-4444-4444-444444444444",
+          "state_code": "FL",
+          "county_name": "Nassau County",
+          "county_code": "NAS",
+          "status": "PROPOSED",
+          "created_at": "2026-10-28T06:53:13.769Z"
+        }
+      ]
+    },
+    "ref.dictionary_versions": {
+      "rowCount": 0,
+      "rows": []
+    },
+    "ref.lead_sources": {
+      "rowCount": 9,
+      "rows": [
+        {
+          "source_code": "MAIL",
+          "source_name": "Direct Mail Campaign",
+          "source_group": "OUTBOUND_DIRECT",
+          "definition": "Physical letter, postcard, or yellow letter sent to owner",
+          "assignment_rule": "Assigned from barcode/mail ID on response",
+          "review_status": "APPROVED",
+          "production_enabled": true,
+          "dictionary_version": "v1.0"
+        },
+        {
+          "source_code": "CLERK",
+          "source_name": "Court Clerk Feed",
+          "source_group": "PUBLIC_RECORD",
+          "definition": "County clerk public court records ingestion",
+          "assignment_rule": "Automated intake from clerk court scraper",
+          "review_status": "APPROVED",
+          "production_enabled": true,
+          "dictionary_version": "v1.0"
+        },
+        {
+          "source_code": "COUNTY",
+          "source_name": "County Appraiser Feed",
+          "source_group": "PUBLIC_RECORD",
+          "definition": "Duval County property appraiser tax rolls",
+          "assignment_rule": "Batch synchronization from county open data",
+          "review_status": "APPROVED",
+          "production_enabled": true,
+          "dictionary_version": "v1.0"
+        },
+        {
+          "source_code": "INBOUND_WEB",
+          "source_name": "Inbound Website Form",
+          "source_group": "ORGANIC",
+          "definition": "Direct seller submission on company landing page",
+          "assignment_rule": "Real-time webhook intake to new lead queue",
+          "review_status": "APPROVED",
+          "production_enabled": true,
+          "dictionary_version": "v1.0"
+        },
+        {
+          "source_code": "INBOUND_CALL",
+          "source_name": "Inbound Phone Call",
+          "source_group": "VOICE",
+          "definition": "Live seller phone call to tracked direct marketing number",
+          "assignment_rule": "Call tracking integration attribution",
+          "review_status": "APPROVED",
+          "production_enabled": true,
+          "dictionary_version": "v1.0"
+        },
+        {
+          "source_code": "FB_AD",
+          "source_name": "Facebook Lead Ad",
+          "source_group": "PAID_SOCIAL",
+          "definition": "Form submission via Meta Facebook lead ads",
+          "assignment_rule": "Facebook Graph API webhook receiver",
+          "review_status": "APPROVED",
+          "production_enabled": true,
+          "dictionary_version": "v1.0"
+        },
+        {
+          "source_code": "SMS_CAMPAIGN",
+          "source_name": "SMS Inbound Response",
+          "source_group": "MESSAGING",
+          "definition": "Inbound seller text message in response to approved campaign",
+          "assignment_rule": "A2P 10DLC compliant messaging inbox",
+          "review_status": "APPROVED",
+          "production_enabled": true,
+          "dictionary_version": "v1.0"
+        },
+        {
+          "source_code": "REFERRAL",
+          "source_name": "Industry Referral",
+          "source_group": "NETWORK",
+          "definition": "Bird dog, attorney, title agent, or wholesaler referral",
+          "assignment_rule": "Manual intake with referrer contact metadata",
+          "review_status": "APPROVED",
+          "production_enabled": true,
+          "dictionary_version": "v1.0"
+        },
+        {
+          "source_code": "OTHER",
+          "source_name": "Other (Detail Required)",
+          "source_group": "MISC",
+          "definition": "Unclassified source; requires source_detail explanation",
+          "assignment_rule": "Manual verification required",
+          "review_status": "APPROVED",
+          "production_enabled": true,
+          "dictionary_version": "v1.0"
+        }
+      ]
+    },
+    "ref.person_roles": {
+      "rowCount": 0,
+      "rows": []
+    },
+    "ref.pillars": {
+      "rowCount": 29,
+      "rows": [
+        {
+          "pillar_code": "FC",
+          "pillar_name": "Foreclosure",
+          "definition": "Formal mortgage or lien foreclosure proceedings initiated",
+          "distinct_event_rule": "Jurisdiction + full court case number",
+          "evidence_required": "Clerk/court case and active case status docket",
+          "review_status": "APPROVED",
+          "production_enabled": true,
+          "dictionary_version": "v1.0"
+        },
+        {
+          "pillar_code": "TAX",
+          "pillar_name": "Tax Delinquency",
+          "definition": "Past due ad valorem property taxes or certificates",
+          "distinct_event_rule": "Tax account + tax year",
+          "evidence_required": "Delinquent balance, tax year and verification date",
+          "review_status": "APPROVED",
+          "production_enabled": true,
+          "dictionary_version": "v1.0"
+        },
+        {
+          "pillar_code": "ML",
+          "pillar_name": "Municipal Lien",
+          "definition": "City or municipal liens recorded against parcel",
+          "distinct_event_rule": "Recording jurisdiction + lien instrument number",
+          "evidence_required": "Recorded lien and release/satisfaction search",
+          "review_status": "APPROVED",
+          "production_enabled": true,
+          "dictionary_version": "v1.0"
+        },
+        {
+          "pillar_code": "PRB",
+          "pillar_name": "Probate / Decedent",
+          "definition": "Property involved in estate administration or deceased owner",
+          "distinct_event_rule": "Jurisdiction + probate case reference",
+          "evidence_required": "Probate record and verified property deed link",
+          "review_status": "APPROVED",
+          "production_enabled": true,
+          "dictionary_version": "v1.0"
+        },
+        {
+          "pillar_code": "VAC",
+          "pillar_name": "Vacancy / Abandonment",
+          "definition": "Documented vacant structure or abandoned utility service",
+          "distinct_event_rule": "Approved episode definition + observation date",
+          "evidence_required": "Dated, attributable inspection or utility shutoff record",
+          "review_status": "APPROVED",
+          "production_enabled": true,
+          "dictionary_version": "v1.0"
+        },
+        {
+          "pillar_code": "CODE",
+          "pillar_name": "Code Violation",
+          "definition": "Municipal code enforcement citation or warning",
+          "distinct_event_rule": "Citation/case number + year",
+          "evidence_required": "Notice of violation with officer ID and inspection date",
+          "review_status": "NEEDS_REVIEW",
+          "production_enabled": false,
+          "dictionary_version": "v1.0"
+        },
+        {
+          "pillar_code": "CONDEMN",
+          "pillar_name": "Condemnation Notice",
+          "definition": "Property condemned or scheduled for demolition",
+          "distinct_event_rule": "Order number + municipal authority",
+          "evidence_required": "Official condemnation notice from city building official",
+          "review_status": "NEEDS_REVIEW",
+          "production_enabled": false,
+          "dictionary_version": "v1.0"
+        },
+        {
+          "pillar_code": "TCERT",
+          "pillar_name": "Tax Certificate",
+          "definition": "County tax sale certificate issued against property",
+          "distinct_event_rule": "Certificate number + tax sale year",
+          "evidence_required": "County tax collector certificate issuance receipt",
+          "review_status": "NEEDS_REVIEW",
+          "production_enabled": false,
+          "dictionary_version": "v1.0"
+        },
+        {
+          "pillar_code": "TDEED",
+          "pillar_name": "Tax Deed Application",
+          "definition": "Application for tax deed foreclosure auction filed",
+          "distinct_event_rule": "Tax deed file number + year",
+          "evidence_required": "Notice of tax deed application and auction schedule",
+          "review_status": "NEEDS_REVIEW",
+          "production_enabled": false,
+          "dictionary_version": "v1.0"
+        },
+        {
+          "pillar_code": "ABS",
+          "pillar_name": "Absentee Owner",
+          "definition": "Owner mailing address differs from property address",
+          "distinct_event_rule": "Owner mailing ZIP != site ZIP",
+          "evidence_required": "Property appraiser tax roll deed address comparison",
+          "review_status": "PROPOSED",
+          "production_enabled": false,
+          "dictionary_version": "v1.0"
+        },
+        {
+          "pillar_code": "OOS",
+          "pillar_name": "Out of State Owner",
+          "definition": "Owner mailing address outside state of Florida",
+          "distinct_event_rule": "Owner mailing State != FL",
+          "evidence_required": "Property appraiser certified tax roll registration",
+          "review_status": "PROPOSED",
+          "production_enabled": false,
+          "dictionary_version": "v1.0"
+        },
+        {
+          "pillar_code": "PFC",
+          "pillar_name": "Pre-Foreclosure Notice",
+          "definition": "Notice of default or lis pendens recorded",
+          "distinct_event_rule": "Lis pendens instrument number",
+          "evidence_required": "Recorded lis pendens filing with county clerk",
+          "review_status": "PROPOSED",
+          "production_enabled": false,
+          "dictionary_version": "v1.0"
+        },
+        {
+          "pillar_code": "BANKR",
+          "pillar_name": "Bankruptcy Case",
+          "definition": "Property owner named in federal bankruptcy petition",
+          "distinct_event_rule": "Federal court + case number",
+          "evidence_required": "PACER docket or bankruptcy petition certificate",
+          "review_status": "PROPOSED",
+          "production_enabled": false,
+          "dictionary_version": "v1.0"
+        },
+        {
+          "pillar_code": "EVICT",
+          "pillar_name": "Eviction Action",
+          "definition": "Landlord-tenant removal filing or writ",
+          "distinct_event_rule": "County court case number + filing date",
+          "evidence_required": "Clerk county civil eviction docket and summons",
+          "review_status": "PROPOSED",
+          "production_enabled": false,
+          "dictionary_version": "v1.0"
+        },
+        {
+          "pillar_code": "DIV",
+          "pillar_name": "Divorce / Domestic",
+          "definition": "Dissolution of marriage involving real property",
+          "distinct_event_rule": "Family court case reference",
+          "evidence_required": "Petition for dissolution referencing real property assets",
+          "review_status": "PROPOSED",
+          "production_enabled": false,
+          "dictionary_version": "v1.0"
+        },
+        {
+          "pillar_code": "HOA",
+          "pillar_name": "HOA / COA Lien",
+          "definition": "Homeowners association assessment lien or intent",
+          "distinct_event_rule": "Association name + recorded instrument",
+          "evidence_required": "Recorded assessment lien in official public records",
+          "review_status": "PROPOSED",
+          "production_enabled": false,
+          "dictionary_version": "v1.0"
+        },
+        {
+          "pillar_code": "MECH",
+          "pillar_name": "Mechanic Lien",
+          "definition": "Contractor or materialman claim of lien recorded",
+          "distinct_event_rule": "Claimant + recording instrument number",
+          "evidence_required": "Recorded claim of lien within statutory window",
+          "review_status": "PROPOSED",
+          "production_enabled": false,
+          "dictionary_version": "v1.0"
+        },
+        {
+          "pillar_code": "UTIL",
+          "pillar_name": "Utility Shutoff",
+          "definition": "Electric or water disconnection for non-payment",
+          "distinct_event_rule": "Account ID + disconnect work order",
+          "evidence_required": "Municipal utility service cut-off confirmation",
+          "review_status": "PROPOSED",
+          "production_enabled": false,
+          "dictionary_version": "v1.0"
+        },
+        {
+          "pillar_code": "FIRE",
+          "pillar_name": "Fire Damage",
+          "definition": "Structure damage from reported fire incident",
+          "distinct_event_rule": "Fire incident report number",
+          "evidence_required": "Fire department run report and damage assessment",
+          "review_status": "PROPOSED",
+          "production_enabled": false,
+          "dictionary_version": "v1.0"
+        },
+        {
+          "pillar_code": "STR",
+          "pillar_name": "STR Non-Compliance",
+          "definition": "Unlicensed short-term rental citation",
+          "distinct_event_rule": "Citation ID + inspection date",
+          "evidence_required": "City short-term rental ordinance citation record",
+          "review_status": "PROPOSED",
+          "production_enabled": false,
+          "dictionary_version": "v1.0"
+        },
+        {
+          "pillar_code": "INSPECT",
+          "pillar_name": "Failed Inspection",
+          "definition": "Failed structural or occupancy safety inspection",
+          "distinct_event_rule": "Inspection report ID + code reference",
+          "evidence_required": "Certified building inspector non-compliance report",
+          "review_status": "PROPOSED",
+          "production_enabled": false,
+          "dictionary_version": "v1.0"
+        },
+        {
+          "pillar_code": "DEMO",
+          "pillar_name": "Demolition Order",
+          "definition": "Emergency demolition order issued by municipality",
+          "distinct_event_rule": "Demolition docket number",
+          "evidence_required": "Official order to demolish from building director",
+          "review_status": "PROPOSED",
+          "production_enabled": false,
+          "dictionary_version": "v1.0"
+        },
+        {
+          "pillar_code": "ZONING",
+          "pillar_name": "Zoning Violation",
+          "definition": "Illegal use or unauthorized zoning alteration",
+          "distinct_event_rule": "Zoning enforcement file number",
+          "evidence_required": "Planning & Development enforcement notice",
+          "review_status": "PROPOSED",
+          "production_enabled": false,
+          "dictionary_version": "v1.0"
+        },
+        {
+          "pillar_code": "ESTATE",
+          "pillar_name": "Intestate Estate",
+          "definition": "Owner deceased without formal will or probate filed",
+          "distinct_event_rule": "Death certificate + vital records cross-ref",
+          "evidence_required": "Florida Department of Health vital statistics record",
+          "review_status": "PROPOSED",
+          "production_enabled": false,
+          "dictionary_version": "v1.0"
+        },
+        {
+          "pillar_code": "PROPDAM",
+          "pillar_name": "Property Damage",
+          "definition": "Major storm or flood casualty claim recorded",
+          "distinct_event_rule": "Insurance / FEMA claim tracking reference",
+          "evidence_required": "FEMA damage inspection or county flood report",
+          "review_status": "PROPOSED",
+          "production_enabled": false,
+          "dictionary_version": "v1.0"
+        },
+        {
+          "pillar_code": "SQUAT",
+          "pillar_name": "Squatter / Trespass",
+          "definition": "Unlawful occupancy or police trespass warning",
+          "distinct_event_rule": "Police incident CAD report number",
+          "evidence_required": "JSO police dispatch record and trespass notice",
+          "review_status": "PROPOSED",
+          "production_enabled": false,
+          "dictionary_version": "v1.0"
+        },
+        {
+          "pillar_code": "ABAND",
+          "pillar_name": "Abandoned Vehicle/Junk",
+          "definition": "Overgrown vegetation, junk or abandoned property",
+          "distinct_event_rule": "Citation ID + inspector badge number",
+          "evidence_required": "Municipal code enforcement junk citation notice",
+          "review_status": "PROPOSED",
+          "production_enabled": false,
+          "dictionary_version": "v1.0"
+        },
+        {
+          "pillar_code": "ROOF",
+          "pillar_name": "Dangerous Roof",
+          "definition": "Severe tarped or collapsed roof violation",
+          "distinct_event_rule": "Building citation number",
+          "evidence_required": "Municipal visual inspection report with timestamped photo",
+          "review_status": "PROPOSED",
+          "production_enabled": false,
+          "dictionary_version": "v1.0"
+        },
+        {
+          "pillar_code": "UNSAFE",
+          "pillar_name": "Unsafe Structure",
+          "definition": "Unsafe building placard posted on property",
+          "distinct_event_rule": "Notice of condemnation or placard ID",
+          "evidence_required": "City placard posting confirmation with officer log",
+          "review_status": "PROPOSED",
+          "production_enabled": false,
+          "dictionary_version": "v1.0"
+        }
+      ]
+    },
+    "ref.platforms": {
+      "rowCount": 8,
+      "rows": [
+        {
+          "platform_code": "PODIO",
+          "platform_name": "Citrix Podio CRM",
+          "category": "CRM"
+        },
+        {
+          "platform_code": "WEWEB",
+          "platform_name": "WeWeb Cloud Operations Center",
+          "category": "FRONTEND"
+        },
+        {
+          "platform_code": "POSTGRESQL",
+          "platform_name": "AWS RDS PostgreSQL Canonical Database",
+          "category": "CANONICAL_DATABASE"
+        },
+        {
+          "platform_code": "NEO4J",
+          "platform_name": "Neo4j Graph Database Projection",
+          "category": "GRAPH_PROJECTION"
+        },
+        {
+          "platform_code": "AWS_S3",
+          "platform_name": "Amazon Web Services S3 Document & Photo Vault",
+          "category": "STORAGE"
+        },
+        {
+          "platform_code": "USPS",
+          "platform_name": "USPS Address Standardization & Mail Tracking",
+          "category": "DIRECT_MAIL"
+        },
+        {
+          "platform_code": "META",
+          "platform_name": "Meta Facebook Lead Ads Webhook Receiver",
+          "category": "PAID_SOCIAL"
+        },
+        {
+          "platform_code": "TWILIO",
+          "platform_name": "Twilio A2P 10DLC Communications Gateway",
+          "category": "VOICE_MESSAGING"
+        }
+      ]
+    },
+    "ref.schema_migrations": {
+      "rowCount": 3,
+      "rows": [
+        {
+          "version": "MIGRATION:001_initial_schema.sql",
+          "applied_at": "2026-11-03T04:55:13.133Z"
+        },
+        {
+          "version": "SEED:001_approved_dictionaries.sql",
+          "applied_at": "2026-11-03T04:55:14.762Z"
+        },
+        {
+          "version": "SEED:002_platforms_and_methods.sql",
+          "applied_at": "2026-11-03T04:55:15.922Z"
+        }
+      ]
+    },
+    "rel.entity_relationships": {
+      "rowCount": 0,
+      "rows": []
+    },
+    "rel.event_evidence": {
+      "rowCount": 0,
+      "rows": []
+    },
+    "rel.identity_candidates": {
+      "rowCount": 0,
+      "rows": []
+    },
+    "rel.review_decisions": {
+      "rowCount": 0,
+      "rows": []
+    }
+  }
+}

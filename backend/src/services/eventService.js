@@ -33,6 +33,9 @@ export class EventService {
         if (!pillar) {
             throw new Error(`Pillar code '${pillarCode}' does not exist in reference dictionary`);
         }
+        if (!pillar.production_enabled || pillar.review_status !== 'APPROVED') {
+            throw new Error(`Pillar code '${pillarCode}' is unapproved or disabled in production (status: ${pillar.review_status})`);
+        }
 
         // STEP 1: Idempotent lookup
         let existingEvent = null;

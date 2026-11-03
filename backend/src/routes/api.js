@@ -810,6 +810,134 @@ apiRouter.get('/businesses', (req, res) => {
     res.json({ total: db.data.core.businesses.length, businesses: db.data.core.businesses });
 });
 
+apiRouter.post('/people', async (req, res) => {
+    try {
+        const {
+            first_name,
+            last_name,
+            full_name,
+            primary_phone,
+            primary_email,
+            mailing_address,
+            is_suppressed = false,
+            verification_level = 'UNVERIFIED',
+            actor = 'USER_WEB'
+        } = req.body || {};
+
+        const resolvedName = full_name || `${first_name || ''} ${last_name || ''}`.trim() || 'Unnamed Person';
+        const person_id = crypto.randomUUID();
+
+        // 1. Insert into PostgreSQL RDS
+        try {
+            await pool.query(
+                `INSERT INTO core.people
+                  (person_id, full_name, first_name, last_name, primary_phone, primary_email, mailing_address, is_suppressed, verification_level, created_at, updated_at)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), NOW())`,
+                [
+                    person_id,
+                    resolvedName,
+                    first_name || null,
+                    last_name || null,
+                    primary_phone || null,
+                    primary_email || null,
+                    mailing_address || null,
+                    Boolean(is_suppressed),
+                    verification_level
+                ]
+            );
+        } catch (pgErr) {
+            console.error('[PostgreSQL People Insert Error]', pgErr.message);
+        }
+
+        // 2. Insert into Canonical Store
+        const newPerson = {
+            person_id,
+            full_name: resolvedName,
+            first_name: first_name || null,
+            last_name: last_name || null,
+            primary_phone: primary_phone || null,
+            primary_email: primary_email || null,
+            mailing_address: mailing_address || null,
+            is_suppressed: Boolean(is_suppressed),
+            verification_level,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+        };
+        db.data.core.people.unshift(newPerson);
+
+        // 3. Log Audit Event
+        const auditEvent = db.logAudit({
+            actor,
+            action: 'PERSON_CREATED',
+            entityType: 'PERSON',
+            entityId: person_id,
+            redactedDiff: { full_name: resolvedName, primary_phone, primary_email }
+        });
+        db.persist();
+
+        res.status(201).json({ person: newPerson, audit: auditEvent });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+apiRouter.post('/businesses', async (req, res) => {
+    try {
+        const {
+            legal_name,
+            entity_type = 'LLC',
+            jurisdiction = 'FL',
+            registration_id,
+            registered_agent,
+            status = 'ACTIVE',
+            actor = 'USER_WEB'
+        } = req.body || {};
+
+        if (!legal_name) return res.status(400).json({ error: 'legal_name is required' });
+
+        const business_id = crypto.randomUUID();
+
+        // 1. Insert into PostgreSQL RDS
+        try {
+            await pool.query(
+                `INSERT INTO core.businesses
+                  (business_id, legal_name, entity_type, jurisdiction, registration_id, status, registered_agent, created_at)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())`,
+                [business_id, legal_name, entity_type, jurisdiction, registration_id || null, status, registered_agent || null]
+            );
+        } catch (pgErr) {
+            console.error('[PostgreSQL Businesses Insert Error]', pgErr.message);
+        }
+
+        // 2. Insert into Canonical Store
+        const newBusiness = {
+            business_id,
+            legal_name,
+            entity_type,
+            jurisdiction,
+            registration_id: registration_id || null,
+            status,
+            registered_agent: registered_agent || null,
+            created_at: new Date().toISOString()
+        };
+        db.data.core.businesses.unshift(newBusiness);
+
+        // 3. Log Audit Event
+        const auditEvent = db.logAudit({
+            actor,
+            action: 'BUSINESS_CREATED',
+            entityType: 'BUSINESS',
+            entityId: business_id,
+            redactedDiff: { legal_name, entity_type, jurisdiction }
+        });
+        db.persist();
+
+        res.status(201).json({ business: newBusiness, audit: auditEvent });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // ============================================================================
 // 6. Pillar Events (Atomic Counter & Evidence)
 // ============================================================================

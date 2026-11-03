@@ -55,6 +55,9 @@ export class CrmService {
         if (!validSource) {
             throw new Error(`Invalid source code '${firstSourceCode}'. Must exist in ref.lead_sources`);
         }
+        if (!validSource.production_enabled || validSource.review_status !== 'APPROVED') {
+            throw new Error(`Lead source '${firstSourceCode}' is unapproved or disabled in production (status: ${validSource.review_status})`);
+        }
 
         const leadId = crypto.randomUUID();
         const newLead = {
