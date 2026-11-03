@@ -1291,6 +1291,142 @@ apiRouter.delete('/tasks/:id', async (req, res) => {
 });
 
 // ============================================================================
+// 7.5. Real-Time Operational Notifications (Escrow, Pipeline, Leads, Compliance)
+// ============================================================================
+function formatRelativeTime(date) {
+    if (!date) return '';
+    const diffMs = Date.now() - new Date(date).getTime();
+    if (diffMs < 0) return 'Just now';
+    const diffMins = Math.floor(diffMs / 60000);
+    if (diffMins < 1) return 'Just now';
+    if (diffMins < 60) return `${diffMins} min${diffMins === 1 ? '' : 's'} ago`;
+    const diffHours = Math.floor(diffMins / 60);
+    if (diffHours < 24) return `${diffHours} hr${diffHours === 1 ? '' : 's'} ago`;
+    const diffDays = Math.floor(diffHours / 24);
+    return `${diffDays} day${diffDays === 1 ? '' : 's'} ago`;
+}
+
+apiRouter.get('/notifications', async (req, res) => {
+    try {
+        const { unread_only } = req.query;
+        let query = `SELECT * FROM ops.notifications`;
+        const params = [];
+        if (unread_only === 'true') {
+            query += ` WHERE is_read = false`;
+        }
+        query += ` ORDER BY created_at DESC LIMIT 50`;
+
+        const pgRes = await pool.query(query, params);
+        const unreadCountRes = await pool.query(`SELECT count(*) FROM ops.notifications WHERE is_read = false`);
+        const unread_count = Number(unreadCountRes.rows[0]?.count || 0);
+
+        res.json({
+            total: pgRes.rows.length,
+            unread_count,
+            notifications: pgRes.rows.map(n => ({
+                id: n.notification_id,
+                notification_id: n.notification_id,
+                title: n.title,
+                body: n.body,
+                category: n.category,
+                priority: n.priority,
+                color: n.color,
+                icon: n.icon,
+                action_url: n.action_url,
+                is_read: n.is_read,
+                read_at: n.read_at,
+                created_at: n.created_at,
+                time: formatRelativeTime(n.created_at)
+            }))
+        });
+    } catch (err) {
+        console.error('[Notifications GET Error]', err.message);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+apiRouter.post('/notifications', async (req, res) => {
+    try {
+        const {
+            title,
+            body,
+            category = 'SYSTEM',
+            priority = 'NORMAL',
+            color = 'blue',
+            icon = 'bell',
+            action_url = null,
+            metadata = {}
+        } = req.body || {};
+
+        if (!title || !body) {
+            return res.status(400).json({ error: 'title and body are required' });
+        }
+
+        const notification_id = crypto.randomUUID();
+        const insertRes = await pool.query(
+            `INSERT INTO ops.notifications 
+             (notification_id, title, body, category, priority, color, icon, action_url, metadata, is_read, created_at)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, false, NOW())
+             RETURNING *`,
+            [notification_id, title, body, category, priority, color, icon, action_url, metadata]
+        );
+
+        const row = insertRes.rows[0];
+        res.status(201).json({
+            notification: {
+                id: row.notification_id,
+                ...row,
+                time: 'Just now'
+            }
+        });
+    } catch (err) {
+        console.error('[Notifications POST Error]', err.message);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+apiRouter.patch('/notifications/:id/read', async (req, res) => {
+    try {
+        const { id } = req.params;
+        await pool.query(
+            `UPDATE ops.notifications SET is_read = true, read_at = NOW() WHERE notification_id = $1`,
+            [id]
+        );
+        res.json({ success: true, notification_id: id });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+apiRouter.post('/notifications/mark-all-read', async (req, res) => {
+    try {
+        await pool.query(`UPDATE ops.notifications SET is_read = true, read_at = NOW() WHERE is_read = false`);
+        res.json({ success: true, message: 'All notifications marked as read' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+apiRouter.delete('/notifications/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        await pool.query(`DELETE FROM ops.notifications WHERE notification_id = $1`, [id]);
+        res.json({ success: true, deleted_id: id });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+apiRouter.post('/notifications/clear-all', async (req, res) => {
+    try {
+        await pool.query(`DELETE FROM ops.notifications`);
+        res.json({ success: true, message: 'All notifications cleared' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// ============================================================================
 // 8. Human Review Loop (Identity Candidates)
 // ============================================================================
 apiRouter.get('/review/queue', (req, res) => {

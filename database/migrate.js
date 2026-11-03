@@ -85,3 +85,4 @@ runMigrations()
         console.error('[Migration Error]', err);
         process.exit(1);
     });
+

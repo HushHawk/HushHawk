@@ -39,5 +39,11 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
+      - name: Verify Real-Time Operational Notifications
+        run: npm run test:notifications
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
       - name: Build Production Frontend
         run: npm run build
+
