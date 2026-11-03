@@ -44,6 +44,11 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
+      - name: Verify Bulk Lead Ingestion & Skip-Trace Processing
+        run: npm run test:leads
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
       - name: Build Production Frontend
         run: npm run build
 

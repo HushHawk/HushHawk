@@ -64,3 +64,4 @@ VALUES
     NOW() - INTERVAL '1 day'
   )
 ON CONFLICT (notification_id) DO NOTHING;
+

@@ -11,6 +11,7 @@ import { ComplianceService } from '../services/complianceService.js';
 import { CrmService } from '../services/crmService.js';
 import { PodioService } from '../services/podioService.js';
 import { processAdminAIQuery, getMissingDataAudit, SYSTEM_SECTIONS } from '../services/aiService.js';
+import { LeadImportService } from '../services/leadImportService.js';
 import { renderCrownKey, validateCrownKeyFormat, normalizeParcelMatch } from '../../../packages/crownkey/index.js';
 
 export const apiRouter = Router();
@@ -1048,12 +1049,138 @@ apiRouter.get('/seller-leads', (req, res) => {
     }
 });
 
-apiRouter.post('/leads', (req, res) => {
+apiRouter.post('/leads', async (req, res) => {
     try {
+        if (req.body.name || req.body.address) {
+            // Direct lead creation from frontend
+            const { name, address, zip, phone, email, source, arv, repairs, mao, equity, actor } = req.body;
+            const countyCode = 'DUV';
+            const countyId = 'c1111111-1111-1111-1111-111111111111';
+            const parcelRaw = `FL-${zip || '32202'}-${Date.now().toString().slice(-4)}`;
+            const parcelMatch = normalizeParcelMatch(parcelRaw);
+
+            const personId = crypto.randomUUID();
+            const propertyId = crypto.randomUUID();
+            const leadId = crypto.randomUUID();
+
+            const sourceCode = (source || 'MAIL').toUpperCase().includes('MAIL') ? 'MAIL' : 'OTHER';
+            const crownKey = renderCrownKey({
+                countyCode,
+                parcelRaw,
+                firstSourceCode: sourceCode
+            });
+
+            // Write to PG
+            await pool.query(`
+                INSERT INTO core.people (person_id, full_name, primary_phone, primary_email, mailing_address, created_at, updated_at)
+                VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
+            `, [personId, name || 'Unnamed Seller', phone || null, email || null, address ? `${address}, Jacksonville, FL ${zip || ''}` : null]);
+
+            await pool.query(`
+                INSERT INTO core.properties (property_id, county_id, parcel_raw, parcel_match, address_line1, city, state_code, postal_code, property_type, assessed_value, created_at, updated_at)
+                VALUES ($1, $2, $3, $4, $5, 'Jacksonville', 'FL', $6, 'Single Family Residential', $7, NOW(), NOW())
+            `, [propertyId, countyId, parcelRaw, parcelMatch, address || 'No Address', zip || '32202', arv ? Number(arv) : 250000]);
+
+            await pool.query(`
+                INSERT INTO core.leads (lead_id, first_source_code, source_detail, property_id, person_id, status, priority_score, metadata, created_at, updated_at)
+                VALUES ($1, $2, $3, $4, $5, 'NEW', 60, $6, NOW(), NOW())
+            `, [leadId, sourceCode, 'Manual Web UI Entry', propertyId, personId, JSON.stringify({ arv, repairs, mao, equity, crownKey })]);
+
+            // Audit
+            await pool.query(`
+                INSERT INTO audit.audit_events (audit_id, actor, action, entity_type, entity_id, request_id, redacted_diff, created_at)
+                VALUES ($1, $2, 'LEAD_CREATED', 'LEAD', $3, $4, $5, NOW())
+            `, [crypto.randomUUID(), actor || 'Acquisitions Admin', leadId, crypto.randomUUID(), JSON.stringify({ name, address, crownKey })]);
+
+            // In-memory sync
+            const newLeadObj = {
+                lead_id: leadId,
+                first_source_code: sourceCode,
+                source_detail: 'Manual Web UI Entry',
+                property_id: propertyId,
+                person_id: personId,
+                status: 'NEW',
+                priority_score: 60,
+                created_at: new Date().toISOString(),
+                crownKey
+            };
+            db.data.core.leads.unshift(newLeadObj);
+            db.data.core.properties.unshift({
+                property_id: propertyId,
+                county_id: countyId,
+                parcel_raw: parcelRaw,
+                parcel_match: parcelMatch,
+                address_line1: address,
+                city: 'Jacksonville',
+                state_code: 'FL',
+                postal_code: zip,
+                assessed_value: arv || 250000,
+                crownKey
+            });
+            db.data.core.people.unshift({
+                person_id: personId,
+                full_name: name,
+                primary_phone: phone,
+                primary_email: email
+            });
+
+            return res.status(201).json({
+                success: true,
+                id: leadId,
+                lead_id: leadId,
+                crownKey,
+                name,
+                address,
+                city: 'Jacksonville',
+                zip,
+                phone,
+                email,
+                source: source || 'Direct Mail',
+                status: 'New',
+                date: new Date().toISOString().split('T')[0],
+                arv,
+                repairs,
+                mao,
+                equity
+            });
+        }
+
         const newLead = CrmService.createLead(req.body);
         res.status(201).json(newLead);
     } catch (err) {
         res.status(400).json({ error: err.message });
+    }
+});
+
+// Bulk Lead Ingestion Endpoint (CSV, TSV, or JSON Array)
+apiRouter.post('/leads/import', async (req, res) => {
+    try {
+        const { data, sourceCode, actor, listName } = req.body;
+        const result = await LeadImportService.processImport({
+            data,
+            sourceCode: sourceCode || 'MAIL',
+            actor: actor || 'Acquisitions Admin',
+            defaultListName: listName || 'Skip-Trace Batch'
+        });
+        res.status(201).json(result);
+    } catch (err) {
+        console.error('[Lead Import Error]', err);
+        res.status(400).json({ error: err.message });
+    }
+});
+
+// Purge test batch records safely (restoring canonical truth)
+apiRouter.post('/leads/purge-test-batch', async (req, res) => {
+    try {
+        const { lead_ids, property_ids, person_ids } = req.body;
+        const result = await LeadImportService.purgeBatch({
+            leadIds: lead_ids || [],
+            propertyIds: property_ids || [],
+            personIds: person_ids || []
+        });
+        res.json(result);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
 });
 

@@ -20,3 +20,4 @@ CREATE TABLE IF NOT EXISTS ops.notifications (
 
 CREATE INDEX IF NOT EXISTS idx_notifications_unread ON ops.notifications (is_read, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_notifications_created_at ON ops.notifications (created_at DESC);
+
