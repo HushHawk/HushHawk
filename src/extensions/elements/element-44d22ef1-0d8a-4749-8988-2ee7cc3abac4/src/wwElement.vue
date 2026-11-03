@@ -88,30 +88,19 @@
         </div>
       </div>
 
-      <button class="notification-btn" @click.stop="isNotifOpen = !isNotifOpen" aria-label="Notifications">
-        <span class="icon" v-html="icons.bell"></span>
-        <span v-if="notifications.length" class="notif-badge">{{ notifications.length }}</span>
-      </button>
+      <div style="position: relative;">
+        <button class="notification-btn" @click.stop="isNotifOpen = !isNotifOpen" aria-label="Notifications" title="Escrow & Pipeline Alerts">
+          <span class="icon" v-html="icons.bell"></span>
+          <span v-if="unreadCount > 0" class="notif-badge">{{ unreadCount }}</span>
+        </button>
 
-      <!-- Notifications Modal / Dropdown -->
-      <div v-if="isNotifOpen" class="notif-dropdown" @click.stop>
-        <div class="notif-head">
-          <strong>Escrow &amp; Pipeline Alerts</strong>
-          <span class="badge-sub">{{ notifications.length }} unread</span>
-        </div>
-        <div v-if="notifications.length">
-          <div v-for="n in notifications" :key="n.id" class="notif-item">
-            <span class="notif-icon" :class="n.color" v-html="icons[n.icon] || icons.check"></span>
-            <div>
-              <strong>{{ n.title }}</strong>
-              <p>{{ n.body }}</p>
-              <small>{{ n.time }}</small>
-            </div>
-          </div>
-        </div>
-        <div v-else style="padding: 24px; text-align: center; color: #64748b; font-size: 11px;">
-          No unread alerts. Pipeline updates and escrow notifications will stream here.
-        </div>
+        <!-- Notifications Modal / Dropdown -->
+        <HushHawkNotificationDropdown 
+          v-if="isNotifOpen" 
+          :icons="icons" 
+          @close="isNotifOpen = false" 
+          @navigate="guard" 
+        />
       </div>
 
       <!-- User Identity Menu & Logout Option -->
@@ -225,14 +214,22 @@
 <script>
 import {ref,reactive,computed,watch,nextTick,onMounted,onBeforeUnmount} from 'vue';
 import CountyMap from './components/CountyMap.vue';
+import HushHawkNotificationDropdown from '@/_front/components/HushHawkNotificationDropdown.vue';
+import { useNotifications } from '@/_common/use/useNotifications.js';
 import {sampleLeads,navigation,iconDefaults} from './data.js';
 import { icons as masterIcons } from '../../element-f1b67d54-2716-43a4-a414-ab7f505c2ace/src/icons.js';
-export default {components:{CountyMap},props:{uid:{type:String,required:true},content:{type:Object,required:true},},setup(props){
+export default {components:{CountyMap,HushHawkNotificationDropdown},props:{uid:{type:String,required:true},content:{type:Object,required:true},},setup(props){
 const uid=computed(()=>props.uid||'seller-leads');
 const isEditing=computed(()=>{return false;});
 const {getIcon}=wwLib.useIcons();const icons=ref({ ...masterIcons });let iconVersion=0;
 watch(()=>Object.keys(iconDefaults).map(k=>props.content?.['icon_'+k]||iconDefaults[k]),async values=>{const version=++iconVersion;const pairs=await Promise.all(Object.keys(iconDefaults).map(async(k,i)=>{try{return[k,await getIcon(values[i])]}catch(e){return[k,'']}}));if(version===iconVersion)icons.value={ ...masterIcons, ...Object.fromEntries(pairs) };},{immediate:true});
-const isQuickAddOpen=ref(false),isNotifOpen=ref(false),currentTime=ref('09:42 AM');
+const {
+  notifications,
+  unreadCount,
+  isNotifOpen,
+  initNotificationPolling
+} = useNotifications();
+const isQuickAddOpen=ref(false),currentTime=ref('09:42 AM');
 const isUserMenuOpen=ref(false),activeUser=ref(null);
 const activeUserName=computed(()=>activeUser.value?.name||'Main Administrator');
 const activeUserRole=computed(()=>activeUser.value?.role||'Superadmin & Managing Partner');
@@ -266,7 +263,7 @@ function updateClock(){
   });
 }
 const liveRows=ref([]);
-const mode=ref('live'),previewRows=ref([]),query=ref(''),stage=ref('all'),statusFilter=ref(''),sourceFilter=ref(''),zipFilter=ref(''),sortKey=ref('date'),sortAscending=ref(false),extraFilters=ref(false),checked=ref([]),selectedId=ref(''),navOpen=ref(false),photoFailed=ref(false),notifications=ref([]);
+const mode=ref('live'),previewRows=ref([]),query=ref(''),stage=ref('all'),statusFilter=ref(''),sourceFilter=ref(''),zipFilter=ref(''),sortKey=ref('date'),sortAscending=ref(false),extraFilters=ref(false),checked=ref([]),selectedId=ref(''),navOpen=ref(false),photoFailed=ref(false);
 
 async function loadSellerLeads() {
   try {
@@ -302,12 +299,13 @@ onMounted(()=>{
   }
   updateClock();
   loadSellerLeads();
+  initNotificationPolling();
   timeInterval=setInterval(updateClock,30000);
   clickOutsideHandler=(e)=>{
     if(!e.target.closest('.quick-add-wrap')){
       isQuickAddOpen.value=false;
     }
-    if(!e.target.closest('.notif-dropdown')&&!e.target.closest('.notification-btn')){
+    if(!e.target.closest('.notif-dropdown')&&!e.target.closest('.notification-btn')&&!e.target.closest('.hushhawk-notif-dropdown')){
       isNotifOpen.value=false;
     }
     if(!e.target.closest('.user-identity-wrap')){
@@ -441,7 +439,7 @@ function addPreview(){if(isEditing.value||!newLead.name.trim()||!newLead.address
 function addTag(){if(!selected.value||!tagDraft.value.trim())return;if(!selected.value.tags)selected.value.tags=[];if(!selected.value.tags.includes(tagDraft.value.trim()))selected.value.tags.push(tagDraft.value.trim());const r=previewRows.value.find(r=>r.id===selectedId.value);if(r&&!r.tags.includes(tagDraft.value.trim()))r.tags.push(tagDraft.value.trim());closeModal();}
 function keepEmail(){if(isEditing.value)return;drafts['email-'+selectedId.value]={subject:emailSubject.value,body:emailDraft.value};emailNotice.value='Draft kept on this page · not sent';}
 function keepOffer(){if(isEditing.value||offerMAO.value==null)return;drafts['offer-'+selectedId.value]={...offerValues,mao:offerMAO.value};offerNotice.value='Worksheet kept on this page · no offer sent';}
-return{uid,isEditing,icons,navigation,navOpen,heroStyle,mode,metrics,tabs,columns,statuses,query,stage,statusFilter,sourceFilter,zipFilter,sortKey,sortAscending,extraFilters,checked,filtered,selected,selectedIndex,photoUrl,photoFailed,availableSources,sourceChart,donutGradient,allChecked,number,money,dateLabel,statusClass,initials,guard,handleNav,resetFilters,setMode,setStage,metricAction,sortBy,selectLead,stepLead,toggleRow,toggleAll,changeStatus,onZip,chooseSource,firstName,messages,smsInput,smsDraft,draftNotice,focusDraft,keepDraft,modal,modalTitle,modalBox,closeButton,openModal,closeModal,modalKeys,newLead,addPreview,sourceNames,tagDraft,addTag,emailSubject,emailDraft,emailNotice,keepEmail,offerValues,offerMAO,offerNotice,keepOffer,rows,isQuickAddOpen,isNotifOpen,currentTime,notifications,isUserMenuOpen,activeUserName,activeUserRole,activeUserEmail,handleLogout};
+return{uid,isEditing,icons,navigation,navOpen,heroStyle,mode,metrics,tabs,columns,statuses,query,stage,statusFilter,sourceFilter,zipFilter,sortKey,sortAscending,extraFilters,checked,filtered,selected,selectedIndex,photoUrl,photoFailed,availableSources,sourceChart,donutGradient,allChecked,number,money,dateLabel,statusClass,initials,guard,handleNav,resetFilters,setMode,setStage,metricAction,sortBy,selectLead,stepLead,toggleRow,toggleAll,changeStatus,onZip,chooseSource,firstName,messages,smsInput,smsDraft,draftNotice,focusDraft,keepDraft,modal,modalTitle,modalBox,closeButton,openModal,closeModal,modalKeys,newLead,addPreview,sourceNames,tagDraft,addTag,emailSubject,emailDraft,emailNotice,keepEmail,offerValues,offerMAO,offerNotice,keepOffer,rows,isQuickAddOpen,isNotifOpen,currentTime,notifications,unreadCount,isUserMenuOpen,activeUserName,activeUserRole,activeUserEmail,handleLogout};
 }};
 </script>
 <style scoped>

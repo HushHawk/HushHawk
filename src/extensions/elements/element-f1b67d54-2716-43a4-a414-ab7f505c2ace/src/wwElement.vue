@@ -127,41 +127,19 @@
             </div>
           </div>
 
-          <button class="notification-btn" @click.stop="isNotifOpen = !isNotifOpen" aria-label="Notifications">
-            <span class="icon" v-html="icons.bell"></span>
-            <span class="notif-badge">3</span>
-          </button>
+          <div style="position: relative;">
+            <button class="notification-btn" @click.stop="isNotifOpen = !isNotifOpen" aria-label="Notifications" title="Escrow & Pipeline Alerts">
+              <span class="icon" v-html="icons.bell"></span>
+              <span v-if="unreadCount > 0" class="notif-badge">{{ unreadCount }}</span>
+            </button>
 
-          <!-- Notifications Modal / Dropdown -->
-          <div v-if="isNotifOpen" class="notif-dropdown" @click.stop>
-            <div class="notif-head">
-              <strong>Escrow &amp; Pipeline Alerts</strong>
-              <span class="badge-sub">3 unread</span>
-            </div>
-            <div class="notif-item">
-              <span class="notif-icon green" v-html="icons.check"></span>
-              <div>
-                <strong>First American Title: Wire Disbursed</strong>
-                <p>$32,500 assignment fee funded for 4812 Moncrief Rd.</p>
-                <small>12 mins ago</small>
-              </div>
-            </div>
-            <div class="notif-item">
-              <span class="notif-icon gold" v-html="icons.file"></span>
-              <div>
-                <strong>DocuSign PSA Executed</strong>
-                <p>Ronald Campbell signed PSA for $110,000 cash.</p>
-                <small>1 hr ago</small>
-              </div>
-            </div>
-            <div class="notif-item">
-              <span class="notif-icon cyan" v-html="icons.phone"></span>
-              <div>
-                <strong>Hot Seller Lead Ingested</strong>
-                <p>Travis Holloway (Duval Probate) score 94/100.</p>
-                <small>2 hrs ago</small>
-              </div>
-            </div>
+            <!-- Notifications Modal / Dropdown -->
+            <HushHawkNotificationDropdown 
+              v-if="isNotifOpen" 
+              :icons="icons" 
+              @close="isNotifOpen = false" 
+              @navigate="handleNav" 
+            />
           </div>
 
           <!-- User Identity Menu & Logout Option -->
@@ -302,10 +280,15 @@ import FacebookLeadsView from './views/FacebookLeadsView.vue';
 import DirectMailView from './views/DirectMailView.vue';
 import DealAnalyzerView from './views/DealAnalyzerView.vue';
 import TeamView from './views/TeamView.vue';
+import HushHawkNotificationDropdown from '@/_front/components/HushHawkNotificationDropdown.vue';
+import { useNotifications } from '@/_common/use/useNotifications.js';
+
+const notifStore = useNotifications();
 
 export default {
   name: 'HushHawkMasterShell',
   components: {
+    HushHawkNotificationDropdown,
     PropertiesView,
     DispositionsView,
     CashBuyersView,
@@ -348,6 +331,12 @@ export default {
     };
   },
   computed: {
+    notifications() {
+      return notifStore.notifications.value;
+    },
+    unreadCount() {
+      return notifStore.unreadCount.value;
+    },
     activeUserName() {
       return this.activeUser?.name || 'Main Administrator';
     },
@@ -547,13 +536,14 @@ export default {
         if (navEl) navEl.scrollTop = 0;
       });
     }
+    notifStore.initNotificationPolling();
     this.updateClock();
     this.timeInterval = setInterval(this.updateClock, 30000);
     this.clickOutsideHandler = (e) => {
       if (!e.target.closest('.quick-add-wrap')) {
         this.isQuickAddOpen = false;
       }
-      if (!e.target.closest('.notif-dropdown') && !e.target.closest('.notification-btn')) {
+      if (!e.target.closest('.notif-dropdown') && !e.target.closest('.notification-btn') && !e.target.closest('.hushhawk-notif-dropdown')) {
         this.isNotifOpen = false;
       }
       if (!e.target.closest('.user-identity-wrap')) {

@@ -28,3 +28,4 @@ VALUES
     ('FB_LEAD', 'Facebook Lead Ad Instant Form')
 ON CONFLICT (method_code) DO UPDATE
 SET method_name = EXCLUDED.method_name;
+

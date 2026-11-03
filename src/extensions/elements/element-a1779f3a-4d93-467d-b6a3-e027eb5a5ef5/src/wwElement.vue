@@ -127,30 +127,19 @@
         </div>
       </div>
 
-      <button class="notification-btn" @click.stop="isNotifOpen = !isNotifOpen" aria-label="Notifications">
-        <span class="icon" v-html="icons.bell"></span>
-        <span v-if="notifications.length" class="notif-badge">{{ notifications.length }}</span>
-      </button>
+      <div style="position: relative;">
+        <button class="notification-btn" @click.stop="isNotifOpen = !isNotifOpen" aria-label="Notifications" title="Escrow & Pipeline Alerts">
+          <span class="icon" v-html="icons.bell"></span>
+          <span v-if="unreadCount > 0" class="notif-badge">{{ unreadCount }}</span>
+        </button>
 
-      <!-- Notifications Modal / Dropdown -->
-      <div v-if="isNotifOpen" class="notif-dropdown" @click.stop>
-        <div class="notif-head">
-          <strong>Escrow &amp; Pipeline Alerts</strong>
-          <span class="badge-sub">{{ notifications.length }} unread</span>
-        </div>
-        <div v-if="notifications.length">
-          <div v-for="n in notifications" :key="n.id" class="notif-item">
-            <span class="notif-icon" :class="n.color" v-html="icons[n.icon] || icons.check"></span>
-            <div>
-              <strong>{{ n.title }}</strong>
-              <p>{{ n.body }}</p>
-              <small>{{ n.time }}</small>
-            </div>
-          </div>
-        </div>
-        <div v-else style="padding: 24px; text-align: center; color: #64748b; font-size: 11px;">
-          No unread alerts. Pipeline updates and escrow notifications will stream here.
-        </div>
+        <!-- Notifications Modal / Dropdown -->
+        <HushHawkNotificationDropdown 
+          v-if="isNotifOpen" 
+          :icons="icons" 
+          @close="isNotifOpen = false" 
+          @navigate="guard" 
+        />
       </div>
 
       <!-- User Identity Menu & Logout Option -->
@@ -233,9 +222,11 @@
 <script>
 import {computed,ref,onMounted,onBeforeUnmount} from 'vue';
 import CountyMap from './components/CountyMap.vue';
+import HushHawkNotificationDropdown from '@/_front/components/HushHawkNotificationDropdown.vue';
+import { useNotifications } from '@/_common/use/useNotifications.js';
 import { icons } from '../../element-f1b67d54-2716-43a4-a414-ab7f505c2ace/src/icons.js';
 import { navigation } from '../../element-f1b67d54-2716-43a4-a414-ab7f505c2ace/src/navigation.js';
-export default {components:{CountyMap},props:{uid:{type:String,required:true},content:{type:Object,required:true},},setup(props){
+export default {components:{CountyMap,HushHawkNotificationDropdown},props:{uid:{type:String,required:true},content:{type:Object,required:true},},setup(props){
 const uid=computed(()=>props.uid||'dashboard');
 const isEditing=computed(()=>{return false;});
 const navOpen=ref(false);
@@ -261,7 +252,13 @@ function handleNav(path, e) {
 }
 const heroStyle=computed(()=>({backgroundImage:'linear-gradient(90deg,#06182ef5 0%,#06182ede 36%,#06182e20 76%),url("'+(props.content?.skyline||'')+'")'}));
 const feedMode=ref('markets');const query=ref(''),zip=ref(''),checked=ref([]),draft=ref(''),draftStatus=ref(''),paused=ref(false),activeEmail=ref(null),clock=ref(''),marketHost=ref(null),marketError=ref(false);let timer,marketTimer;
-const isQuickAddOpen=ref(false),isNotifOpen=ref(false),currentTime=ref('09:42 AM');
+const {
+  notifications,
+  unreadCount,
+  isNotifOpen,
+  initNotificationPolling
+} = useNotifications();
+const isQuickAddOpen=ref(false),currentTime=ref('09:42 AM');
 const isUserMenuOpen=ref(false),activeUser=ref(null);
 const activeUserName=computed(()=>activeUser.value?.name||'Main Administrator');
 const activeUserRole=computed(()=>activeUser.value?.role||'Superadmin & Managing Partner');
@@ -300,7 +297,6 @@ const metrics=ref([
 const emails=ref([]);
 const activeChat=ref(null);
 const activeSnapshot=ref(null);
-const notifications=ref([]);
 function money(v){return v==null?'—':new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0}).format(v);}
 const rawTasks=ref([]);
 const tasks=ref([]);
@@ -452,11 +448,12 @@ onMounted(()=>{
     }, 150);
   }
   timer=setInterval(tick,30000);
+  initNotificationPolling();
   clickOutsideHandler=(e)=>{
     if(!e.target.closest('.quick-add-wrap')){
       isQuickAddOpen.value=false;
     }
-    if(!e.target.closest('.notif-dropdown')&&!e.target.closest('.notification-btn')){
+    if(!e.target.closest('.notif-dropdown')&&!e.target.closest('.notification-btn')&&!e.target.closest('.hushhawk-notif-dropdown')){
       isNotifOpen.value=false;
     }
     if(!e.target.closest('.user-identity-wrap')){
@@ -496,7 +493,7 @@ onBeforeUnmount(()=>{
   }
   if(marketHost.value)marketHost.value.innerHTML='';
 });
-return{icons,uid,feedMode,isEditing,heroStyle,metrics,query,zip,checked,tasks,imports,filteredLeads,stages,stageColors,sources,emails,activeEmail,chooseEmail,activeChat,activeSnapshot,notifications,money,draft,draftStatus,saveDraft,paused,signals,signalTape,signalsCount,clock,marketHost,marketError,onZip,clearZip,guard,isQuickAddOpen,isNotifOpen,currentTime,navOpen,primaryNavigation,secondaryNavigation,handleNav,isUserMenuOpen,activeUserName,activeUserRole,activeUserEmail,handleLogout};
+return{icons,uid,feedMode,isEditing,heroStyle,metrics,query,zip,checked,tasks,imports,filteredLeads,stages,stageColors,sources,emails,activeEmail,chooseEmail,activeChat,activeSnapshot,notifications,unreadCount,money,draft,draftStatus,saveDraft,paused,signals,signalTape,signalsCount,clock,marketHost,marketError,onZip,clearZip,guard,isQuickAddOpen,isNotifOpen,currentTime,navOpen,primaryNavigation,secondaryNavigation,handleNav,isUserMenuOpen,activeUserName,activeUserRole,activeUserEmail,handleLogout};
 }};
 </script>
 <style scoped>

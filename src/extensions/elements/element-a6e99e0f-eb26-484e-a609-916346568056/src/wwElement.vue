@@ -88,30 +88,19 @@
         </div>
       </div>
 
-      <button class="notification-btn" @click.stop="isNotifOpen = !isNotifOpen" aria-label="Notifications">
-        <span class="icon" v-html="icons.bell"></span>
-        <span v-if="notifications.length" class="notif-badge">{{ notifications.length }}</span>
-      </button>
+      <div style="position: relative;">
+        <button class="notification-btn" @click.stop="isNotifOpen = !isNotifOpen" aria-label="Notifications" title="Escrow & Pipeline Alerts">
+          <span class="icon" v-html="icons.bell"></span>
+          <span v-if="unreadCount > 0" class="notif-badge">{{ unreadCount }}</span>
+        </button>
 
-      <!-- Notifications Modal / Dropdown -->
-      <div v-if="isNotifOpen" class="notif-dropdown" @click.stop>
-        <div class="notif-head">
-          <strong>Escrow &amp; Pipeline Alerts</strong>
-          <span class="badge-sub">{{ notifications.length }} unread</span>
-        </div>
-        <div v-if="notifications.length">
-          <div v-for="n in notifications" :key="n.id" class="notif-item">
-            <span class="notif-icon" :class="n.color" v-html="icons[n.icon] || icons.check"></span>
-            <div>
-              <strong>{{ n.title }}</strong>
-              <p>{{ n.body }}</p>
-              <small>{{ n.time }}</small>
-            </div>
-          </div>
-        </div>
-        <div v-else style="padding: 24px; text-align: center; color: #64748b; font-size: 11px;">
-          No unread alerts. Pipeline updates and escrow notifications will stream here.
-        </div>
+        <!-- Notifications Modal / Dropdown -->
+        <HushHawkNotificationDropdown 
+          v-if="isNotifOpen" 
+          :icons="icons" 
+          @close="isNotifOpen = false" 
+          @navigate="guard" 
+        />
       </div>
 
       <!-- User Identity Menu & Logout Option -->
@@ -226,16 +215,25 @@
 
 <script>
 import {ref,computed,watch,nextTick,onMounted,onBeforeUnmount} from 'vue';
+import HushHawkNotificationDropdown from '@/_front/components/HushHawkNotificationDropdown.vue';
+import { useNotifications } from '@/_common/use/useNotifications.js';
 import {navigation,iconDefaults,stages,samples} from './data.js';
 import { icons as masterIcons } from '../../element-f1b67d54-2716-43a4-a414-ab7f505c2ace/src/icons.js';
 export default {
+ components:{HushHawkNotificationDropdown},
  props:{uid:{type:String,required:true},content:{type:Object,required:true},},
  setup(props){
  const isEditing=computed(()=>{return false;});
  const icons=ref({ ...masterIcons });const {getIcon}=wwLib.useIcons();
  watch(()=>Object.keys(iconDefaults).map(k=>props.content?.[k+'Icon']||iconDefaults[k]),async names=>{const vals=await Promise.all(names.map(n=>getIcon(n).catch(()=>'')));icons.value={ ...masterIcons, ...Object.fromEntries(Object.keys(iconDefaults).map((k,i)=>[k,vals[i]])) };},{immediate:true});
  const navOpen=ref(false),query=ref(''),deals=ref([]),selectedId=ref(''),dragged=ref(''),tab=ref('Messages'),draft=ref(''),note=ref(''),notice=ref(''),dialog=ref(''),dialogEl=ref(null),newAddress=ref(''),newZip=ref('32206');
- const isQuickAddOpen=ref(false),isNotifOpen=ref(false),currentTime=ref('09:42 AM'),notifications=ref([]);
+ const {
+   notifications,
+   unreadCount,
+   isNotifOpen,
+   initNotificationPolling
+ } = useNotifications();
+ const isQuickAddOpen=ref(false),currentTime=ref('09:42 AM');
  const isUserMenuOpen=ref(false);
  const activeUser=ref({
    name: 'Main Administrator',
@@ -335,12 +333,13 @@ export default {
    }
    updateClock();
    loadDeals();
+   initNotificationPolling();
    timeInterval=setInterval(updateClock,30000);
    clickOutsideHandler=(e)=>{
      if(!e.target.closest('.quick-add-wrap')){
        isQuickAddOpen.value=false;
      }
-     if(!e.target.closest('.notif-dropdown')&&!e.target.closest('.notification-btn')){
+     if(!e.target.closest('.notif-dropdown')&&!e.target.closest('.notification-btn')&&!e.target.closest('.hushhawk-notif-dropdown')){
        isNotifOpen.value=false;
      }
      if(!e.target.closest('.user-identity-wrap')){
@@ -447,7 +446,7 @@ export default {
  function closeDialog(){dialog.value='';previousFocus?.focus?.();}
  function dialogKeys(e){if(e.key==='Escape'){e.preventDefault();closeDialog();}if(e.key==='Tab'){const nodes=Array.from(dialogEl.value?.querySelectorAll('button,a[href],input,select,textarea,[tabindex="0"]')||[]).filter(n=>!n.disabled);const first=nodes[0],last=nodes[nodes.length-1],active=wwLib.getFrontDocument()?.activeElement;if(e.shiftKey&&(active===first||active===dialogEl.value)){e.preventDefault();last?.focus();}else if(!e.shiftKey&&(active===last||active===dialogEl.value)){e.preventDefault();first?.focus();}}}
  function addDeal(){if(isEditing.value||!newAddress.value.trim()||!/^\d{5}$/.test(newZip.value))return;const d={...samples[0],id:'preview-'+Date.now(),address:newAddress.value.trim(),zip:newZip.value,owner:'Owner not entered',phone:'—',email:'—',arv:null,repairs:null,mao:null,fee:null,note:'',agent:'Elite Team',completed:false};deals.value.push(d);query.value='';selectedId.value=d.id;newAddress.value='';closeDialog();}
- return {icons,isEditing,navigation,stages,navOpen,query,selected,visible,heroStyle,metrics,activities,tabs,tab,draft,note,notice,dialog,dialogEl,dialogTitle,newAddress,newZip,dragged,photo,money,guard,handleNav,imageFailed,shortStage,stageCount,clearSearch,selectDeal,closeDetail,startDrag,dropDeal,moveDeal,completeTask,setTab,saveDraft,saveNote,openDialog,closeDialog,dialogKeys,addDeal,isQuickAddOpen,isNotifOpen,currentTime,notifications,isUserMenuOpen,activeUserName,activeUserRole,activeUserEmail,handleLogout};
+ return {icons,isEditing,navigation,stages,navOpen,query,selected,visible,heroStyle,metrics,activities,tabs,tab,draft,note,notice,dialog,dialogEl,dialogTitle,newAddress,newZip,dragged,photo,money,guard,handleNav,imageFailed,shortStage,stageCount,clearSearch,selectDeal,closeDetail,startDrag,dropDeal,moveDeal,completeTask,setTab,saveDraft,saveNote,openDialog,closeDialog,dialogKeys,addDeal,isQuickAddOpen,isNotifOpen,currentTime,notifications,unreadCount,isUserMenuOpen,activeUserName,activeUserRole,activeUserEmail,handleLogout};
  }
 };
 </script>

@@ -22,7 +22,8 @@
     "typecheck:prerender": "tsc --noEmit -p ./prerender/tsconfig.json",
     "db:migrate": "node database/migrate.js",
     "db:backup": "node database/backup.js",
-    "test:milestone1": "node tests/milestone1_exit_check.js"
+    "test:milestone1": "node tests/milestone1_exit_check.js",
+    "test:notifications": "node tests/notifications.test.js"
   },
   "dependencies": {
     "@better-fetch/fetch": "1.1.21",

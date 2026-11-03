@@ -26,7 +26,7 @@
   <div class="brand-bottom"><p>“REAL ESTATE<br>CREATES FREEDOM.”</p><span>HUSHHAWK • BUILT TO CLOSE</span><small>HushHawk Property Intelligence</small></div>
  </aside>
  <main class="workspace">
-  <div class="topbar"><button class="mobile-menu" @click="!isEditing&&(navOpen=!navOpen)" :aria-expanded="navOpen">Menu</button><label class="global-search"><span class="icon" v-html="icons.search"></span><input v-model="query" :disabled="isEditing" aria-label="Search county records" placeholder="Search properties, owners, addresses, or anything…"></label><button class="gold add-lead" @click="openDialog('import')"><span class="icon" v-html="icons.plus"></span>Add New <span>⌄</span></button><button class="notification" @click="openDialog('notifications')" aria-label="Preview notifications"><span class="icon" v-html="icons.bell"></span><b>3</b></button>      <!-- User Identity Menu & Logout Option -->
+  <div class="topbar"><button class="mobile-menu" @click="!isEditing&&(navOpen=!navOpen)" :aria-expanded="navOpen">Menu</button><label class="global-search"><span class="icon" v-html="icons.search"></span><input v-model="query" :disabled="isEditing" aria-label="Search county records" placeholder="Search properties, owners, addresses, or anything…"></label><button class="gold add-lead" @click="openDialog('import')"><span class="icon" v-html="icons.plus"></span>Add New <span>⌄</span></button><div style="position: relative; display: inline-flex;"><button class="notification" @click.stop="isNotifOpen = !isNotifOpen" aria-label="Notifications" title="Escrow & Pipeline Alerts"><span class="icon" v-html="icons.bell"></span><b v-if="unreadCount > 0">{{ unreadCount }}</b></button><HushHawkNotificationDropdown v-if="isNotifOpen" :icons="icons" @close="isNotifOpen = false" @navigate="guard" /></div>      <!-- User Identity Menu & Logout Option -->
       <div class="user-identity-wrap">
         <button
           type="button"
@@ -104,9 +104,25 @@
 <script>
 import {ref,computed,watch,nextTick,onMounted} from 'vue';
 import Papa from 'papaparse';
+import HushHawkNotificationDropdown from '@/_front/components/HushHawkNotificationDropdown.vue';
+import { useNotifications } from '@/_common/use/useNotifications.js';
 import {navigation,iconDefaults,sampleRecords,floridaGeometry} from './data.js';
-export default {props:{uid:{type:String,required:true},content:{type:Object,required:true},},setup(props){
+export default {components:{HushHawkNotificationDropdown},props:{uid:{type:String,required:true},content:{type:Object,required:true},},setup(props){
+const {
+  notifications,
+  unreadCount,
+  isNotifOpen,
+  initNotificationPolling
+} = useNotifications();
 onMounted(() => {
+  initNotificationPolling();
+  if (typeof document !== 'undefined') {
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.notification') && !e.target.closest('.hushhawk-notif-dropdown')) {
+        isNotifOpen.value = false;
+      }
+    });
+  }
   if (typeof window !== 'undefined') {
     if ('scrollRestoration' in window.history) {
       window.history.scrollRestoration = 'manual';
@@ -202,7 +218,7 @@ function showCampaign(c){if(!isEditing.value){focusedCampaign.value=c;openDialog
 async function readCsv(e){if(isEditing.value)return;const file=e.target.files?.[0];pendingRows.value=[];importError.value='';importNotice.value='';if(!file)return;if(file.size>1048576){importError.value='Choose a CSV smaller than 1 MB.';return;}importBusy.value=true;try{const parsed=Papa.parse(await file.text(),{header:true,delimiter:',',skipEmptyLines:'greedy',transformHeader:h=>h.trim()});if(parsed.errors.length)throw new Error('CSV format error: '+parsed.errors[0].message);if(!parsed.meta.fields?.includes('address'))throw new Error('The CSV must contain an address column.');if(parsed.data.length>5000)throw new Error('Use a maximum of 5,000 rows.');const rows=parsed.data.filter(r=>String(r.address||'').trim()).map((r,i)=>{const raw=String(r.value||'').replace(/[$,]/g,'');return{id:'csv-'+i,address:String(r.address).trim(),city:String(r.city||''),owner:String(r.owner||''),ownerType:String(r.ownerType||''),type:String(r.type||''),value:raw!==''&&Number.isFinite(Number(raw))?Number(raw):null,tags:String(r.tags||'').split(';').map(t=>t.trim()).filter(Boolean),last:String(r.last||''),status:String(r.status||'New')};});if(!rows.length)throw new Error('No rows with an address were found.');pendingRows.value=rows;importNotice.value=rows.length+' valid rows ready to preview.';}catch(e){importError.value=e.message||'Unable to read CSV.';}finally{importBusy.value=false;}}
 function loadCsv(){if(isEditing.value||!pendingRows.value.length)return;records.value=pendingRows.value.map(r=>({...r}));imported.value=true;selectedId.value='';resetFilters();draft.value='';draftNotice.value='';closeDialog();}
 function exportCsv(){if(isEditing.value||!filtered.value.length)return;const rows=filtered.value.filter(r=>!checked.value.length||checked.value.includes(r.id));const data=rows.map(r=>Object.fromEntries(shownColumns.value.map(c=>[c.key,c.key==='tags'?r.tags.join(';'):r[c.key]])));const win=wwLib.getFrontWindow(),doc=wwLib.getFrontDocument(),url=win.URL.createObjectURL(new win.Blob([Papa.unparse(data,{escapeFormulae:true})],{type:'text/csv;charset=utf-8;'}));const a=doc.createElement('a');a.href=url;a.download=county.value.toLowerCase()+'-property-preview.csv';doc.body.appendChild(a);a.click();a.remove();win.setTimeout(()=>win.URL.revokeObjectURL(url),1000);notice.value=rows.length+' preview rows exported.';}
-return{icons,isEditing,navigation,navOpen,query,county,records,imported,checked,sort,selectedId,pendingFilters,applied,notice,draft,draftNotice,dialog,dialogEl,importBusy,importNotice,importError,pendingRows,focusedCampaign,columns,visibleColumns,shownColumns,filterOptions,filtered,allChecked,selectedRecord,recordCaption,metrics,campaigns,heroStyle,paths,marker,money,dateLabel,statusClass,tagClass,dialogTitle,guard,changeCounty,applyFilters,resetFilters,toggleAll,toggleRecord,selectRecord,openDialog,closeDialog,dialogKeys,saveDraft,showCampaign,readCsv,loadCsv,exportCsv,isUserMenuOpen,activeUserName,activeUserRole,activeUserEmail,handleLogout};
+return{icons,isEditing,navigation,navOpen,query,county,records,imported,checked,sort,selectedId,pendingFilters,applied,notice,draft,draftNotice,dialog,dialogEl,importBusy,importNotice,importError,pendingRows,focusedCampaign,columns,visibleColumns,shownColumns,filterOptions,filtered,allChecked,selectedRecord,recordCaption,metrics,campaigns,heroStyle,paths,marker,money,dateLabel,statusClass,tagClass,dialogTitle,guard,changeCounty,applyFilters,resetFilters,toggleAll,toggleRecord,selectRecord,openDialog,closeDialog,dialogKeys,saveDraft,showCampaign,readCsv,loadCsv,exportCsv,isUserMenuOpen,activeUserName,activeUserRole,activeUserEmail,handleLogout,notifications,unreadCount,isNotifOpen};
 }};
 </script>
 <style scoped>
