@@ -72,9 +72,9 @@ async function runNotificationTests() {
             VALUES ($1, 'Batch Test 1', 'Desc', false), ($2, 'Batch Test 2', 'Desc', false)
         `, [tempId1, tempId2]);
 
-        await pool.query(`UPDATE ops.notifications SET is_read = true, read_at = NOW() WHERE is_read = false`);
-        const unreadCount = await pool.query('SELECT count(*) FROM ops.notifications WHERE is_read = false');
-        assert(Number(unreadCount.rows[0].count) === 0, 'All unread notifications marked as read (unread count = 0)');
+        await pool.query(`UPDATE ops.notifications SET is_read = true, read_at = NOW() WHERE notification_id = ANY($1)`, [[tempId1, tempId2]]);
+        const unreadCount = await pool.query('SELECT count(*) FROM ops.notifications WHERE notification_id = ANY($1) AND is_read = false', [[tempId1, tempId2]]);
+        assert(Number(unreadCount.rows[0].count) === 0, 'Batch unread notifications marked as read (unread count = 0)');
 
         // Test 5: Cleanup Test Records
         console.log('\n[Test 5] Clean up test records');
@@ -98,3 +98,4 @@ async function runNotificationTests() {
 }
 
 runNotificationTests();
+
