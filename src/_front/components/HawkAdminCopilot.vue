@@ -32,10 +32,10 @@
             <div>
               <div class="hawk-title">
                 HawkAI Copilot
-                <span class="hawk-role-pill">ADMIN</span>
+                <span class="hawk-role-pill">ENTERPRISE</span>
               </div>
               <div class="hawk-subtitle">
-                <span class="hawk-status-dot"></span> AWS RDS PostgreSQL · Canonical DB
+                <span class="hawk-status-dot"></span> AWS RDS PostgreSQL · Multi-Schema Active
               </div>
             </div>
           </div>
@@ -77,8 +77,35 @@
               <span v-else>🦅</span>
             </div>
             <div class="hawk-msg-bubble">
-              <div class="hawk-msg-time">{{ msg.time }}</div>
+              <div class="hawk-msg-header">
+                <span class="hawk-msg-time">{{ msg.time }}</span>
+                <button
+                  v-if="msg.sender === 'ai'"
+                  class="hawk-copy-btn"
+                  @click="copyText(msg.text)"
+                  title="Copy Answer"
+                >
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                    <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Message Body -->
               <div class="hawk-msg-content" v-html="renderMarkdown(msg.text)"></div>
+
+              <!-- Interactive Action Buttons -->
+              <div v-if="msg.actions && msg.actions.length > 0" class="hawk-actions-container">
+                <button
+                  v-for="(action, aIdx) in msg.actions"
+                  :key="aIdx"
+                  class="hawk-action-pill-btn"
+                  @click="handleActionClick(action)"
+                >
+                  {{ action.label }}
+                </button>
+              </div>
             </div>
           </div>
 
@@ -87,7 +114,7 @@
             <div class="hawk-msg-avatar">🦅</div>
             <div class="hawk-msg-bubble hawk-typing">
               <div class="hawk-spinner"></div>
-              <span>Querying AWS RDS PostgreSQL & Canonical Schemas...</span>
+              <span>Introspecting PostgreSQL 43 tables & computing real estate insights...</span>
             </div>
           </div>
         </div>
@@ -100,7 +127,7 @@
               v-model="inputQuery"
               ref="queryInput"
               class="hawk-input"
-              placeholder="Ask anything (leads, dates, audit trail, missing data, rules)..."
+              placeholder="Ask anything (e.g. 'portfolio value', 'find buyers for...', 'missing data')..."
               :disabled="isLoading"
             />
             <button
@@ -116,7 +143,7 @@
             </button>
           </form>
           <div class="hawk-shortcut-hint">
-            <span>Press <strong>Enter</strong> to send · <strong>Cmd+K</strong> to toggle</span>
+            <span>Press <strong>Enter</strong> to send · <strong>Cmd+K</strong> to toggle · Supports follow-up memory</span>
           </div>
         </div>
       </div>
@@ -133,17 +160,23 @@ export default {
       isLoading: false,
       inputQuery: '',
       quickPrompts: [
+        { label: '💎 Portfolio Valuation', query: 'What is our total assessed property value and top properties?' },
+        { label: '🤝 Match Cash Buyers', query: 'Find cash buyers in Duval County for deals' },
         { label: '🔍 Missing Data Audit', query: 'Which leads are missing phone or email addresses?' },
+        { label: '📋 Task Matrix', query: 'What tasks are pending or high priority?' },
         { label: '📜 Recent Audit Trail', query: 'Show me the audit trail and what changed recently' },
-        { label: '📋 Pending Tasks Matrix', query: 'What tasks are pending or high priority?' },
         { label: '🏛️ Blueprint Rules', query: 'Explain the CrownKey standard and non-merge rules' },
-        { label: '🦅 Executive Portfolio', query: 'Give me an executive summary of our active portfolio' },
       ],
       messages: [
         {
           sender: 'ai',
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          text: `### 🦅 Welcome, Administrator\nI am your **HushHawk Admin AI Copilot**.\n\nI possess real-time introspection into our **AWS RDS PostgreSQL** database across all 7 schemas (\`core\`, \`crm\`, \`audit\`, \`ops\`, \`rel\`, \`ref\`, \`raw\`).\n\n**Ask me anything:**\n- 🔍 *Missing data & unreached leads*\n- 📜 *Audit events & timestamps (who modified what and on what date)*\n- 📍 *Property & APN lookups with raw parcel precision*\n- 📋 *Pending tasks & team action items*\n- 🏛️ *Core system rules (CrownKey standard, non-merge policy)*`,
+          text: `### 🦅 Welcome, Administrator\nI am your **HushHawk Enterprise AI Copilot**.\n\nI possess real-time introspection into our **AWS RDS PostgreSQL** database across all 7 schemas and 43 production tables.\n\n**New Real Estate Intelligence Capabilities:**\n- 💎 **Portfolio Valuation:** Cumulative assessed value, averages, and peak assets\n- 🤝 **Cash Buyer Matching:** Auto-match investor buy-boxes to active property deals\n- 🔍 **Missing Data Audit:** Unreached seller contacts, missing phones & emails\n- 📜 **Audit History:** Full chronological timeline with actors, diffs, and dates\n- 🧠 **Context Memory:** You can ask follow-ups like *"What is the phone for him?"* or *"Who can buy that property?"*`,
+          actions: [
+            { label: '💎 Portfolio Valuation', action: 'PROMPT', query: 'What is our total assessed property value and top properties?' },
+            { label: '🤝 Match Cash Buyers', action: 'PROMPT', query: 'Find cash buyers in Duval County for deals' },
+            { label: '🔍 Missing Data Audit', action: 'PROMPT', query: 'Which leads are missing phone or email addresses?' }
+          ]
         },
       ],
     };
@@ -179,13 +212,30 @@ export default {
         {
           sender: 'ai',
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          text: 'Chat history cleared. Live connection to AWS RDS PostgreSQL active. How can I assist you?',
+          text: 'Chat history cleared. Active connection to AWS RDS PostgreSQL. How can I assist you?',
+          actions: [
+            { label: '💎 Portfolio Valuation', action: 'PROMPT', query: 'What is our total assessed property value and top properties?' },
+            { label: '🤝 Match Cash Buyers', action: 'PROMPT', query: 'Find cash buyers in Duval County for deals' }
+          ]
         },
       ];
     },
     sendQuickPrompt(query) {
       this.inputQuery = query;
       this.sendMessage();
+    },
+    handleActionClick(action) {
+      if (action.action === 'PROMPT' && action.query) {
+        this.inputQuery = action.query;
+        this.sendMessage();
+      } else if (action.action === 'NAVIGATE' && action.path) {
+        window.location.hash = action.path;
+      }
+    },
+    copyText(text) {
+      if (navigator && navigator.clipboard) {
+        navigator.clipboard.writeText(text);
+      }
     },
     async sendMessage() {
       const q = this.inputQuery.trim();
@@ -217,19 +267,22 @@ export default {
             sender: 'ai',
             time: aiTime,
             text: data.answer || 'Query completed with no direct output.',
+            actions: data.actions || []
           });
         } else {
           this.messages.push({
             sender: 'ai',
             time: aiTime,
             text: `⚠️ **Error Processing Query:** ${data.error || 'Server returned an error'}`,
+            actions: []
           });
         }
       } catch (err) {
         this.messages.push({
           sender: 'ai',
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          text: `⚠️ **Connection Failure:** Could not reach backend API at \`/api/v1/ai/query\`. Please verify backend is running. (${err.message})`,
+          text: `⚠️ **Connection Failure:** Could not reach backend API at \`/api/v1/ai/query\`. (${err.message})`,
+          actions: []
         });
       } finally {
         this.isLoading = false;
@@ -247,7 +300,6 @@ export default {
     renderMarkdown(text) {
       if (!text) return '';
       let html = text
-        // Escape HTML
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;');
@@ -261,6 +313,9 @@ export default {
 
       // Date Badges 📅 **XYZ**
       html = html.replace(/📅 \*\*([^\*]+)\*\*/g, '<span class="hawk-date-badge">📅 $1</span>');
+
+      // Money Badges 💰 **$XYZ**
+      html = html.replace(/💰 \*\*([^\*]+)\*\*/g, '<span class="hawk-money-badge">💰 $1</span>');
 
       // Blockquotes
       html = html.replace(/^> (.*$)/gim, '<blockquote class="hawk-blockquote">$1</blockquote>');
@@ -366,12 +421,12 @@ export default {
   position: fixed;
   bottom: 24px;
   right: 24px;
-  width: 440px;
+  width: 470px;
   max-width: calc(100vw - 32px);
-  height: 640px;
+  height: 680px;
   max-height: calc(100vh - 48px);
   background: #04182D;
-  border: 1px solid rgba(212, 175, 55, 0.4);
+  border: 1.5px solid rgba(212, 175, 55, 0.4);
   border-radius: 16px;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(212, 175, 55, 0.15);
   display: flex;
@@ -563,12 +618,37 @@ export default {
 }
 
 .hawk-msg-bubble {
-  max-width: 82%;
+  max-width: 86%;
   padding: 12px 14px;
   border-radius: 12px;
   font-size: 13px;
   line-height: 1.5;
   word-break: break-word;
+}
+
+.hawk-msg-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.hawk-copy-btn {
+  background: none;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  padding: 2px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.hawk-copy-btn:hover {
+  color: #FFDF73;
+  background: rgba(212, 175, 55, 0.15);
 }
 
 .hawk-msg-user .hawk-msg-bubble {
@@ -588,12 +668,42 @@ export default {
 .hawk-msg-time {
   font-size: 10px;
   color: #64748b;
-  margin-bottom: 4px;
 }
 
 .hawk-msg-user .hawk-msg-time {
-  text-align: right;
   color: #93c5fd;
+}
+
+/* Actions Container */
+.hawk-actions-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(212, 175, 55, 0.15);
+}
+
+.hawk-action-pill-btn {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: rgba(212, 175, 55, 0.15);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  color: #FFDF73;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.hawk-action-pill-btn:hover {
+  background: #D4AF37;
+  color: #04182D;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(212, 175, 55, 0.3);
 }
 
 /* Typing Indicator */
@@ -733,6 +843,17 @@ export default {
   font-size: 11px;
   font-weight: 600;
   border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+:deep(.hawk-money-badge) {
+  display: inline-block;
+  background: rgba(212, 175, 55, 0.2);
+  color: #FFDF73;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  border: 1px solid rgba(212, 175, 55, 0.4);
 }
 
 :deep(.hawk-code) {
