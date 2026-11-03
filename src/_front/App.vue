@@ -1,14 +1,18 @@
 <template>
      <!-- wwFront:start -->
     <router-view />
+    <HawkAdminCopilot />
     <!-- wwFront:end -->
 </template>
 
 <script>
 import { reactive, computed, provide, onMounted, watch } from 'vue';
+import HawkAdminCopilot from './components/HawkAdminCopilot.vue';
 
- 
 export default {
+    components: {
+        HawkAdminCopilot,
+    },
     setup() {
         const wwFrontState = reactive({
             lang: computed(() => wwLib.$store.getters['front/getLang']),
