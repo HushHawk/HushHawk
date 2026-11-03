@@ -433,14 +433,161 @@ async function callGenerativeLLM(systemPrompt, userQuery, contextData) {
 // 3. MAIN COGNITIVE REASONING PIPELINE
 // ============================================================================
 
-export async function processAdminAIQuery(userQuery, conversationHistory = []) {
+/**
+ * Calculate appropriate friendly time of day greeting based on user's timezone hour
+ */
+function getTimeGreeting(hour) {
+    if (hour >= 5 && hour < 12) return 'Good morning';
+    if (hour >= 12 && hour < 14) return 'Good noon';
+    if (hour >= 14 && hour < 17) return 'Good afternoon';
+    if (hour >= 17 && hour < 22) return 'Good evening';
+    return 'Good night';
+}
+
+export async function processAdminAIQuery(userQuery, optionsOrHistory = {}) {
+    const options = Array.isArray(optionsOrHistory) ? { history: optionsOrHistory } : (optionsOrHistory || {});
+    const clientHour = typeof options.clientHour === 'number' ? options.clientHour : new Date().getHours();
+    const timeGreeting = getTimeGreeting(clientHour);
+
     let q = (userQuery || '').trim();
     if (!q) {
         return {
-            answer: "Greetings, Administrator. I am your HushHawk System AI Copilot. Ask me anything regarding leads, properties, audit trails, missing data, dates, or system architectural rules.",
+            answer: `${timeGreeting}, Administrator! I am your dedicated HushHawk Acquisitions & Operations Copilot. How can I help you manage our leads, properties, cash buyers, or daily tasks today?`,
             citations: [SYSTEM_SECTIONS.SYSTEM_RULES.name],
             records: [],
-            actions: []
+            actions: [
+                { label: 'Portfolio Valuation', action: 'PROMPT', query: 'What is our total assessed property value and top properties?' },
+                { label: 'Match Cash Buyers', action: 'PROMPT', query: 'Find cash buyers in Duval County for deals' },
+                { label: 'Missing Data Audit', action: 'PROMPT', query: 'Which leads are missing phone or email addresses?' }
+            ]
+        };
+    }
+
+    const cleanLower = q.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
+
+    // ------------------------------------------------------------------------
+    // CONVERSATIONAL INTENTS: GREETINGS, TIME OF DAY & SOCIAL BANTER
+    // ------------------------------------------------------------------------
+    const isSpecificMorning = cleanLower.includes('good morning') || cleanLower === 'morning';
+    const isSpecificNoon = cleanLower.includes('good noon') || cleanLower.includes('good afternoon') || cleanLower === 'noon' || cleanLower === 'afternoon';
+    const isSpecificEvening = cleanLower.includes('good evening') || cleanLower === 'evening';
+    const isSpecificNight = cleanLower.includes('good night') || cleanLower.includes('goodnight') || cleanLower === 'night';
+    const isGeneralGreeting = /^(hi|hello|hlw|hey|heya|howdy|sup|yo|hi there|hello there)$/i.test(cleanLower);
+
+    if (isSpecificMorning) {
+        return {
+            answer: `Good morning! It's great to connect with you. I hope you're having a productive and wonderful start to your day!\n\nAll systems across our AWS RDS PostgreSQL database are online, and our lead queues are up-to-date. How can I assist you with HushHawk today?`,
+            citations: [SYSTEM_SECTIONS.LEADS.name, SYSTEM_SECTIONS.PROPERTIES.name],
+            records: [],
+            actions: [
+                { label: 'Check Pending Tasks', action: 'NAVIGATE', path: '#tasks' },
+                { label: 'Portfolio Valuation', action: 'PROMPT', query: 'What is our total assessed property value and top properties?' },
+                { label: 'Missing Data Audit', action: 'PROMPT', query: 'Which leads are missing phone or email addresses?' }
+            ],
+            intent: 'GREETING_MORNING'
+        };
+    }
+
+    if (isSpecificNoon) {
+        return {
+            answer: `Good afternoon! Hope your day is going smoothly and you're having a great day.\n\nI'm right here at your service. Whether you'd like to pull property valuations, check recent Podio syncs, or review seller contacts, just let me know what we're working on!`,
+            citations: [SYSTEM_SECTIONS.LEADS.name, SYSTEM_SECTIONS.PROPERTIES.name],
+            records: [],
+            actions: [
+                { label: 'Review Today\'s Tasks', action: 'NAVIGATE', path: '#tasks' },
+                { label: 'Match Cash Buyers', action: 'PROMPT', query: 'Find cash buyers in Duval County for deals' },
+                { label: 'View Seller Leads', action: 'NAVIGATE', path: '#leads' }
+            ],
+            intent: 'GREETING_AFTERNOON'
+        };
+    }
+
+    if (isSpecificEvening) {
+        return {
+            answer: `Good evening! Hope you've had a successful day.\n\nI'm right here with full access to our database whenever you need numbers, seller details, follow-ups, or audit checks before wrapping up. How can I assist you tonight?`,
+            citations: [SYSTEM_SECTIONS.AUDIT.name, SYSTEM_SECTIONS.TASKS.name],
+            records: [],
+            actions: [
+                { label: 'Recent Audit Trail', action: 'PROMPT', query: 'Show me the audit trail and what changed recently' },
+                { label: 'Check Pending Tasks', action: 'NAVIGATE', path: '#tasks' }
+            ],
+            intent: 'GREETING_EVENING'
+        };
+    }
+
+    if (isSpecificNight) {
+        return {
+            answer: `Good night! Wishing you a peaceful and well-deserved rest.\n\nDon't worry about a thing—I'll remain right here monitoring incoming leads, webhooks, and audit logs so everything is in order when you're back tomorrow. Have a great night!`,
+            citations: [SYSTEM_SECTIONS.AUDIT.name],
+            records: [],
+            actions: [
+                { label: 'Executive Portfolio', action: 'PROMPT', query: 'What is our total assessed property value and top properties?' }
+            ],
+            intent: 'GREETING_NIGHT'
+        };
+    }
+
+    if (isGeneralGreeting) {
+        return {
+            answer: `${timeGreeting}! It's great to hear from you. I'm your dedicated HushHawk assistant, ready to help you with anything across our real estate portfolio, seller leads, cash buyers, or daily tasks.\n\nHow is everything going today? What would you like us to look into?`,
+            citations: [SYSTEM_SECTIONS.LEADS.name],
+            records: [],
+            actions: [
+                { label: 'Portfolio Valuation', action: 'PROMPT', query: 'What is our total assessed property value and top properties?' },
+                { label: 'Match Cash Buyers', action: 'PROMPT', query: 'Find cash buyers in Duval County for deals' },
+                { label: 'Missing Data Audit', action: 'PROMPT', query: 'Which leads are missing phone or email addresses?' }
+            ],
+            intent: 'GREETING_GENERAL'
+        };
+    }
+
+    // Check "how are you"
+    if (cleanLower.includes('how are you') || cleanLower.includes('how r u') || cleanLower.includes('hows it going') || cleanLower.includes('how is it going')) {
+        return {
+            answer: `I'm doing wonderful, thank you so much for asking! All our database tables in AWS RDS PostgreSQL are healthy and our lead pipeline is up-to-date.\n\nMore importantly, how are you doing today? What can I take off your plate right now?`,
+            citations: [SYSTEM_SECTIONS.LEADS.name],
+            records: [],
+            actions: [
+                { label: 'Check Pending Tasks', action: 'NAVIGATE', path: '#tasks' },
+                { label: 'Missing Data Audit', action: 'PROMPT', query: 'Which leads are missing phone or email addresses?' }
+            ],
+            intent: 'SOCIAL_HOW_ARE_YOU'
+        };
+    }
+
+    // Check "who are you" / "what can you do"
+    if (cleanLower.includes('who are you') || cleanLower.includes('what are you') || cleanLower.includes('what can you do') || cleanLower.includes('introduce yourself')) {
+        return {
+            answer: `I am your dedicated **HushHawk Acquisitions & Operations Copilot**—think of me as your full-time executive team member!\n\nI have real-time access to our live **AWS RDS PostgreSQL** database across all 7 schemas and 43 tables:\n- **Seller Leads & Pipeline:** Look up any contact, phone, email, lead score, or source\n- **Property Portfolio:** Search addresses, raw APNs, assessed valuations, and equity\n- **Cash Buyers Network:** Match private investors to active wholesale/disposition deals\n- **Task Matrix:** Track team follow-ups, inspections, and due dates\n- **Audit Ledger:** Check who modified any record, with diffs and timestamps\n\nWhenever you need something, just ask me naturally!`,
+            citations: [SYSTEM_SECTIONS.SYSTEM_RULES.name],
+            records: [],
+            actions: [
+                { label: 'Portfolio Valuation', action: 'PROMPT', query: 'What is our total assessed property value and top properties?' },
+                { label: 'Match Cash Buyers', action: 'PROMPT', query: 'Find cash buyers in Duval County for deals' }
+            ],
+            intent: 'SOCIAL_WHO_ARE_YOU'
+        };
+    }
+
+    // Check "thank you" / "thanks"
+    if (/^(thank you|thanks|thx|thank u|much appreciated|great job|good job|awesome|perfect)$/i.test(cleanLower)) {
+        return {
+            answer: `You're very welcome! It's always my pleasure to help keep HushHawk running smoothly. Let me know whenever you need anything else!`,
+            citations: [],
+            records: [],
+            actions: [],
+            intent: 'SOCIAL_GRATITUDE'
+        };
+    }
+
+    // Check "bye" / "see you"
+    if (/^(bye|goodbye|see you|see ya|talk later|have a good day|cya)$/i.test(cleanLower)) {
+        return {
+            answer: `Take care! Have a fantastic day ahead. I'll be right here whenever you need me!`,
+            citations: [],
+            records: [],
+            actions: [],
+            intent: 'SOCIAL_FAREWELL'
         };
     }
 
@@ -798,41 +945,65 @@ export async function processAdminAIQuery(userQuery, conversationHistory = []) {
     }
 
     // ------------------------------------------------------------------------
-    // INTENT H: Executive Overview & Natural Language Fallback
+    // INTENT H: Executive Overview (If explicitly requested)
     // ------------------------------------------------------------------------
-    const fin = await getPortfolioFinancials();
-    const leadsCount = db?.data?.core?.leads?.length || 59;
-    const propsCount = db?.data?.core?.properties?.length || 19;
-    const tasksCount = db?.data?.core?.tasks?.length || 11;
-    const buyersCount = db?.data?.crm?.cash_buyers?.length || 5;
+    const isExplicitOverview = lowerNormalized.includes('overview') || lowerNormalized.includes('summary') || lowerNormalized.includes('system state') || lowerNormalized.includes('portfolio') || lowerNormalized.includes('stats');
 
-    let markdown = `### HushHawk Executive System Summary\n\n`;
-    markdown += `I analyzed our active AWS RDS PostgreSQL database in response to: *"${q}"*.\n\n`;
-    markdown += `#### Live System State:\n`;
-    markdown += `- **[Section: ${SYSTEM_SECTIONS.LEADS.name}]:** **${leadsCount} Verified Production Leads** (Source: Podio CRM)\n`;
-    markdown += `- **[Section: ${SYSTEM_SECTIONS.PROPERTIES.name}]:** **${propsCount} Canonical Properties** with **${formatCurrency(fin.stats.total_assessed_value)}** in tracked assessed value\n`;
-    markdown += `- **[Section: ${SYSTEM_SECTIONS.TASKS.name}]:** **${tasksCount} Active Tasks** in operational matrix\n`;
-    markdown += `- **[Section: ${SYSTEM_SECTIONS.BUYERS.name}]:** **${buyersCount} Vetted Cash Investors** in disposition network\n`;
-    markdown += `- **[Section: ${SYSTEM_SECTIONS.AUDIT.name}]:** SOC2/Title 47 immutable audit trail active\n\n`;
+    if (isExplicitOverview) {
+        const fin = await getPortfolioFinancials();
+        const leadsCount = db?.data?.core?.leads?.length || 59;
+        const propsCount = db?.data?.core?.properties?.length || 19;
+        const tasksCount = db?.data?.core?.tasks?.length || 11;
+        const buyersCount = db?.data?.crm?.cash_buyers?.length || 5;
 
-    markdown += `**Suggested Inquiries You Can Ask Me:**\n`;
-    markdown += `1. *"What is our total assessed property value and top properties?"*\n`;
-    markdown += `2. *"Find cash buyers for 10725 Meadowlea Dr or Duval County"* \n`;
-    markdown += `3. *"Which leads are missing phone numbers or emails?"*\n`;
-    markdown += `4. *"Show me all high priority tasks and due dates"*\n`;
-    markdown += `5. *"What were the most recent changes in the audit log?"*\n`;
+        let markdown = `### HushHawk Executive System Summary\n\n`;
+        markdown += `Here is a live summary of our active system records across all sections:\n\n`;
+        markdown += `- **[Section: ${SYSTEM_SECTIONS.LEADS.name}]:** **${leadsCount} Verified Production Leads** (Source: Podio CRM)\n`;
+        markdown += `- **[Section: ${SYSTEM_SECTIONS.PROPERTIES.name}]:** **${propsCount} Canonical Properties** with **${formatCurrency(fin.stats.total_assessed_value)}** in tracked assessed value\n`;
+        markdown += `- **[Section: ${SYSTEM_SECTIONS.TASKS.name}]:** **${tasksCount} Active Tasks** in operational matrix\n`;
+        markdown += `- **[Section: ${SYSTEM_SECTIONS.BUYERS.name}]:** **${buyersCount} Vetted Cash Investors** in disposition network\n`;
+        markdown += `- **[Section: ${SYSTEM_SECTIONS.AUDIT.name}]:** SOC2/Title 47 immutable audit trail active\n\n`;
+        markdown += `Feel free to ask me to drill into any specific lead, property address, task, or buyer!`;
+
+        const actions = [
+            { label: 'Portfolio Valuation', action: 'PROMPT', query: 'What is our total assessed property value and top properties?' },
+            { label: 'Match Cash Buyers', action: 'PROMPT', query: 'Find cash buyers in Duval County for deals' },
+            { label: 'Check Pending Tasks', action: 'NAVIGATE', path: '#tasks' }
+        ];
+
+        return {
+            answer: markdown,
+            citations: [SYSTEM_SECTIONS.LEADS.name, SYSTEM_SECTIONS.PROPERTIES.name, SYSTEM_SECTIONS.BUYERS.name],
+            records: [],
+            actions,
+            intent: 'SYSTEM_OVERVIEW'
+        };
+    }
+
+    // ------------------------------------------------------------------------
+    // INTENT I: Friendly Out-of-Scope / Non-System Query Handler
+    // ------------------------------------------------------------------------
+    let markdown = `### I'm Really Sorry About That!\n\n`;
+    markdown += `I don't have that information in our workspace. As your dedicated HushHawk acquisitions and operations assistant, my knowledge is specifically centered around what we have inside our internal system and live database:\n\n`;
+    markdown += `- **Seller Leads & Pipeline** (Verified contacts, lead scores, marketing sources)\n`;
+    markdown += `- **Property Portfolio & Dossiers** (Parcels, assessed values, addresses, and equity)\n`;
+    markdown += `- **Cash Buyers Network** (Investor buy-box criteria and buyer matching)\n`;
+    markdown += `- **Task Matrix & Follow-ups** (Pending team action items and diligence deadlines)\n`;
+    markdown += `- **Audit Ledger & Compliance** (Historical change timelines, diffs, and timestamps)\n\n`;
+    markdown += `I'm unable to answer questions outside our real estate platform, but if there's any property, seller contact, investor match, or task you'd like me to look up right here, I'm right here and happy to help!`;
 
     const actions = [
-        { label: 'Portfolio Valuation', action: 'PROMPT', query: 'Show me our portfolio valuation and top properties' },
-        { label: 'Match Cash Buyers', action: 'PROMPT', query: 'Find cash buyers in Duval County' },
+        { label: 'View All Properties', action: 'NAVIGATE', path: '#properties' },
+        { label: 'Check Pending Tasks', action: 'NAVIGATE', path: '#tasks' },
+        { label: 'Match Cash Buyers', action: 'PROMPT', query: 'Find cash buyers in Duval County for deals' },
         { label: 'Missing Data Audit', action: 'PROMPT', query: 'Which leads are missing phone or email addresses?' }
     ];
 
     return {
         answer: markdown,
-        citations: [SYSTEM_SECTIONS.LEADS.name, SYSTEM_SECTIONS.PROPERTIES.name, SYSTEM_SECTIONS.BUYERS.name],
+        citations: [SYSTEM_SECTIONS.SYSTEM_RULES.name],
         records: [],
         actions,
-        intent: 'SYSTEM_OVERVIEW'
+        intent: 'OUT_OF_SCOPE'
     };
 }
