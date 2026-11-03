@@ -10,6 +10,7 @@ import { GraphService } from '../services/graphService.js';
 import { ComplianceService } from '../services/complianceService.js';
 import { CrmService } from '../services/crmService.js';
 import { PodioService } from '../services/podioService.js';
+import { processAdminAIQuery, getMissingDataAudit, SYSTEM_SECTIONS } from '../services/aiService.js';
 import { renderCrownKey, validateCrownKeyFormat, normalizeParcelMatch } from '../../../packages/crownkey/index.js';
 
 export const apiRouter = Router();
@@ -2216,5 +2217,45 @@ apiRouter.post('/admin/reset-database', (req, res) => {
         });
     } catch (err) {
         res.status(500).json({ error: err.message });
+    }
+});
+
+// ============================================================================
+// HAWKAI: Dedicated Admin AI Copilot Intelligence Routes
+// ============================================================================
+apiRouter.post('/ai/query', async (req, res) => {
+    try {
+        const { query: userQuery, history } = req.body || {};
+        const result = await processAdminAIQuery(userQuery, history);
+        res.json({
+            ok: true,
+            ...result,
+            timestamp: new Date().toISOString()
+        });
+    } catch (err) {
+        console.error('[HawkAI Error]', err);
+        res.status(500).json({ ok: false, error: err.message });
+    }
+});
+
+apiRouter.get('/ai/quick-prompts', (req, res) => {
+    res.json({
+        ok: true,
+        prompts: [
+            { label: '🔍 Missing Data Audit', query: 'Which leads are missing phone or email addresses?' },
+            { label: '📜 Recent Audit Trail', query: 'Show me the audit trail and what changed recently' },
+            { label: '📋 Pending Tasks', query: 'What tasks are pending or high priority?' },
+            { label: '🏛️ System Blueprint Rules', query: 'Explain the CrownKey standard and non-merge rules' },
+            { label: '🦅 Executive Portfolio', query: 'Give me an executive summary of our active portfolio' }
+        ]
+    });
+});
+
+apiRouter.get('/ai/data-audit', async (req, res) => {
+    try {
+        const audit = await getMissingDataAudit();
+        res.json({ ok: true, data: audit });
+    } catch (err) {
+        res.status(500).json({ ok: false, error: err.message });
     }
 });
