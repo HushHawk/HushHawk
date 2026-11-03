@@ -9,6 +9,7 @@ import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { pool } from './pgClient.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -137,6 +138,28 @@ class CanonicalStore {
             this.data.audit.audit_events.pop();
         }
         this.persist();
+
+        // Asynchronously persist to AWS RDS PostgreSQL
+        pool.query(
+            `INSERT INTO audit.audit_events (audit_id, actor, action, entity_type, entity_id, request_id, redacted_diff, created_at)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+             ON CONFLICT (audit_id) DO NOTHING`,
+            [
+                auditEvent.audit_id,
+                auditEvent.actor,
+                auditEvent.action,
+                auditEvent.entity_type,
+                auditEvent.entity_id || null,
+                auditEvent.request_id,
+                auditEvent.redacted_diff || {},
+                auditEvent.created_at
+            ]
+        ).catch(err => {
+            if (process.env.DEBUG_SQL === 'true') {
+                console.warn('[Audit PG Sync Warn]', err.message);
+            }
+        });
+
         return auditEvent;
     }
 
