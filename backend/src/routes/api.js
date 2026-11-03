@@ -2225,8 +2225,8 @@ apiRouter.post('/admin/reset-database', (req, res) => {
 // ============================================================================
 apiRouter.post('/ai/query', async (req, res) => {
     try {
-        const { query: userQuery, history } = req.body || {};
-        const result = await processAdminAIQuery(userQuery, history);
+        const { query: userQuery, history, clientHour, timeZone } = req.body || {};
+        const result = await processAdminAIQuery(userQuery, { history, clientHour, timeZone });
         res.json({
             ok: true,
             ...result,

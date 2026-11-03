@@ -219,27 +219,40 @@ export default {
           iconSvg: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>'
         },
       ],
-      messages: [
-        {
-          sender: 'ai',
-          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          text: `### Welcome, Administrator\nI am your **HushHawk Enterprise AI Copilot**.\n\nI possess real-time introspection into our **AWS RDS PostgreSQL** database across all 7 schemas and 43 production tables.\n\n**Real Estate Intelligence Capabilities:**\n- **Portfolio Valuation:** Cumulative assessed value, averages, and peak assets\n- **Cash Buyer Matching:** Auto-match investor buy-boxes to active property deals\n- **Missing Data Audit:** Unreached seller contacts, missing phones & emails\n- **Audit History:** Full chronological timeline with actors, diffs, and dates\n- **Context Memory:** You can ask follow-ups like *"What is the phone for him?"* or *"Who can buy that property?"*`,
-          actions: [
-            { label: 'Portfolio Valuation', action: 'PROMPT', query: 'What is our total assessed property value and top properties?' },
-            { label: 'Match Cash Buyers', action: 'PROMPT', query: 'Find cash buyers in Duval County for deals' },
-            { label: 'Missing Data Audit', action: 'PROMPT', query: 'Which leads are missing phone or email addresses?' }
-          ]
-        },
-      ],
+      messages: [],
     };
   },
   mounted() {
     window.addEventListener('keydown', this.handleKeyDown);
+    this.initWelcomeMessage();
   },
   beforeUnmount() {
     window.removeEventListener('keydown', this.handleKeyDown);
   },
   methods: {
+    getGreeting() {
+      const h = new Date().getHours();
+      if (h >= 5 && h < 12) return 'Good morning';
+      if (h >= 12 && h < 14) return 'Good noon';
+      if (h >= 14 && h < 17) return 'Good afternoon';
+      if (h >= 17 && h < 22) return 'Good evening';
+      return 'Good night';
+    },
+    initWelcomeMessage() {
+      const greeting = this.getGreeting();
+      this.messages = [
+        {
+          sender: 'ai',
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          text: `### ${greeting}, Administrator!\nI am your dedicated **HushHawk Acquisitions & Operations Assistant**.\n\nI have live, real-time access to our entire **AWS RDS PostgreSQL** database across all 7 schemas and 43 tables to help you manage leads, look up property valuations, match cash buyers, and follow up on team tasks.\n\nHow can I help you today?`,
+          actions: [
+            { label: 'Portfolio Valuation', action: 'PROMPT', query: 'What is our total assessed property value and top properties?' },
+            { label: 'Match Cash Buyers', action: 'PROMPT', query: 'Find cash buyers in Duval County for deals' },
+            { label: 'Check Pending Tasks', action: 'NAVIGATE', path: '#tasks' }
+          ]
+        }
+      ];
+    },
     toggleOpen() {
       this.isOpen = !this.isOpen;
       if (this.isOpen) {
@@ -260,17 +273,7 @@ export default {
       }
     },
     clearChat() {
-      this.messages = [
-        {
-          sender: 'ai',
-          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          text: 'Chat history cleared. Active connection to AWS RDS PostgreSQL. How can I assist you?',
-          actions: [
-            { label: 'Portfolio Valuation', action: 'PROMPT', query: 'What is our total assessed property value and top properties?' },
-            { label: 'Match Cash Buyers', action: 'PROMPT', query: 'Find cash buyers in Duval County for deals' }
-          ]
-        },
-      ];
+      this.initWelcomeMessage();
     },
     sendQuickPrompt(query) {
       this.inputQuery = query;
@@ -308,7 +311,12 @@ export default {
         const response = await fetch('/api/v1/ai/query', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ query: q }),
+          body: JSON.stringify({
+            query: q,
+            clientHour: new Date().getHours(),
+            timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            clientTime: new Date().toISOString()
+          }),
         });
 
         const data = await response.json();
