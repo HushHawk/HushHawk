@@ -481,11 +481,11 @@ export async function processAdminAIQuery(userQuery, conversationHistory = []) {
 
         const buyers = await matchCashBuyersForProperty(matchedProperty || q);
 
-        let markdown = `### 🤝 Cash Buyer & Disposition Intelligence\n`;
+        let markdown = `### Cash Buyer & Disposition Intelligence\n`;
         markdown += `**[Section: ${SYSTEM_SECTIONS.BUYERS.name}]**\n\n`;
 
         if (matchedProperty) {
-            markdown += `🎯 **Target Deal:** ${matchedProperty.address_line1}, ${matchedProperty.city || 'Jacksonville'}, FL (Assessed: ${formatCurrency(matchedProperty.assessed_value)})\n\n`;
+            markdown += `**Target Deal:** ${matchedProperty.address_line1}, ${matchedProperty.city || 'Jacksonville'}, FL (Assessed: ${formatCurrency(matchedProperty.assessed_value)})\n\n`;
             markdown += `Found **${buyers.length} vetted cash investors** matching this deal criteria:\n\n`;
         } else {
             markdown += `Found **${buyers.length} vetted cash investors** in our private network:\n\n`;
@@ -494,8 +494,8 @@ export async function processAdminAIQuery(userQuery, conversationHistory = []) {
         buyers.slice(0, 5).forEach((b, idx) => {
             const fitScore = b.matchScore ? ` · Fit Score: **${b.matchScore}%**` : '';
             markdown += `#### ${idx + 1}. ${b.full_name} (${b.company || 'Private Investor'})${fitScore}\n`;
-            markdown += `- **Phone:** 📞 \`${b.phone || 'N/A'}\` | **Email:** ✉️ \`${b.email || 'N/A'}\`\n`;
-            markdown += `- **Buy Box Focus:** 🎯 \`${b.buy_box || 'Standard Residential'}\`\n`;
+            markdown += `- **Phone:** \`${b.phone || 'N/A'}\` | **Email:** \`${b.email || 'N/A'}\`\n`;
+            markdown += `- **Buy Box Focus:** \`${b.buy_box || 'Standard Residential'}\`\n`;
             markdown += `- **Status:** \`${b.status || 'ACTIVE'}\`\n`;
             markdown += `\n`;
         });
@@ -503,8 +503,8 @@ export async function processAdminAIQuery(userQuery, conversationHistory = []) {
         sessionContext.lastEntity = { type: 'BUYER', data: buyers[0] };
 
         const actions = [
-            { label: '👥 Open Buyers Network', action: 'NAVIGATE', path: '#buyers' },
-            { label: '📢 Create Deal Blast', action: 'PROMPT', query: 'Draft deal blast message for cash buyers' }
+            { label: 'Open Buyers Network', action: 'NAVIGATE', path: '#buyers' },
+            { label: 'Create Deal Blast', action: 'PROMPT', query: 'Draft deal blast message for cash buyers' }
         ];
 
         return {
@@ -523,26 +523,26 @@ export async function processAdminAIQuery(userQuery, conversationHistory = []) {
         const fin = await getPortfolioFinancials();
         const stats = fin.stats;
 
-        let markdown = `### 💎 HushHawk Portfolio Valuation & Financial Intelligence\n`;
+        let markdown = `### HushHawk Portfolio Valuation & Financial Intelligence\n`;
         markdown += `**[Section: ${SYSTEM_SECTIONS.PROPERTIES.name}]**\n\n`;
 
         markdown += `#### Executive Portfolio Summary:\n`;
         markdown += `- **Total Tracked Properties:** \`${stats.total_properties}\` parcels\n`;
-        markdown += `- **Cumulative Assessed Value:** 💰 **${formatCurrency(stats.total_assessed_value)}**\n`;
-        markdown += `- **Average Value per Asset:** 📊 **${formatCurrency(stats.avg_assessed_value)}**\n`;
-        markdown += `- **Peak Assessed Property:** 🏆 **${formatCurrency(stats.max_assessed_value)}**\n\n`;
+        markdown += `- **Cumulative Assessed Value:** [VALUATION] **${formatCurrency(stats.total_assessed_value)}**\n`;
+        markdown += `- **Average Value per Asset:** **${formatCurrency(stats.avg_assessed_value)}**\n`;
+        markdown += `- **Peak Assessed Property:** **${formatCurrency(stats.max_assessed_value)}**\n\n`;
 
         markdown += `#### Top 5 Highest Assessed Assets:\n`;
         fin.topProperties.forEach((p, idx) => {
             markdown += `${idx + 1}. **${p.address_line1}** (${p.city || 'FL'})\n`;
-            markdown += `   - **Assessed Value:** 💰 **${formatCurrency(p.assessed_value)}**\n`;
+            markdown += `   - **Assessed Value:** [VALUATION] **${formatCurrency(p.assessed_value)}**\n`;
             markdown += `   - **Parcel APN:** \`${p.parcel_raw}\`\n`;
-            markdown += `   - **Registered:** *${formatDateTime(p.created_at)}*\n`;
+            markdown += `   - **Registered:** [DATE] **${formatDateTime(p.created_at)}**\n`;
         });
 
         const actions = [
-            { label: '📍 View All Properties', action: 'NAVIGATE', path: '#properties' },
-            { label: '🤝 Match Buyers for Top Asset', action: 'PROMPT', query: `Find cash buyers for ${fin.topProperties[0]?.address_line1 || 'top property'}` }
+            { label: 'View All Properties', action: 'NAVIGATE', path: '#properties' },
+            { label: 'Match Buyers for Top Asset', action: 'PROMPT', query: `Find cash buyers for ${fin.topProperties[0]?.address_line1 || 'top property'}` }
         ];
 
         if (fin.topProperties.length > 0) {
@@ -563,7 +563,7 @@ export async function processAdminAIQuery(userQuery, conversationHistory = []) {
     // ------------------------------------------------------------------------
     if (lowerNormalized.includes('missing') || lowerNormalized.includes('incomplete') || lowerNormalized.includes('no phone') || lowerNormalized.includes('no email') || lowerNormalized.includes('without property') || lowerNormalized.includes('gap')) {
         const audit = await getMissingDataAudit();
-        let markdown = `### 🔍 Data Integrity & Missing Information Audit\n`;
+        let markdown = `### Data Integrity & Missing Information Audit\n`;
         markdown += `**Analysis Scope:** Evaluated **${audit.totalLeadsChecked} Verified Leads** across AWS RDS PostgreSQL.\n\n`;
 
         markdown += `#### 1. [Section: ${SYSTEM_SECTIONS.CONTACTS.name}]\n`;
@@ -571,7 +571,7 @@ export async function processAdminAIQuery(userQuery, conversationHistory = []) {
         if (audit.missingPhoneSample.length > 0) {
             markdown += `  *Sample unreached contacts:*\n`;
             audit.missingPhoneSample.forEach(item => {
-                markdown += `  - **${item.name}** (CrownKey: \`${item.crownkey}\`) — Added on *${formatDateTime(item.created_at)}*\n`;
+                markdown += `  - **${item.name}** (CrownKey: \`${item.crownkey}\`) — Added on [DATE] **${formatDateTime(item.created_at)}**\n`;
             });
         }
 
@@ -580,18 +580,18 @@ export async function processAdminAIQuery(userQuery, conversationHistory = []) {
         if (audit.missingEmailSample.length > 0) {
             markdown += `  *Sample contacts without email:*\n`;
             audit.missingEmailSample.forEach(item => {
-                markdown += `  - **${item.name}** (CrownKey: \`${item.crownkey}\`) — Registered on *${formatDateTime(item.created_at)}*\n`;
+                markdown += `  - **${item.name}** (CrownKey: \`${item.crownkey}\`) — Registered on [DATE] **${formatDateTime(item.created_at)}**\n`;
             });
         }
 
         markdown += `\n#### 3. [Section: ${SYSTEM_SECTIONS.PROPERTIES.name}]\n`;
         markdown += `- **Leads Not Yet Linked to a Canonical Parcel:** \`${audit.missingPropertyCount}\` records\n`;
 
-        markdown += `\n> 🛡️ **Autonomous Recommendation:** Initiate a batch skip-trace enrichment task or push records through the USPS address normalizer to enrich missing phone/email fields.`;
+        markdown += `\n> **Autonomous Recommendation:** Initiate a batch skip-trace enrichment task or push records through the USPS address normalizer to enrich missing phone/email fields.`;
 
         const actions = [
-            { label: '⚡ Run Skip-Trace Enrichment', action: 'NAVIGATE', path: '#skip-tracing' },
-            { label: '📋 View Seller Leads', action: 'NAVIGATE', path: '#leads' }
+            { label: 'Run Skip-Trace Enrichment', action: 'NAVIGATE', path: '#skip-tracing' },
+            { label: 'View Seller Leads', action: 'NAVIGATE', path: '#leads' }
         ];
 
         return {
@@ -624,7 +624,7 @@ export async function processAdminAIQuery(userQuery, conversationHistory = []) {
             return true;
         }).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
-        let markdown = `### 📜 Immutable Audit Trail & Change Ledger\n`;
+        let markdown = `### Immutable Audit Trail & Change Ledger\n`;
         markdown += `**[Section: ${SYSTEM_SECTIONS.AUDIT.name}]**\n`;
         markdown += `**Authority:** Append-only ledger in schema \`audit.audit_events\`.\n\n`;
 
@@ -634,8 +634,8 @@ export async function processAdminAIQuery(userQuery, conversationHistory = []) {
             unique.slice(0, 6).forEach((evt, idx) => {
                 const diffStr = evt.redacted_diff ? Object.keys(evt.redacted_diff).map(k => `${k}: ${JSON.stringify(evt.redacted_diff[k])}`).join(', ') : 'None';
                 markdown += `#### #${idx + 1}. Action: \`${evt.action}\`\n`;
-                markdown += `- **Exact Timestamp:** 📅 **${formatDateTime(evt.created_at)}**\n`;
-                markdown += `- **Actor / Origin:** 👤 **${evt.actor || 'System'}**\n`;
+                markdown += `- **Exact Timestamp:** [DATE] **${formatDateTime(evt.created_at)}**\n`;
+                markdown += `- **Actor / Origin:** **${evt.actor || 'System'}**\n`;
                 markdown += `- **Target:** \`${evt.entity_type}\` (ID: \`${(evt.entity_id || '').slice(0, 8)}...\`)\n`;
                 if (diffStr !== 'None') {
                     markdown += `- **Changes:** \`${diffStr.slice(0, 120)}\`\n`;
@@ -645,8 +645,8 @@ export async function processAdminAIQuery(userQuery, conversationHistory = []) {
         }
 
         const actions = [
-            { label: '📜 Full Audit Ledger', action: 'NAVIGATE', path: '#audit' },
-            { label: '🛡️ Compliance Review', action: 'PROMPT', query: 'Explain our compliance gate rules' }
+            { label: 'Full Audit Ledger', action: 'NAVIGATE', path: '#audit' },
+            { label: 'Compliance Review', action: 'PROMPT', query: 'Explain our compliance gate rules' }
         ];
 
         return {
@@ -673,24 +673,24 @@ export async function processAdminAIQuery(userQuery, conversationHistory = []) {
         }
         const pending = tasks.filter(t => !t.is_completed && t.status !== 'COMPLETED');
 
-        let markdown = `### 📋 Task Matrix & Action Items Overview\n`;
+        let markdown = `### Task Matrix & Action Items Overview\n`;
         markdown += `**[Section: ${SYSTEM_SECTIONS.TASKS.name}]**\n\n`;
         markdown += `- **Total Tasks Active:** \`${tasks.length}\` | **Pending Action:** \`${pending.length}\`\n\n`;
 
         pending.slice(0, 6).forEach((t, idx) => {
             const due = t.due_date ? formatDateTime(t.due_date) : (t.due_time || 'Immediate Follow-up');
             const prio = (t.priority || '').toUpperCase();
-            const priorityBadge = prio === 'HIGH' ? '🔴 HIGH' : (prio === 'MEDIUM' ? '🟡 MED' : '🟢 LOW');
+            const priorityBadge = `[PRIORITY_${prio || 'MED'}]`;
             markdown += `#### ${idx + 1}. ${t.title}\n`;
             markdown += `- **Priority:** ${priorityBadge} | **Status:** \`${t.status}\`\n`;
             markdown += `- **Assigned:** \`${t.owner_id || 'Acquisitions Team'}\`\n`;
-            markdown += `- **Due Date:** 📅 **${due}**\n`;
-            markdown += `- **Created:** *${formatDateTime(t.created_at)}*\n\n`;
+            markdown += `- **Due Date:** [DATE] **${due}**\n`;
+            markdown += `- **Created:** [DATE] **${formatDateTime(t.created_at)}**\n\n`;
         });
 
         const actions = [
-            { label: '📋 Open Task Matrix', action: 'NAVIGATE', path: '#tasks' },
-            { label: '⚡ Prioritize High Urgency', action: 'PROMPT', query: 'Show me only high priority tasks' }
+            { label: 'Open Task Matrix', action: 'NAVIGATE', path: '#tasks' },
+            { label: 'Prioritize High Urgency', action: 'PROMPT', query: 'Show me only high priority tasks' }
         ];
 
         return {
@@ -706,7 +706,7 @@ export async function processAdminAIQuery(userQuery, conversationHistory = []) {
     // INTENT F: Core System Rules & Architectural Blueprint
     // ------------------------------------------------------------------------
     if (lowerNormalized.includes('rule') || lowerNormalized.includes('crownkey') || lowerNormalized.includes('crown key') || lowerNormalized.includes('merge') || lowerNormalized.includes('schema') || lowerNormalized.includes('blueprint')) {
-        let markdown = `### 🏛️ HushHawk Core System Rules & Blueprint Architecture\n`;
+        let markdown = `### HushHawk Core System Rules & Blueprint Architecture\n`;
         markdown += `**[Section: ${SYSTEM_SECTIONS.SYSTEM_RULES.name}]**\n\n`;
 
         markdown += `1. **The CrownKey Standard (\`COUNTY-PARCEL_CLEAN · SOURCE\`)**\n`;
@@ -725,7 +725,7 @@ export async function processAdminAIQuery(userQuery, conversationHistory = []) {
         markdown += `   - All mutations write immutable rows to \`audit.audit_events\` with actor, action, timestamp, and diff.\n`;
 
         const actions = [
-            { label: '🔍 Audit Compliance Log', action: 'NAVIGATE', path: '#audit' }
+            { label: 'Audit Compliance Log', action: 'NAVIGATE', path: '#audit' }
         ];
 
         return {
@@ -744,7 +744,7 @@ export async function processAdminAIQuery(userQuery, conversationHistory = []) {
     const hasMatches = (entities.leads.length > 0 || entities.properties.length > 0 || entities.buyers.length > 0);
 
     if (hasMatches) {
-        let markdown = `### 🎯 Search Intelligence: Matched Records for "${q}"\n\n`;
+        let markdown = `### Search Intelligence: Matched Records for "${q}"\n\n`;
         const matchedActions = [];
 
         // Matched Properties
@@ -753,13 +753,13 @@ export async function processAdminAIQuery(userQuery, conversationHistory = []) {
             entities.properties.slice(0, 3).forEach((p, idx) => {
                 markdown += `**Property #${idx + 1}: ${p.address_line1}, ${p.city || 'Jacksonville'}, FL ${p.postal_code || ''}**\n`;
                 markdown += `- **Raw APN / Parcel:** \`${p.parcel_raw || 'Unassigned'}\`\n`;
-                markdown += `- **Assessed Value:** 💰 **${formatCurrency(p.assessed_value)}**\n`;
-                markdown += `- **Registered Date:** 📅 **${formatDateTime(p.created_at)}**\n`;
+                markdown += `- **Assessed Value:** [VALUATION] **${formatCurrency(p.assessed_value)}**\n`;
+                markdown += `- **Registered Date:** [DATE] **${formatDateTime(p.created_at)}**\n`;
                 markdown += `- **Property ID:** \`${p.property_id}\`\n\n`;
             });
             sessionContext.lastEntity = { type: 'PROPERTY', data: entities.properties[0] };
             matchedActions.push({
-                label: `🤝 Match Buyers for ${entities.properties[0].address_line1}`,
+                label: `Match Buyers for ${entities.properties[0].address_line1}`,
                 action: 'PROMPT',
                 query: `Find cash buyers for ${entities.properties[0].address_line1}`
             });
@@ -780,12 +780,12 @@ export async function processAdminAIQuery(userQuery, conversationHistory = []) {
                 markdown += `**Lead #${idx + 1}: ${name}**\n`;
                 markdown += `- **CrownKey:** \`${l.crownkey || formatCrownKey(l.lead_id)}\`\n`;
                 markdown += `- **Status:** \`${l.status || contact.lead_status || 'NEW'}\` | **Lead Score:** \`${contact.lead_score || l.priority_score || 'N/A'}\`\n`;
-                markdown += `- **Property:** 📍 ${addr}\n`;
-                markdown += `- **Contact:** 📞 ${phone} | ✉️ ${email}\n`;
-                markdown += `- **Added On:** 📅 **${formatDateTime(l.created_at || contact.created_at)}**\n\n`;
+                markdown += `- **Property:** ${addr}\n`;
+                markdown += `- **Contact:** Phone: \`${phone}\` | Email: \`${email}\`\n`;
+                markdown += `- **Added On:** [DATE] **${formatDateTime(l.created_at || contact.created_at)}**\n\n`;
             });
             sessionContext.lastEntity = { type: 'LEAD', data: entities.leads[0] };
-            matchedActions.push({ label: '👥 View in Seller Leads', action: 'NAVIGATE', path: '#leads' });
+            matchedActions.push({ label: 'View in Seller Leads', action: 'NAVIGATE', path: '#leads' });
         }
 
         return {
@@ -806,7 +806,7 @@ export async function processAdminAIQuery(userQuery, conversationHistory = []) {
     const tasksCount = db?.data?.core?.tasks?.length || 11;
     const buyersCount = db?.data?.crm?.cash_buyers?.length || 5;
 
-    let markdown = `### 🦅 HushHawk Executive System Summary\n\n`;
+    let markdown = `### HushHawk Executive System Summary\n\n`;
     markdown += `I analyzed our active AWS RDS PostgreSQL database in response to: *"${q}"*.\n\n`;
     markdown += `#### Live System State:\n`;
     markdown += `- **[Section: ${SYSTEM_SECTIONS.LEADS.name}]:** **${leadsCount} Verified Production Leads** (Source: Podio CRM)\n`;
@@ -823,9 +823,9 @@ export async function processAdminAIQuery(userQuery, conversationHistory = []) {
     markdown += `5. *"What were the most recent changes in the audit log?"*\n`;
 
     const actions = [
-        { label: '💎 Portfolio Valuation', action: 'PROMPT', query: 'Show me our portfolio valuation and top properties' },
-        { label: '🤝 Match Cash Buyers', action: 'PROMPT', query: 'Find cash buyers in Duval County' },
-        { label: '🔍 Missing Data Audit', action: 'PROMPT', query: 'Which leads are missing phone or email addresses?' }
+        { label: 'Portfolio Valuation', action: 'PROMPT', query: 'Show me our portfolio valuation and top properties' },
+        { label: 'Match Cash Buyers', action: 'PROMPT', query: 'Find cash buyers in Duval County' },
+        { label: 'Missing Data Audit', action: 'PROMPT', query: 'Which leads are missing phone or email addresses?' }
     ];
 
     return {

@@ -10,8 +10,15 @@
     >
       <div class="hawk-launcher-icon">
         <svg viewBox="0 0 24 24" class="hawk-svg" fill="none" stroke="currentColor">
-          <path d="M12 2L15 8L21 9L17 14L18 20L12 17L6 20L7 14L3 9L9 8L12 2Z" fill="#D4AF37" stroke="#FFDF73" stroke-width="1.5" stroke-linejoin="round"/>
+          <path d="M12 2L15 8L21 9L17 14L18 20L12 17L6 20L7 14L3 9L9 8L12 2Z" fill="url(#hawkGoldGrad)" stroke="#FFDF73" stroke-width="1.5" stroke-linejoin="round"/>
           <circle cx="12" cy="11" r="2" fill="#04182D"/>
+          <defs>
+            <linearGradient id="hawkGoldGrad" x1="3" y1="2" x2="21" y2="20" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#FFDF73"/>
+              <stop offset="0.6" stop-color="#D4AF37"/>
+              <stop offset="1" stop-color="#9A7B1C"/>
+            </linearGradient>
+          </defs>
         </svg>
       </div>
       <span class="hawk-launcher-label">HawkAI</span>
@@ -26,7 +33,13 @@
           <div class="hawk-header-left">
             <div class="hawk-logo-icon">
               <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor">
-                <path d="M12 2L15 8L21 9L17 14L18 20L12 17L6 20L7 14L3 9L9 8L12 2Z" fill="#D4AF37" stroke="#FFDF73" stroke-width="1.5"/>
+                <path d="M12 2L15 8L21 9L17 14L18 20L12 17L6 20L7 14L3 9L9 8L12 2Z" fill="url(#hawkHeaderGold)" stroke="#FFDF73" stroke-width="1.5"/>
+                <defs>
+                  <linearGradient id="hawkHeaderGold" x1="3" y1="2" x2="21" y2="20">
+                    <stop stop-color="#FFDF73"/>
+                    <stop offset="1" stop-color="#D4AF37"/>
+                  </linearGradient>
+                </defs>
               </svg>
             </div>
             <div>
@@ -53,7 +66,7 @@
           </div>
         </div>
 
-        <!-- Quick Action Prompt Chips -->
+        <!-- Quick Action Prompt Chips with Premium SVG Icons -->
         <div class="hawk-quick-chips">
           <button
             v-for="(chip, idx) in quickPrompts"
@@ -61,7 +74,8 @@
             class="hawk-chip-btn"
             @click="sendQuickPrompt(chip.query)"
           >
-            {{ chip.label }}
+            <span class="hawk-chip-icon" v-html="chip.iconSvg"></span>
+            <span>{{ chip.label }}</span>
           </button>
         </div>
 
@@ -73,8 +87,15 @@
             :class="['hawk-msg-row', msg.sender === 'user' ? 'hawk-msg-user' : 'hawk-msg-ai']"
           >
             <div class="hawk-msg-avatar">
-              <span v-if="msg.sender === 'user'">👤</span>
-              <span v-else>🦅</span>
+              <!-- Premium Minimalist User Avatar SVG -->
+              <svg v-if="msg.sender === 'user'" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+              <!-- Premium Golden Falcon Crest SVG -->
+              <svg v-else width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M12 2L14.5 7.5L20.5 8.5L16.5 13L17.5 19L12 16L6.5 19L7.5 13L3.5 8.5L9.5 7.5L12 2Z" fill="#D4AF37" stroke="#FFDF73" stroke-width="1.2"/>
+              </svg>
             </div>
             <div class="hawk-msg-bubble">
               <div class="hawk-msg-header">
@@ -103,7 +124,10 @@
                   class="hawk-action-pill-btn"
                   @click="handleActionClick(action)"
                 >
-                  {{ action.label }}
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"/>
+                  </svg>
+                  <span>{{ action.label }}</span>
                 </button>
               </div>
             </div>
@@ -111,7 +135,11 @@
 
           <!-- Typing Spinner -->
           <div v-if="isLoading" class="hawk-msg-row hawk-msg-ai">
-            <div class="hawk-msg-avatar">🦅</div>
+            <div class="hawk-msg-avatar">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M12 2L14.5 7.5L20.5 8.5L16.5 13L17.5 19L12 16L6.5 19L7.5 13L3.5 8.5L9.5 7.5L12 2Z" fill="#D4AF37" stroke="#FFDF73" stroke-width="1.2"/>
+              </svg>
+            </div>
             <div class="hawk-msg-bubble hawk-typing">
               <div class="hawk-spinner"></div>
               <span>Introspecting PostgreSQL 43 tables & computing real estate insights...</span>
@@ -160,22 +188,46 @@ export default {
       isLoading: false,
       inputQuery: '',
       quickPrompts: [
-        { label: '💎 Portfolio Valuation', query: 'What is our total assessed property value and top properties?' },
-        { label: '🤝 Match Cash Buyers', query: 'Find cash buyers in Duval County for deals' },
-        { label: '🔍 Missing Data Audit', query: 'Which leads are missing phone or email addresses?' },
-        { label: '📋 Task Matrix', query: 'What tasks are pending or high priority?' },
-        { label: '📜 Recent Audit Trail', query: 'Show me the audit trail and what changed recently' },
-        { label: '🏛️ Blueprint Rules', query: 'Explain the CrownKey standard and non-merge rules' },
+        {
+          label: 'Portfolio Valuation',
+          query: 'What is our total assessed property value and top properties?',
+          iconSvg: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>'
+        },
+        {
+          label: 'Match Cash Buyers',
+          query: 'Find cash buyers in Duval County for deals',
+          iconSvg: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>'
+        },
+        {
+          label: 'Missing Data Audit',
+          query: 'Which leads are missing phone or email addresses?',
+          iconSvg: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>'
+        },
+        {
+          label: 'Task Matrix',
+          query: 'What tasks are pending or high priority?',
+          iconSvg: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>'
+        },
+        {
+          label: 'Recent Audit Trail',
+          query: 'Show me the audit trail and what changed recently',
+          iconSvg: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>'
+        },
+        {
+          label: 'Blueprint Rules',
+          query: 'Explain the CrownKey standard and non-merge rules',
+          iconSvg: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>'
+        },
       ],
       messages: [
         {
           sender: 'ai',
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          text: `### 🦅 Welcome, Administrator\nI am your **HushHawk Enterprise AI Copilot**.\n\nI possess real-time introspection into our **AWS RDS PostgreSQL** database across all 7 schemas and 43 production tables.\n\n**New Real Estate Intelligence Capabilities:**\n- 💎 **Portfolio Valuation:** Cumulative assessed value, averages, and peak assets\n- 🤝 **Cash Buyer Matching:** Auto-match investor buy-boxes to active property deals\n- 🔍 **Missing Data Audit:** Unreached seller contacts, missing phones & emails\n- 📜 **Audit History:** Full chronological timeline with actors, diffs, and dates\n- 🧠 **Context Memory:** You can ask follow-ups like *"What is the phone for him?"* or *"Who can buy that property?"*`,
+          text: `### Welcome, Administrator\nI am your **HushHawk Enterprise AI Copilot**.\n\nI possess real-time introspection into our **AWS RDS PostgreSQL** database across all 7 schemas and 43 production tables.\n\n**Real Estate Intelligence Capabilities:**\n- **Portfolio Valuation:** Cumulative assessed value, averages, and peak assets\n- **Cash Buyer Matching:** Auto-match investor buy-boxes to active property deals\n- **Missing Data Audit:** Unreached seller contacts, missing phones & emails\n- **Audit History:** Full chronological timeline with actors, diffs, and dates\n- **Context Memory:** You can ask follow-ups like *"What is the phone for him?"* or *"Who can buy that property?"*`,
           actions: [
-            { label: '💎 Portfolio Valuation', action: 'PROMPT', query: 'What is our total assessed property value and top properties?' },
-            { label: '🤝 Match Cash Buyers', action: 'PROMPT', query: 'Find cash buyers in Duval County for deals' },
-            { label: '🔍 Missing Data Audit', action: 'PROMPT', query: 'Which leads are missing phone or email addresses?' }
+            { label: 'Portfolio Valuation', action: 'PROMPT', query: 'What is our total assessed property value and top properties?' },
+            { label: 'Match Cash Buyers', action: 'PROMPT', query: 'Find cash buyers in Duval County for deals' },
+            { label: 'Missing Data Audit', action: 'PROMPT', query: 'Which leads are missing phone or email addresses?' }
           ]
         },
       ],
@@ -214,8 +266,8 @@ export default {
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           text: 'Chat history cleared. Active connection to AWS RDS PostgreSQL. How can I assist you?',
           actions: [
-            { label: '💎 Portfolio Valuation', action: 'PROMPT', query: 'What is our total assessed property value and top properties?' },
-            { label: '🤝 Match Cash Buyers', action: 'PROMPT', query: 'Find cash buyers in Duval County for deals' }
+            { label: 'Portfolio Valuation', action: 'PROMPT', query: 'What is our total assessed property value and top properties?' },
+            { label: 'Match Cash Buyers', action: 'PROMPT', query: 'Find cash buyers in Duval County for deals' }
           ]
         },
       ];
@@ -273,7 +325,7 @@ export default {
           this.messages.push({
             sender: 'ai',
             time: aiTime,
-            text: `⚠️ **Error Processing Query:** ${data.error || 'Server returned an error'}`,
+            text: `Error Processing Query: ${data.error || 'Server returned an error'}`,
             actions: []
           });
         }
@@ -281,7 +333,7 @@ export default {
         this.messages.push({
           sender: 'ai',
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          text: `⚠️ **Connection Failure:** Could not reach backend API at \`/api/v1/ai/query\`. (${err.message})`,
+          text: `Connection Failure: Could not reach backend API at /api/v1/ai/query. (${err.message})`,
           actions: []
         });
       } finally {
@@ -309,13 +361,18 @@ export default {
       html = html.replace(/^#### (.*$)/gim, '<h4 class="hawk-md-h4">$1</h4>');
 
       // Section Badges [Section: XYZ]
-      html = html.replace(/\[Section: ([^\]]+)\]/g, '<span class="hawk-section-badge"><span class="badge-dot"></span>$1</span>');
+      html = html.replace(/\[Section: ([^\]]+)\]/g, '<span class="hawk-section-badge"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px;"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>$1</span>');
 
-      // Date Badges 📅 **XYZ**
-      html = html.replace(/📅 \*\*([^\*]+)\*\*/g, '<span class="hawk-date-badge">📅 $1</span>');
+      // Date Badges [DATE] **XYZ** with Premium Calendar SVG
+      html = html.replace(/\[DATE\] \*\*([^\*]+)\*\*/g, '<span class="hawk-date-badge"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>$1</span>');
 
-      // Money Badges 💰 **$XYZ**
-      html = html.replace(/💰 \*\*([^\*]+)\*\*/g, '<span class="hawk-money-badge">💰 $1</span>');
+      // Valuation Badges [VALUATION] **$XYZ** with Premium Dollar/Currency SVG
+      html = html.replace(/\[VALUATION\] \*\*([^\*]+)\*\*/g, '<span class="hawk-money-badge"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:3px;"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>$1</span>');
+
+      // Priority Badges [PRIORITY_HIGH], [PRIORITY_MED], [PRIORITY_LOW]
+      html = html.replace(/\[PRIORITY_HIGH\]/g, '<span class="hawk-priority-badge priority-high">HIGH</span>');
+      html = html.replace(/\[PRIORITY_MED\]/g, '<span class="hawk-priority-badge priority-med">MED</span>');
+      html = html.replace(/\[PRIORITY_LOW\]/g, '<span class="hawk-priority-badge priority-low">LOW</span>');
 
       // Blockquotes
       html = html.replace(/^> (.*$)/gim, '<blockquote class="hawk-blockquote">$1</blockquote>');
@@ -561,6 +618,15 @@ export default {
   cursor: pointer;
   transition: all 0.15s ease;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hawk-chip-icon {
+  display: inline-flex;
+  align-items: center;
+  color: #FFDF73;
 }
 
 .hawk-chip-btn:hover {
@@ -608,7 +674,6 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
   flex-shrink: 0;
 }
 
@@ -815,7 +880,6 @@ export default {
 :deep(.hawk-section-badge) {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
   font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
@@ -827,18 +891,12 @@ export default {
   margin-bottom: 4px;
 }
 
-:deep(.hawk-section-badge .badge-dot) {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: #FFDF73;
-}
-
 :deep(.hawk-date-badge) {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   background: rgba(16, 185, 129, 0.15);
   color: #34d399;
-  padding: 1px 6px;
+  padding: 1px 7px;
   border-radius: 4px;
   font-size: 11px;
   font-weight: 600;
@@ -846,14 +904,43 @@ export default {
 }
 
 :deep(.hawk-money-badge) {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   background: rgba(212, 175, 55, 0.2);
   color: #FFDF73;
-  padding: 1px 6px;
+  padding: 1px 7px;
   border-radius: 4px;
   font-size: 11px;
   font-weight: 700;
   border: 1px solid rgba(212, 175, 55, 0.4);
+}
+
+:deep(.hawk-priority-badge) {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+:deep(.hawk-priority-badge.priority-high) {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+}
+
+:deep(.hawk-priority-badge.priority-med) {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+}
+
+:deep(.hawk-priority-badge.priority-low) {
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.4);
 }
 
 :deep(.hawk-code) {
