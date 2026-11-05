@@ -24,7 +24,8 @@
     "db:backup": "node database/backup.js",
     "test:milestone1": "node tests/milestone1_exit_check.js",
     "test:notifications": "node tests/notifications.test.js",
-    "test:leads": "node tests/lead_import.test.js"
+    "test:leads": "node tests/lead_import.test.js",
+    "test:subsystems": "node tests/blueprint_subsystems.test.js"
   },
   "dependencies": {
     "@better-fetch/fetch": "1.1.21",

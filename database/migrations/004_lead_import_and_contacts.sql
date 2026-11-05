@@ -12,3 +12,4 @@ CREATE INDEX IF NOT EXISTS idx_people_primary_phone ON core.people (primary_phon
 CREATE INDEX IF NOT EXISTS idx_people_primary_email ON core.people (primary_email);
 CREATE INDEX IF NOT EXISTS idx_properties_parcel_match ON core.properties (parcel_match);
 CREATE INDEX IF NOT EXISTS idx_leads_source ON core.leads (first_source_code);
+
