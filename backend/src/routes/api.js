@@ -12,6 +12,7 @@ import { CrmService } from '../services/crmService.js';
 import { PodioService } from '../services/podioService.js';
 import { processAdminAIQuery, getMissingDataAudit, SYSTEM_SECTIONS } from '../services/aiService.js';
 import { LeadImportService } from '../services/leadImportService.js';
+import { StorageService } from '../services/storageService.js';
 import { renderCrownKey, validateCrownKeyFormat, normalizeParcelMatch } from '../../../packages/crownkey/index.js';
 
 export const apiRouter = Router();
@@ -278,37 +279,80 @@ apiRouter.get('/properties/:propertyId/photos', async (req, res) => {
     }
 });
 
-// S3 Presigned Upload Authorization URL
+// ============================================================================
+// 4b. Storage & S3 Vault Endpoints
+// ============================================================================
+
+// S3 Storage Configuration status
+apiRouter.get('/storage/config', (req, res) => {
+    res.json(StorageService.getConfig());
+});
+
+// General S3 Presigned Upload Authorization URL
+apiRouter.post('/storage/upload-url', async (req, res) => {
+    const { entity_type = 'general', entity_id, category = 'attachments', filename, content_type, file_size_bytes } = req.body;
+    if (!filename) return res.status(400).json({ error: 'filename is required' });
+
+    try {
+        const presigned = await StorageService.getPresignedUploadUrl({
+            entityType: entity_type,
+            entityId: entity_id,
+            category,
+            filename,
+            contentType: content_type || 'application/octet-stream',
+            fileSizeBytes: file_size_bytes || 0
+        });
+        res.json(presigned);
+    } catch (err) {
+        console.error('[Storage Upload URL Error]', err.message);
+        res.status(400).json({ error: err.message });
+    }
+});
+
+// S3 Presigned Upload Authorization URL for Property Photos
 apiRouter.post('/properties/:propertyId/photos/upload-url', async (req, res) => {
     const { propertyId } = req.params;
     const { filename, content_type = 'image/jpeg', file_size_bytes = 0 } = req.body;
     if (!filename) return res.status(400).json({ error: 'filename is required' });
 
-    // Validate size limit (max 25MB)
-    const MAX_SIZE = 25 * 1024 * 1024;
-    if (file_size_bytes > MAX_SIZE) {
-        return res.status(400).json({ error: 'File size exceeds maximum limit of 25MB' });
+    try {
+        const presigned = await StorageService.getPresignedUploadUrl({
+            entityType: 'properties',
+            entityId: propertyId,
+            category: 'photos',
+            filename,
+            contentType: content_type,
+            fileSizeBytes: file_size_bytes
+        });
+        res.json(presigned);
+    } catch (err) {
+        console.error('[Photo Upload URL Error]', err.message);
+        res.status(400).json({ error: err.message });
     }
+});
 
-    const safeFilename = filename.replace(/[^a-zA-Z0-9.-]/g, '_');
-    const objectKey = `properties/${propertyId}/photos/${Date.now()}-${safeFilename}`;
-    const bucket = process.env.AWS_S3_BUCKET || 'hushhawk-private-property-vault';
-    const region = process.env.AWS_REGION || 'us-east-2';
+// S3 Presigned Download/View URL for Property Photos
+apiRouter.get('/properties/:propertyId/photos/:photoId/download-url', async (req, res) => {
+    const { propertyId, photoId } = req.params;
+    try {
+        const { rows } = await pool.query(
+            `SELECT id, property_id, filename, object_key, storage_provider FROM core.property_photos WHERE id = $1 AND property_id = $2`,
+            [photoId, propertyId]
+        );
+        if (rows.length === 0) return res.status(404).json({ error: 'Photo not found' });
 
-    // Return S3 presigned upload configuration
-    res.json({
-        success: true,
-        storage_provider: 'S3',
-        bucket,
-        region,
-        object_key: objectKey,
-        upload_url: `https://${bucket}.s3.${region}.amazonaws.com/${objectKey}`,
-        expires_in_seconds: 900,
-        headers: {
-            'Content-Type': content_type,
-            'x-amz-server-side-encryption': 'AES256'
-        }
-    });
+        const photo = rows[0];
+        const objectKey = photo.object_key || `properties/${propertyId}/photos/${photo.filename}`;
+        const presigned = await StorageService.getPresignedDownloadUrl({ objectKey });
+        res.json({
+            ...presigned,
+            photo_id: photo.id,
+            filename: photo.filename
+        });
+    } catch (err) {
+        console.error('[Photo Download URL Error]', err.message);
+        res.status(500).json({ error: err.message });
+    }
 });
 
 apiRouter.post('/properties/:propertyId/photos', async (req, res) => {
@@ -331,7 +375,12 @@ apiRouter.post('/properties/:propertyId/photos', async (req, res) => {
 
     if (!filename) return res.status(400).json({ error: 'filename is required' });
 
-    const safeKey = object_key || `properties/${propertyId}/photos/${Date.now()}-${(filename || 'photo.jpg').replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+    const safeKey = object_key || StorageService.buildObjectKey({
+        entityType: 'properties',
+        entityId: propertyId,
+        category: 'photos',
+        filename
+    });
 
     try {
         const { rows } = await pool.query(
@@ -376,6 +425,14 @@ apiRouter.post('/properties/:propertyId/photos', async (req, res) => {
 apiRouter.delete('/properties/:propertyId/photos/:photoId', async (req, res) => {
     const { propertyId, photoId } = req.params;
     try {
+        const { rows } = await pool.query(
+            `SELECT object_key FROM core.property_photos WHERE id = $1 AND property_id = $2`,
+            [photoId, propertyId]
+        );
+        if (rows.length > 0 && rows[0].object_key) {
+            await StorageService.deleteObject({ objectKey: rows[0].object_key }).catch(e => console.warn('[S3 Delete Warn]', e.message));
+        }
+
         await pool.query(
             `DELETE FROM core.property_photos WHERE id = $1 AND property_id = $2`,
             [photoId, propertyId]
@@ -388,7 +445,7 @@ apiRouter.delete('/properties/:propertyId/photos/:photoId', async (req, res) => 
 });
 
 // ============================================================================
-// 4c. Property Documents
+// 4c. Property Documents & S3 Storage
 // ============================================================================
 apiRouter.get('/properties/:propertyId/documents', async (req, res) => {
     const { propertyId } = req.params;
@@ -404,25 +461,108 @@ apiRouter.get('/properties/:propertyId/documents', async (req, res) => {
     }
 });
 
+// S3 Presigned Upload Authorization URL for Property Documents
+apiRouter.post('/properties/:propertyId/documents/upload-url', async (req, res) => {
+    const { propertyId } = req.params;
+    const { filename, content_type = 'application/pdf', file_size_bytes = 0 } = req.body;
+    if (!filename) return res.status(400).json({ error: 'filename is required' });
+
+    try {
+        const presigned = await StorageService.getPresignedUploadUrl({
+            entityType: 'properties',
+            entityId: propertyId,
+            category: 'documents',
+            filename,
+            contentType: content_type,
+            fileSizeBytes: file_size_bytes
+        });
+        res.json(presigned);
+    } catch (err) {
+        console.error('[Document Upload URL Error]', err.message);
+        res.status(400).json({ error: err.message });
+    }
+});
+
+// S3 Presigned Download/View URL for Property Documents
+apiRouter.get('/properties/:propertyId/documents/:docId/download-url', async (req, res) => {
+    const { propertyId, docId } = req.params;
+    try {
+        const { rows } = await pool.query(
+            `SELECT id, property_id, title, filename, object_key, storage_provider FROM core.property_documents WHERE id = $1 AND property_id = $2`,
+            [docId, propertyId]
+        );
+        if (rows.length === 0) return res.status(404).json({ error: 'Document not found' });
+
+        const doc = rows[0];
+        const objectKey = doc.object_key || `properties/${propertyId}/documents/${doc.filename || 'document.pdf'}`;
+        const presigned = await StorageService.getPresignedDownloadUrl({ objectKey });
+        res.json({
+            ...presigned,
+            doc_id: doc.id,
+            title: doc.title,
+            filename: doc.filename
+        });
+    } catch (err) {
+        console.error('[Document Download URL Error]', err.message);
+        res.status(500).json({ error: err.message });
+    }
+});
+
 apiRouter.post('/properties/:propertyId/documents', async (req, res) => {
     const { propertyId } = req.params;
-    const { title, category, filename, file_size_bytes, data_url } = req.body;
+    const {
+        title,
+        category,
+        filename,
+        file_size_bytes,
+        mime_type,
+        data_url,
+        object_key,
+        storage_provider = 'S3',
+        uploaded_by = 'HushHawk Staff',
+        status = 'UPLOADED'
+    } = req.body;
+
     if (!title && !filename) return res.status(400).json({ error: 'Title or filename is required' });
+
+    const safeFilename = filename || title || 'document.pdf';
+    const safeKey = object_key || StorageService.buildObjectKey({
+        entityType: 'properties',
+        entityId: propertyId,
+        category: 'documents',
+        filename: safeFilename
+    });
+
     try {
         const { rows } = await pool.query(
             `INSERT INTO core.property_documents
-              (property_id, title, category, filename, file_size_bytes, data_url)
-             VALUES ($1, $2, $3, $4, $5, $6)
+              (property_id, title, category, filename, file_size_bytes, mime_type, data_url, storage_provider, object_key, uploaded_by, status)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
              RETURNING *`,
             [
                 propertyId,
-                title || filename,
+                title || safeFilename,
                 category || 'Other',
-                filename || title || 'document.pdf',
+                safeFilename,
                 file_size_bytes || 0,
-                data_url || null
+                mime_type || (safeFilename.endsWith('.pdf') ? 'application/pdf' : 'application/octet-stream'),
+                data_url || null,
+                storage_provider,
+                safeKey,
+                uploaded_by,
+                status
             ]
         );
+
+        db.logAudit({
+            actor: uploaded_by || 'USER_WEB',
+            action: 'DOCUMENT_UPLOADED_S3',
+            entityType: 'PROPERTY_DOCUMENT',
+            entityId: rows[0].id,
+            redactedDiff: { property_id: propertyId, title: title || safeFilename, object_key: safeKey, storage_provider: 'S3' }
+        });
+        db.persist();
+
         res.status(201).json(rows[0]);
     } catch (err) {
         console.error('[Documents POST Error]', err.message);
@@ -433,6 +573,14 @@ apiRouter.post('/properties/:propertyId/documents', async (req, res) => {
 apiRouter.delete('/properties/:propertyId/documents/:docId', async (req, res) => {
     const { propertyId, docId } = req.params;
     try {
+        const { rows } = await pool.query(
+            `SELECT object_key FROM core.property_documents WHERE id = $1 AND property_id = $2`,
+            [docId, propertyId]
+        );
+        if (rows.length > 0 && rows[0].object_key) {
+            await StorageService.deleteObject({ objectKey: rows[0].object_key }).catch(e => console.warn('[S3 Delete Warn]', e.message));
+        }
+
         await pool.query(
             `DELETE FROM core.property_documents WHERE id = $1 AND property_id = $2`,
             [docId, propertyId]

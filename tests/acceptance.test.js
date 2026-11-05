@@ -220,3 +220,4 @@ assert(audits[0].action);
 console.log(`  ✓ Pass: ${audits.length} immutable audit event(s) recorded in audit.audit_events`);
 
 console.log('\n🎉 ALL 12 PLATFORM ACCEPTANCE TESTS PASSED WITH 100% SUCCESS!\n');
+process.exit(0);

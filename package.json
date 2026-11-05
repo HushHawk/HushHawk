@@ -25,9 +25,12 @@
     "test:milestone1": "node tests/milestone1_exit_check.js",
     "test:notifications": "node tests/notifications.test.js",
     "test:leads": "node tests/lead_import.test.js",
-    "test:subsystems": "node tests/blueprint_subsystems.test.js"
+    "test:subsystems": "node tests/blueprint_subsystems.test.js",
+    "test:s3": "node tests/s3_storage.test.js"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1162.0",
+    "@aws-sdk/s3-request-presigner": "^3.1162.0",
     "@better-fetch/fetch": "1.1.21",
     "@unhead/vue": "2.1.13",
     "axios": "1.20.0",
