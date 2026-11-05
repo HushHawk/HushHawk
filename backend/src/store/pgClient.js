@@ -14,7 +14,7 @@ dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 
 const { Pool } = pg;
 
-const connectionString = process.env.DATABASE_URL || 'postgresql://hushhawk:HushHawk2026!DB@hushhawk-postgres.cxsqkk2qulh9.us-east-2.rds.amazonaws.com:5432/hushhawk';
+const connectionString = process.env.DATABASE_URL || 'postgresql://hushhawk:HushHawkSecure2026!@hushhawk-postgres.cxsqkk2qulh9.us-east-2.rds.amazonaws.com:5432/hushhawk';
 
 export const pool = new Pool({
     connectionString,

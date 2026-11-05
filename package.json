@@ -52,6 +52,8 @@
     "vuex": "4.1.0"
   },
   "devDependencies": {
+    "@emnapi/core": "^1.11.3",
+    "@emnapi/runtime": "^1.11.3",
     "@types/jsdom": "21.1.7",
     "@types/node": "24.13.3",
     "@vitejs/plugin-vue": "6.0.5",
