@@ -209,7 +209,7 @@
   <div class="secondary-grid">
    <article class="panel pipeline"><div class="panel-title"><h3><span class="panel-title-icon" v-html="icons.zap"></span> Lead → Funded</h3><span>12 milestones</span></div><div class="stage-grid"><a v-for="(stage,i) in stages" :key="stage" :href="i<4?'/acquisitions':i<8?'/contracts':'/dispositions'" @click="guard" :style="{'--stage':stageColors[i]}" :title="stage"><strong>{{String(i+1).padStart(2,'0')}}</strong><span>{{stage}}</span></a></div><div class="pipeline-footer">BUILD MOMENTUM <span>12 · CLOSED + FUNDED</span></div></article>
    <article class="panel leads"><div class="panel-title"><h3><span class="panel-title-icon" v-html="icons.users"></span> Recent Seller Leads</h3><a href="/seller-leads" @click="guard">View all ↗</a></div><table><thead><tr><th>Name</th><th>Property</th><th>ZIP</th><th>Status</th></tr></thead><tbody><tr v-for="r in (filteredLeads || [])" :key="r.name"><td>{{r.name}}</td><td><a href="/seller-leads" @click="guard">{{r.address}}</a></td><td>{{r.zip}}</td><td><span :class="'status '+r.status">{{r.status}}</span></td></tr></tbody></table><p v-if="!((filteredLeads || []).length)" class="panel-note">No matching leads.</p><button v-if="zip" class="clear-filter" @click="clearZip">ZIP {{zip}} × Clear</button></article>
-   <article class="panel sources"><div class="panel-title"><h3><span class="panel-title-icon" v-html="icons.pieChart"></span> Lead Source Mix</h3><span>Live Ingestion</span></div><div class="source-body"><div class="donut"><div><strong>{{ metrics[0]?.value || '44' }}</strong><small>Total leads</small></div></div><ul><li v-for="s in sources" :key="s.name"><i :style="{background:s.color}"></i><span>{{s.name}}</span><b>{{s.value}}%</b></li></ul></div></article>
+   <article class="panel sources"><div class="panel-title"><h3><span class="panel-title-icon" v-html="icons.pieChart"></span> Lead Source Mix</h3><span>Live Ingestion</span></div><div class="source-body"><div class="donut" :style="{ background: donutGradient }"><div><strong>{{ metrics[0]?.value || '0' }}</strong><small>Total leads</small></div></div><ul><li v-for="s in sources" :key="s.name"><i :style="{background:s.color}"></i><span>{{s.name}}</span><b>{{s.value}}%</b></li></ul></div></article>
    <article class="panel analyzer"><div class="panel-title"><h3><span class="panel-title-icon" v-html="icons.calculator"></span> Deal Snapshot</h3><a href="/deal-analyzer" @click="guard">Analyze ↗</a></div><div v-if="activeSnapshot"><strong class="property">{{activeSnapshot.address}}</strong><p>{{activeSnapshot.cityStateZip}}</p><dl><div><dt>After-repair value</dt><dd>{{money(activeSnapshot.arv)}}</dd></div><div><dt>Estimated repairs</dt><dd>{{money(activeSnapshot.repairs)}}</dd></div><div><dt>Purchase price</dt><dd>{{money(activeSnapshot.purchase)}}</dd></div></dl><div class="profit"><span>Illustrative spread*</span><strong>{{money(activeSnapshot.spread)}}</strong></div><small>*ARV − purchase − repairs; before fees &amp; costs.</small></div><div v-else style="padding: 28px 16px; text-align: center; color: #64748b; font-size: 11px;">No deals currently underwritten. Use the Deal Analyzer to calculate MAO, repair budgets, and spreads.</div></article>
   </div>
   <section class="pulse"><div class="pulse-heading"><strong><i></i> CAPITAL DESK</strong><div class="feed-tabs"><button :class="{active:feedMode==='deals'}" @click="!isEditing&&(feedMode='deals')">Deal Pulse</button><button :class="{active:feedMode==='markets'}" @click="!isEditing&&(feedMode='markets')">Market Watch</button></div><span v-if="feedMode==='deals'">LIVE CRM SIGNALS</span><button v-if="feedMode==='deals'" @click="!isEditing&&(paused=!paused)" :aria-pressed="paused">{{paused?'Resume':'Pause'}}</button></div><div class="tape-window" v-show="feedMode==='deals'"><div class="tape" :class="{paused}"><span v-for="(item,i) in signalTape" :key="i" :aria-hidden="i>=signalsCount"><b>{{item.code}}</b> {{item.label}} <strong>{{item.value}}</strong><em>▲ {{item.change}}</em></span></div></div></section>
@@ -306,23 +306,57 @@ const filteredLeads=computed(()=>(leads.value||[]).filter(r=>(!zip.value||r.zip=
 const stages=['Lead received','Contact made','Appointment','Offer sent','Signed','Sent to title','EMD confirmed','Title cleared','Dispo launched','Buyer chosen','Assignment','Closed + funded'];
 const stageColors=['#187ed4','#268dc7','#3b77d0','#7b63d1','#9a57c0','#b55b94','#bc7770','#c99339','#d2a93c','#78b854','#3ca962','#0fa85a'];
 const sources=computed(()=>{
-  const total=Number(metrics.value[0]?.value)||0;
-  if(!total){
+  const allLeads = leads.value || [];
+  const total = allLeads.length || Number(metrics.value[0]?.value) || 0;
+  if (!total) {
     return [
-      {name:'Direct Mail',value:0,color:'#f64a68'},
-      {name:'County Data',value:0,color:'#16c798'},
-      {name:'Driving for $',value:0,color:'#f3c34e'},
-      {name:'Website',value:0,color:'#a273ed'},
-      {name:'Other',value:0,color:'#8199b3'}
+      { name: 'Direct Mail', value: 0, color: '#f64a68' },
+      { name: 'County Data', value: 0, color: '#16c798' },
+      { name: 'Driving for $', value: 0, color: '#f3c34e' },
+      { name: 'Website', value: 0, color: '#a273ed' },
+      { name: 'Other', value: 0, color: '#8199b3' }
     ];
   }
-  return [
-    {name:'Direct Mail',value:38,color:'#f64a68'},
-    {name:'County Data',value:26,color:'#16c798'},
-    {name:'Driving for $',value:18,color:'#f3c34e'},
-    {name:'Website',value:12,color:'#a273ed'},
-    {name:'Other',value:6,color:'#8199b3'}
-  ];
+  const counts = {};
+  allLeads.forEach(l => {
+    const s = l.source || 'Direct Mail';
+    counts[s] = (counts[s] || 0) + 1;
+  });
+  const colorMap = {
+    'Direct Mail': '#f64a68',
+    'County Data': '#16c798',
+    'Driving for Dollars': '#f3c34e',
+    'Driving for $': '#f3c34e',
+    'Website': '#a273ed',
+    'Emailing': '#249bff',
+    'Cold Call': '#3ca962',
+    'Cold Calling': '#3ca962',
+    'SMS Campaign': '#bc7770',
+    'Other': '#8199b3'
+  };
+  const entries = Object.entries(counts);
+  if (!entries.length) {
+    return [
+      { name: 'Direct Mail', value: 100, color: '#f64a68' }
+    ];
+  }
+  return entries.map(([name, count]) => ({
+    name,
+    value: Math.round((count / total) * 100),
+    color: colorMap[name] || '#dfbb61'
+  })).sort((a, b) => b.value - a.value);
+});
+const donutGradient=computed(()=>{
+  const sList = sources.value || [];
+  if (!sList.length || sList.every(s => !s.value)) return '#143954';
+  let acc = 0;
+  const stops = [];
+  sList.forEach(s => {
+    const start = acc;
+    acc += s.value;
+    stops.push(`${s.color} ${start}% ${acc}%`);
+  });
+  return `conic-gradient(${stops.join(', ')})`;
 });
 const signals=ref([
   {code:'DUVAL',label:'Lead flow',value:'0',change:'Live'},
@@ -388,16 +422,31 @@ async function loadDashboardData() {
   } catch (e) {}
 
   try {
-    const resLeads = await fetch('/api/v1/facebook-leads');
+    const resLeads = await fetch('/api/v1/seller-leads');
     if (resLeads.ok) {
       const lData = await resLeads.json();
       if (lData.leads && lData.leads.length) {
         leads.value = lData.leads.map(l => ({
-          name: l.name || l.author || 'Seller Lead',
-          address: l.propertyAddress || l.address || 'Jacksonville, FL',
+          name: l.name || 'Seller Lead',
+          address: l.address && l.address !== 'No Property Address on File' ? l.address : (l.email || 'Jacksonville, FL'),
           zip: l.zip || '32208',
-          status: l.status || 'New'
+          status: l.status || 'New',
+          source: l.source || 'Direct Mail'
         }));
+      }
+    } else {
+      const resFb = await fetch('/api/v1/facebook-leads');
+      if (resFb.ok) {
+        const lData = await resFb.json();
+        if (lData.leads && lData.leads.length) {
+          leads.value = lData.leads.map(l => ({
+            name: l.name || l.author || 'Seller Lead',
+            address: l.propertyAddress || l.address || 'Jacksonville, FL',
+            zip: l.zip || '32208',
+            status: l.status || 'New',
+            source: l.source || 'Direct Mail'
+          }));
+        }
       }
     }
   } catch (e) {}
@@ -493,7 +542,7 @@ onBeforeUnmount(()=>{
   }
   if(marketHost.value)marketHost.value.innerHTML='';
 });
-return{icons,uid,feedMode,isEditing,heroStyle,metrics,query,zip,checked,tasks,imports,filteredLeads,stages,stageColors,sources,emails,activeEmail,chooseEmail,activeChat,activeSnapshot,notifications,unreadCount,money,draft,draftStatus,saveDraft,paused,signals,signalTape,signalsCount,clock,marketHost,marketError,onZip,clearZip,guard,isQuickAddOpen,isNotifOpen,currentTime,navOpen,primaryNavigation,secondaryNavigation,handleNav,isUserMenuOpen,activeUserName,activeUserRole,activeUserEmail,handleLogout};
+return{icons,uid,feedMode,isEditing,heroStyle,metrics,query,zip,checked,tasks,imports,filteredLeads,stages,stageColors,sources,donutGradient,emails,activeEmail,chooseEmail,activeChat,activeSnapshot,notifications,unreadCount,money,draft,draftStatus,saveDraft,paused,signals,signalTape,signalsCount,clock,marketHost,marketError,onZip,clearZip,guard,isQuickAddOpen,isNotifOpen,currentTime,navOpen,primaryNavigation,secondaryNavigation,handleNav,isUserMenuOpen,activeUserName,activeUserRole,activeUserEmail,handleLogout};
 }};
 </script>
 <style scoped>

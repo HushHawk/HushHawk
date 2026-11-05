@@ -35,7 +35,7 @@ app.get('/', (req, res) => {
 app.use('/api/v1', apiRouter);
 
 // Auth session endpoint for frontend WeWeb auth checks
-const mockAuthPayload = {
+const systemAuthPayload = {
     session: {
         id: 's-admin-1',
         userId: 'u-admin-1',
@@ -56,7 +56,7 @@ const mockAuthPayload = {
 };
 
 app.use('/api/auth', (req, res) => {
-    res.json(mockAuthPayload);
+    res.json(systemAuthPayload);
 });
 
 // Mount /ww and /api/ww adapter for WeWeb frontend table-views and workflows

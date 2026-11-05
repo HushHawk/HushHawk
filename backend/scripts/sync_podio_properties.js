@@ -3,9 +3,15 @@
  * Syncs REAL properties from Podio Properties app (30087415) into HushHawk.
  * Also cleans fake "Jacksonville Property #NNN" entries generated from the leads sync.
  */
+import crypto from 'crypto';
 import { db } from '../src/store/database.js';
 import { pool } from '../src/store/pgClient.js';
 import { PodioService } from '../src/services/podioService.js';
+
+function toDeterministicUuid(str) {
+  const hash = crypto.createHash('md5').update(str).digest('hex');
+  return `${hash.slice(0, 8)}-${hash.slice(8, 12)}-4${hash.slice(13, 16)}-a${hash.slice(17, 20)}-${hash.slice(20, 32)}`;
+}
 
 const PODIO_LEADS_APP_ID   = process.env.PODIO_APP_ID;
 const PODIO_PROPS_APP_ID   = process.env.PODIO_PROPERTIES_APP_ID || '30087415';
@@ -94,6 +100,7 @@ async function main() {
                      : 'DUV';
 
     const propId = `podio-prop-${it.item_id}`;
+    const propUuid = toDeterministicUuid(`podio-prop-${it.item_id}`);
 
     // Upsert into RDS
     try {
@@ -105,7 +112,7 @@ async function main() {
         VALUES ($1,
           (SELECT county_id FROM ref.counties WHERE county_code = $2 LIMIT 1),
           $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW(), NOW())
-        ON CONFLICT (property_id) DO UPDATE
+        ON CONFLICT (county_id, parcel_match) DO UPDATE
           SET address_line1 = EXCLUDED.address_line1,
               city          = EXCLUDED.city,
               state_code    = EXCLUDED.state_code,
@@ -114,13 +121,21 @@ async function main() {
               assessed_value= EXCLUDED.assessed_value,
               updated_at    = NOW()
       `, [
-        propId, countyCode,
+        propUuid, countyCode,
         `PODIO-${it.item_id}`, `PODIO${it.item_id}`,
         line1, city, state, zip || '32204',
         propType,
         notes || null,
         offerAmt ? offerAmt * 1.5 : null   // rough ARV estimate from offer
       ]);
+
+      await pool.query(`
+        INSERT INTO crm.external_sync_map (internal_entity_type, internal_uuid, external_system, external_app_id, external_item_id, last_sync_at, status)
+        VALUES ('PROPERTY', $1, 'PODIO', $2, $3, NOW(), 'SYNCED')
+        ON CONFLICT (internal_entity_type, internal_uuid, external_system) DO UPDATE
+          SET last_sync_at = NOW(),
+              external_item_id = EXCLUDED.external_item_id
+      `, [propUuid, String(PODIO_PROPS_APP_ID), String(it.item_id)]);
     } catch (dbErr) {
       console.warn(`[RDS] Could not upsert property ${propId}:`, dbErr.message);
     }
