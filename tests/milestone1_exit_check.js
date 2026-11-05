@@ -54,7 +54,7 @@ async function runMilestoneAudit() {
     console.log('[Work Item 1] Repository, Environments & CI');
     const ciPath = path.resolve(__dirname, '../.github/workflows/ci.yml');
     assert(fs.existsSync(ciPath), 'GitHub Actions CI workflow file exists (.github/workflows/ci.yml)');
-    const effectiveDbUrl = process.env.DATABASE_URL || 'postgresql://hushhawk:HushHawkSecure2026!@hushhawk-postgres.cxsqkk2qulh9.us-east-2.rds.amazonaws.com:5432/hushhawk';
+    const effectiveDbUrl = process.env.DATABASE_URL || 'postgresql://hushhawk:HushHawk2026!DB@hushhawk-postgres.cxsqkk2qulh9.us-east-2.rds.amazonaws.com:5432/hushhawk';
     assert(effectiveDbUrl && effectiveDbUrl.includes('postgresql://'), 'PostgreSQL DATABASE_URL environment configured');
     console.log('');
 
