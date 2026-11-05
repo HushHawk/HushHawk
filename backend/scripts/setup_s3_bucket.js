@@ -188,3 +188,4 @@ function printCliInstructions() {
 }
 
 runS3Setup();
+

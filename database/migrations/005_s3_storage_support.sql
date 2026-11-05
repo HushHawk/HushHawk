@@ -18,3 +18,4 @@ CREATE INDEX IF NOT EXISTS idx_property_photos_obj_key ON core.property_photos(o
 
 -- 3. Ensure raw.attachments has index on storage_uri
 CREATE INDEX IF NOT EXISTS idx_raw_attachments_storage_uri ON raw.attachments(storage_uri);
+
