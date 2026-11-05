@@ -1320,12 +1320,78 @@ apiRouter.get('/interactions', (req, res) => {
     res.json({ interactions: db.data.core.interactions });
 });
 
-apiRouter.post('/interactions', (req, res) => {
+apiRouter.post('/interactions', async (req, res) => {
     try {
-        const interaction = CrmService.recordInteraction(req.body);
+        const interaction = await CrmService.recordInteraction(req.body);
         res.status(201).json(interaction);
     } catch (err) {
         res.status(400).json({ error: err.message });
+    }
+});
+
+// Outbound Call Dispatch with Section 14 Compliance Gate & Interaction Logging
+apiRouter.post('/calls/dispatch', async (req, res) => {
+    try {
+        const { recipientPhone, leadId, personId, propertyId, actor = 'Elena Rostova', notes = '', templateId = 'tmpl-seller-outreach-v1' } = req.body;
+        if (!recipientPhone) {
+            return res.status(400).json({ error: 'recipientPhone is required' });
+        }
+
+        // 1. Mandatory 6-Step Compliance Gate (Blueprint Section 14)
+        const compliance = ComplianceService.evaluateOutboundRequest({
+            channel: 'CALL',
+            recipientPhone,
+            actor,
+            templateId,
+        });
+
+        if (!compliance.allowed) {
+            return res.status(403).json({
+                error: 'OUTBOUND_CALL_BLOCKED_BY_COMPLIANCE_GATE',
+                details: compliance.checks.find(c => !c.passed)?.reason,
+                compliance
+            });
+        }
+
+        // 2. Log Interaction to core.interactions (PostgreSQL RDS)
+        const interaction = await CrmService.recordInteraction({
+            leadId,
+            personId,
+            propertyId,
+            method: 'PHONE',
+            direction: 'OUTBOUND',
+            actor,
+            result: 'CALL_DISPATCHED',
+            notes: notes || `Outbound phone call initiated to ${recipientPhone}`
+        });
+
+        // 3. Emit Operational Notification
+        const notifId = crypto.randomUUID();
+        await pool.query(
+            `INSERT INTO ops.notifications (notification_id, title, body, category, priority, color, icon, is_read, created_at)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, false, NOW())`,
+            [
+                notifId,
+                `Outbound Call: ${recipientPhone}`,
+                `Call initiated by ${actor} (Compliance gate passed 6/6 checks).`,
+                'PIPELINE',
+                'LOW',
+                'gold',
+                'phone'
+            ]
+        );
+
+        res.status(200).json({
+            success: true,
+            status: 'CALL_DISPATCHED',
+            channel: 'CALL',
+            recipientPhone,
+            compliance,
+            interaction
+        });
+    } catch (err) {
+        console.error('[Call Dispatch Error]', err);
+        res.status(500).json({ error: err.message });
     }
 });
 
@@ -2104,18 +2170,28 @@ apiRouter.get('/direct-mail', (req, res) => {
     }
 });
 
-apiRouter.post('/direct-mail', (req, res) => {
+apiRouter.post('/direct-mail', async (req, res) => {
     try {
-        const { name, audience, zips, format, quantity, dropDate } = req.body;
+        const { name, audience, zips, format, quantity, dropDate, actor = 'Marcus Vance' } = req.body;
         if (!name) return res.status(400).json({ error: 'Batch name is required' });
 
+        // Compliance check for Direct Mail (Blueprint Section 14)
+        const compliance = ComplianceService.evaluateOutboundRequest({
+            channel: 'MAIL',
+            recipientAddress: zips || 'Duval County',
+            actor,
+            templateId: 'tmpl-yellow-letter-v1',
+        });
+
         const batchId = Date.now();
+        const batchUuid = crypto.randomUUID();
         const batchCode = 'DM-2026-B' + Math.floor(109 + Math.random() * 50);
         const qty = Number(quantity) || 2500;
         const cost = Math.round(qty * 0.44);
 
         const newBatch = {
             id: batchId,
+            batch_uuid: batchUuid,
             batchCode,
             name,
             audience: audience || 'Duval County High Equity Absentee',
@@ -2128,12 +2204,43 @@ apiRouter.post('/direct-mail', (req, res) => {
             status: 'In Production',
             statusClass: 'status-prod',
             dropDate: dropDate || new Date().toISOString().split('T')[0],
+            compliance_status: compliance.status,
             created_at: new Date().toISOString()
         };
 
         if (!db.data.crm.direct_mail) db.data.crm.direct_mail = [];
         db.data.crm.direct_mail.unshift(newBatch);
         db.persist();
+
+        // Audit Trail in PostgreSQL RDS
+        try {
+            await pool.query(
+                `INSERT INTO audit.audit_events (audit_id, actor, action, entity_type, entity_id, request_id, redacted_diff, created_at)
+                 VALUES ($1, $2, 'DIRECT_MAIL_DISPATCHED', 'DIRECT_MAIL_BATCH', $3, $4, $5, NOW())`,
+                [crypto.randomUUID(), actor, batchUuid, crypto.randomUUID(), JSON.stringify({ batchCode, name, quantity: qty, cost })]
+            );
+        } catch (auditErr) {
+            console.warn('[Direct Mail Audit Warn]', auditErr.message);
+        }
+
+        // Operational Notification in PostgreSQL RDS
+        try {
+            await pool.query(
+                `INSERT INTO ops.notifications (notification_id, title, body, category, priority, color, icon, is_read, created_at)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, false, NOW())`,
+                [
+                    crypto.randomUUID(),
+                    `Direct Mail Batch Dispatched: ${batchCode}`,
+                    `${qty} pieces (${format}) ordered for ${zips || 'service territory'}.`,
+                    'PIPELINE',
+                    'MEDIUM',
+                    'gold',
+                    'mail'
+                ]
+            );
+        } catch (notifErr) {
+            console.warn('[Direct Mail Notif Warn]', notifErr.message);
+        }
 
         res.status(201).json(newBatch);
     } catch (err) {
