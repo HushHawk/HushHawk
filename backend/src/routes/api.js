@@ -2594,11 +2594,20 @@ apiRouter.delete('/buyers/:id', (req, res) => {
     }
 });
 
-// --- Wholesale Contracts ---
+// --- Wholesale Contracts & Dispositions ---
 apiRouter.get('/contracts', (req, res) => {
     try {
         const contracts = db.data.crm.contracts || [];
         res.json({ total: contracts.length, contracts });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+apiRouter.get('/dispositions', (req, res) => {
+    try {
+        const contracts = db.data.crm.contracts || [];
+        res.json({ total: contracts.length, dispositions: contracts, contracts });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
