@@ -290,6 +290,16 @@ export default {
         return false;
       }
 
+      // If the login gateway or auth screen is currently rendered in the DOM, strictly hide
+      if (typeof document !== 'undefined') {
+        const authDomPresent = !!document.querySelector('.hushhawk-auth-wrapper, .auth-card, #login-email');
+        if (authDomPresent) {
+          this.isLoggedIn = false;
+          if (this.isOpen) this.isOpen = false;
+          return false;
+        }
+      }
+
       // Verify active authenticated session or token in storage
       let hasSession = false;
       try {
