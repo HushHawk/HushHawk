@@ -244,6 +244,11 @@
               </div>
             </transition>
 
+            <button class="btn-import-vault" @click="openImportFromVaultModal" title="Import assets from Central S3 Media Vault">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+              Import from Vault
+            </button>
+
             <button class="btn-take-photo" @click="openChooseOptionModal">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
               Add Photos
@@ -1105,12 +1110,70 @@
             </div>
             <div class="opt-text">
               <strong>Upload Files</strong>
-              <small>PDF, images, videos</small>
+              <small>PDF, images, documents</small>
+            </div>
+          </div>
+
+          <!-- 4. Select from Media Vault -->
+          <div class="choose-option-item" @click="showChooseOptionModal = false; openImportFromVaultModal()">
+            <div class="opt-icon-gold">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <div class="opt-text">
+              <strong>Select from Media Vault</strong>
+              <small>Import existing images from S3 vault</small>
             </div>
           </div>
         </div>
 
         <button class="btn-cancel-flat" @click="showChooseOptionModal = false">Cancel</button>
+      </div>
+    </div>
+
+    <!-- MODAL: Import from Media Vault -->
+    <div v-if="showImportFromVaultModal" class="video-modal-backdrop" @click.self="showImportFromVaultModal = false">
+      <div class="white-modal-card vault-import-modal-card">
+        <div class="modal-head-simple">
+          <div>
+            <h3>Import Photos from Media Vault</h3>
+            <small style="color: #64748b;">Select images from the central AWS S3 Private Vault to attach to {{ selectedProperty?.address_line1 }}.</small>
+          </div>
+          <button class="camera-close-x" @click="showImportFromVaultModal = false">×</button>
+        </div>
+
+        <div v-if="loadingVaultImportFiles" style="padding: 30px; text-align: center; color: #94a3b8;">
+          Loading Media Vault…
+        </div>
+        <div v-else-if="vaultImportFiles.length === 0" style="padding: 30px; text-align: center; color: #94a3b8;">
+          <p>No photos currently stored in the Central Media Vault.</p>
+          <a href="/vault" style="color: #d4af37; text-decoration: underline; font-size: 13px;">Go to Media Vault to upload photos</a>
+        </div>
+        <div v-else class="vault-import-grid">
+          <div
+            v-for="vf in vaultImportFiles"
+            :key="vf.id"
+            class="vault-import-tile"
+            :class="{ selected: selectedVaultFileIds.includes(vf.id) }"
+            @click="toggleVaultFileSelection(vf.id)"
+          >
+            <img :src="vf.data_url || vf.object_key" :alt="vf.filename" />
+            <div class="vit-checkbox">
+              <span v-if="selectedVaultFileIds.includes(vf.id)">✓</span>
+            </div>
+            <span class="vit-name">{{ vf.original_filename || vf.filename }}</span>
+          </div>
+        </div>
+
+        <div class="modal-foot-simple" style="display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-top: 1px solid #e2e8f0;">
+          <span style="font-size: 12px; color: #64748b;">{{ selectedVaultFileIds.length }} selected</span>
+          <div style="display: flex; gap: 10px;">
+            <button class="btn-cancel-flat" @click="showImportFromVaultModal = false">Cancel</button>
+            <button class="btn-gold" :disabled="selectedVaultFileIds.length === 0 || isImportingFromVault" @click="confirmImportFromVault">
+              <span v-if="!isImportingFromVault">Attach to Property</span>
+              <span v-else>Importing…</span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1321,6 +1384,11 @@ export default {
       icons,
       // 8-step Photo & S3 workflow state
       showChooseOptionModal: false,
+      showImportFromVaultModal: false,
+      loadingVaultImportFiles: false,
+      vaultImportFiles: [],
+      selectedVaultFileIds: [],
+      isImportingFromVault: false,
       modalStep: null,
       hasCameraStream: false,
       shutterFlashed: false,
@@ -1471,6 +1539,54 @@ export default {
     document.removeEventListener('click', this.closeAllMenus);
   },
   methods: {
+    async openImportFromVaultModal() {
+      this.showImportFromVaultModal = true;
+      this.loadingVaultImportFiles = true;
+      this.selectedVaultFileIds = [];
+      try {
+        const res = await fetch(`${API_BASE}/vault/files?type=photos`);
+        const data = await res.json();
+        this.vaultImportFiles = data.files || [];
+      } catch (err) {
+        console.error('[Vault Import Error]', err);
+        this.vaultImportFiles = [];
+      } finally {
+        this.loadingVaultImportFiles = false;
+      }
+    },
+    toggleVaultFileSelection(id) {
+      const idx = this.selectedVaultFileIds.indexOf(id);
+      if (idx > -1) {
+        this.selectedVaultFileIds.splice(idx, 1);
+      } else {
+        this.selectedVaultFileIds.push(id);
+      }
+    },
+    async confirmImportFromVault() {
+      if (!this.selectedProperty || this.selectedVaultFileIds.length === 0 || this.isImportingFromVault) return;
+      this.isImportingFromVault = true;
+      try {
+        for (const fileId of this.selectedVaultFileIds) {
+          await fetch(`${API_BASE}/vault/files/${fileId}/assign-property`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              property_id: this.selectedProperty.property_id,
+              tag: 'General'
+            })
+          });
+        }
+        this.lastAddedCount = this.selectedVaultFileIds.length;
+        this.showImportFromVaultModal = false;
+        await this.loadPhotos(this.selectedProperty.property_id);
+        this.showPhotoAddedToast = true;
+        setTimeout(() => { this.showPhotoAddedToast = false; }, 4000);
+      } catch (err) {
+        alert('Vault Import Error: ' + err.message);
+      } finally {
+        this.isImportingFromVault = false;
+      }
+    },
     openChooseOptionModal() {
       this.showChooseOptionModal = true;
     },
@@ -3726,5 +3842,85 @@ export default {
 }
 .photo-date {
   color: #64748b;
+}
+
+/* Media Vault Import Styles */
+.btn-import-vault {
+  background: rgba(212, 175, 55, 0.12);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  color: #d4af37;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.btn-import-vault:hover {
+  background: rgba(212, 175, 55, 0.25);
+  border-color: #d4af37;
+}
+.vault-import-modal-card {
+  max-width: 680px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+}
+.vault-import-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 12px;
+  padding: 16px 20px;
+  max-height: 50vh;
+  overflow-y: auto;
+}
+.vault-import-tile {
+  height: 110px;
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  border: 2px solid transparent;
+  background: #0f172a;
+}
+.vault-import-tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.vault-import-tile.selected {
+  border-color: #d4af37;
+}
+.vit-checkbox {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid #d4af37;
+  color: #d4af37;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+}
+.vit-name {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  font-size: 10px;
+  padding: 2px 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>
