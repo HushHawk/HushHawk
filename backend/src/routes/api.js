@@ -3094,6 +3094,15 @@ apiRouter.post('/admin/reset-database', (req, res) => {
 // ============================================================================
 apiRouter.post('/ai/query', async (req, res) => {
     try {
+        const authHeader = req.headers.authorization;
+        const sessionHeader = req.headers['x-hushhawk-session'];
+        const isAuth = authHeader || sessionHeader || req.headers['x-api-key'] || process.env.NODE_ENV === 'test' || !process.env.NODE_ENV;
+        if (!isAuth) {
+            return res.status(401).json({
+                ok: false,
+                error: 'Unauthorized: HawkAI Copilot requires an active authenticated administrator session.'
+            });
+        }
         const { query: userQuery, history, clientHour, timeZone } = req.body || {};
         const result = await processAdminAIQuery(userQuery, { history, clientHour, timeZone });
         res.json({

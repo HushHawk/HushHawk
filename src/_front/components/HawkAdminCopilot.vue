@@ -1,5 +1,5 @@
 <template>
-  <div class="hawk-copilot-container">
+  <div v-if="shouldShowCopilot" class="hawk-copilot-container">
     <!-- Floating Trigger Launcher -->
     <button
       v-if="!isOpen"
@@ -187,6 +187,8 @@ export default {
       isOpen: false,
       isLoading: false,
       inputQuery: '',
+      isLoggedIn: false,
+      authCheckInterval: null,
       quickPrompts: [
         {
           label: 'Portfolio Valuation',
@@ -222,14 +224,109 @@ export default {
       messages: [],
     };
   },
+  computed: {
+    shouldShowCopilot() {
+      return this.isLoggedIn;
+    }
+  },
+  watch: {
+    '$route'() {
+      this.checkAuthStatus();
+    },
+    isLoggedIn(newVal) {
+      if (newVal && this.messages.length === 0) {
+        this.initWelcomeMessage();
+      }
+    }
+  },
   mounted() {
+    this.checkAuthStatus();
+    if (this.isLoggedIn) {
+      this.initWelcomeMessage();
+    }
     window.addEventListener('keydown', this.handleKeyDown);
-    this.initWelcomeMessage();
+    window.addEventListener('storage', this.checkAuthStatus);
+    window.addEventListener('popstate', this.checkAuthStatus);
+    window.addEventListener('hashchange', this.checkAuthStatus);
+    this.authCheckInterval = setInterval(this.checkAuthStatus, 800);
   },
   beforeUnmount() {
     window.removeEventListener('keydown', this.handleKeyDown);
+    window.removeEventListener('storage', this.checkAuthStatus);
+    window.removeEventListener('popstate', this.checkAuthStatus);
+    window.removeEventListener('hashchange', this.checkAuthStatus);
+    if (this.authCheckInterval) {
+      clearInterval(this.authCheckInterval);
+    }
   },
   methods: {
+    checkAuthStatus() {
+      if (typeof window === 'undefined') {
+        this.isLoggedIn = false;
+        return false;
+      }
+
+      // Check current route/path/hash: strictly hide on unauthenticated auth screens
+      const path = (this.$route?.path || window.location.pathname || '').toLowerCase();
+      const hash = (window.location.hash || '').toLowerCase();
+
+      const isAuthRoute =
+        path === '/login' ||
+        path.startsWith('/login') ||
+        path === '/signup' ||
+        path.startsWith('/signup') ||
+        path === '/forgot-password' ||
+        path.startsWith('/forgot-password') ||
+        hash === '#login' ||
+        hash === '#/login' ||
+        hash === '#signup' ||
+        hash === '#/signup' ||
+        hash === '#forgot-password' ||
+        hash === '#/forgot-password';
+
+      if (isAuthRoute) {
+        this.isLoggedIn = false;
+        if (this.isOpen) this.isOpen = false;
+        return false;
+      }
+
+      // Verify active authenticated session or token in storage
+      let hasSession = false;
+      try {
+        const rawSession =
+          window.sessionStorage.getItem('hushhawk_session') ||
+          window.localStorage.getItem('hushhawk_session') ||
+          window.localStorage.getItem('ww-auth-session');
+        const token = window.localStorage.getItem('hushhawk_auth_token');
+
+        if (rawSession) {
+          try {
+            const parsed = JSON.parse(rawSession);
+            if (parsed && (parsed.email || parsed.token || parsed.user || parsed.id || parsed.role || parsed.name)) {
+              hasSession = true;
+            }
+          } catch (e) {
+            if (rawSession.length > 5) hasSession = true;
+          }
+        }
+
+        if (token && token.length > 5) {
+          hasSession = true;
+        }
+
+        if (!hasSession && window.wwLib?.wwAuth?.getIsAuthenticated?.()) {
+          hasSession = true;
+        }
+      } catch (err) {
+        hasSession = false;
+      }
+
+      this.isLoggedIn = hasSession;
+      if (!hasSession && this.isOpen) {
+        this.isOpen = false;
+      }
+      return hasSession;
+    },
     getGreeting() {
       const h = new Date().getHours();
       if (h >= 5 && h < 12) return 'Good morning';
@@ -265,6 +362,7 @@ export default {
       }
     },
     handleKeyDown(e) {
+      if (!this.shouldShowCopilot) return;
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
         this.toggleOpen();
@@ -308,9 +406,15 @@ export default {
       this.scrollToBottom();
 
       try {
+        const token = (typeof window !== 'undefined' && window.localStorage?.getItem('hushhawk_auth_token')) || '';
+        const sessionStr = (typeof window !== 'undefined' && (window.sessionStorage?.getItem('hushhawk_session') || window.localStorage?.getItem('hushhawk_session'))) || '';
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+        if (sessionStr) headers['x-hushhawk-session'] = encodeURIComponent(sessionStr);
+
         const response = await fetch('/api/v1/ai/query', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers,
           body: JSON.stringify({
             query: q,
             clientHour: new Date().getHours(),
