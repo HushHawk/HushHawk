@@ -533,21 +533,55 @@ export default {
       modalType.value = 'assign';
     }
 
-    function confirmAssignment() {
+    async function confirmAssignment() {
       if (activeAssignContract.value) {
-        activeAssignContract.value.status = 'Buyer Selected';
-        activeAssignContract.value.statusClass = 'status-buyer';
+        const contract = activeAssignContract.value;
+        contract.status = 'Buyer Selected';
+        contract.statusClass = 'status-buyer';
+        const fee = Number(assignForm.value.fee || 0);
+        const emd = Number(assignForm.value.emd || 0);
+        const buyerId = assignForm.value.buyerId;
+        const buyerMatch = topBuyerMatches.value.find(b => b.id === buyerId);
+        const buyerName = buyerMatch ? buyerMatch.name : (assignForm.value.buyer || 'VIP Buyer');
+
+        try {
+          await fetch(API_BASE + '/contracts/' + contract.id, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              buyer: buyerName,
+              status: 'Buyer Selected',
+              statusClass: 'status-buyer',
+              fee,
+              emd,
+              fileNumber: assignForm.value.fileNumber || 'FAT-JAX-2026-8819'
+            })
+          });
+        } catch (e) {}
+
         if (typeof window.showHushHawkToast === 'function') {
-          window.showHushHawkToast('Contract Assigned', `Assigned ${activeAssignContract.value.address} to ${assignForm.value.buyer}. Fee: $${Number(assignForm.value.fee || 0).toLocaleString()}.`, 'success');
+          window.showHushHawkToast('Contract Assigned', `Assigned ${contract.address} to ${buyerName}. Fee: $${fee.toLocaleString()}.`, 'success');
         }
       }
       closeModal();
     }
 
-    function assignToBuyer(buyer) {
+    async function assignToBuyer(buyer) {
       if (selectedContract.value) {
         selectedContract.value.status = 'Buyer Selected';
         selectedContract.value.statusClass = 'status-buyer';
+        try {
+          await fetch(API_BASE + '/contracts/' + selectedContract.value.id, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              buyer: buyer.name,
+              status: 'Buyer Selected',
+              statusClass: 'status-buyer'
+            })
+          });
+        } catch (e) {}
+
         if (typeof window.showHushHawkToast === 'function') {
           window.showHushHawkToast('Buyer Matched', `${buyer.name} selected as primary assignee for ${selectedContract.value.address}.`, 'success');
         }

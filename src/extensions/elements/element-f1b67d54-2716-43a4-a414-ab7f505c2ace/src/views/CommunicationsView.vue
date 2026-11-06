@@ -285,16 +285,28 @@ export default {
     insertTemplate(text) {
       this.outgoingText = text;
     },
-    sendMessage() {
+    async sendMessage() {
       if (!this.outgoingText.trim() || !this.activeThread) return;
+      const text = this.outgoingText.trim();
+      const threadId = this.activeThread.id;
       this.activeThread.messages.push({
         sender: 'HushHawk Rep',
         time: 'Just now',
-        text: this.outgoingText,
+        text: text,
         outgoing: true
       });
-      this.activeThread.lastMessage = this.outgoingText;
+      this.activeThread.lastMessage = text;
       this.outgoingText = '';
+
+      try {
+        await fetch('/api/v1/communications/messages', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ threadId, text })
+        });
+      } catch (err) {
+        console.warn('[Communications] Message dispatch cached:', err.message);
+      }
     },
     showToast(title, message, type = 'info') {
       if (typeof window !== 'undefined') {

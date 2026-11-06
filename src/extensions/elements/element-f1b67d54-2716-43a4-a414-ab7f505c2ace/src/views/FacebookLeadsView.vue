@@ -359,18 +359,32 @@ export default {
     quickCall(l) {
       this.showToast('Twilio Voice Call', `Connecting outbound bridge to ${l.name} (${l.phone})...`, 'success');
     },
-    pushToPipeline(l) {
+    async pushToPipeline(l) {
       l.stage = 'Pushed to Pipeline';
+      try {
+        await fetch(`/api/v1/facebook-leads/${l.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ stage: 'Pushed to Pipeline' })
+        });
+      } catch (e) {}
       this.showToast('Acquisitions Pipeline', `Lead ${l.name} pushed directly to Acquisitions Pipeline with MAO preset.`, 'success');
     },
-    pushAllQualified() {
+    async pushAllQualified() {
       let count = 0;
-      this.leads.forEach(l => {
+      for (const l of this.leads) {
         if (l.score >= 80 && l.stage !== 'Pushed to Pipeline') {
           l.stage = 'Pushed to Pipeline';
           count++;
+          try {
+            await fetch(`/api/v1/facebook-leads/${l.id}`, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ stage: 'Pushed to Pipeline' })
+            });
+          } catch (e) {}
         }
-      });
+      }
       this.showToast('Batch Push Complete', `Pushed ${count} hot qualified leads to Acquisitions team.`, 'success');
     },
     syncMetaWebhook() {

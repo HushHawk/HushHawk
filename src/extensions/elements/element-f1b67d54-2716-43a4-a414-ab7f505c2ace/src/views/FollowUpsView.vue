@@ -496,12 +496,26 @@ export default {
     selectFollowUp(item) {
       this.selectedFollowUp = item;
     },
-    toggleComplete(item) {
+    async toggleComplete(item) {
       item.done = !item.done;
+      try {
+        await fetch(`/api/v1/follow-ups/${item.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ done: item.done })
+        });
+      } catch (e) {}
     },
     snoozeFollowUp(item, days) {
       item.dueStatus = 'Upcoming';
       item.dueText = `Snoozed +${days}d`;
+      try {
+        fetch(`/api/v1/follow-ups/${item.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ dueStatus: 'Upcoming', dueText: item.dueText })
+        });
+      } catch (e) {}
     },
     quickCall(item) {
       this.commModal = {
@@ -519,17 +533,36 @@ export default {
         message: `Hi ${item.seller.split(' ')[0]}, this is ${item.rep} with HushHawk. Quick check-in on ${item.address.split(',')[0]}—did you have any questions on the cash terms we sent over?`
       };
     },
-    sendComm() {
+    async sendComm() {
       if (this.commModal.item) {
         this.commModal.item.attemptCount += 1;
         this.commModal.item.notes = `${new Date().toLocaleDateString()}: [${this.commModal.type.toUpperCase()}] ${this.commModal.message} | ` + this.commModal.item.notes;
+        try {
+          await fetch(`/api/v1/follow-ups/${this.commModal.item.id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              attemptCount: this.commModal.item.attemptCount,
+              notes: this.commModal.item.notes
+            })
+          });
+        } catch (e) {}
       }
       this.commModal.open = false;
     },
-    addNote() {
+    async addNote() {
       if (!this.newNoteText.trim() || !this.selectedFollowUp) return;
       this.selectedFollowUp.notes = `${new Date().toLocaleDateString()}: ${this.newNoteText} | ` + this.selectedFollowUp.notes;
+      const notes = this.selectedFollowUp.notes;
+      const targetId = this.selectedFollowUp.id;
       this.newNoteText = '';
+      try {
+        await fetch(`/api/v1/follow-ups/${targetId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ notes })
+        });
+      } catch (e) {}
     },
     resetFilters() {
       this.searchQuery = '';

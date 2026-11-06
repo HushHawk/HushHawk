@@ -2680,6 +2680,22 @@ apiRouter.patch('/contracts/:id/milestone', (req, res) => {
     }
 });
 
+apiRouter.patch('/contracts/:id', (req, res) => {
+    try {
+        const { id } = req.params;
+        const updates = req.body || {};
+        const contracts = db.data.crm.contracts || [];
+        const contract = contracts.find(c => c.id === id);
+        if (!contract) return res.status(404).json({ error: 'Contract not found' });
+
+        Object.assign(contract, updates);
+        db.persist();
+        res.json(contract);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // --- Contacts Rolodex ---
 apiRouter.get('/contacts', (req, res) => {
     try {
@@ -2843,6 +2859,22 @@ apiRouter.post('/facebook-leads', (req, res) => {
     }
 });
 
+apiRouter.patch('/facebook-leads/:id', (req, res) => {
+    try {
+        const { id } = req.params;
+        const updates = req.body || {};
+        const leads = db.data.crm.facebook_leads || [];
+        const lead = leads.find(l => l.id === id || l.id === Number(id));
+        if (!lead) return res.status(404).json({ error: 'Lead not found' });
+
+        Object.assign(lead, updates);
+        db.persist();
+        res.json(lead);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // --- Follow Ups ---
 apiRouter.get('/follow-ups', (req, res) => {
     try {
@@ -2885,6 +2917,22 @@ apiRouter.post('/follow-ups', (req, res) => {
         db.persist();
 
         res.status(201).json(newFollowUp);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+apiRouter.patch('/follow-ups/:id', (req, res) => {
+    try {
+        const { id } = req.params;
+        const updates = req.body || {};
+        const followUps = db.data.crm.follow_ups || [];
+        const item = followUps.find(f => f.id === id || f.id === Number(id));
+        if (!item) return res.status(404).json({ error: 'Follow-up not found' });
+
+        Object.assign(item, updates);
+        db.persist();
+        res.json(item);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -3155,6 +3203,22 @@ apiRouter.post('/team', (req, res) => {
         db.persist();
 
         res.status(201).json(newMember);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+apiRouter.patch('/team/:id', (req, res) => {
+    try {
+        const { id } = req.params;
+        const updates = req.body || {};
+        const members = db.data.crm.team_members || [];
+        const member = members.find(m => m.id === id);
+        if (!member) return res.status(404).json({ error: 'Team member not found' });
+
+        Object.assign(member, updates);
+        db.persist();
+        res.json(member);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -3469,6 +3533,22 @@ apiRouter.post('/marketing', (req, res) => {
         db.data.marketing_campaigns.unshift(campaign);
         db.persist();
         res.status(201).json(campaign);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+apiRouter.patch('/marketing/:id', (req, res) => {
+    try {
+        const { id } = req.params;
+        const updates = req.body || {};
+        const campaigns = db.data.marketing_campaigns || [];
+        const camp = campaigns.find(c => c.id === id);
+        if (!camp) return res.status(404).json({ error: 'Campaign not found' });
+
+        Object.assign(camp, updates);
+        db.persist();
+        res.json(camp);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
