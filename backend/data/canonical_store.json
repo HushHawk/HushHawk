@@ -3960,6 +3960,77 @@
   "audit": {
     "audit_events": [
       {
+        "audit_id": "2354788a-2ddc-4365-8184-11f81bf57c3e",
+        "actor": "MAIN_ADMIN",
+        "action": "VAULT_FILE_DELETED",
+        "entity_type": "VAULT_FILE",
+        "entity_id": "191c1dad-fdea-4c0c-9a50-2ce228e963ba",
+        "request_id": "8f2c7525-23dc-4111-9147-98527a5958a4",
+        "redacted_diff": {
+          "file_id": "191c1dad-fdea-4c0c-9a50-2ce228e963ba"
+        },
+        "created_at": "2026-11-06T17:07:31.798Z"
+      },
+      {
+        "audit_id": "05521699-b6b6-439d-befa-1669c96b5734",
+        "actor": "MAIN_ADMIN",
+        "action": "VAULT_FILE_ASSIGNED_TO_PROPERTY",
+        "entity_type": "VAULT_FILE",
+        "entity_id": "191c1dad-fdea-4c0c-9a50-2ce228e963ba",
+        "request_id": "89702e36-883e-4f47-8b71-b3837222c7ec",
+        "redacted_diff": {
+          "file_id": "191c1dad-fdea-4c0c-9a50-2ce228e963ba",
+          "property_id": "a2d7f98b-2200-4977-9ffa-6a5248be1011",
+          "address": "123 Vault Drive"
+        },
+        "created_at": "2026-11-06T17:07:26.985Z"
+      },
+      {
+        "audit_id": "046a4781-45c0-4854-bf50-b8dea0ea9f95",
+        "actor": "Main Administrator",
+        "action": "VAULT_FILE_UPLOADED",
+        "entity_type": "VAULT_FILE",
+        "entity_id": "191c1dad-fdea-4c0c-9a50-2ce228e963ba",
+        "request_id": "38f4eef5-1f9f-46be-98db-231c61bebaa3",
+        "redacted_diff": {
+          "filename": "vault_contract_scan.pdf",
+          "mime_type": "application/pdf",
+          "category": "legal",
+          "object_key": "vault/admin/legal/1793984845339-vault_contract_scan.pdf"
+        },
+        "created_at": "2026-11-06T17:07:25.613Z"
+      },
+      {
+        "audit_id": "be68068e-0480-4fed-840a-f42d74c1ef83",
+        "actor": "Title Attorney",
+        "action": "DOCUMENT_UPLOADED_S3",
+        "entity_type": "PROPERTY_DOCUMENT",
+        "entity_id": "98e6c862-9e0a-475c-acee-f0a784c1ca87",
+        "request_id": "8523d5a0-524b-46d8-b0e9-c3a178ea96ea",
+        "redacted_diff": {
+          "property_id": "a2d7f98b-2200-4977-9ffa-6a5248be1011",
+          "title": "Probate Court Petition",
+          "object_key": "properties/a2d7f98b-2200-4977-9ffa-6a5248be1011/documents/1793984838027-probate_court_petition.pdf",
+          "storage_provider": "S3"
+        },
+        "created_at": "2026-11-06T17:07:24.486Z"
+      },
+      {
+        "audit_id": "27a128ae-846c-4634-8c03-052cb3364e1a",
+        "actor": "Staff Appraiser",
+        "action": "PHOTO_UPLOADED_S3",
+        "entity_type": "PROPERTY_PHOTO",
+        "entity_id": "6a2d8a52-a99a-42e7-82c2-e8b41ea92edd",
+        "request_id": "8a674961-28e9-4d7e-8f42-2d2f5c63484b",
+        "redacted_diff": {
+          "property_id": "a2d7f98b-2200-4977-9ffa-6a5248be1011",
+          "filename": "front_elevation_inspection.jpg",
+          "object_key": "properties/a2d7f98b-2200-4977-9ffa-6a5248be1011/photos/1793984838008-front_elevation_inspection.jpg",
+          "storage_provider": "S3"
+        },
+        "created_at": "2026-11-06T17:07:20.581Z"
+      },
+      {
         "audit_id": "8d60a585-9db0-41b0-8382-e87482e9ef84",
         "actor": "MAIN_ADMIN",
         "action": "VAULT_FILE_DELETED",

@@ -425,6 +425,47 @@ apiRouter.post('/properties/:propertyId/photos', async (req, res) => {
             ]
         );
 
+        // Upload buffer to S3 Private Vault if base64 data_url is supplied
+        if (data_url && typeof data_url === 'string' && data_url.includes('base64,')) {
+            try {
+                const base64Data = data_url.split('base64,')[1];
+                const buffer = Buffer.from(base64Data, 'base64');
+                await StorageService.uploadBuffer({
+                    objectKey: safeKey,
+                    buffer,
+                    contentType: mime_type || 'image/jpeg',
+                    metadata: {
+                        propertyId,
+                        tag: tag || 'General',
+                        uploadedBy: uploaded_by
+                    }
+                });
+            } catch (s3Err) {
+                console.warn('[Property Photo S3 Buffer Upload Warn]', s3Err.message);
+            }
+        }
+
+        // Mirror automatically into core.vault_files for centralized Media Vault visibility
+        await pool.query(
+            `INSERT INTO core.vault_files
+              (filename, original_filename, file_size_bytes, mime_type, category, tag, description, object_key, storage_provider, data_url, linked_property_id, uploaded_by)
+             VALUES ($1, $2, $3, $4, 'Photos', $5, $6, $7, $8, $9, $10, $11)
+             ON CONFLICT DO NOTHING`,
+            [
+                filename,
+                original_filename || filename,
+                file_size_bytes || 0,
+                mime_type || 'image/jpeg',
+                tag || 'General',
+                caption || description || null,
+                safeKey,
+                storage_provider,
+                data_url || null,
+                propertyId,
+                uploaded_by
+            ]
+        ).catch(e => console.warn('[Vault Mirror Warn]', e.message));
+
         db.logAudit({
             actor: uploaded_by || 'USER_WEB',
             action: 'PHOTO_UPLOADED_S3',
@@ -450,6 +491,7 @@ apiRouter.delete('/properties/:propertyId/photos/:photoId', async (req, res) => 
         );
         if (rows.length > 0 && rows[0].object_key) {
             await StorageService.deleteObject({ objectKey: rows[0].object_key }).catch(e => console.warn('[S3 Delete Warn]', e.message));
+            await pool.query(`DELETE FROM core.vault_files WHERE object_key = $1`, [rows[0].object_key]).catch(e => console.warn('[Vault Delete Mirror Warn]', e.message));
         }
 
         await pool.query(
@@ -573,6 +615,48 @@ apiRouter.post('/properties/:propertyId/documents', async (req, res) => {
             ]
         );
 
+        // Upload buffer to S3 Private Vault if base64 data_url is supplied
+        if (data_url && typeof data_url === 'string' && data_url.includes('base64,')) {
+            try {
+                const base64Data = data_url.split('base64,')[1];
+                const buffer = Buffer.from(base64Data, 'base64');
+                await StorageService.uploadBuffer({
+                    objectKey: safeKey,
+                    buffer,
+                    contentType: mime_type || 'application/pdf',
+                    metadata: {
+                        propertyId,
+                        category: category || 'Documents',
+                        uploadedBy: uploaded_by
+                    }
+                });
+            } catch (s3Err) {
+                console.warn('[Property Document S3 Buffer Upload Warn]', s3Err.message);
+            }
+        }
+
+        // Mirror automatically into core.vault_files for centralized Media Vault visibility
+        await pool.query(
+            `INSERT INTO core.vault_files
+              (filename, original_filename, file_size_bytes, mime_type, category, tag, description, object_key, storage_provider, data_url, linked_property_id, uploaded_by)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+             ON CONFLICT DO NOTHING`,
+            [
+                safeFilename,
+                safeFilename,
+                file_size_bytes || 0,
+                mime_type || 'application/pdf',
+                category || 'Documents',
+                'Property Document',
+                title || safeFilename,
+                safeKey,
+                storage_provider,
+                data_url || null,
+                propertyId,
+                uploaded_by
+            ]
+        ).catch(e => console.warn('[Vault Mirror Warn]', e.message));
+
         db.logAudit({
             actor: uploaded_by || 'USER_WEB',
             action: 'DOCUMENT_UPLOADED_S3',
@@ -598,6 +682,7 @@ apiRouter.delete('/properties/:propertyId/documents/:docId', async (req, res) =>
         );
         if (rows.length > 0 && rows[0].object_key) {
             await StorageService.deleteObject({ objectKey: rows[0].object_key }).catch(e => console.warn('[S3 Delete Warn]', e.message));
+            await pool.query(`DELETE FROM core.vault_files WHERE object_key = $1`, [rows[0].object_key]).catch(e => console.warn('[Vault Delete Mirror Warn]', e.message));
         }
 
         await pool.query(
@@ -982,6 +1067,7 @@ apiRouter.delete('/vault/files/:id', async (req, res) => {
         const { rows } = await pool.query('SELECT * FROM core.vault_files WHERE id = $1', [id]);
         if (rows.length > 0 && rows[0].object_key) {
             await StorageService.deleteObject({ objectKey: rows[0].object_key }).catch(e => console.warn('[S3 Delete Warn]', e.message));
+            await pool.query(`DELETE FROM core.vault_files WHERE object_key = $1`, [rows[0].object_key]).catch(e => console.warn('[Vault Delete Mirror Warn]', e.message));
         }
 
         await pool.query('DELETE FROM core.vault_files WHERE id = $1', [id]);
