@@ -1,6 +1,7 @@
 export const navigation = [
   { name: 'Dashboard', icon: 'house', path: '/home' },
   { name: 'Properties', icon: 'house', path: '/properties' },
+  { name: 'Media Vault', icon: 'file', path: '/vault' },
   { name: 'Seller Leads', icon: 'users', path: '/seller-leads' },
   { name: 'Acquisitions', icon: 'handshake', path: '/acquisitions' },
   { name: 'Dispositions', icon: 'badgeDollar', path: '/dispositions' },

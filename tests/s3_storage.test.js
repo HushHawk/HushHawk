@@ -179,8 +179,78 @@ async function runTests() {
         assert.ok(actions.includes('DOCUMENT_UPLOADED_S3'), 'Audit log must record DOCUMENT_UPLOADED_S3');
         console.log('✔ Audit logging verified: PHOTO_UPLOADED_S3 and DOCUMENT_UPLOADED_S3 recorded.');
 
-        // Test 9: Clean up test artifacts
-        console.log('\n[Test 9] Deleting test records and verifying S3 deletion handler...');
+        // Test 9: Central Media & File Vault Endpoints
+        console.log('\n[Test 9] Testing Central Hybrid Media & File Vault Endpoints...');
+        const vaultConfigRes = await fetch(`${API_BASE}/vault/config`);
+        assert.strictEqual(vaultConfigRes.status, 200, 'Vault config should return 200');
+        const vaultConfig = await vaultConfigRes.json();
+        const cats = vaultConfig.allowedCategories || vaultConfig.categories || [];
+        assert.ok(cats.includes('Photos'), 'Categories should include Photos');
+
+        const vaultUploadUrlRes = await fetch(`${API_BASE}/vault/upload-url`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                filename: 'vault_contract_scan.pdf',
+                content_type: 'application/pdf',
+                category: 'legal'
+            })
+        });
+        assert.strictEqual(vaultUploadUrlRes.status, 200, 'Vault upload URL should return 200');
+        const vaultUpload = await vaultUploadUrlRes.json();
+        assert.ok(vaultUpload.upload_url, 'Should return upload URL');
+        assert.ok(vaultUpload.object_key.includes('vault/admin/legal/'), 'Object key should contain vault/admin/legal/');
+
+        // Record file in vault
+        const recordVaultRes = await fetch(`${API_BASE}/vault/files`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                filename: 'vault_contract_scan.pdf',
+                object_key: vaultUpload.object_key,
+                mime_type: 'application/pdf',
+                file_size_bytes: 84200,
+                category: 'legal'
+            })
+        });
+        assert.strictEqual(recordVaultRes.status, 201, 'Vault file record should return 201');
+        const savedVaultFile = await recordVaultRes.json();
+        const testVaultFileId = savedVaultFile.id || savedVaultFile.file?.id;
+        assert.ok(testVaultFileId, 'Must return vault file ID');
+
+        // Assign to property
+        const assignRes = await fetch(`${API_BASE}/vault/files/${testVaultFileId}/assign-property`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                property_id: testPropId,
+                tag: 'inspection'
+            })
+        });
+        assert.strictEqual(assignRes.status, 200, 'Assign to property should return 200');
+        const assignResult = await assignRes.json();
+        assert.strictEqual(assignResult.success, true);
+        assert.strictEqual(assignResult.property.property_id, testPropId);
+
+        // Get download URL
+        const vaultDownloadRes = await fetch(`${API_BASE}/vault/files/${testVaultFileId}/download-url`);
+        assert.strictEqual(vaultDownloadRes.status, 200, 'Vault download URL should return 200');
+        const vaultDownload = await vaultDownloadRes.json();
+        assert.ok(vaultDownload.download_url, 'Must provide authenticated temporary download URL');
+
+        // Get Vault Stats
+        const vaultStatsRes = await fetch(`${API_BASE}/vault/stats`);
+        assert.strictEqual(vaultStatsRes.status, 200, 'Vault stats should return 200');
+        const vaultStats = await vaultStatsRes.json();
+        assert.ok(vaultStats.summary && vaultStats.summary.total_files !== undefined, 'Vault summary should include total_files');
+
+        // Delete Vault File
+        const deleteVaultRes = await fetch(`${API_BASE}/vault/files/${testVaultFileId}`, { method: 'DELETE' });
+        assert.strictEqual(deleteVaultRes.status, 200, 'Delete vault file should return 200');
+        console.log('✔ Central Hybrid Media & File Vault endpoints verified 100%.');
+
+        // Test 10: Clean up test artifacts
+        console.log('\n[Test 10] Deleting test records and verifying S3 deletion handler...');
         const delPhotoRes = await fetch(`${API_BASE}/properties/${testPropId}/photos/${testPhotoId}`, { method: 'DELETE' });
         assert.strictEqual(delPhotoRes.status, 200, 'Photo delete should return 200');
 
@@ -191,7 +261,7 @@ async function runTests() {
         console.log('✔ Cleanup completed cleanly.');
 
         console.log('\n=============================================================');
-        console.log('✔ ALL S3 PRIVATE VAULT TESTS PASSED (100% SUCCESS)');
+        console.log('✔ ALL S3 PRIVATE VAULT & MEDIA VAULT TESTS PASSED (100% SUCCESS)');
         console.log('=============================================================\n');
 
     } catch (err) {

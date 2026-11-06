@@ -612,6 +612,406 @@ apiRouter.delete('/properties/:propertyId/documents/:docId', async (req, res) =>
 });
 
 // ============================================================================
+// 4d. Central Media & File Vault (Hybrid S3 & RDS Storage)
+// ============================================================================
+
+// 1. Get Vault Configuration
+apiRouter.get('/vault/config', (req, res) => {
+    const allowed = [
+        'Photos',
+        'Documents',
+        'Contracts',
+        'Inspections',
+        'Marketing',
+        'Blueprints',
+        'Title & Escrow',
+        'Receipts'
+    ];
+    res.json({
+        ok: true,
+        storage: StorageService.getConfig(),
+        allowedCategories: allowed,
+        categories: allowed
+    });
+});
+
+// 2. Vault Presigned Upload URL
+apiRouter.post('/vault/upload-url', async (req, res) => {
+    const { filename, content_type, file_size_bytes = 0, category = 'files' } = req.body || {};
+    if (!filename) return res.status(400).json({ error: 'filename is required' });
+
+    try {
+        const presigned = await StorageService.getPresignedUploadUrl({
+            entityType: 'vault',
+            entityId: 'admin',
+            category: category.toLowerCase().replace(/[^a-z0-9]/g, '-'),
+            filename,
+            contentType: content_type || 'application/octet-stream',
+            fileSizeBytes: file_size_bytes
+        });
+        res.json(presigned);
+    } catch (err) {
+        console.error('[Vault Upload URL Error]', err.message);
+        res.status(400).json({ error: err.message });
+    }
+});
+
+// 3. List All Vault Files & Photos
+apiRouter.get('/vault/files', async (req, res) => {
+    try {
+        const { type, category, q, property_id } = req.query;
+        let queryStr = `
+            SELECT 
+                v.id,
+                v.filename,
+                v.original_filename,
+                v.file_size_bytes,
+                v.mime_type,
+                v.category,
+                v.tag,
+                v.description,
+                v.object_key,
+                v.storage_provider,
+                v.data_url,
+                v.linked_property_id,
+                v.uploaded_by,
+                v.created_at,
+                v.updated_at,
+                p.address_line1 as property_address,
+                p.city as property_city,
+                p.state_code as property_state,
+                p.postal_code as property_zip,
+                p.parcel_raw as property_parcel
+            FROM core.vault_files v
+            LEFT JOIN core.properties p ON v.linked_property_id = p.property_id
+            WHERE 1=1
+        `;
+        const params = [];
+
+        if (property_id) {
+            params.push(property_id);
+            queryStr += ` AND v.linked_property_id = $${params.length}`;
+        }
+        if (category && category !== 'All') {
+            params.push(category);
+            queryStr += ` AND v.category = $${params.length}`;
+        }
+        if (type === 'photos') {
+            queryStr += ` AND v.mime_type LIKE 'image/%'`;
+        } else if (type === 'documents') {
+            queryStr += ` AND (v.mime_type NOT LIKE 'image/%' OR v.category IN ('Documents', 'Contracts', 'Title & Escrow', 'Blueprints'))`;
+        }
+        if (q) {
+            params.push(`%${q.toLowerCase()}%`);
+            queryStr += ` AND (
+                LOWER(v.filename) LIKE $${params.length} OR
+                LOWER(COALESCE(v.original_filename, '')) LIKE $${params.length} OR
+                LOWER(COALESCE(v.description, '')) LIKE $${params.length} OR
+                LOWER(COALESCE(v.tag, '')) LIKE $${params.length} OR
+                LOWER(COALESCE(p.address_line1, '')) LIKE $${params.length}
+            )`;
+        }
+
+        queryStr += ` ORDER BY v.created_at DESC`;
+
+        const { rows } = await pool.query(queryStr, params);
+        res.json({ total: rows.length, files: rows });
+    } catch (err) {
+        console.error('[Vault GET Files Error]', err.message);
+        res.json({ total: 0, files: [] });
+    }
+});
+
+// 4. Register Uploaded Vault File
+apiRouter.post('/vault/files', async (req, res) => {
+    const {
+        filename,
+        original_filename,
+        file_size_bytes = 0,
+        mime_type = 'application/octet-stream',
+        category = 'Photos',
+        tag = 'General',
+        description,
+        object_key,
+        storage_provider = 'S3',
+        data_url,
+        linked_property_id,
+        uploaded_by = 'Main Administrator'
+    } = req.body || {};
+
+    if (!filename) return res.status(400).json({ error: 'filename is required' });
+
+    const safeKey = object_key || StorageService.buildObjectKey({
+        entityType: 'vault',
+        entityId: 'admin',
+        category: category.toLowerCase().replace(/[^a-z0-9]/g, '-'),
+        filename
+    });
+
+    try {
+        const { rows } = await pool.query(
+            `INSERT INTO core.vault_files
+              (filename, original_filename, file_size_bytes, mime_type, category, tag, description, object_key, storage_provider, data_url, linked_property_id, uploaded_by)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+             RETURNING *`,
+            [
+                filename,
+                original_filename || filename,
+                file_size_bytes,
+                mime_type,
+                category,
+                tag,
+                description || null,
+                safeKey,
+                storage_provider,
+                data_url || null,
+                linked_property_id || null,
+                uploaded_by
+            ]
+        );
+
+        const newFile = rows[0];
+
+        // If linked to a property, mirror into property_photos or property_documents
+        if (linked_property_id) {
+            if (mime_type.startsWith('image/')) {
+                await pool.query(
+                    `INSERT INTO core.property_photos
+                      (property_id, filename, original_filename, file_size_bytes, mime_type, tag, caption, data_url, storage_provider, object_key, uploaded_by, status)
+                     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, 'UPLOADED')
+                     ON CONFLICT DO NOTHING`,
+                    [
+                        linked_property_id,
+                        filename,
+                        original_filename || filename,
+                        file_size_bytes,
+                        mime_type,
+                        tag,
+                        description || original_filename,
+                        data_url || null,
+                        storage_provider,
+                        safeKey,
+                        uploaded_by
+                    ]
+                ).catch(e => console.warn('[Property Photo Mirror Warn]', e.message));
+            } else {
+                await pool.query(
+                    `INSERT INTO core.property_documents
+                      (property_id, title, category, filename, file_size_bytes, mime_type, data_url, storage_provider, object_key, uploaded_by, status)
+                     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 'UPLOADED')
+                     ON CONFLICT DO NOTHING`,
+                    [
+                        linked_property_id,
+                        original_filename || filename,
+                        category,
+                        filename,
+                        file_size_bytes,
+                        mime_type,
+                        data_url || null,
+                        storage_provider,
+                        safeKey,
+                        uploaded_by
+                    ]
+                ).catch(e => console.warn('[Property Document Mirror Warn]', e.message));
+            }
+        }
+
+        db.logAudit({
+            actor: uploaded_by || 'ADMIN_USER',
+            action: 'VAULT_FILE_UPLOADED',
+            entityType: 'VAULT_FILE',
+            entityId: newFile.id,
+            redactedDiff: { filename, mime_type, category, object_key: safeKey, linked_property_id }
+        });
+        db.persist();
+
+        // Operational Notification in RDS
+        await pool.query(
+            `INSERT INTO ops.notifications (title, body, category, is_read, metadata)
+             VALUES ($1, $2, 'vault', false, $3)`,
+            [
+                `Vault File Stored: ${original_filename || filename}`,
+                `Stored ${category} (${(file_size_bytes / 1024).toFixed(1)} KB) in AWS S3 Private Vault.${linked_property_id ? ' Linked to property.' : ''}`,
+                JSON.stringify({ file_id: newFile.id, filename, object_key: safeKey, linked_property_id })
+            ]
+        ).catch(e => console.warn('[Vault Notif Warn]', e.message));
+
+        res.status(201).json(newFile);
+    } catch (err) {
+        console.error('[Vault POST File Error]', err.message);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// 5. Assign Vault File/Image to Property
+apiRouter.post('/vault/files/:id/assign-property', async (req, res) => {
+    const { id } = req.params;
+    const { property_id, tag, caption } = req.body || {};
+    if (!property_id) return res.status(400).json({ error: 'property_id is required' });
+
+    try {
+        const fileRes = await pool.query('SELECT * FROM core.vault_files WHERE id = $1', [id]);
+        if (fileRes.rows.length === 0) return res.status(404).json({ error: 'Vault file not found' });
+        const file = fileRes.rows[0];
+
+        const propRes = await pool.query('SELECT * FROM core.properties WHERE property_id = $1', [property_id]);
+        if (propRes.rows.length === 0) return res.status(404).json({ error: 'Property not found' });
+        const property = propRes.rows[0];
+
+        // Update vault file link
+        await pool.query(
+            'UPDATE core.vault_files SET linked_property_id = $1, tag = COALESCE($2, tag), updated_at = now() WHERE id = $3',
+            [property_id, tag, id]
+        );
+
+        // Mirror to property photos or documents
+        if (file.mime_type && file.mime_type.startsWith('image/')) {
+            await pool.query(
+                `INSERT INTO core.property_photos
+                  (property_id, filename, original_filename, file_size_bytes, mime_type, tag, caption, data_url, storage_provider, object_key, uploaded_by, status)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, 'UPLOADED')`,
+                [
+                    property_id,
+                    file.filename,
+                    file.original_filename || file.filename,
+                    file.file_size_bytes,
+                    file.mime_type,
+                    tag || file.tag || 'General',
+                    caption || file.description || file.original_filename,
+                    file.data_url,
+                    file.storage_provider,
+                    file.object_key,
+                    file.uploaded_by
+                ]
+            );
+        } else {
+            await pool.query(
+                `INSERT INTO core.property_documents
+                  (property_id, title, category, filename, file_size_bytes, mime_type, data_url, storage_provider, object_key, uploaded_by, status)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 'UPLOADED')`,
+                [
+                    property_id,
+                    caption || file.original_filename || file.filename,
+                    file.category || 'Documents',
+                    file.filename,
+                    file.file_size_bytes,
+                    file.mime_type,
+                    file.data_url,
+                    file.storage_provider,
+                    file.object_key,
+                    file.uploaded_by
+                ]
+            );
+        }
+
+        db.logAudit({
+            actor: 'MAIN_ADMIN',
+            action: 'VAULT_FILE_ASSIGNED_TO_PROPERTY',
+            entityType: 'VAULT_FILE',
+            entityId: id,
+            redactedDiff: { file_id: id, property_id, address: property.address_line1 }
+        });
+        db.persist();
+
+        res.json({
+            success: true,
+            message: `File assigned to property ${property.address_line1}`,
+            property: {
+                property_id: property.property_id,
+                address_line1: property.address_line1,
+                city: property.city,
+                state_code: property.state_code
+            }
+        });
+    } catch (err) {
+        console.error('[Vault Assign Property Error]', err.message);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// 6. Get Vault Presigned Download URL
+apiRouter.get('/vault/files/:id/download-url', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const { rows } = await pool.query('SELECT * FROM core.vault_files WHERE id = $1', [id]);
+        if (rows.length === 0) return res.status(404).json({ error: 'Vault file not found' });
+        const file = rows[0];
+
+        const presigned = await StorageService.getPresignedDownloadUrl({
+            objectKey: file.object_key,
+            expiresInSeconds: 3600
+        });
+
+        res.json({
+            ...presigned,
+            file_id: file.id,
+            filename: file.original_filename || file.filename,
+            data_url: file.data_url
+        });
+    } catch (err) {
+        console.error('[Vault Download URL Error]', err.message);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// 7. Delete Vault File
+apiRouter.delete('/vault/files/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const { rows } = await pool.query('SELECT * FROM core.vault_files WHERE id = $1', [id]);
+        if (rows.length > 0 && rows[0].object_key) {
+            await StorageService.deleteObject({ objectKey: rows[0].object_key }).catch(e => console.warn('[S3 Delete Warn]', e.message));
+        }
+
+        await pool.query('DELETE FROM core.vault_files WHERE id = $1', [id]);
+
+        db.logAudit({
+            actor: 'MAIN_ADMIN',
+            action: 'VAULT_FILE_DELETED',
+            entityType: 'VAULT_FILE',
+            entityId: id,
+            redactedDiff: { file_id: id }
+        });
+        db.persist();
+
+        res.json({ success: true, message: 'File deleted cleanly from vault' });
+    } catch (err) {
+        console.error('[Vault DELETE Error]', err.message);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// 8. Vault Aggregate Metrics
+apiRouter.get('/vault/stats', async (req, res) => {
+    try {
+        const countRes = await pool.query(`
+            SELECT 
+                count(*) as total_files,
+                count(CASE WHEN mime_type LIKE 'image/%' THEN 1 END) as total_photos,
+                count(CASE WHEN mime_type NOT LIKE 'image/%' THEN 1 END) as total_documents,
+                count(CASE WHEN linked_property_id IS NOT NULL THEN 1 END) as linked_files,
+                COALESCE(sum(file_size_bytes), 0) as total_bytes
+            FROM core.vault_files
+        `);
+        const catRes = await pool.query(`
+            SELECT category, count(*) as count
+            FROM core.vault_files
+            GROUP BY category
+            ORDER BY count DESC
+        `);
+
+        res.json({
+            ok: true,
+            summary: countRes.rows[0],
+            categories: catRes.rows
+        });
+    } catch (err) {
+        console.error('[Vault Stats Error]', err.message);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// ============================================================================
 // 4d. Property Expenses
 // ============================================================================
 apiRouter.get('/properties/:propertyId/expenses', async (req, res) => {

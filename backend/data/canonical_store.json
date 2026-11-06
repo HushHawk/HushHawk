@@ -2458,10 +2458,47 @@
         "event_date": "2026-11-05",
         "filing_amount": 0,
         "created_at": "2026-11-05T05:44:45.940Z"
+      },
+      {
+        "event_id": "e3e56415-231d-43a4-8b2d-d3751eadf984",
+        "property_id": "e39c7363-fad6-4be9-a8cc-d4add7595226",
+        "pillar_code": "FC",
+        "event_number": 1,
+        "external_event_id": "CASE-2026-CA-009988",
+        "case_reference": "CASE-2026-CA-009988",
+        "event_status": "OPEN",
+        "verification_status": "CONFIRMED",
+        "event_date": "2026-11-06",
+        "filing_amount": 0,
+        "created_at": "2026-11-06T16:34:19.329Z"
       }
     ],
     "campaigns": [],
     "interactions": [
+      {
+        "interaction_id": "d666173f-9717-4c35-bb5d-50d8f19a4ab8",
+        "lead_id": null,
+        "person_id": null,
+        "property_id": null,
+        "method": "TEXT",
+        "direction": "OUTBOUND",
+        "actor_id": "Elena Rostova",
+        "result": "DELIVERED_10DLC",
+        "notes": "Sent offer walkthrough link via 10DLC registered route.",
+        "occurred_at": "2026-11-06T16:34:15.215Z"
+      },
+      {
+        "interaction_id": "e4288b61-3d76-468a-954e-a6f796758ae5",
+        "lead_id": null,
+        "person_id": null,
+        "property_id": null,
+        "method": "CALL",
+        "direction": "OUTBOUND",
+        "actor_id": "Elena Rostova",
+        "result": "CONNECTED_SPOKE_WITH_SELLER",
+        "notes": "Outbound call to 9045550199. Seller requested all-cash offer.",
+        "occurred_at": "2026-11-06T16:34:14.672Z"
+      },
       {
         "interaction_id": "36641982-21d3-447b-827a-661553f5110d",
         "lead_id": null,
@@ -2644,6 +2681,20 @@
       }
     ],
     "tasks": [
+      {
+        "task_id": "1fe30883-27a1-473c-a879-21c8ab41cbd7",
+        "title": "Schedule In-Person Walkthrough for 4155 County Rd 218",
+        "due_date": "2026-11-08T16:34:18.782Z",
+        "status": "PENDING",
+        "owner_id": "Elena Rostova",
+        "linked_entity_type": "LEAD",
+        "linked_entity_id": "ee176f97-ec96-440b-a64b-e118ba5f56f1",
+        "category": "Underwriting",
+        "priority": "URGENT",
+        "is_completed": false,
+        "created_at": "2026-11-06T16:34:18.784Z",
+        "completed_at": null
+      },
       {
         "task_id": "6e1992c1-03d1-4ba4-892e-22832518b725",
         "title": "Schedule In-Person Walkthrough for 4155 County Rd 218",
@@ -2886,6 +2937,22 @@
         "verification_status": "CONFIRMED",
         "observed_at": "2026-11-05T05:44:45.942Z",
         "notes": "Source record attached"
+      },
+      {
+        "evidence_id": "d74e647d-64f3-4d10-aafc-f52f3fe08309",
+        "event_id": "e3e56415-231d-43a4-8b2d-d3751eadf984",
+        "source_record_id": "afc655e9-b24f-4fd7-b8e8-7cfd79efb36f",
+        "verification_status": "CONFIRMED",
+        "observed_at": "2026-11-06T16:34:19.329Z",
+        "notes": "Source record attached"
+      },
+      {
+        "evidence_id": "1e02de4a-83fe-4ce1-9de3-1574de4d4489",
+        "event_id": "e3e56415-231d-43a4-8b2d-d3751eadf984",
+        "source_record_id": "84040eb1-6896-463c-b81d-c1a16a7608fc",
+        "verification_status": "CONFIRMED",
+        "observed_at": "2026-11-06T16:34:19.334Z",
+        "notes": "Source record attached"
       }
     ],
     "identity_candidates": [],
@@ -2945,6 +3012,14 @@
     "lead_stage_history": [],
     "suppression_records": [
       {
+        "suppression_id": "2319bc63-c79e-49d8-b0ae-da241a448ffc",
+        "identifier_type": "PHONE",
+        "identifier_value": "9049999999",
+        "reason": "Owner requested Do Not Call registry",
+        "source": "FL_DNC_REGISTRY",
+        "created_at": "2026-11-06T16:34:15.210Z"
+      },
+      {
         "suppression_id": "03a3c1d0-9188-4f80-96a4-2e248b13fa6b",
         "identifier_type": "PHONE",
         "identifier_value": "9049999999",
@@ -3002,6 +3077,14 @@
       }
     ],
     "external_sync_map": [
+      {
+        "internal_uuid": "ee176f97-ec96-440b-a64b-e118ba5f56f1",
+        "external_system": "PODIO",
+        "external_item_id": "podio-item-1793982859327",
+        "last_sync_at": "2026-11-06T16:34:19.327Z",
+        "sync_status": "SYNCHRONIZED",
+        "field_ownership": "HUSHHAWK_CANONICAL"
+      },
       {
         "internal_uuid": "e70f3249-2cf2-44c9-b648-7577b6ce4170",
         "external_system": "PODIO",
@@ -3621,6 +3704,19 @@
     "follow_ups": [],
     "direct_mail": [
       {
+        "id": 1793982851999,
+        "batchCode": "DM-TEST-1999",
+        "name": "Clay County Q4 Absentee Drop",
+        "audience": "Clay County High Equity Absentee",
+        "zips": "32068, 32043",
+        "format": "4x6 Yellow Postcard",
+        "quantity": 3500,
+        "cost": 1540,
+        "status": "In Production",
+        "compliance_status": "APPROVED_FOR_DISPATCH",
+        "created_at": "2026-11-06T16:34:11.999Z"
+      },
+      {
         "id": 1793857478498,
         "batchCode": "DM-TEST-8498",
         "name": "Clay County Q4 Absentee Drop",
@@ -3741,9 +3837,26 @@
       "e73f4ae4-ccde-4a41-932d-841ea41ae647:FC": 1,
       "f612f6b3-955a-49fb-ad50-60c28c2a287e:FC": 1,
       "76bd9518-9a9a-4e08-a317-aa37c2e633a0:FC": 1,
-      "eff45c69-afec-4822-ad5c-398268e07536:FC": 1
+      "eff45c69-afec-4822-ad5c-398268e07536:FC": 1,
+      "e39c7363-fad6-4be9-a8cc-d4add7595226:FC": 1
     },
     "outbox_events": [
+      {
+        "outbox_id": "334360b4-8ea3-44b2-b95d-be420183bdf7",
+        "aggregate_type": "PILLAR_EVENT",
+        "aggregate_id": "e3e56415-231d-43a4-8b2d-d3751eadf984",
+        "payload": {
+          "property_id": "e39c7363-fad6-4be9-a8cc-d4add7595226",
+          "pillar_code": "FC",
+          "event_number": 1,
+          "case_reference": "CASE-2026-CA-009988",
+          "verification_status": "CONFIRMED"
+        },
+        "created_at": "2026-11-06T16:34:19.331Z",
+        "published_at": null,
+        "attempts": 0,
+        "last_error": null
+      },
       {
         "outbox_id": "b5ab0c22-0fa9-4080-828f-0e42c3ce1c3b",
         "aggregate_type": "PILLAR_EVENT",
@@ -3846,6 +3959,569 @@
   },
   "audit": {
     "audit_events": [
+      {
+        "audit_id": "0368ea97-1ba4-48e3-857f-0215cdaacb0f",
+        "actor": "Tax Connector",
+        "action": "EVENT_EVIDENCE_ATTACHED",
+        "entity_type": "PILLAR_EVENT",
+        "entity_id": "e3e56415-231d-43a4-8b2d-d3751eadf984",
+        "request_id": "18e12210-855f-4abe-b0b4-51cc6069f8f7",
+        "redacted_diff": {
+          "sourceRecordId": "84040eb1-6896-463c-b81d-c1a16a7608fc",
+          "notes": "Source record attached"
+        },
+        "created_at": "2026-11-06T16:34:19.335Z"
+      },
+      {
+        "audit_id": "fda1845f-9bd5-4cda-854b-f78a4ba886e2",
+        "actor": "Clerk Connector",
+        "action": "EVENT_CREATED",
+        "entity_type": "PILLAR_EVENT",
+        "entity_id": "e3e56415-231d-43a4-8b2d-d3751eadf984",
+        "request_id": "03d92856-399f-456a-bb11-c78a8aaea413",
+        "redacted_diff": {
+          "pillar_code": "FC",
+          "event_number": 1,
+          "caseReference": "CASE-2026-CA-009988"
+        },
+        "created_at": "2026-11-06T16:34:19.332Z"
+      },
+      {
+        "audit_id": "11f5ac5a-fd87-4a52-ad10-7857075b8180",
+        "actor": "Marcus Vance",
+        "action": "TASK_CREATED",
+        "entity_type": "TASK",
+        "entity_id": "1fe30883-27a1-473c-a879-21c8ab41cbd7",
+        "request_id": "5c6e61d5-7bfa-4f37-8ac6-8fda1dfce6b3",
+        "redacted_diff": {
+          "title": "Schedule In-Person Walkthrough for 4155 County Rd 218",
+          "ownerId": "Elena Rostova",
+          "linkedEntityType": "LEAD"
+        },
+        "created_at": "2026-11-06T16:34:19.052Z"
+      },
+      {
+        "audit_id": "9ce45d0c-57fa-43c0-8493-58f5b91daafb",
+        "actor": "Elena Rostova",
+        "action": "INTERACTION_LOGGED",
+        "entity_type": "INTERACTION",
+        "entity_id": "d666173f-9717-4c35-bb5d-50d8f19a4ab8",
+        "request_id": "d0a80b6f-623e-464e-88bf-6d6c34946b2b",
+        "redacted_diff": {
+          "method": "TEXT",
+          "direction": "OUTBOUND",
+          "result": "DELIVERED_10DLC"
+        },
+        "created_at": "2026-11-06T16:34:17.384Z"
+      },
+      {
+        "audit_id": "612f0de4-38ba-411b-ad03-3e1a608e6ae6",
+        "actor": "Elena Rostova",
+        "action": "COMPLIANCE_GATE_BLOCKED",
+        "entity_type": "OUTBOUND_DISPATCH",
+        "entity_id": "34b9345b-175e-4028-bae4-5fe41d9ea3d2",
+        "request_id": "ac7adbf1-bc0d-48de-96af-654938cf2bb2",
+        "redacted_diff": {
+          "channel": "CALL",
+          "recipient": "9049999999",
+          "checks": [
+            {
+              "step": 1,
+              "name": "Suppression & DNC Check",
+              "passed": false,
+              "reason": "BLOCKED: Recipient phone is on the Suppression/DNC list (Owner requested Do Not Call registry)"
+            },
+            {
+              "step": 2,
+              "name": "Consent & Legal Basis",
+              "passed": true,
+              "reason": "Public record or affirmative seller inquiry verified"
+            },
+            {
+              "step": 3,
+              "name": "Campaign Rules & Template",
+              "passed": true,
+              "reason": "Template 'tmpl-cash-offer-v1' is approved"
+            },
+            {
+              "step": 4,
+              "name": "User Permission",
+              "passed": true,
+              "reason": "Actor 'Elena Rostova' holds authorized role for outbound dispatch"
+            },
+            {
+              "step": 5,
+              "name": "Rate Limit & Cadence",
+              "passed": true,
+              "reason": "Within safe carrier & 10DLC frequency limits"
+            },
+            {
+              "step": 6,
+              "name": "Jurisdiction Rules",
+              "passed": true,
+              "reason": "Compliant with Florida telemarketing & solicitation statutes"
+            }
+          ],
+          "status": "BLOCKED"
+        },
+        "created_at": "2026-11-06T16:34:15.214Z"
+      },
+      {
+        "audit_id": "01803cff-caf1-45f0-a26d-58aa92fd19d7",
+        "actor": "COMPLIANCE_OFFICER",
+        "action": "SUPPRESSION_ADDED",
+        "entity_type": "SUPPRESSION_RECORD",
+        "entity_id": "2319bc63-c79e-49d8-b0ae-da241a448ffc",
+        "request_id": "d3bdc0cb-0ebc-442a-ad01-4b906e4046ab",
+        "redacted_diff": {
+          "type": "PHONE",
+          "value": "9049999999",
+          "reason": "Owner requested Do Not Call registry"
+        },
+        "created_at": "2026-11-06T16:34:15.210Z"
+      },
+      {
+        "audit_id": "03b1fb9d-0e4f-4479-9672-1696d409dd58",
+        "actor": "Elena Rostova",
+        "action": "INTERACTION_LOGGED",
+        "entity_type": "INTERACTION",
+        "entity_id": "e4288b61-3d76-468a-954e-a6f796758ae5",
+        "request_id": "ac7cc6df-7e6d-4586-b452-b72cdaf1df3d",
+        "redacted_diff": {
+          "method": "CALL",
+          "direction": "OUTBOUND",
+          "result": "CONNECTED_SPOKE_WITH_SELLER"
+        },
+        "created_at": "2026-11-06T16:34:14.941Z"
+      },
+      {
+        "audit_id": "fc500809-fb78-47ee-b931-0fe66d86615a",
+        "actor": "Elena Rostova",
+        "action": "COMPLIANCE_GATE_PASSED",
+        "entity_type": "OUTBOUND_DISPATCH",
+        "entity_id": "363b1149-3d3b-43b0-8611-e8ba7d491d9d",
+        "request_id": "6cfe23af-c9d4-41ee-bc00-6a72f134cc23",
+        "redacted_diff": {
+          "channel": "CALL",
+          "recipient": "9045550199",
+          "checks": [
+            {
+              "step": 1,
+              "name": "Suppression & DNC Check",
+              "passed": true,
+              "reason": "Clean on internal & federal DNC list"
+            },
+            {
+              "step": 2,
+              "name": "Consent & Legal Basis",
+              "passed": true,
+              "reason": "Public record or affirmative seller inquiry verified"
+            },
+            {
+              "step": 3,
+              "name": "Campaign Rules & Template",
+              "passed": true,
+              "reason": "Template 'tmpl-intro-call-v1' is approved"
+            },
+            {
+              "step": 4,
+              "name": "User Permission",
+              "passed": true,
+              "reason": "Actor 'Elena Rostova' holds authorized role for outbound dispatch"
+            },
+            {
+              "step": 5,
+              "name": "Rate Limit & Cadence",
+              "passed": true,
+              "reason": "Within safe carrier & 10DLC frequency limits"
+            },
+            {
+              "step": 6,
+              "name": "Jurisdiction Rules",
+              "passed": true,
+              "reason": "Compliant with Florida telemarketing & solicitation statutes"
+            }
+          ],
+          "status": "APPROVED"
+        },
+        "created_at": "2026-11-06T16:34:14.670Z"
+      },
+      {
+        "audit_id": "e1ad3dcc-18e4-4b59-b2e8-e388214ec39e",
+        "actor": "Marcus Vance",
+        "action": "COMPLIANCE_GATE_PASSED",
+        "entity_type": "OUTBOUND_DISPATCH",
+        "entity_id": "acf0c805-c037-4cb6-b1dd-454650993c0e",
+        "request_id": "f665958c-b437-4c2d-9e67-a8b8293e0995",
+        "redacted_diff": {
+          "channel": "MAIL",
+          "recipient": "32068, 32043 (Clay County High Equity)",
+          "checks": [
+            {
+              "step": 1,
+              "name": "Suppression & DNC Check",
+              "passed": true,
+              "reason": "Clean on internal & federal DNC list"
+            },
+            {
+              "step": 2,
+              "name": "Consent & Legal Basis",
+              "passed": true,
+              "reason": "Public record or affirmative seller inquiry verified"
+            },
+            {
+              "step": 3,
+              "name": "Campaign Rules & Template",
+              "passed": true,
+              "reason": "Template 'tmpl-probate-letter-v1' is approved"
+            },
+            {
+              "step": 4,
+              "name": "User Permission",
+              "passed": true,
+              "reason": "Actor 'Marcus Vance' holds authorized role for outbound dispatch"
+            },
+            {
+              "step": 5,
+              "name": "Rate Limit & Cadence",
+              "passed": true,
+              "reason": "Within safe carrier & 10DLC frequency limits"
+            },
+            {
+              "step": 6,
+              "name": "Jurisdiction Rules",
+              "passed": true,
+              "reason": "Compliant with Florida telemarketing & solicitation statutes"
+            }
+          ],
+          "status": "APPROVED"
+        },
+        "created_at": "2026-11-06T16:34:11.992Z"
+      },
+      {
+        "audit_id": "969014f5-f551-4dbc-ab42-2e50cec8fe78",
+        "actor": "MAIN_ADMIN",
+        "action": "VAULT_FILE_DELETED",
+        "entity_type": "VAULT_FILE",
+        "entity_id": "aa25e41a-6097-49d2-ad26-78ca675d2753",
+        "request_id": "ebc3891c-c7e8-415e-ae2a-5658b3cf9f75",
+        "redacted_diff": {
+          "file_id": "aa25e41a-6097-49d2-ad26-78ca675d2753"
+        },
+        "created_at": "2026-11-06T16:33:06.991Z"
+      },
+      {
+        "audit_id": "35d28bd0-d427-479d-bc16-b3341102617a",
+        "actor": "MAIN_ADMIN",
+        "action": "VAULT_FILE_ASSIGNED_TO_PROPERTY",
+        "entity_type": "VAULT_FILE",
+        "entity_id": "aa25e41a-6097-49d2-ad26-78ca675d2753",
+        "request_id": "32eac358-af77-425b-80d5-71e98f076e6d",
+        "redacted_diff": {
+          "file_id": "aa25e41a-6097-49d2-ad26-78ca675d2753",
+          "property_id": "812a43cf-f043-45e3-83d5-b5af6e0f8101",
+          "address": "123 Vault Drive"
+        },
+        "created_at": "2026-11-06T16:33:02.745Z"
+      },
+      {
+        "audit_id": "434ef8b3-07c0-4f9f-a2e6-4a50360f3bde",
+        "actor": "Main Administrator",
+        "action": "VAULT_FILE_UPLOADED",
+        "entity_type": "VAULT_FILE",
+        "entity_id": "aa25e41a-6097-49d2-ad26-78ca675d2753",
+        "request_id": "4b2a8d63-aaba-4baa-ad47-33722f313d93",
+        "redacted_diff": {
+          "filename": "vault_contract_scan.pdf",
+          "mime_type": "application/pdf",
+          "category": "legal",
+          "object_key": "vault/admin/legal/1793982781105-vault_contract_scan.pdf"
+        },
+        "created_at": "2026-11-06T16:33:01.388Z"
+      },
+      {
+        "audit_id": "b74afeab-2a47-44ae-8abc-c4d8ea2299a6",
+        "actor": "Title Attorney",
+        "action": "DOCUMENT_UPLOADED_S3",
+        "entity_type": "PROPERTY_DOCUMENT",
+        "entity_id": "fb3e80d8-4d59-4321-a91c-507e94413c62",
+        "request_id": "110e6288-9862-48ac-a7c9-68f7d387e71d",
+        "redacted_diff": {
+          "property_id": "812a43cf-f043-45e3-83d5-b5af6e0f8101",
+          "title": "Probate Court Petition",
+          "object_key": "properties/812a43cf-f043-45e3-83d5-b5af6e0f8101/documents/1793982775534-probate_court_petition.pdf",
+          "storage_provider": "S3"
+        },
+        "created_at": "2026-11-06T16:33:00.248Z"
+      },
+      {
+        "audit_id": "cd14d084-68e7-4503-b14d-cfdd7a79418a",
+        "actor": "Staff Appraiser",
+        "action": "PHOTO_UPLOADED_S3",
+        "entity_type": "PROPERTY_PHOTO",
+        "entity_id": "23359d41-3da6-4e4c-8d43-3d22a60c2414",
+        "request_id": "8b9d7eb1-1af4-45ae-94e2-ddaa024132ff",
+        "redacted_diff": {
+          "property_id": "812a43cf-f043-45e3-83d5-b5af6e0f8101",
+          "filename": "front_elevation_inspection.jpg",
+          "object_key": "properties/812a43cf-f043-45e3-83d5-b5af6e0f8101/photos/1793982775516-front_elevation_inspection.jpg",
+          "storage_provider": "S3"
+        },
+        "created_at": "2026-11-06T16:32:57.900Z"
+      },
+      {
+        "audit_id": "a74d2af0-2f4f-4af6-82dc-2ebb1e638a2d",
+        "actor": "MAIN_ADMIN",
+        "action": "VAULT_FILE_ASSIGNED_TO_PROPERTY",
+        "entity_type": "VAULT_FILE",
+        "entity_id": "b65c4064-4515-40d8-8e36-3bc14ab1e84d",
+        "request_id": "051d4ebe-351d-486d-9769-f2b941a74684",
+        "redacted_diff": {
+          "file_id": "b65c4064-4515-40d8-8e36-3bc14ab1e84d",
+          "property_id": "271029e8-007a-408d-99b9-512fef44a547",
+          "address": "123 Vault Drive"
+        },
+        "created_at": "2026-11-06T16:31:47.552Z"
+      },
+      {
+        "audit_id": "b410773d-60bd-4867-92ce-f10a7bf53bb2",
+        "actor": "Main Administrator",
+        "action": "VAULT_FILE_UPLOADED",
+        "entity_type": "VAULT_FILE",
+        "entity_id": "b65c4064-4515-40d8-8e36-3bc14ab1e84d",
+        "request_id": "8b7c17eb-8b1c-4915-9f65-32218e81be7b",
+        "redacted_diff": {
+          "filename": "vault_contract_scan.pdf",
+          "mime_type": "application/pdf",
+          "category": "legal",
+          "object_key": "vault/admin/legal/1793982705795-vault_contract_scan.pdf"
+        },
+        "created_at": "2026-11-06T16:31:46.069Z"
+      },
+      {
+        "audit_id": "9cf6eae4-936f-4434-bf9b-1e55aa1b7d0a",
+        "actor": "Title Attorney",
+        "action": "DOCUMENT_UPLOADED_S3",
+        "entity_type": "PROPERTY_DOCUMENT",
+        "entity_id": "c7b8e316-1eda-490d-9e72-4a4d5450e969",
+        "request_id": "7b1cfcde-5d5d-433b-bcc4-67f1bff2f176",
+        "redacted_diff": {
+          "property_id": "271029e8-007a-408d-99b9-512fef44a547",
+          "title": "Probate Court Petition",
+          "object_key": "properties/271029e8-007a-408d-99b9-512fef44a547/documents/1793982700225-probate_court_petition.pdf",
+          "storage_provider": "S3"
+        },
+        "created_at": "2026-11-06T16:31:44.951Z"
+      },
+      {
+        "audit_id": "42e85f7f-74a7-4a10-b9ed-48184635ca0c",
+        "actor": "Staff Appraiser",
+        "action": "PHOTO_UPLOADED_S3",
+        "entity_type": "PROPERTY_PHOTO",
+        "entity_id": "14591c3c-081c-47c2-a15a-a09cb2e9d75c",
+        "request_id": "a21c5f67-e8c1-4479-bd76-5fd63c69bccd",
+        "redacted_diff": {
+          "property_id": "271029e8-007a-408d-99b9-512fef44a547",
+          "filename": "front_elevation_inspection.jpg",
+          "object_key": "properties/271029e8-007a-408d-99b9-512fef44a547/photos/1793982700196-front_elevation_inspection.jpg",
+          "storage_provider": "S3"
+        },
+        "created_at": "2026-11-06T16:31:42.721Z"
+      },
+      {
+        "audit_id": "f516921e-5310-462e-afc5-7e2a5da374a5",
+        "actor": "MAIN_ADMIN",
+        "action": "VAULT_FILE_ASSIGNED_TO_PROPERTY",
+        "entity_type": "VAULT_FILE",
+        "entity_id": "f01ac420-4991-4922-86a8-04cfc4810007",
+        "request_id": "cc58ad43-413b-42a6-817a-53ffa575f9ca",
+        "redacted_diff": {
+          "file_id": "f01ac420-4991-4922-86a8-04cfc4810007",
+          "property_id": "33ddfaff-aadd-464f-a63e-ec0bcec7af79",
+          "address": "123 Vault Drive"
+        },
+        "created_at": "2026-11-06T16:30:39.089Z"
+      },
+      {
+        "audit_id": "94ad8d8e-cceb-433d-9b19-c8be6530599f",
+        "actor": "Main Administrator",
+        "action": "VAULT_FILE_UPLOADED",
+        "entity_type": "VAULT_FILE",
+        "entity_id": "f01ac420-4991-4922-86a8-04cfc4810007",
+        "request_id": "4e213cb2-647a-4835-9092-5f1acc8657f4",
+        "redacted_diff": {
+          "filename": "vault_contract_scan.pdf",
+          "mime_type": "application/pdf",
+          "category": "legal",
+          "object_key": "vault/admin/legal/1793982637435-vault_contract_scan.pdf"
+        },
+        "created_at": "2026-11-06T16:30:37.718Z"
+      },
+      {
+        "audit_id": "1fc9cc86-f032-4470-b39b-7a24ca3123eb",
+        "actor": "Title Attorney",
+        "action": "DOCUMENT_UPLOADED_S3",
+        "entity_type": "PROPERTY_DOCUMENT",
+        "entity_id": "b08f3a7c-b393-427b-ab80-15c4091bfe02",
+        "request_id": "2108bcc9-6e0f-4b05-ab7d-bc4010c4e5a7",
+        "redacted_diff": {
+          "property_id": "33ddfaff-aadd-464f-a63e-ec0bcec7af79",
+          "title": "Probate Court Petition",
+          "object_key": "properties/33ddfaff-aadd-464f-a63e-ec0bcec7af79/documents/1793982631816-probate_court_petition.pdf",
+          "storage_provider": "S3"
+        },
+        "created_at": "2026-11-06T16:30:36.552Z"
+      },
+      {
+        "audit_id": "e94bd453-470e-461e-8b6b-41d26a83ed65",
+        "actor": "Staff Appraiser",
+        "action": "PHOTO_UPLOADED_S3",
+        "entity_type": "PROPERTY_PHOTO",
+        "entity_id": "ace63c4f-eac8-414b-a0a2-36cfaa77526f",
+        "request_id": "063ca40d-2323-4d19-b0c7-b0df2239adc6",
+        "redacted_diff": {
+          "property_id": "33ddfaff-aadd-464f-a63e-ec0bcec7af79",
+          "filename": "front_elevation_inspection.jpg",
+          "object_key": "properties/33ddfaff-aadd-464f-a63e-ec0bcec7af79/photos/1793982631794-front_elevation_inspection.jpg",
+          "storage_provider": "S3"
+        },
+        "created_at": "2026-11-06T16:30:34.313Z"
+      },
+      {
+        "audit_id": "2fa92f64-52d9-4c97-b0a8-a1352af96a3c",
+        "actor": "Main Administrator",
+        "action": "VAULT_FILE_UPLOADED",
+        "entity_type": "VAULT_FILE",
+        "entity_id": "504e8f60-f7b0-463a-b41b-980d43f2b368",
+        "request_id": "6ac7602a-9b96-457b-b690-0384c4b01548",
+        "redacted_diff": {
+          "filename": "vault_contract_scan.pdf",
+          "mime_type": "application/pdf",
+          "category": "legal",
+          "object_key": "vault/admin/legal/1793982577310-vault_contract_scan.pdf"
+        },
+        "created_at": "2026-11-06T16:29:37.591Z"
+      },
+      {
+        "audit_id": "3274d112-f694-4970-85a9-7831879cdc03",
+        "actor": "Title Attorney",
+        "action": "DOCUMENT_UPLOADED_S3",
+        "entity_type": "PROPERTY_DOCUMENT",
+        "entity_id": "c6ad3d77-f95b-4c0c-a798-02fc37664a24",
+        "request_id": "54fdf0df-9aa4-400b-b40d-67d6c31f87da",
+        "redacted_diff": {
+          "property_id": "5f1e35c4-1e68-48c8-be98-eaa2dba4df87",
+          "title": "Probate Court Petition",
+          "object_key": "properties/5f1e35c4-1e68-48c8-be98-eaa2dba4df87/documents/1793982571507-probate_court_petition.pdf",
+          "storage_provider": "S3"
+        },
+        "created_at": "2026-11-06T16:29:36.380Z"
+      },
+      {
+        "audit_id": "6e1b840c-0f9e-4f5d-b4a7-0268f1ec9685",
+        "actor": "Staff Appraiser",
+        "action": "PHOTO_UPLOADED_S3",
+        "entity_type": "PROPERTY_PHOTO",
+        "entity_id": "3928ff90-c36a-408d-a43a-bfb80d652c9e",
+        "request_id": "c0dec5bb-3acc-4b19-b658-11765aaef94b",
+        "redacted_diff": {
+          "property_id": "5f1e35c4-1e68-48c8-be98-eaa2dba4df87",
+          "filename": "front_elevation_inspection.jpg",
+          "object_key": "properties/5f1e35c4-1e68-48c8-be98-eaa2dba4df87/photos/1793982571488-front_elevation_inspection.jpg",
+          "storage_provider": "S3"
+        },
+        "created_at": "2026-11-06T16:29:34.024Z"
+      },
+      {
+        "audit_id": "ecc7ebfa-6c33-4641-863d-4e2fd1020fe0",
+        "actor": "Title Attorney",
+        "action": "DOCUMENT_UPLOADED_S3",
+        "entity_type": "PROPERTY_DOCUMENT",
+        "entity_id": "1e6088bc-6693-4af7-9aef-20619b4a1cbf",
+        "request_id": "a0ad8aa0-cd63-4bcd-8b39-160c92b301e6",
+        "redacted_diff": {
+          "property_id": "5967ec8d-5c65-4373-b8f0-c700bcd38037",
+          "title": "Probate Court Petition",
+          "object_key": "properties/5967ec8d-5c65-4373-b8f0-c700bcd38037/documents/1793982524589-probate_court_petition.pdf",
+          "storage_provider": "S3"
+        },
+        "created_at": "2026-11-06T16:28:49.174Z"
+      },
+      {
+        "audit_id": "ad1b3083-7f6b-486a-8ee2-63f4dca25c64",
+        "actor": "Staff Appraiser",
+        "action": "PHOTO_UPLOADED_S3",
+        "entity_type": "PROPERTY_PHOTO",
+        "entity_id": "385760aa-ba9a-4db2-a6fa-f18c18ffd7c2",
+        "request_id": "8a493bf5-2ac9-4555-a837-f7637f8eae7c",
+        "redacted_diff": {
+          "property_id": "5967ec8d-5c65-4373-b8f0-c700bcd38037",
+          "filename": "front_elevation_inspection.jpg",
+          "object_key": "properties/5967ec8d-5c65-4373-b8f0-c700bcd38037/photos/1793982524573-front_elevation_inspection.jpg",
+          "storage_provider": "S3"
+        },
+        "created_at": "2026-11-06T16:28:46.866Z"
+      },
+      {
+        "audit_id": "5af4dc20-5a88-42a6-b5cb-3d5522fcfd55",
+        "actor": "Title Attorney",
+        "action": "DOCUMENT_UPLOADED_S3",
+        "entity_type": "PROPERTY_DOCUMENT",
+        "entity_id": "7b89e96e-0449-4f58-946c-d91b5da6ed3a",
+        "request_id": "03b0fa05-2d08-4736-871d-b8d9f117f989",
+        "redacted_diff": {
+          "property_id": "4261be35-4bef-4c2c-856c-060047b377a1",
+          "title": "Probate Court Petition",
+          "object_key": "properties/4261be35-4bef-4c2c-856c-060047b377a1/documents/1793982471483-probate_court_petition.pdf",
+          "storage_provider": "S3"
+        },
+        "created_at": "2026-11-06T16:27:55.997Z"
+      },
+      {
+        "audit_id": "4a1fe95a-6da1-42c0-ae95-e9178ed32f5f",
+        "actor": "Staff Appraiser",
+        "action": "PHOTO_UPLOADED_S3",
+        "entity_type": "PROPERTY_PHOTO",
+        "entity_id": "478a91dc-e2e3-47b9-b212-2397294f0c0d",
+        "request_id": "a2ae26dd-58cf-4a7f-ae07-02bd968445ba",
+        "redacted_diff": {
+          "property_id": "4261be35-4bef-4c2c-856c-060047b377a1",
+          "filename": "front_elevation_inspection.jpg",
+          "object_key": "properties/4261be35-4bef-4c2c-856c-060047b377a1/photos/1793982471467-front_elevation_inspection.jpg",
+          "storage_provider": "S3"
+        },
+        "created_at": "2026-11-06T16:27:53.814Z"
+      },
+      {
+        "audit_id": "5286b03e-76fe-4ca2-96ca-567981473c19",
+        "actor": "Title Attorney",
+        "action": "DOCUMENT_UPLOADED_S3",
+        "entity_type": "PROPERTY_DOCUMENT",
+        "entity_id": "5c4d7679-9718-4547-8f8d-d9bac579085e",
+        "request_id": "5f11a4eb-84e2-4ea8-b77c-fba78db52d72",
+        "redacted_diff": {
+          "property_id": "637dd0b8-8767-4858-aec1-a16dbbff0b4e",
+          "title": "Probate Court Petition",
+          "object_key": "properties/637dd0b8-8767-4858-aec1-a16dbbff0b4e/documents/1793980809049-probate_court_petition.pdf",
+          "storage_provider": "S3"
+        },
+        "created_at": "2026-11-06T16:00:13.630Z"
+      },
+      {
+        "audit_id": "abb4740c-fc6c-45e4-8782-dfab3eabc18f",
+        "actor": "Staff Appraiser",
+        "action": "PHOTO_UPLOADED_S3",
+        "entity_type": "PROPERTY_PHOTO",
+        "entity_id": "5b55198e-5787-475c-bccc-892efc2fb713",
+        "request_id": "c2c5b981-825b-4256-9679-dc57ec6636ca",
+        "redacted_diff": {
+          "property_id": "637dd0b8-8767-4858-aec1-a16dbbff0b4e",
+          "filename": "front_elevation_inspection.jpg",
+          "object_key": "properties/637dd0b8-8767-4858-aec1-a16dbbff0b4e/photos/1793980809032-front_elevation_inspection.jpg",
+          "storage_provider": "S3"
+        },
+        "created_at": "2026-11-06T16:00:11.364Z"
+      },
       {
         "audit_id": "a552c1f4-b021-4443-8e64-a64d9f19d639",
         "actor": "Tax Connector",

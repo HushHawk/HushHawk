@@ -100,6 +100,9 @@
               <span class="caret-icon" v-html="icons.chevronDown"></span>
             </button>
             <div v-if="isQuickAddOpen" class="quick-add-menu" @click.stop>
+              <a href="/vault" @click="handleNav('/vault', $event)">
+                <span class="qa-icon" v-html="icons.file"></span> Media &amp; File Vault
+              </a>
               <a href="/properties" @click="handleNav('/properties', $event)">
                 <span class="qa-icon" v-html="icons.house"></span> View Properties &amp; Photos
               </a>
@@ -280,6 +283,7 @@ import FacebookLeadsView from './views/FacebookLeadsView.vue';
 import DirectMailView from './views/DirectMailView.vue';
 import DealAnalyzerView from './views/DealAnalyzerView.vue';
 import TeamView from './views/TeamView.vue';
+import VaultView from './views/VaultView.vue';
 import HushHawkNotificationDropdown from '@/_front/components/HushHawkNotificationDropdown.vue';
 import { useNotifications } from '@/_common/use/useNotifications.js';
 
@@ -290,6 +294,7 @@ export default {
   components: {
     HushHawkNotificationDropdown,
     PropertiesView,
+    VaultView,
     DispositionsView,
     CashBuyersView,
     MarketingView,
@@ -361,6 +366,7 @@ export default {
       // 1. Browser path detection (takes precedence over default content props)
       if (typeof window !== 'undefined' && window.location) {
         const path = window.location.pathname.toLowerCase().replace(/\/$/, '');
+        if (path.includes('vault') || path.includes('media')) return 'vault';
         if (path.includes('properties')) return 'properties';
         if (path.includes('cash-buyers')) return 'cash-buyers';
         if (path.includes('marketing')) return 'marketing';
@@ -396,6 +402,7 @@ export default {
     currentViewComponent() {
       const map = {
         'properties': 'PropertiesView',
+        'vault': 'VaultView',
         'dispositions': 'DispositionsView',
         'cash-buyers': 'CashBuyersView',
         'marketing': 'MarketingView',
@@ -419,6 +426,11 @@ export default {
     },
     currentSectionMeta() {
       const metas = {
+        'vault': {
+          title: 'Media & File Vault',
+          subtitle: 'Central Institutional Asset & Document Storage',
+          tagline: 'Encrypted AWS S3 Private Vault with Drag-and-Drop Ingestion, Secure Downloads, and Direct Property Linkage.'
+        },
         'properties': {
           title: 'Properties',
           subtitle: 'Property Portfolio & Photo Management',
