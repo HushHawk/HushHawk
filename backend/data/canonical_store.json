@@ -2536,10 +2536,47 @@
         "event_date": "2026-11-06",
         "filing_amount": 0,
         "created_at": "2026-11-06T17:53:41.078Z"
+      },
+      {
+        "event_id": "4d3eaadd-3a94-4b4f-b006-ee282b3187a6",
+        "property_id": "01171113-992d-46c2-96a3-6f482bc63b15",
+        "pillar_code": "FC",
+        "event_number": 1,
+        "external_event_id": "CASE-2026-CA-009988",
+        "case_reference": "CASE-2026-CA-009988",
+        "event_status": "OPEN",
+        "verification_status": "CONFIRMED",
+        "event_date": "2026-11-06",
+        "filing_amount": 0,
+        "created_at": "2026-11-06T19:01:39.208Z"
       }
     ],
     "campaigns": [],
     "interactions": [
+      {
+        "interaction_id": "29ea01ba-5a36-46e6-b6dd-02a42ed1d4f0",
+        "lead_id": null,
+        "person_id": null,
+        "property_id": null,
+        "method": "TEXT",
+        "direction": "OUTBOUND",
+        "actor_id": "Elena Rostova",
+        "result": "DELIVERED_10DLC",
+        "notes": "Sent offer walkthrough link via 10DLC registered route.",
+        "occurred_at": "2026-11-06T19:01:34.858Z"
+      },
+      {
+        "interaction_id": "47484380-305e-4e4e-bb2b-e64becae2f60",
+        "lead_id": null,
+        "person_id": null,
+        "property_id": null,
+        "method": "CALL",
+        "direction": "OUTBOUND",
+        "actor_id": "Elena Rostova",
+        "result": "CONNECTED_SPOKE_WITH_SELLER",
+        "notes": "Outbound call to 9045550199. Seller requested all-cash offer.",
+        "occurred_at": "2026-11-06T19:01:34.228Z"
+      },
       {
         "interaction_id": "59644c74-cfc6-4826-a3ca-24f8b5410624",
         "lead_id": null,
@@ -2866,6 +2903,20 @@
       }
     ],
     "tasks": [
+      {
+        "task_id": "b0a2859c-fa0c-48bb-afde-7bb85a2f994e",
+        "title": "Schedule In-Person Walkthrough for 4155 County Rd 218",
+        "due_date": "2026-11-08T19:01:38.659Z",
+        "status": "PENDING",
+        "owner_id": "Elena Rostova",
+        "linked_entity_type": "LEAD",
+        "linked_entity_id": "006ca242-9b0f-4028-997d-5f99370a2626",
+        "category": "Underwriting",
+        "priority": "URGENT",
+        "is_completed": false,
+        "created_at": "2026-11-06T19:01:38.660Z",
+        "completed_at": null
+      },
       {
         "task_id": "a99419ea-a4ca-43be-b718-64b888c65e78",
         "title": "Schedule In-Person Walkthrough for 4155 County Rd 218",
@@ -3288,6 +3339,22 @@
         "verification_status": "CONFIRMED",
         "observed_at": "2026-11-06T17:53:41.086Z",
         "notes": "Source record attached"
+      },
+      {
+        "evidence_id": "0ceb53fb-3b3c-4f8f-919e-540b8f3dc0c7",
+        "event_id": "4d3eaadd-3a94-4b4f-b006-ee282b3187a6",
+        "source_record_id": "e1c2619f-4fc1-46a4-a8a7-2ab3dd090d44",
+        "verification_status": "CONFIRMED",
+        "observed_at": "2026-11-06T19:01:39.208Z",
+        "notes": "Source record attached"
+      },
+      {
+        "evidence_id": "3575923b-0e47-4877-a5cc-f88ba16efec3",
+        "event_id": "4d3eaadd-3a94-4b4f-b006-ee282b3187a6",
+        "source_record_id": "103f8eee-27a9-4101-b8cb-752ba254a52d",
+        "verification_status": "CONFIRMED",
+        "observed_at": "2026-11-06T19:01:39.213Z",
+        "notes": "Source record attached"
       }
     ],
     "identity_candidates": [],
@@ -3346,6 +3413,14 @@
     ],
     "lead_stage_history": [],
     "suppression_records": [
+      {
+        "suppression_id": "09caf3ad-4739-4464-af1d-1f8e9a36e7c3",
+        "identifier_type": "PHONE",
+        "identifier_value": "9049999999",
+        "reason": "Owner requested Do Not Call registry",
+        "source": "FL_DNC_REGISTRY",
+        "created_at": "2026-11-06T19:01:34.851Z"
+      },
       {
         "suppression_id": "001fefb0-9e6e-4259-ac5b-7076d2d3d7e0",
         "identifier_type": "PHONE",
@@ -3452,6 +3527,14 @@
       }
     ],
     "external_sync_map": [
+      {
+        "internal_uuid": "006ca242-9b0f-4028-997d-5f99370a2626",
+        "external_system": "PODIO",
+        "external_item_id": "podio-item-1793991699205",
+        "last_sync_at": "2026-11-06T19:01:39.205Z",
+        "sync_status": "SYNCHRONIZED",
+        "field_ownership": "HUSHHAWK_CANONICAL"
+      },
       {
         "internal_uuid": "6c565eba-1181-4c8e-8789-067e861b3609",
         "external_system": "PODIO",
@@ -4119,6 +4202,19 @@
     "follow_ups": [],
     "direct_mail": [
       {
+        "id": 1793991690853,
+        "batchCode": "DM-TEST-0852",
+        "name": "Clay County Q4 Absentee Drop",
+        "audience": "Clay County High Equity Absentee",
+        "zips": "32068, 32043",
+        "format": "4x6 Yellow Postcard",
+        "quantity": 3500,
+        "cost": 1540,
+        "status": "In Production",
+        "compliance_status": "APPROVED_FOR_DISPATCH",
+        "created_at": "2026-11-06T19:01:30.853Z"
+      },
+      {
         "id": 1793987612211,
         "batchCode": "DM-TEST-2211",
         "name": "Clay County Q4 Absentee Drop",
@@ -4323,9 +4419,26 @@
       "b2d698d1-111b-4d78-a34b-b55b19870546:FC": 1,
       "482eb220-8455-48bc-83aa-983a1a2a7b10:FC": 1,
       "1312b5eb-3ac0-4d3c-8cc3-7bfae81744b0:FC": 1,
-      "4d2e0818-c217-48f9-bd16-1cd8ed003dd0:FC": 1
+      "4d2e0818-c217-48f9-bd16-1cd8ed003dd0:FC": 1,
+      "01171113-992d-46c2-96a3-6f482bc63b15:FC": 1
     },
     "outbox_events": [
+      {
+        "outbox_id": "0a2a7d7c-84d2-4c7f-aced-5cff3254d27d",
+        "aggregate_type": "PILLAR_EVENT",
+        "aggregate_id": "4d3eaadd-3a94-4b4f-b006-ee282b3187a6",
+        "payload": {
+          "property_id": "01171113-992d-46c2-96a3-6f482bc63b15",
+          "pillar_code": "FC",
+          "event_number": 1,
+          "case_reference": "CASE-2026-CA-009988",
+          "verification_status": "CONFIRMED"
+        },
+        "created_at": "2026-11-06T19:01:39.209Z",
+        "published_at": null,
+        "attempts": 0,
+        "last_error": null
+      },
       {
         "outbox_id": "3b778491-4c1f-485c-ad2d-18ab0e3e3cd8",
         "aggregate_type": "PILLAR_EVENT",
@@ -4524,6 +4637,245 @@
   },
   "audit": {
     "audit_events": [
+      {
+        "audit_id": "cea3cd3e-5c0b-4d56-be46-4cc9a6fce0cc",
+        "actor": "Tax Connector",
+        "action": "EVENT_EVIDENCE_ATTACHED",
+        "entity_type": "PILLAR_EVENT",
+        "entity_id": "4d3eaadd-3a94-4b4f-b006-ee282b3187a6",
+        "request_id": "f4cfdf20-2d77-4a6b-81cf-40f2adff4012",
+        "redacted_diff": {
+          "sourceRecordId": "103f8eee-27a9-4101-b8cb-752ba254a52d",
+          "notes": "Source record attached"
+        },
+        "created_at": "2026-11-06T19:01:39.223Z"
+      },
+      {
+        "audit_id": "0ec65928-c4f3-4494-bcd3-fdccd0f8c1cd",
+        "actor": "Clerk Connector",
+        "action": "EVENT_CREATED",
+        "entity_type": "PILLAR_EVENT",
+        "entity_id": "4d3eaadd-3a94-4b4f-b006-ee282b3187a6",
+        "request_id": "cdb5ca95-2c2b-4940-bbe4-32c1df27b118",
+        "redacted_diff": {
+          "pillar_code": "FC",
+          "event_number": 1,
+          "caseReference": "CASE-2026-CA-009988"
+        },
+        "created_at": "2026-11-06T19:01:39.209Z"
+      },
+      {
+        "audit_id": "f73b6983-b2eb-48aa-a40b-e8fcc1396cd7",
+        "actor": "Marcus Vance",
+        "action": "TASK_CREATED",
+        "entity_type": "TASK",
+        "entity_id": "b0a2859c-fa0c-48bb-afde-7bb85a2f994e",
+        "request_id": "0e290836-1be1-4ba6-9fc3-7d99ad20eb4b",
+        "redacted_diff": {
+          "title": "Schedule In-Person Walkthrough for 4155 County Rd 218",
+          "ownerId": "Elena Rostova",
+          "linkedEntityType": "LEAD"
+        },
+        "created_at": "2026-11-06T19:01:38.932Z"
+      },
+      {
+        "audit_id": "de5d0255-dfe4-4481-a548-b64e530fa6c0",
+        "actor": "Elena Rostova",
+        "action": "INTERACTION_LOGGED",
+        "entity_type": "INTERACTION",
+        "entity_id": "29ea01ba-5a36-46e6-b6dd-02a42ed1d4f0",
+        "request_id": "bb864a62-7ba0-434b-9a0e-2d3d2723ff9f",
+        "redacted_diff": {
+          "method": "TEXT",
+          "direction": "OUTBOUND",
+          "result": "DELIVERED_10DLC"
+        },
+        "created_at": "2026-11-06T19:01:37.194Z"
+      },
+      {
+        "audit_id": "32eef92e-0305-45be-b8b2-5de494af1fab",
+        "actor": "Elena Rostova",
+        "action": "COMPLIANCE_GATE_BLOCKED",
+        "entity_type": "OUTBOUND_DISPATCH",
+        "entity_id": "c56833c5-87ed-4255-97a6-1f2b8dca44e4",
+        "request_id": "a6d887ac-b960-4caa-b7d2-084e42fa6586",
+        "redacted_diff": {
+          "channel": "CALL",
+          "recipient": "9049999999",
+          "checks": [
+            {
+              "step": 1,
+              "name": "Suppression & DNC Check",
+              "passed": false,
+              "reason": "BLOCKED: Recipient phone is on the Suppression/DNC list (Owner requested Do Not Call registry)"
+            },
+            {
+              "step": 2,
+              "name": "Consent & Legal Basis",
+              "passed": true,
+              "reason": "Public record or affirmative seller inquiry verified"
+            },
+            {
+              "step": 3,
+              "name": "Campaign Rules & Template",
+              "passed": true,
+              "reason": "Template 'tmpl-cash-offer-v1' is approved"
+            },
+            {
+              "step": 4,
+              "name": "User Permission",
+              "passed": true,
+              "reason": "Actor 'Elena Rostova' holds authorized role for outbound dispatch"
+            },
+            {
+              "step": 5,
+              "name": "Rate Limit & Cadence",
+              "passed": true,
+              "reason": "Within safe carrier & 10DLC frequency limits"
+            },
+            {
+              "step": 6,
+              "name": "Jurisdiction Rules",
+              "passed": true,
+              "reason": "Compliant with Florida telemarketing & solicitation statutes"
+            }
+          ],
+          "status": "BLOCKED"
+        },
+        "created_at": "2026-11-06T19:01:34.856Z"
+      },
+      {
+        "audit_id": "ce4cea81-6a3c-49c1-bbb5-a0e7f806b481",
+        "actor": "COMPLIANCE_OFFICER",
+        "action": "SUPPRESSION_ADDED",
+        "entity_type": "SUPPRESSION_RECORD",
+        "entity_id": "09caf3ad-4739-4464-af1d-1f8e9a36e7c3",
+        "request_id": "9875eef5-4ea0-4f01-bac2-e093cac36e6d",
+        "redacted_diff": {
+          "type": "PHONE",
+          "value": "9049999999",
+          "reason": "Owner requested Do Not Call registry"
+        },
+        "created_at": "2026-11-06T19:01:34.851Z"
+      },
+      {
+        "audit_id": "c636716e-4749-484a-962a-02bb9f253528",
+        "actor": "Elena Rostova",
+        "action": "INTERACTION_LOGGED",
+        "entity_type": "INTERACTION",
+        "entity_id": "47484380-305e-4e4e-bb2b-e64becae2f60",
+        "request_id": "8057eaf8-dca0-42fc-b61a-30959d804941",
+        "redacted_diff": {
+          "method": "CALL",
+          "direction": "OUTBOUND",
+          "result": "CONNECTED_SPOKE_WITH_SELLER"
+        },
+        "created_at": "2026-11-06T19:01:34.501Z"
+      },
+      {
+        "audit_id": "a59c37d0-fe8c-4a16-b96d-c8c441ee1fa1",
+        "actor": "Elena Rostova",
+        "action": "COMPLIANCE_GATE_PASSED",
+        "entity_type": "OUTBOUND_DISPATCH",
+        "entity_id": "c81f370b-3787-46c2-8834-da8e0279fee1",
+        "request_id": "0a344231-5569-480f-a72a-d400b9a499d0",
+        "redacted_diff": {
+          "channel": "CALL",
+          "recipient": "9045550199",
+          "checks": [
+            {
+              "step": 1,
+              "name": "Suppression & DNC Check",
+              "passed": true,
+              "reason": "Clean on internal & federal DNC list"
+            },
+            {
+              "step": 2,
+              "name": "Consent & Legal Basis",
+              "passed": true,
+              "reason": "Public record or affirmative seller inquiry verified"
+            },
+            {
+              "step": 3,
+              "name": "Campaign Rules & Template",
+              "passed": true,
+              "reason": "Template 'tmpl-intro-call-v1' is approved"
+            },
+            {
+              "step": 4,
+              "name": "User Permission",
+              "passed": true,
+              "reason": "Actor 'Elena Rostova' holds authorized role for outbound dispatch"
+            },
+            {
+              "step": 5,
+              "name": "Rate Limit & Cadence",
+              "passed": true,
+              "reason": "Within safe carrier & 10DLC frequency limits"
+            },
+            {
+              "step": 6,
+              "name": "Jurisdiction Rules",
+              "passed": true,
+              "reason": "Compliant with Florida telemarketing & solicitation statutes"
+            }
+          ],
+          "status": "APPROVED"
+        },
+        "created_at": "2026-11-06T19:01:34.225Z"
+      },
+      {
+        "audit_id": "913d7a2a-7e3f-4674-bb99-efd2c812f3c8",
+        "actor": "Marcus Vance",
+        "action": "COMPLIANCE_GATE_PASSED",
+        "entity_type": "OUTBOUND_DISPATCH",
+        "entity_id": "f8fc24b3-c399-4100-85d2-1e9f6fd015a3",
+        "request_id": "300368e4-c1b6-4df6-beb5-fc81b7ab5d0c",
+        "redacted_diff": {
+          "channel": "MAIL",
+          "recipient": "32068, 32043 (Clay County High Equity)",
+          "checks": [
+            {
+              "step": 1,
+              "name": "Suppression & DNC Check",
+              "passed": true,
+              "reason": "Clean on internal & federal DNC list"
+            },
+            {
+              "step": 2,
+              "name": "Consent & Legal Basis",
+              "passed": true,
+              "reason": "Public record or affirmative seller inquiry verified"
+            },
+            {
+              "step": 3,
+              "name": "Campaign Rules & Template",
+              "passed": true,
+              "reason": "Template 'tmpl-probate-letter-v1' is approved"
+            },
+            {
+              "step": 4,
+              "name": "User Permission",
+              "passed": true,
+              "reason": "Actor 'Marcus Vance' holds authorized role for outbound dispatch"
+            },
+            {
+              "step": 5,
+              "name": "Rate Limit & Cadence",
+              "passed": true,
+              "reason": "Within safe carrier & 10DLC frequency limits"
+            },
+            {
+              "step": 6,
+              "name": "Jurisdiction Rules",
+              "passed": true,
+              "reason": "Compliant with Florida telemarketing & solicitation statutes"
+            }
+          ],
+          "status": "APPROVED"
+        },
+        "created_at": "2026-11-06T19:01:30.836Z"
+      },
       {
         "audit_id": "f619b730-693f-4b9c-9da8-bb0a4a494e2c",
         "actor": "Tax Connector",
