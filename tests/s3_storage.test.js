@@ -8,7 +8,7 @@ import crypto from 'crypto';
 import { StorageService } from '../backend/src/services/storageService.js';
 import { pool } from '../backend/src/store/pgClient.js';
 
-const API_BASE = 'http://localhost:3001/api/v1';
+const API_BASE = process.env.API_BASE || 'http://localhost:3001/api/v1';
 
 async function runTests() {
     console.log('\n=============================================================');

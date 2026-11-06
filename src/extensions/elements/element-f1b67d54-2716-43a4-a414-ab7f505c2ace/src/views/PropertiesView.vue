@@ -2241,11 +2241,30 @@ export default {
     // ===== ACTIONS MENU ITEMS =====
     shareSecureLink() {
       const url = `${window.location.origin}/properties?id=${this.selectedProperty.property_id}`;
-      navigator.clipboard.writeText(url).then(() => {
-        this.showToast('Secure property link copied to clipboard!');
-      }).catch(() => {
-        prompt('Copy secure property link:', url);
-      });
+      if (navigator && navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(() => {
+          this.showToast('Secure property link copied to clipboard!');
+        }).catch(() => {
+          this.copyFallback(url, 'Secure property link copied to clipboard!');
+        });
+      } else {
+        this.copyFallback(url, 'Secure property link copied to clipboard!');
+      }
+    },
+    copyFallback(text, msg) {
+      try {
+        const el = document.createElement('textarea');
+        el.value = text;
+        el.style.position = 'fixed';
+        el.style.opacity = '0';
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+        this.showToast(msg || 'Copied to clipboard!');
+      } catch (e) {
+        this.showToast('Link: ' + text, 'info');
+      }
     },
     viewInMap() {
       const query = encodeURIComponent(`${this.selectedProperty.address_line1}, ${this.selectedProperty.city}, ${this.selectedProperty.state_code}`);
