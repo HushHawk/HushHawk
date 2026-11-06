@@ -282,8 +282,18 @@ export default {
       if (type === 'addCampaign') showAddModal.value = true;
     }
 
-    function toggleCampaignStatus(c) {
-      c.status = c.status === 'Active' ? 'Paused' : 'Active';
+    async function toggleCampaignStatus(c) {
+      const newStatus = c.status === 'Active' ? 'Paused' : 'Active';
+      c.status = newStatus;
+      try {
+        await fetch(`/api/v1/marketing/${c.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: newStatus })
+        });
+      } catch (err) {
+        console.warn('[Marketing] Status update cached:', err.message);
+      }
     }
 
     async function loadMarketing() {

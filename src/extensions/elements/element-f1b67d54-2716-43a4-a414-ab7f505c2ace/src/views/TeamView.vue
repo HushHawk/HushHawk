@@ -648,7 +648,7 @@ export default {
         commissionSplit: '15% Net Assignment Margin'
       };
     },
-    savePermissions() {
+    async savePermissions() {
       if (!this.editingMember) return;
       const idx = this.members.findIndex(m => m.id === this.editingMember.id);
       if (idx !== -1) {
@@ -658,13 +658,34 @@ export default {
         }
       }
       const memberName = this.editingMember.name;
+      const memberId = this.editingMember.id;
+      const payload = {
+        accessLevel: this.editingMember.accessLevel,
+        permissions: this.editingMember.permissions,
+        department: this.editingMember.department
+      };
+      try {
+        await fetch(`/api/v1/team/${memberId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+      } catch (e) {}
+
       this.closeModal();
       if (typeof window.showHushHawkToast === 'function') {
         window.showHushHawkToast('Permissions Updated', `Access credentials updated for ${memberName}.`, 'success');
       }
     },
-    toggleStatus(member) {
+    async toggleStatus(member) {
       member.status = member.status === 'Active' ? 'Offline' : 'Active';
+      try {
+        await fetch(`/api/v1/team/${member.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: member.status })
+        });
+      } catch (e) {}
       if (typeof window.showHushHawkToast === 'function') {
         window.showHushHawkToast('Status Changed', `${member.name} marked as ${member.status}.`, 'info');
       }
