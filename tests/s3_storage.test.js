@@ -22,11 +22,14 @@ async function runTests() {
     try {
         // Step 0: Ensure a test property exists in PostgreSQL RDS
         console.log('[Test 0] Creating test property record in core.properties...');
+        const testParcelRaw = `99-99-99-S3-${Date.now().toString().slice(-6)}`;
+        const testParcelMatch = testParcelRaw.replace(/[^A-Za-z0-9]/g, '');
+        await pool.query(`DELETE FROM core.properties WHERE parcel_raw LIKE '99-99-99-S3%' OR parcel_match = '999999TESTS3001'`);
         await pool.query(
             `INSERT INTO core.properties (property_id, county_id, parcel_raw, parcel_match, address_line1, city, state_code, postal_code)
-             VALUES ($1, 'c1111111-1111-1111-1111-111111111111', '99-99-99-TESTS3-001', '999999TESTS3001', '123 Vault Drive', 'Jacksonville', 'FL', '32202')
-             ON CONFLICT (property_id) DO NOTHING`,
-            [testPropId]
+             VALUES ($1, 'c1111111-1111-1111-1111-111111111111', $2, $3, '123 Vault Drive', 'Jacksonville', 'FL', '32202')
+             ON CONFLICT (county_id, parcel_match) DO UPDATE SET property_id = EXCLUDED.property_id`,
+            [testPropId, testParcelRaw, testParcelMatch]
         );
         console.log('✔ Test property initialized in database.');
 
