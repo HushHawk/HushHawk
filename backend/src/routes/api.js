@@ -544,24 +544,34 @@ apiRouter.post('/properties/:propertyId/documents/upload-url', async (req, res) 
     }
 });
 
-// S3 Presigned Download/View URL for Property Documents
-apiRouter.get('/properties/:propertyId/documents/:docId/download-url', async (req, res) => {
+// S3 Presigned Download/View URL for Property Documents (supports ?disposition=inline or ?disposition=attachment)
+apiRouter.get(['/properties/:propertyId/documents/:docId/download-url', '/properties/:propertyId/documents/:docId/preview-url'], async (req, res) => {
     const { propertyId, docId } = req.params;
+    const disposition = req.query.disposition || (req.path.includes('preview-url') ? 'inline' : 'inline');
     try {
         const { rows } = await pool.query(
-            `SELECT id, property_id, title, filename, object_key, storage_provider FROM core.property_documents WHERE id = $1 AND property_id = $2`,
+            `SELECT id, property_id, title, category, filename, object_key, storage_provider, data_url, mime_type, file_size_bytes FROM core.property_documents WHERE id = $1 AND property_id = $2`,
             [docId, propertyId]
         );
         if (rows.length === 0) return res.status(404).json({ error: 'Document not found' });
 
         const doc = rows[0];
         const objectKey = doc.object_key || `properties/${propertyId}/documents/${doc.filename || 'document.pdf'}`;
-        const presigned = await StorageService.getPresignedDownloadUrl({ objectKey });
+        const presigned = await StorageService.getPresignedDownloadUrl({
+            objectKey,
+            filename: doc.filename,
+            disposition,
+            contentType: doc.mime_type || (doc.filename && doc.filename.endsWith('.pdf') ? 'application/pdf' : undefined)
+        });
         res.json({
             ...presigned,
             doc_id: doc.id,
             title: doc.title,
-            filename: doc.filename
+            filename: doc.filename,
+            category: doc.category,
+            file_size_bytes: doc.file_size_bytes,
+            data_url: doc.data_url,
+            mime_type: doc.mime_type
         });
     } catch (err) {
         console.error('[Document Download URL Error]', err.message);
@@ -1034,9 +1044,10 @@ apiRouter.post('/vault/files/:id/assign-property', async (req, res) => {
     }
 });
 
-// 6. Get Vault Presigned Download URL
-apiRouter.get('/vault/files/:id/download-url', async (req, res) => {
+// 6. Get Vault Presigned Download/Preview URL
+apiRouter.get(['/vault/files/:id/download-url', '/vault/files/:id/preview-url'], async (req, res) => {
     const { id } = req.params;
+    const disposition = req.query.disposition || 'inline';
     try {
         const { rows } = await pool.query('SELECT * FROM core.vault_files WHERE id = $1', [id]);
         if (rows.length === 0) return res.status(404).json({ error: 'Vault file not found' });
@@ -1045,6 +1056,8 @@ apiRouter.get('/vault/files/:id/download-url', async (req, res) => {
         const presigned = await StorageService.getPresignedDownloadUrl({
             objectKey: file.object_key,
             filename: file.original_filename || file.filename,
+            disposition,
+            contentType: file.mime_type,
             expiresInSeconds: 3600
         });
 
@@ -1052,6 +1065,10 @@ apiRouter.get('/vault/files/:id/download-url', async (req, res) => {
             ...presigned,
             file_id: file.id,
             filename: file.original_filename || file.filename,
+            original_filename: file.original_filename,
+            category: file.category,
+            file_size_bytes: file.file_size_bytes,
+            mime_type: file.mime_type,
             data_url: file.data_url
         });
     } catch (err) {

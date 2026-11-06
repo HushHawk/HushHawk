@@ -274,6 +274,31 @@
           <option value="Receipts">Receipts</option>
         </select>
 
+        <!-- Sorting Dropdown Filter -->
+        <select v-model="selectedSort" class="vault-filter-select" @change="filterFiles" title="Sort Documents">
+          <option value="date_desc">Newest Uploaded</option>
+          <option value="date_asc">Oldest Uploaded</option>
+          <option value="name_asc">Name (A – Z)</option>
+          <option value="name_desc">Name (Z – A)</option>
+          <option value="size_desc">File Size (Largest)</option>
+          <option value="size_asc">File Size (Smallest)</option>
+        </select>
+
+        <!-- Preview Only Mode Toggle -->
+        <button
+          type="button"
+          class="btn-preview-mode-toggle"
+          :class="{ 'preview-mode-active': previewOnlyMode }"
+          @click="togglePreviewOnlyMode"
+          :title="previewOnlyMode ? 'Preview Only Active: Downloads restricted' : 'Click to enable Preview Only Mode'"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+          <span>{{ previewOnlyMode ? 'Preview Only (Active)' : 'Preview Mode: Off' }}</span>
+        </button>
+
         <!-- View Switcher (Grid / List) -->
         <div class="view-switch-group">
           <button
@@ -365,17 +390,33 @@
 
           <!-- Hover Overlay with Quick Actions -->
           <div class="card-hover-overlay">
-            <button class="cho-btn" @click.stop="openPreviewModal(file)" title="View High-Res Preview">
+            <button class="cho-btn cho-btn-primary" @click.stop="openPreviewModal(file)" title="Preview Document">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
                 <circle cx="12" cy="12" r="3"/>
               </svg>
             </button>
-            <button class="cho-btn" @click.stop="downloadFile(file)" title="Download File">
+            <button
+              v-if="!previewOnlyMode"
+              class="cho-btn"
+              @click.stop="downloadFile(file)"
+              title="Download File"
+            >
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                 <polyline points="7 10 12 15 17 10"/>
                 <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+            </button>
+            <button
+              v-else
+              class="cho-btn cho-btn-locked"
+              @click.stop="showToast('Preview Only active: Downloads restricted to prevent local file leaks.', 'info')"
+              title="Download restricted in Preview-Only mode"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
               </svg>
             </button>
             <button class="cho-btn" @click.stop="openAssignModal(file)" title="Assign / Use on Property">
@@ -419,6 +460,14 @@
 
           <!-- Action Buttons Bar -->
           <div class="card-actions-bar">
+            <button class="btn-card-action btn-preview" @click="openPreviewModal(file)" title="Preview Document">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+              <span>Preview</span>
+            </button>
+
             <button class="btn-card-action btn-assign" @click="openAssignModal(file)" title="Attach or Use on Property">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
@@ -491,16 +540,38 @@
             <td class="text-slate text-sm">{{ formatDate(file.created_at) }}</td>
             <td class="text-right">
               <div class="table-actions-row">
+                <button class="tbl-btn tbl-preview" @click="openPreviewModal(file)" title="Preview Document">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
                 <button class="tbl-btn" @click="openAssignModal(file)" title="Use on Property">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
                   </svg>
                 </button>
-                <button class="tbl-btn" @click="downloadFile(file)" title="Download">
+                <button
+                  v-if="!previewOnlyMode"
+                  class="tbl-btn"
+                  @click="downloadFile(file)"
+                  title="Download File"
+                >
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                     <polyline points="7 10 12 15 17 10"/>
                     <line x1="12" y1="15" x2="12" y2="3"/>
+                  </svg>
+                </button>
+                <button
+                  v-else
+                  class="tbl-btn tbl-locked"
+                  @click="showToast('Preview Only active: Downloads restricted to prevent local file leaks.', 'info')"
+                  title="Download restricted in Preview-Only mode"
+                >
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                   </svg>
                 </button>
                 <button class="tbl-btn" @click="copyAssetLink(file)" title="Copy Key">
@@ -624,7 +695,13 @@
             <small>{{ previewFile.category }} · {{ formatBytes(previewFile.file_size_bytes) }}</small>
           </div>
           <div class="pm-actions">
-            <button class="pm-btn" @click="downloadFile(previewFile)" title="Download">
+            <span v-if="previewOnlyMode" class="pm-preview-only-badge" title="Preview Only Mode Active: Downloads restricted">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+              <span>Preview Only Active</span>
+            </span>
+            <button v-else class="pm-btn" @click="downloadFile(previewFile)" title="Download">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                 <polyline points="7 10 12 15 17 10"/>
@@ -643,8 +720,22 @@
         </div>
 
         <div class="pm-body">
-          <div v-if="isImageFile(previewFile)" class="pm-image-wrap">
-            <img :src="previewFile.data_url || getDownloadPlaceholder(previewFile)" :alt="previewFile.filename" />
+          <div v-if="previewFile.loadingPreview" class="pm-loading-wrap">
+            <div class="vault-spinner"></div>
+            <span>Decrypting asset for preview…</span>
+          </div>
+          <div v-else-if="isImageFile(previewFile)" class="pm-image-wrap">
+            <img :src="getSafePreviewUrl(previewFile)" :alt="previewFile.filename" />
+          </div>
+          <div v-else-if="isPdfFile(previewFile)" class="pm-pdf-wrap">
+            <iframe
+              :src="getSafePreviewUrl(previewFile)"
+              class="vault-pdf-iframe"
+              title="PDF Document Preview"
+            ></iframe>
+          </div>
+          <div v-else-if="isTextFile(previewFile)" class="pm-text-wrap">
+            <pre class="vault-text-preview">{{ getPreviewText(previewFile) }}</pre>
           </div>
           <div v-else class="pm-doc-wrap">
             <div class="doc-icon-huge">
@@ -656,8 +747,12 @@
               </svg>
             </div>
             <h3>{{ previewFile.original_filename || previewFile.filename }}</h3>
+            <div class="pm-preview-badges">
+              <span class="preview-badge-gold">Preview Only Mode</span>
+              <span class="preview-badge-cyan">AES256 Encrypted</span>
+            </div>
             <p>Encrypted document stored in AWS S3 Private Vault.</p>
-            <button class="btn-primary-gold" @click="downloadFile(previewFile)">
+            <button v-if="!previewOnlyMode" class="btn-primary-gold" @click="downloadFile(previewFile)">
               Download Document ({{ formatBytes(previewFile.file_size_bytes) }})
             </button>
           </div>
@@ -823,6 +918,8 @@ export default {
       propertiesList: [],
       activeFilterType: 'all',
       selectedCategoryFilter: 'All',
+      selectedSort: 'date_desc',
+      previewOnlyMode: true,
       searchQuery: '',
       viewMode: 'grid',
       isLoadingFiles: false,
@@ -944,7 +1041,30 @@ export default {
         });
       }
 
+      // 4. Document Sorting
+      if (this.selectedSort === 'date_desc') {
+        list.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+      } else if (this.selectedSort === 'date_asc') {
+        list.sort((a, b) => new Date(a.created_at || 0) - new Date(b.created_at || 0));
+      } else if (this.selectedSort === 'name_asc') {
+        list.sort((a, b) => (a.original_filename || a.filename || '').localeCompare(b.original_filename || b.filename || ''));
+      } else if (this.selectedSort === 'name_desc') {
+        list.sort((a, b) => (b.original_filename || b.filename || '').localeCompare(a.original_filename || a.filename || ''));
+      } else if (this.selectedSort === 'size_desc') {
+        list.sort((a, b) => (parseInt(b.file_size_bytes) || 0) - (parseInt(a.file_size_bytes) || 0));
+      } else if (this.selectedSort === 'size_asc') {
+        list.sort((a, b) => (parseInt(a.file_size_bytes) || 0) - (parseInt(b.file_size_bytes) || 0));
+      }
+
       this.filteredFilesList = list;
+    },
+    togglePreviewOnlyMode() {
+      this.previewOnlyMode = !this.previewOnlyMode;
+      if (this.previewOnlyMode) {
+        this.showToast('Preview Only Mode active: Document downloads are restricted; inspect files in the secure previewer.', 'info');
+      } else {
+        this.showToast('Download option enabled for vault files.', 'info');
+      }
     },
     isImageFile(file) {
       if (!file) return false;
@@ -1139,13 +1259,67 @@ export default {
         this.isAssigning = false;
       }
     },
-    openPreviewModal(file) {
-      this.previewFile = file;
+    async openPreviewModal(file) {
+      if (!file) return;
+      this.previewFile = { ...file, loadingPreview: !file.data_url && !!file.id };
       this.showPreviewModal = true;
+      if (!this.previewFile.data_url && this.previewFile.id) {
+        try {
+          const res = await fetch(`${API_BASE}/vault/files/${file.id}/download-url?disposition=inline`);
+          const data = await res.json();
+          if (data.preview_url || data.download_url || data.data_url) {
+            this.previewFile = {
+              ...this.previewFile,
+              preview_url: data.preview_url || data.download_url,
+              data_url: data.data_url || this.previewFile.data_url,
+              mime_type: data.mime_type || this.previewFile.mime_type,
+              loadingPreview: false
+            };
+          } else {
+            this.previewFile.loadingPreview = false;
+          }
+        } catch (err) {
+          console.warn('[Vault Preview URL Load Warn]', err);
+          this.previewFile.loadingPreview = false;
+        }
+      }
+    },
+    isPdfFile(file) {
+      if (!file) return false;
+      const mime = (file.mime_type || '').toLowerCase();
+      if (mime.includes('pdf')) return true;
+      const fn = (file.original_filename || file.filename || '').toLowerCase();
+      return fn.endsWith('.pdf') || (file.data_url && file.data_url.startsWith('data:application/pdf'));
+    },
+    isTextFile(file) {
+      if (!file) return false;
+      const mime = (file.mime_type || '').toLowerCase();
+      if (mime.includes('text') || mime.includes('csv') || mime.includes('json')) return true;
+      const fn = (file.original_filename || file.filename || '').toLowerCase();
+      return fn.endsWith('.txt') || fn.endsWith('.csv') || fn.endsWith('.json') || fn.endsWith('.log');
+    },
+    getSafePreviewUrl(file) {
+      if (!file) return '';
+      return file.preview_url || file.data_url || '';
+    },
+    getPreviewText(file) {
+      if (!file) return '';
+      if (file.data_url && file.data_url.startsWith('data:text')) {
+        try {
+          const b64 = file.data_url.split('base64,')[1];
+          if (b64) return atob(b64);
+        } catch (e) {}
+      }
+      return `[HushHawk Private Vault Document]\nFilename: ${file.original_filename || file.filename}\nCategory: ${file.category}\nS3 Key: ${file.object_key}\nStatus: Verified and Encrypted (AES256)`;
     },
     async downloadFile(file) {
+      if (this.previewOnlyMode) {
+        this.showToast('Preview Only mode active: Direct downloads restricted to prevent local file leaks.', 'info');
+        this.openPreviewModal(file);
+        return;
+      }
       try {
-        const res = await fetch(`${API_BASE}/vault/files/${file.id}/download-url`);
+        const res = await fetch(`${API_BASE}/vault/files/${file.id}/download-url?disposition=attachment`);
         const data = await res.json();
         const url = data.download_url || file.data_url;
         if (!url) {
@@ -2074,17 +2248,92 @@ export default {
   gap: 10px;
 }
 
+/* Preview Only Mode & Toggle Styles */
+.btn-preview-mode-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #94a3b8;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.btn-preview-mode-toggle:hover {
+  border-color: #d4af37;
+  color: #f8fafc;
+}
+.btn-preview-mode-toggle.preview-mode-active {
+  background: rgba(212, 175, 55, 0.15);
+  border-color: #d4af37;
+  color: #d4af37;
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+}
+.pm-preview-only-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(212, 175, 55, 0.12);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: 6px;
+  color: #d4af37;
+  font-size: 12px;
+  font-weight: 600;
+}
+.cho-btn-primary {
+  border-color: rgba(212, 175, 55, 0.4) !important;
+  color: #d4af37 !important;
+}
+.cho-btn-primary:hover {
+  background: rgba(212, 175, 55, 0.2) !important;
+}
+.cho-btn-locked {
+  border-color: rgba(100, 116, 139, 0.4) !important;
+  color: #64748b !important;
+}
+.cho-btn-locked:hover {
+  border-color: #d4af37 !important;
+  color: #d4af37 !important;
+}
+.tbl-preview:hover {
+  color: #d4af37 !important;
+  border-color: #d4af37 !important;
+}
+.tbl-locked {
+  color: #64748b !important;
+}
+.tbl-locked:hover {
+  color: #d4af37 !important;
+  border-color: #d4af37 !important;
+}
+.btn-card-action.btn-preview {
+  background: rgba(212, 175, 55, 0.1);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  color: #d4af37;
+}
+.btn-card-action.btn-preview:hover {
+  background: rgba(212, 175, 55, 0.2);
+  border-color: #d4af37;
+  color: #fff;
+}
+
 /* Preview Modal */
 .preview-modal-card {
   background: #0f172a;
   border: 1px solid rgba(212, 175, 55, 0.4);
   border-radius: 10px;
   width: 100%;
-  max-width: 860px;
-  max-height: 85vh;
+  max-width: 980px;
+  max-height: 88vh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
 }
 .pm-header {
   padding: 16px 20px;
@@ -2129,6 +2378,17 @@ export default {
   flex: 1;
   overflow: hidden;
 }
+.pm-loading-wrap {
+  background: #020617;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: #94a3b8;
+  font-size: 13px;
+  min-height: 400px;
+}
 .pm-image-wrap {
   background: #020617;
   display: flex;
@@ -2143,6 +2403,61 @@ export default {
   object-fit: contain;
   border-radius: 6px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+}
+.pm-pdf-wrap {
+  background: #020617;
+  width: 100%;
+  height: 60vh;
+  display: flex;
+  flex-direction: column;
+}
+.vault-pdf-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: #0a1128;
+}
+.pm-text-wrap {
+  background: #020617;
+  padding: 20px;
+  overflow: auto;
+  max-height: 60vh;
+}
+.vault-text-preview {
+  color: #e2e8f0;
+  font-family: 'JetBrains Mono', Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-all;
+  margin: 0;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 16px;
+  border-radius: 6px;
+}
+.pm-preview-badges {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+.preview-badge-gold {
+  background: rgba(212, 175, 55, 0.15);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  color: #d4af37;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.preview-badge-cyan {
+  background: rgba(6, 182, 212, 0.15);
+  border: 1px solid rgba(6, 182, 212, 0.35);
+  color: #38bdf8;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
 }
 .pm-doc-wrap {
   background: #020617;

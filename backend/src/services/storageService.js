@@ -134,8 +134,9 @@ export class StorageService {
     /**
      * Generate a presigned download/view URL (GET)
      * Allows authenticated staff to securely view private files without making the S3 bucket public
+     * Supports disposition: 'inline' for in-app browser preview or 'attachment' for forced download
      */
-    static async getPresignedDownloadUrl({ objectKey, filename, expiresInSeconds = 3600 }) {
+    static async getPresignedDownloadUrl({ objectKey, filename, disposition = 'inline', contentType, expiresInSeconds = 3600 }) {
         if (!objectKey) throw new Error('Object key is required to generate download URL');
 
         if (HAS_AWS_CREDS) {
@@ -145,7 +146,11 @@ export class StorageService {
                     Key: objectKey
                 };
                 if (filename) {
-                    getParams.ResponseContentDisposition = `attachment; filename="${encodeURIComponent(filename)}"`;
+                    const dispType = disposition === 'attachment' ? 'attachment' : 'inline';
+                    getParams.ResponseContentDisposition = `${dispType}; filename="${encodeURIComponent(filename)}"`;
+                }
+                if (contentType) {
+                    getParams.ResponseContentType = contentType;
                 }
                 const command = new GetObjectCommand(getParams);
                 const downloadUrl = await getSignedUrl(s3Client, command, { expiresIn: expiresInSeconds });
@@ -153,6 +158,8 @@ export class StorageService {
                     success: true,
                     object_key: objectKey,
                     download_url: downloadUrl,
+                    preview_url: downloadUrl,
+                    disposition,
                     expires_in_seconds: expiresInSeconds
                 };
             } catch (err) {
@@ -160,10 +167,13 @@ export class StorageService {
             }
         }
 
+        const fallbackUrl = `https://${AWS_S3_BUCKET}.s3.${AWS_REGION}.amazonaws.com/${objectKey}`;
         return {
             success: true,
             object_key: objectKey,
-            download_url: `https://${AWS_S3_BUCKET}.s3.${AWS_REGION}.amazonaws.com/${objectKey}`,
+            download_url: fallbackUrl,
+            preview_url: fallbackUrl,
+            disposition,
             expires_in_seconds: expiresInSeconds,
             mode: 'DEVELOPMENT_PRESET'
         };

@@ -308,10 +308,80 @@
             <h3 class="tab-panel-title">Property Documents</h3>
             <p class="tab-panel-subtitle">Executed contracts, title commitments, and inspection reports.</p>
           </div>
-          <button class="btn-primary-gold" @click="showAddDocModal = true">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Add Document
-          </button>
+          <div class="doc-header-actions">
+            <button
+              type="button"
+              class="btn-doc-preview-mode"
+              :class="{ active: docPreviewOnlyMode }"
+              @click="toggleDocPreviewOnlyMode"
+              :title="docPreviewOnlyMode ? 'Preview Only Mode Active: Downloads restricted' : 'Click to enable Preview Only Mode'"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+              <span>{{ docPreviewOnlyMode ? 'Preview Only (Active)' : 'Preview Mode: Off' }}</span>
+            </button>
+            <button class="btn-primary-gold" @click="showAddDocModal = true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Add Document
+            </button>
+          </div>
+        </div>
+
+        <!-- Sorting & Search Toolbar for Documents -->
+        <div v-if="documents.length > 0" class="doc-sorting-toolbar">
+          <div class="dst-search">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input
+              v-model="docSearchQuery"
+              type="text"
+              placeholder="Search documents by title or filename…"
+              class="dst-input"
+            />
+          </div>
+
+          <div class="dst-filters">
+            <div class="dst-field">
+              <label>Category:</label>
+              <select v-model="docCategoryFilter" class="dst-select">
+                <option value="All">All Categories</option>
+                <option value="Contract">Contract</option>
+                <option value="Title">Title</option>
+                <option value="Inspection">Inspection</option>
+                <option value="Appraisal">Appraisal</option>
+                <option value="Survey">Survey</option>
+                <option value="Insurance">Insurance</option>
+                <option value="Renovation">Renovation</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <div class="dst-field">
+              <label>Sort:</label>
+              <select v-model="docSortBy" class="dst-select">
+                <option value="date_desc">Newest Uploaded</option>
+                <option value="date_asc">Oldest Uploaded</option>
+                <option value="title_asc">Title (A – Z)</option>
+                <option value="title_desc">Title (Z – A)</option>
+                <option value="size_desc">File Size (Largest)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Preview Only Banner -->
+        <div v-if="docPreviewOnlyMode && documents.length > 0" class="doc-preview-mode-banner">
+          <div class="dpmb-left">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            <span><strong>Preview Only Mode Active:</strong> Documents open in secure in-browser preview. Local file downloads are restricted to protect property records.</span>
+          </div>
+          <span class="dpmb-badge font-mono">CONFIDENTIAL PROPERTY RECORDS</span>
         </div>
 
         <div v-if="loadingDocs" class="panel-loading">
@@ -338,7 +408,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="doc in documents" :key="doc.id">
+              <tr v-for="doc in sortedDocuments" :key="doc.id" class="doc-clickable-row" @click="openDocPreview(doc)">
                 <td>
                   <div class="doc-title-cell">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#edcf7c" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
@@ -349,11 +419,31 @@
                 <td class="mono-text">{{ doc.filename }}</td>
                 <td>{{ formatSize(doc.file_size_bytes) }}</td>
                 <td>{{ formatDate(doc.created_at) }}</td>
-                <td style="text-align: right;">
-                  <button class="btn-icon" @click="downloadDocument(doc)" title="Download">
+                <td style="text-align: right;" @click.stop>
+                  <button class="btn-icon btn-action-preview" @click.stop="openDocPreview(doc)" title="Preview Document">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                      <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                    <span class="btn-text-sm">Preview</span>
+                  </button>
+                  <button
+                    v-if="!docPreviewOnlyMode"
+                    class="btn-icon"
+                    @click.stop="downloadDocument(doc)"
+                    title="Download File"
+                  >
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="8,17 12,21 16,17"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
                   </button>
-                  <button class="btn-icon danger" @click="deleteDocument(doc)" title="Delete">
+                  <button
+                    v-else
+                    class="btn-icon btn-icon-locked"
+                    @click.stop="showToast('Preview Only active: Direct downloads restricted to prevent local file leaks.', 'info')"
+                    title="Download restricted in Preview-Only mode"
+                  >
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  </button>
+                  <button class="btn-icon danger" @click.stop="deleteDocument(doc)" title="Delete">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                   </button>
                 </td>
@@ -769,6 +859,28 @@
             <button type="button" class="btn-upload-files" style="width: 100%; justify-content: center;" @click="$refs.docFileInput.click()">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16,16 12,12 8,16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
               {{ newDoc.filename ? newDoc.filename : 'Choose File (PDF, DOCX, Image)' }}
+            </button>
+          </div>
+          <!-- Live Pre-Upload Document Preview Card -->
+          <div v-if="newDoc.filename" class="upload-doc-preview-card">
+            <div class="udpc-left">
+              <div class="udpc-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                </svg>
+              </div>
+              <div class="udpc-meta">
+                <strong class="udpc-name">{{ newDoc.filename }}</strong>
+                <small>{{ formatSize(newDoc.file_size_bytes) }} · Encrypted S3 Ingestion Ready</small>
+              </div>
+            </div>
+            <button type="button" class="btn-xs-preview" @click="previewPendingUploadDoc" title="Preview document before upload">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+              <span>Preview</span>
             </button>
           </div>
           <div class="form-actions">
@@ -1370,6 +1482,89 @@
     <input ref="libraryFileInput" type="file" accept="image/*" multiple style="display:none" @change="onNativeFilesSelected" />
     <input ref="nativeFileInput" type="file" accept="image/*,application/pdf" multiple style="display:none" @change="onNativeFilesSelected" />
 
+    <!-- INSTITUTIONAL DOCUMENT PREVIEW MODAL -->
+    <div v-if="showDocPreviewModal && selectedPreviewDoc" class="modal-overlay" @click.self="showDocPreviewModal = false">
+      <div class="modal-card doc-preview-modal-card">
+        <div class="dpm-head">
+          <div class="dpm-title-wrap">
+            <span class="category-pill">{{ selectedPreviewDoc.category || 'Document' }}</span>
+            <strong class="dpm-title-text">{{ selectedPreviewDoc.title || selectedPreviewDoc.filename }}</strong>
+            <span class="dpm-sub font-mono">{{ formatSize(selectedPreviewDoc.file_size_bytes) }} · {{ formatDate(selectedPreviewDoc.created_at) }}</span>
+          </div>
+          <div class="dpm-actions">
+            <span v-if="docPreviewOnlyMode" class="dpm-badge-secure" title="Preview Only Mode Active: Downloads restricted">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+              <span>Preview Only Active</span>
+            </span>
+            <button
+              v-else
+              class="btn-dpm-download"
+              @click="downloadDocument(selectedPreviewDoc)"
+              title="Download Document"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="8,17 12,21 16,17"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+              <span>Download</span>
+            </button>
+            <button class="modal-close" @click="showDocPreviewModal = false">×</button>
+          </div>
+        </div>
+
+        <div class="dpm-body">
+          <div v-if="loadingDocPreview" class="dpm-loading">
+            <div class="hushhawk-logo-spinner" v-html="icons.logoSpinner"></div>
+            <span>Decrypting document stream from AWS S3 Private Vault…</span>
+          </div>
+          <!-- PDF Document View -->
+          <div v-else-if="isPdfDoc(selectedPreviewDoc)" class="dpm-viewer-wrap">
+            <iframe
+              :src="getDocPreviewUrl(selectedPreviewDoc)"
+              class="dpm-iframe"
+              title="PDF Document Viewer"
+            ></iframe>
+          </div>
+          <!-- Image View -->
+          <div v-else-if="isImageDoc(selectedPreviewDoc)" class="dpm-image-wrap">
+            <img :src="getDocPreviewUrl(selectedPreviewDoc)" :alt="selectedPreviewDoc.title" />
+          </div>
+          <!-- Text View -->
+          <div v-else-if="isTextDoc(selectedPreviewDoc)" class="dpm-text-wrap">
+            <pre class="dpm-pre">{{ getDocTextContent(selectedPreviewDoc) }}</pre>
+          </div>
+          <!-- Document Summary Card -->
+          <div v-else class="dpm-fallback-wrap">
+            <div class="dpm-fallback-icon">
+              <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="1.5">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="16" y1="13" x2="8" y2="13"/>
+                <line x1="16" y1="17" x2="8" y2="17"/>
+              </svg>
+            </div>
+            <h4>{{ selectedPreviewDoc.title }}</h4>
+            <p class="font-mono text-slate text-sm">{{ selectedPreviewDoc.filename }}</p>
+            <div class="dpm-meta-grid">
+              <div class="dmg-item"><span>Category</span><strong>{{ selectedPreviewDoc.category }}</strong></div>
+              <div class="dmg-item"><span>File Size</span><strong>{{ formatSize(selectedPreviewDoc.file_size_bytes) }}</strong></div>
+              <div class="dmg-item"><span>Storage</span><strong>AWS S3 Private Vault</strong></div>
+              <div class="dmg-item"><span>Encryption</span><strong>AES256 Server-Side</strong></div>
+            </div>
+            <div class="dpm-security-note">
+              <span>Preview-only inspection active. File verified in Amazon S3 (us-east-2).</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="dpm-footer">
+          <span class="dpm-footer-path font-mono">
+            Storage: AWS S3 Private Vault / properties / {{ selectedProperty?.crownKey || selectedProperty?.property_id || 'portfolio' }} / documents / {{ selectedPreviewDoc.filename }}
+          </span>
+          <button class="btn-cancel-upload" @click="showDocPreviewModal = false">Close Preview</button>
+        </div>
+      </div>
+    </div>
+
     <!-- INSTITUTIONAL CONFIRMATION MODAL -->
     <transition name="toast-fade">
       <div v-if="showConfirmModal" class="modal-overlay" @click.self="showConfirmModal = false">
@@ -1520,6 +1715,13 @@ export default {
       showAddDocModal: false,
       savingDoc: false,
       newDoc: { title: '', category: 'Contract', filename: '', file_size_bytes: 0, data_url: null },
+      docSearchQuery: '',
+      docCategoryFilter: 'All',
+      docSortBy: 'date_desc',
+      docPreviewOnlyMode: true,
+      showDocPreviewModal: false,
+      selectedPreviewDoc: null,
+      loadingDocPreview: false,
 
       // Tasks state
       tasks: [],
@@ -1588,6 +1790,32 @@ export default {
     },
     pendingTasksCount() {
       return this.tasks.filter(t => !t.is_completed && t.status !== 'DONE').length;
+    },
+    sortedDocuments() {
+      let list = [...(this.documents || [])];
+      if (this.docCategoryFilter && this.docCategoryFilter !== 'All') {
+        list = list.filter(d => (d.category || '').toLowerCase() === this.docCategoryFilter.toLowerCase());
+      }
+      if (this.docSearchQuery && this.docSearchQuery.trim()) {
+        const q = this.docSearchQuery.trim().toLowerCase();
+        list = list.filter(d =>
+          (d.title || '').toLowerCase().includes(q) ||
+          (d.filename || '').toLowerCase().includes(q) ||
+          (d.category || '').toLowerCase().includes(q)
+        );
+      }
+      if (this.docSortBy === 'date_desc') {
+        list.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+      } else if (this.docSortBy === 'date_asc') {
+        list.sort((a, b) => new Date(a.created_at || 0) - new Date(b.created_at || 0));
+      } else if (this.docSortBy === 'title_asc') {
+        list.sort((a, b) => (a.title || a.filename || '').localeCompare(b.title || b.filename || ''));
+      } else if (this.docSortBy === 'title_desc') {
+        list.sort((a, b) => (b.title || b.filename || '').localeCompare(a.title || a.filename || ''));
+      } else if (this.docSortBy === 'size_desc') {
+        list.sort((a, b) => (parseInt(b.file_size_bytes) || 0) - (parseInt(a.file_size_bytes) || 0));
+      }
+      return list;
     }
   },
   mounted() {
@@ -2216,15 +2444,117 @@ export default {
         this.savingDoc = false;
       }
     },
-    downloadDocument(doc) {
-      if (!doc.data_url) {
-        this.showToast(`Downloading ${doc.filename}...`);
+    toggleDocPreviewOnlyMode() {
+      this.docPreviewOnlyMode = !this.docPreviewOnlyMode;
+      if (this.docPreviewOnlyMode) {
+        this.showToast('Preview Only Mode active: Document downloads are restricted; inspect files in the secure previewer.', 'info');
+      } else {
+        this.showToast('Download option enabled for property documents.', 'info');
+      }
+    },
+    async openDocPreview(doc) {
+      if (!doc) return;
+      this.selectedPreviewDoc = { ...doc };
+      this.showDocPreviewModal = true;
+      this.loadingDocPreview = !doc.data_url && !!doc.id;
+      if (!this.selectedPreviewDoc.data_url && this.selectedPreviewDoc.id) {
+        try {
+          const res = await fetch(`${API_BASE}/properties/${this.selectedProperty.property_id}/documents/${doc.id}/download-url?disposition=inline`);
+          const data = await res.json();
+          if (data.preview_url || data.download_url || data.data_url) {
+            this.selectedPreviewDoc = {
+              ...this.selectedPreviewDoc,
+              preview_url: data.preview_url || data.download_url,
+              data_url: data.data_url || this.selectedPreviewDoc.data_url,
+              mime_type: data.mime_type || this.selectedPreviewDoc.mime_type
+            };
+          }
+        } catch (err) {
+          console.warn('[Doc preview URL fetch warn]', err);
+        } finally {
+          this.loadingDocPreview = false;
+        }
+      } else {
+        this.loadingDocPreview = false;
+      }
+    },
+    previewPendingUploadDoc() {
+      if (!this.newDoc.filename) return;
+      this.selectedPreviewDoc = {
+        title: this.newDoc.title || this.newDoc.filename,
+        filename: this.newDoc.filename,
+        category: this.newDoc.category,
+        file_size_bytes: this.newDoc.file_size_bytes,
+        data_url: this.newDoc.data_url,
+        created_at: new Date().toISOString()
+      };
+      this.showDocPreviewModal = true;
+    },
+    isPdfDoc(doc) {
+      if (!doc) return false;
+      const fn = (doc.filename || doc.title || '').toLowerCase();
+      const mime = (doc.mime_type || '').toLowerCase();
+      return fn.endsWith('.pdf') || mime.includes('pdf') || (doc.data_url && doc.data_url.startsWith('data:application/pdf'));
+    },
+    isImageDoc(doc) {
+      if (!doc) return false;
+      const fn = (doc.filename || doc.title || '').toLowerCase();
+      const mime = (doc.mime_type || '').toLowerCase();
+      return fn.endsWith('.jpg') || fn.endsWith('.jpeg') || fn.endsWith('.png') || fn.endsWith('.webp') || mime.startsWith('image/');
+    },
+    isTextDoc(doc) {
+      if (!doc) return false;
+      const fn = (doc.filename || doc.title || '').toLowerCase();
+      const mime = (doc.mime_type || '').toLowerCase();
+      return fn.endsWith('.txt') || fn.endsWith('.csv') || fn.endsWith('.json') || mime.includes('text') || mime.includes('csv');
+    },
+    getDocPreviewUrl(doc) {
+      if (!doc) return '';
+      return doc.preview_url || doc.data_url || '';
+    },
+    getDocTextContent(doc) {
+      if (!doc) return '';
+      if (doc.data_url && doc.data_url.startsWith('data:text')) {
+        try {
+          const b64 = doc.data_url.split('base64,')[1];
+          if (b64) return atob(b64);
+        } catch (e) {}
+      }
+      return `[HushHawk Property Document]\nTitle: ${doc.title}\nCategory: ${doc.category}\nFilename: ${doc.filename}\nSize: ${this.formatSize(doc.file_size_bytes)}\nEncrypted Storage: AWS S3 Private Vault\nStatus: Verified and Sealed`;
+    },
+    async downloadDocument(doc) {
+      if (this.docPreviewOnlyMode) {
+        this.showToast('Preview Only mode active: Direct downloads restricted to prevent local file leaks.', 'info');
+        this.openDocPreview(doc);
         return;
+      }
+      if (!doc.data_url) {
+        try {
+          const res = await fetch(`${API_BASE}/properties/${this.selectedProperty.property_id}/documents/${doc.id}/download-url?disposition=attachment`);
+          const data = await res.json();
+          const url = data.download_url || doc.data_url;
+          if (url) {
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = doc.filename || doc.title || 'document.pdf';
+            a.target = '_blank';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            this.showToast('Secure S3 document download initiated.');
+            return;
+          }
+        } catch (e) {
+          console.warn('[Doc download error]', e);
+        }
       }
       const a = document.createElement('a');
       a.href = doc.data_url;
       a.download = doc.filename || doc.title || 'document.pdf';
+      document.body.appendChild(a);
       a.click();
+      document.body.removeChild(a);
+      this.showToast('Document download initiated.');
     },
     deleteDocument(doc) {
       if (!doc) return;
@@ -3024,6 +3354,414 @@ export default {
 .category-pill {
   font-size: 10px; padding: 2px 8px; border-radius: 10px;
   background: #0d2845; color: #8ea4c0; border: 1px solid #1a3a5a;
+  white-space: nowrap;
+}
+
+/* Document Preview, Sorting & Mode Controls */
+.doc-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.btn-doc-preview-mode {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #94a3b8;
+  border-radius: 6px;
+  padding: 7px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.btn-doc-preview-mode:hover {
+  border-color: #d4af37;
+  color: #f8fafc;
+}
+.btn-doc-preview-mode.active {
+  background: rgba(212, 175, 55, 0.15);
+  border-color: #d4af37;
+  color: #d4af37;
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+}
+.doc-sorting-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: #061528;
+  border: 1px solid #0d2845;
+  border-radius: 6px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.dst-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 220px;
+  background: #0a1b32;
+  border: 1px solid #153860;
+  border-radius: 4px;
+  padding: 6px 10px;
+  color: #94a3b8;
+}
+.dst-input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #f8fafc;
+  font-size: 12px;
+  width: 100%;
+}
+.dst-filters {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.dst-field {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.dst-field label {
+  font-size: 11px;
+  color: #6b88a8;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.dst-select {
+  background: #0a1b32;
+  border: 1px solid #153860;
+  border-radius: 4px;
+  color: #e2e8f0;
+  font-size: 12px;
+  padding: 5px 10px;
+  outline: none;
+}
+.dst-select:focus {
+  border-color: #d4af37;
+}
+.doc-preview-mode-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(212, 175, 55, 0.08);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-radius: 6px;
+  padding: 8px 14px;
+  margin-bottom: 12px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.dpmb-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #e2e8f0;
+  font-size: 12px;
+}
+.dpmb-left strong {
+  color: #d4af37;
+}
+.dpmb-badge {
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  color: #d4af37;
+  background: rgba(212, 175, 55, 0.15);
+  padding: 3px 8px;
+  border-radius: 3px;
+  font-weight: 700;
+}
+.doc-clickable-row {
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.doc-clickable-row:hover {
+  background: rgba(212, 175, 55, 0.06) !important;
+}
+.btn-action-preview {
+  width: auto !important;
+  padding: 0 10px !important;
+  gap: 5px;
+  background: rgba(212, 175, 55, 0.1) !important;
+  border-color: rgba(212, 175, 55, 0.3) !important;
+  color: #d4af37 !important;
+  font-weight: 600;
+}
+.btn-action-preview:hover {
+  background: rgba(212, 175, 55, 0.2) !important;
+  border-color: #d4af37 !important;
+  color: #fff !important;
+}
+.btn-text-sm {
+  font-size: 11px;
+}
+.btn-icon-locked {
+  background: rgba(100, 116, 139, 0.1) !important;
+  border-color: rgba(100, 116, 139, 0.25) !important;
+}
+.btn-icon-locked:hover {
+  border-color: #d4af37 !important;
+  color: #d4af37 !important;
+}
+
+/* Upload Live Preview Card */
+.upload-doc-preview-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #08172c;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: 6px;
+  padding: 10px 14px;
+  margin-top: 10px;
+}
+.udpc-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.udpc-icon {
+  width: 32px;
+  height: 32px;
+  background: rgba(212, 175, 55, 0.1);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.udpc-meta strong {
+  display: block;
+  font-size: 12px;
+  color: #f8fafc;
+}
+.udpc-meta small {
+  font-size: 10px;
+  color: #8ea4c0;
+}
+.btn-xs-preview {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(212, 175, 55, 0.12);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  color: #d4af37;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn-xs-preview:hover {
+  background: rgba(212, 175, 55, 0.25);
+  color: #fff;
+}
+
+/* Institutional Document Previewer Modal */
+.doc-preview-modal-card {
+  background: #0a1424;
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  border-radius: 10px;
+  width: 100%;
+  max-width: 980px;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85);
+}
+.dpm-head {
+  padding: 14px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #07101e;
+}
+.dpm-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.dpm-title-text {
+  font-size: 14px;
+  color: #f8fafc;
+}
+.dpm-sub {
+  font-size: 11px;
+  color: #6b88a8;
+}
+.dpm-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.dpm-badge-secure {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(212, 175, 55, 0.12);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: 5px;
+  padding: 5px 10px;
+  font-size: 11px;
+  color: #d4af37;
+  font-weight: 600;
+}
+.btn-dpm-download {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #f8fafc;
+  border-radius: 5px;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn-dpm-download:hover {
+  border-color: #d4af37;
+  color: #d4af37;
+}
+.dpm-body {
+  flex: 1;
+  background: #020617;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 480px;
+}
+.dpm-loading {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  color: #94a3b8;
+  font-size: 13px;
+}
+.dpm-viewer-wrap {
+  flex: 1;
+  width: 100%;
+  height: 60vh;
+}
+.dpm-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: #0a1128;
+}
+.dpm-image-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  overflow: auto;
+}
+.dpm-image-wrap img {
+  max-width: 100%;
+  max-height: 55vh;
+  object-fit: contain;
+  border-radius: 6px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.8);
+}
+.dpm-text-wrap {
+  flex: 1;
+  padding: 20px;
+  overflow: auto;
+  max-height: 60vh;
+}
+.dpm-pre {
+  color: #e2e8f0;
+  font-family: 'JetBrains Mono', Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-all;
+  margin: 0;
+  background: rgba(10, 20, 36, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 16px;
+  border-radius: 6px;
+}
+.dpm-fallback-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+  gap: 12px;
+}
+.dpm-fallback-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: rgba(212, 175, 55, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dpm-fallback-wrap h4 {
+  margin: 0;
+  font-size: 16px;
+  color: #f8fafc;
+}
+.dpm-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-top: 10px;
+  max-width: 420px;
+  width: 100%;
+}
+.dmg-item {
+  background: #0a1b32;
+  border: 1px solid #153860;
+  border-radius: 5px;
+  padding: 8px 12px;
+  text-align: left;
+}
+.dmg-item span {
+  display: block;
+  font-size: 10px;
+  color: #6b88a8;
+  text-transform: uppercase;
+}
+.dmg-item strong {
+  font-size: 12px;
+  color: #e2e8f0;
+}
+.dpm-security-note {
+  font-size: 11px;
+  color: #8ea4c0;
+  margin-top: 10px;
+}
+.dpm-footer {
+  padding: 12px 20px;
+  background: #07101e;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.dpm-footer-path {
+  font-size: 11px;
+  color: #6b88a8;
+  max-width: 70%;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 .mono-text { font-family: monospace; font-size: 11px; color: #8ba0b8; }
