@@ -772,6 +772,26 @@ apiRouter.post('/vault/files', async (req, res) => {
 
         const newFile = rows[0];
 
+        // If binary base64 data_url is supplied, persist directly into AWS S3 Private Vault buffer
+        if (data_url && typeof data_url === 'string' && data_url.includes('base64,')) {
+            try {
+                const base64Data = data_url.split('base64,')[1];
+                const buffer = Buffer.from(base64Data, 'base64');
+                await StorageService.uploadBuffer({
+                    objectKey: safeKey,
+                    buffer,
+                    contentType: mime_type,
+                    metadata: {
+                        category,
+                        uploadedBy: uploaded_by || 'Main Administrator',
+                        originalFilename: original_filename || filename
+                    }
+                });
+            } catch (s3Err) {
+                console.warn('[Vault S3 Buffer Persist Warn]', s3Err.message);
+            }
+        }
+
         // If linked to a property, mirror into property_photos or property_documents
         if (linked_property_id) {
             if (mime_type.startsWith('image/')) {
@@ -939,6 +959,7 @@ apiRouter.get('/vault/files/:id/download-url', async (req, res) => {
 
         const presigned = await StorageService.getPresignedDownloadUrl({
             objectKey: file.object_key,
+            filename: file.original_filename || file.filename,
             expiresInSeconds: 3600
         });
 

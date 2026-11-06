@@ -135,15 +135,19 @@ export class StorageService {
      * Generate a presigned download/view URL (GET)
      * Allows authenticated staff to securely view private files without making the S3 bucket public
      */
-    static async getPresignedDownloadUrl({ objectKey, expiresInSeconds = 3600 }) {
+    static async getPresignedDownloadUrl({ objectKey, filename, expiresInSeconds = 3600 }) {
         if (!objectKey) throw new Error('Object key is required to generate download URL');
 
         if (HAS_AWS_CREDS) {
             try {
-                const command = new GetObjectCommand({
+                const getParams = {
                     Bucket: AWS_S3_BUCKET,
                     Key: objectKey
-                });
+                };
+                if (filename) {
+                    getParams.ResponseContentDisposition = `attachment; filename="${encodeURIComponent(filename)}"`;
+                }
+                const command = new GetObjectCommand(getParams);
                 const downloadUrl = await getSignedUrl(s3Client, command, { expiresIn: expiresInSeconds });
                 return {
                     success: true,
