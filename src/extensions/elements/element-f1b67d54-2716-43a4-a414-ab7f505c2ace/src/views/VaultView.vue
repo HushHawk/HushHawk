@@ -697,6 +697,114 @@
         </div>
       </div>
     </div>
+
+    <!-- MODAL 3: Institutional Delete Asset Confirmation Modal -->
+    <transition name="vault-modal-anim">
+      <div v-if="showDeleteModal && fileToDelete" class="vault-modal-backdrop" @click="cancelDelete">
+        <div class="delete-modal-card" @click.stop>
+          <!-- Accent top glow bar -->
+          <div class="delete-modal-glow"></div>
+
+          <!-- Header -->
+          <div class="delete-modal-header">
+            <div class="delete-danger-icon-wrap">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                <line x1="12" y1="9" x2="12" y2="13"/>
+                <line x1="12" y1="17" x2="12.01" y2="17"/>
+              </svg>
+            </div>
+            <div class="delete-header-texts">
+              <h3 class="delete-modal-title">Delete S3 Vault Asset</h3>
+              <span class="delete-modal-sub">AWS S3 Private Vault · Permanent Deletion</span>
+            </div>
+            <button class="delete-close-btn" @click="cancelDelete" :disabled="isDeleting" title="Cancel (Esc)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Body -->
+          <div class="delete-modal-body">
+            <p class="delete-warning-text">
+              Are you sure you want to permanently delete this asset? The binary file will be purged from <strong>Amazon S3</strong> and all metadata indexes will be removed from <strong>PostgreSQL RDS</strong>.
+            </p>
+
+            <!-- Asset Summary Badge Card -->
+            <div class="delete-file-chip">
+              <div class="dfc-icon">
+                <svg v-if="isImageFile(fileToDelete)" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="2">
+                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                  <circle cx="12" cy="13" r="4"/>
+                </svg>
+                <svg v-else width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                </svg>
+              </div>
+              <div class="dfc-details">
+                <strong class="dfc-name" :title="fileToDelete.original_filename || fileToDelete.filename">
+                  {{ fileToDelete.original_filename || fileToDelete.filename }}
+                </strong>
+                <div class="dfc-meta">
+                  <span class="dfc-pill">{{ fileToDelete.category || 'Asset' }}</span>
+                  <span class="dfc-sep">·</span>
+                  <span>{{ formatBytes(fileToDelete.file_size_bytes) }}</span>
+                  <span class="dfc-sep">·</span>
+                  <span class="dfc-s3-key" :title="fileToDelete.object_key || fileToDelete.filename">{{ fileToDelete.object_key || 'Direct S3 Stream' }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="delete-callout-box">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="12"/>
+                <line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+              <span>This operation is irreversible. Any property dossiers referencing this S3 key will lose access to this asset.</span>
+            </div>
+          </div>
+
+          <!-- Footer Actions -->
+          <div class="delete-modal-footer">
+            <button type="button" class="btn-cancel-action" @click="cancelDelete" :disabled="isDeleting">
+              Cancel
+            </button>
+            <button type="button" class="btn-confirm-delete" @click="executeDelete" :disabled="isDeleting">
+              <span v-if="!isDeleting" class="btn-delete-inner">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="3 6 5 6 21 6"/>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                </svg>
+                <span>Permanently Delete Asset</span>
+              </span>
+              <span v-else class="btn-delete-inner">
+                <span class="delete-spinner"></span>
+                <span>Deleting from S3 &amp; RDS…</span>
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </transition>
+
+    <!-- Sleek Floating Toast Notification -->
+    <transition name="toast-slide">
+      <div v-if="toastMessage" :class="['vault-floating-toast', toastType === 'error' ? 'toast-err' : 'toast-ok']">
+        <svg v-if="toastType === 'error'" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="15" y1="9" x2="9" y2="15"/>
+          <line x1="9" y1="9" x2="15" y2="15"/>
+        </svg>
+        <svg v-else width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+        <span>{{ toastMessage }}</span>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -736,6 +844,14 @@ export default {
 
       showPreviewModal: false,
       previewFile: null,
+
+      // Delete Modal & Notifications
+      showDeleteModal: false,
+      fileToDelete: null,
+      isDeleting: false,
+      toastMessage: '',
+      toastType: 'success',
+      toastTimer: null,
     };
   },
   computed: {
@@ -1064,17 +1180,39 @@ export default {
         }, 2000);
       }
     },
-    async confirmDeleteFile(file) {
-      const ok = confirm(`Delete "${file.original_filename || file.filename}" from AWS S3 Private Vault? This action cannot be undone.`);
-      if (!ok) return;
-
+    confirmDeleteFile(file) {
+      this.fileToDelete = file;
+      this.showDeleteModal = true;
+    },
+    cancelDelete() {
+      if (this.isDeleting) return;
+      this.showDeleteModal = false;
+      this.fileToDelete = null;
+    },
+    async executeDelete() {
+      if (!this.fileToDelete || this.isDeleting) return;
+      this.isDeleting = true;
+      const target = this.fileToDelete;
       try {
-        const res = await fetch(`${API_BASE}/vault/files/${file.id}`, { method: 'DELETE' });
-        if (!res.ok) throw new Error('Delete failed');
+        const res = await fetch(`${API_BASE}/vault/files/${target.id}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error('Deletion failed on server');
+        this.showDeleteModal = false;
+        this.fileToDelete = null;
         await this.loadVaultFiles();
+        this.showToast(`Permanently deleted "${target.original_filename || target.filename}" from S3 Vault.`);
       } catch (err) {
-        alert('Delete Error: ' + err.message);
+        this.showToast('Delete Error: ' + err.message, 'error');
+      } finally {
+        this.isDeleting = false;
       }
+    },
+    showToast(msg, type = 'success') {
+      this.toastMessage = msg;
+      this.toastType = type;
+      if (this.toastTimer) clearTimeout(this.toastTimer);
+      this.toastTimer = setTimeout(() => {
+        this.toastMessage = '';
+      }, 4000);
     }
   }
 };
@@ -2063,6 +2201,309 @@ export default {
 }
 @keyframes vspin {
   to { transform: rotate(360deg); }
+}
+
+/* Institutional Delete Modal */
+.delete-modal-card {
+  position: relative;
+  background: linear-gradient(180deg, #0A1128 0%, #050B1A 100%);
+  border: 1.5px solid rgba(239, 68, 68, 0.45);
+  border-radius: 12px;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 24px rgba(239, 68, 68, 0.15);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: deleteCardPop 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.delete-modal-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #D4AF37 0%, #EF4444 50%, #D4AF37 100%);
+}
+
+.delete-modal-header {
+  padding: 18px 22px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.delete-danger-icon-wrap {
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.delete-header-texts {
+  flex: 1;
+}
+
+.delete-modal-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #F8FAFC;
+  letter-spacing: -0.01em;
+}
+
+.delete-modal-sub {
+  display: block;
+  font-size: 11px;
+  color: #EF4444;
+  font-weight: 500;
+  margin-top: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.delete-close-btn {
+  background: none;
+  border: none;
+  color: #94A3B8;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.18s;
+}
+
+.delete-close-btn:hover {
+  color: #F8FAFC;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.delete-modal-body {
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.delete-warning-text {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: #CBD5E1;
+}
+
+.delete-warning-text strong {
+  color: #F8FAFC;
+  font-weight: 600;
+}
+
+.delete-file-chip {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+
+.dfc-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  background: rgba(212, 175, 55, 0.1);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.dfc-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.dfc-name {
+  display: block;
+  font-size: 13px;
+  color: #F8FAFC;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.dfc-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #94A3B8;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+
+.dfc-pill {
+  background: rgba(212, 175, 55, 0.15);
+  color: #FFDF73;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 10px;
+}
+
+.dfc-sep {
+  color: #64748B;
+}
+
+.dfc-s3-key {
+  max-width: 170px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.delete-callout-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: rgba(239, 68, 68, 0.08);
+  border-left: 3px solid #EF4444;
+  padding: 10px 12px;
+  border-radius: 0 6px 6px 0;
+  font-size: 12px;
+  color: #FCA5A5;
+  line-height: 1.45;
+}
+
+.delete-modal-footer {
+  padding: 16px 22px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(5, 11, 26, 0.7);
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.btn-cancel-action {
+  padding: 9px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  color: #E2E8F0;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+
+.btn-cancel-action:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #FFFFFF;
+}
+
+.btn-confirm-delete {
+  padding: 9px 18px;
+  background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%);
+  border: 1px solid rgba(239, 68, 68, 0.6);
+  border-radius: 6px;
+  color: #FFFFFF;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.35);
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-confirm-delete:hover:not(:disabled) {
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+  border-color: #EF4444;
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.5);
+  transform: translateY(-1px);
+}
+
+.btn-confirm-delete:disabled, .btn-cancel-action:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-delete-inner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.delete-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #FFFFFF;
+  border-radius: 50%;
+  animation: vspin 0.7s linear infinite;
+}
+
+@keyframes deleteCardPop {
+  0% { transform: scale(0.92); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Floating Toast */
+.vault-floating-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  background: #0A1128;
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  border-radius: 8px;
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+  z-index: 9999999;
+  font-size: 13px;
+  font-weight: 500;
+  color: #F8FAFC;
+}
+
+.vault-floating-toast.toast-ok {
+  border-color: rgba(16, 185, 129, 0.4);
+}
+
+.vault-floating-toast.toast-err {
+  border-color: rgba(239, 68, 68, 0.5);
+}
+
+.toast-slide-enter-active, .toast-slide-leave-active {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.toast-slide-enter-from, .toast-slide-leave-to {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.vault-modal-anim-enter-active, .vault-modal-anim-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.vault-modal-anim-enter-from, .vault-modal-anim-leave-to {
+  opacity: 0;
 }
 
 /* Utilities */
