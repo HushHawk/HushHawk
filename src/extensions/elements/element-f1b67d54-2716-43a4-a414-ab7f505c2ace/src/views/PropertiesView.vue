@@ -1772,16 +1772,36 @@ export default {
     openPhotoDetail(photo) {
       this.selectedDetailPhoto = photo;
     },
-    downloadCurrentPhoto() {
+    async downloadCurrentPhoto() {
       if (!this.selectedDetailPhoto) return;
-      const link = document.createElement('a');
-      link.href = this.selectedDetailPhoto.data_url || this.defaultPhotoPlaceholder;
-      link.download = this.selectedDetailPhoto.filename || 'property-photo.jpg';
-      link.target = '_blank';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      this.showToast('Photo download initiated');
+      const photo = this.selectedDetailPhoto;
+      if (photo.data_url) {
+        const link = document.createElement('a');
+        link.href = photo.data_url;
+        link.download = photo.original_filename || photo.filename || 'property-photo.jpg';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        this.showToast('Photo download initiated');
+        return;
+      }
+      try {
+        const res = await fetch(`${API_BASE}/properties/${this.selectedProperty.property_id}/photos/${photo.id}/download-url`);
+        const data = await res.json();
+        const url = data.download_url;
+        if (url) {
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = photo.original_filename || photo.filename || 'property-photo.jpg';
+          link.target = '_blank';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          this.showToast('Secure S3 download initiated');
+        }
+      } catch (err) {
+        console.error('[Download Error]', err);
+      }
     },
     async deleteCurrentPhoto(photo) {
       if (!photo || !confirm(`Are you sure you want to delete ${photo.filename}?`)) return;
