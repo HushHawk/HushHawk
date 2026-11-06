@@ -1132,8 +1132,9 @@ export default {
         if (!res.ok) throw new Error('Failed to assign property');
         this.showAssignModal = false;
         await this.loadVaultFiles();
+        this.showToast('Asset successfully linked to property.');
       } catch (err) {
-        alert('Assignment Error: ' + err.message);
+        this.showToast('Assignment Error: ' + err.message, 'error');
       } finally {
         this.isAssigning = false;
       }
@@ -1148,7 +1149,7 @@ export default {
         const data = await res.json();
         const url = data.download_url || file.data_url;
         if (!url) {
-          alert('No download URL available for this file.');
+          this.showToast('No download URL available for this file.', 'error');
           return;
         }
         const a = document.createElement('a');

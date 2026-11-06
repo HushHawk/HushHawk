@@ -1369,6 +1369,54 @@
     <!-- Hidden native file inputs -->
     <input ref="libraryFileInput" type="file" accept="image/*" multiple style="display:none" @change="onNativeFilesSelected" />
     <input ref="nativeFileInput" type="file" accept="image/*,application/pdf" multiple style="display:none" @change="onNativeFilesSelected" />
+
+    <!-- INSTITUTIONAL CONFIRMATION MODAL -->
+    <transition name="toast-fade">
+      <div v-if="showConfirmModal" class="modal-overlay" @click.self="showConfirmModal = false">
+        <div class="modal-card confirm-dialog-card">
+          <div class="confirm-modal-glow"></div>
+          <div class="modal-head confirm-head">
+            <div class="confirm-title-wrap">
+              <div class="confirm-warn-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2">
+                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                  <line x1="12" y1="9" x2="12" y2="13"/>
+                  <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+              </div>
+              <div>
+                <strong class="confirm-modal-title">{{ confirmModalConfig.title }}</strong>
+                <span class="confirm-subtitle">{{ confirmModalConfig.subtitle }}</span>
+              </div>
+            </div>
+            <button class="modal-close" @click="showConfirmModal = false">×</button>
+          </div>
+          <div class="modal-body confirm-body">
+            <p class="confirm-message-text">{{ confirmModalConfig.message }}</p>
+            <div v-if="confirmModalConfig.itemLabel" class="confirm-item-badge">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+              </svg>
+              <span class="confirm-item-text">{{ confirmModalConfig.itemLabel }}</span>
+            </div>
+            <p class="confirm-danger-notice">
+              This action permanently modifies the property record in AWS RDS and AWS S3. It cannot be reversed.
+            </p>
+          </div>
+          <div class="modal-foot confirm-foot">
+            <button class="btn-cancel" @click="showConfirmModal = false">Cancel</button>
+            <button class="btn-confirm-danger" @click="executeModalConfirm">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6"/>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+              </svg>
+              <span>{{ confirmModalConfig.confirmButtonText || 'Confirm Deletion' }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </transition>
 </div>
 </template>
 
@@ -1419,6 +1467,17 @@ export default {
       actionsOpen: false,
       toastMessage: '',
       toastTimer: null,
+
+      // Institutional Confirm Modal
+      showConfirmModal: false,
+      confirmModalConfig: {
+        title: '',
+        subtitle: '',
+        message: '',
+        itemLabel: '',
+        confirmButtonText: 'Delete',
+        action: null
+      },
 
       // Tabs definition
       tabs: [
@@ -1582,7 +1641,7 @@ export default {
         this.showPhotoAddedToast = true;
         setTimeout(() => { this.showPhotoAddedToast = false; }, 4000);
       } catch (err) {
-        alert('Vault Import Error: ' + err.message);
+        this.showToast('Vault Import Error: ' + err.message);
       } finally {
         this.isImportingFromVault = false;
       }
@@ -1803,17 +1862,46 @@ export default {
         console.error('[Download Error]', err);
       }
     },
-    async deleteCurrentPhoto(photo) {
-      if (!photo || !confirm(`Are you sure you want to delete ${photo.filename}?`)) return;
-      try {
-        await fetch(`${API_BASE}/properties/${this.selectedProperty.property_id}/photos/${photo.id}`, {
-          method: 'DELETE',
-        });
-        this.selectedDetailPhoto = null;
-        this.showToast('Photo deleted from S3 & PostgreSQL');
-        await this.loadPhotos(this.selectedProperty.property_id);
-      } catch (err) {
-        this.showToast('Failed to delete photo');
+    deleteCurrentPhoto(photo) {
+      if (!photo) return;
+      this.openConfirmDialog({
+        title: 'Delete Property Photo',
+        subtitle: 'AWS S3 & PostgreSQL Synchronization',
+        message: 'Are you sure you want to delete this photo from the property dossier and AWS S3?',
+        itemLabel: photo.original_filename || photo.filename,
+        action: async () => {
+          try {
+            await fetch(`${API_BASE}/properties/${this.selectedProperty.property_id}/photos/${photo.id}`, {
+              method: 'DELETE',
+            });
+            this.selectedDetailPhoto = null;
+            this.showToast('Photo deleted from S3 & PostgreSQL');
+            await this.loadPhotos(this.selectedProperty.property_id);
+          } catch (err) {
+            this.showToast('Failed to delete photo');
+          }
+        }
+      });
+    },
+
+    openConfirmDialog({ title, subtitle, message, itemLabel, confirmButtonText, action }) {
+      this.confirmModalConfig = {
+        title: title || 'Confirm Deletion',
+        subtitle: subtitle || 'Irreversible Action',
+        message: message || 'Are you sure you want to proceed?',
+        itemLabel: itemLabel || '',
+        confirmButtonText: confirmButtonText || 'Delete',
+        action
+      };
+      this.showConfirmModal = true;
+    },
+    async executeModalConfirm() {
+      if (this.confirmModalConfig && typeof this.confirmModalConfig.action === 'function') {
+        const act = this.confirmModalConfig.action;
+        this.showConfirmModal = false;
+        await act();
+      } else {
+        this.showConfirmModal = false;
       }
     },
 
@@ -2039,13 +2127,23 @@ export default {
       this.uploadResults = { total: 0, done: 0, items: [] };
       this.uploadProgress = 0;
     },
-    async deletePhoto(photo) {
-      if (!confirm(`Delete "${photo.original_filename || photo.filename}"?`)) return;
-      try {
-        await fetch(`${API_BASE}/properties/${this.selectedProperty.property_id}/photos/${photo.id}`, { method: 'DELETE' });
-        this.photos = this.photos.filter(p => p.id !== photo.id);
-        this.showToast('Photo deleted.');
-      } catch (e) { /* ignore */ }
+    deletePhoto(photo) {
+      if (!photo) return;
+      this.openConfirmDialog({
+        title: 'Delete Property Photo',
+        subtitle: 'AWS S3 & PostgreSQL Synchronization',
+        message: 'Are you sure you want to delete this photo from the property gallery?',
+        itemLabel: photo.original_filename || photo.filename,
+        action: async () => {
+          try {
+            await fetch(`${API_BASE}/properties/${this.selectedProperty.property_id}/photos/${photo.id}`, { method: 'DELETE' });
+            this.photos = this.photos.filter(p => p.id !== photo.id);
+            this.showToast('Photo deleted.');
+          } catch (e) {
+            this.showToast('Failed to delete photo');
+          }
+        }
+      });
     },
     openLightbox(photo) {
       this.lightboxPhoto = photo;
@@ -2113,7 +2211,7 @@ export default {
           this.loadTimeline(this.selectedProperty.property_id);
         }
       } catch (e) {
-        alert('Failed to upload document.');
+        this.showToast('Failed to upload document.');
       } finally {
         this.savingDoc = false;
       }
@@ -2128,13 +2226,23 @@ export default {
       a.download = doc.filename || doc.title || 'document.pdf';
       a.click();
     },
-    async deleteDocument(doc) {
-      if (!confirm(`Delete document "${doc.title}"?`)) return;
-      try {
-        await fetch(`${API_BASE}/properties/${this.selectedProperty.property_id}/documents/${doc.id}`, { method: 'DELETE' });
-        this.documents = this.documents.filter(d => d.id !== doc.id);
-        this.showToast('Document deleted.');
-      } catch (e) { /* ignore */ }
+    deleteDocument(doc) {
+      if (!doc) return;
+      this.openConfirmDialog({
+        title: 'Delete Property Document',
+        subtitle: 'AWS S3 & PostgreSQL Synchronization',
+        message: 'Are you sure you want to delete this document from the property record?',
+        itemLabel: doc.title || doc.filename,
+        action: async () => {
+          try {
+            await fetch(`${API_BASE}/properties/${this.selectedProperty.property_id}/documents/${doc.id}`, { method: 'DELETE' });
+            this.documents = this.documents.filter(d => d.id !== doc.id);
+            this.showToast('Document deleted.');
+          } catch (e) {
+            this.showToast('Failed to delete document');
+          }
+        }
+      });
     },
 
     // ===== TASKS =====
@@ -2168,7 +2276,7 @@ export default {
           this.loadTimeline(this.selectedProperty.property_id);
         }
       } catch (e) {
-        alert('Failed to create task.');
+        this.showToast('Failed to create task.');
       } finally {
         this.savingTask = false;
       }
@@ -2218,18 +2326,28 @@ export default {
           this.loadTimeline(this.selectedProperty.property_id);
         }
       } catch (e) {
-        alert('Failed to record expense.');
+        this.showToast('Failed to record expense.');
       } finally {
         this.savingExpense = false;
       }
     },
     async deleteExpense(exp) {
-      if (!confirm(`Delete expense "${exp.category} - $${exp.amount}"?`)) return;
-      try {
-        await fetch(`${API_BASE}/properties/${this.selectedProperty.property_id}/expenses/${exp.id}`, { method: 'DELETE' });
-        this.expenses = this.expenses.filter(e => e.id !== exp.id);
-        this.showToast('Expense removed.');
-      } catch (e) { /* ignore */ }
+      if (!exp) return;
+      this.openConfirmDialog({
+        title: 'Delete Expense Item',
+        subtitle: 'Financial Ledger Adjustment',
+        message: 'Are you sure you want to remove this expense record?',
+        itemLabel: `${exp.category} - $${exp.amount}`,
+        action: async () => {
+          try {
+            await fetch(`${API_BASE}/properties/${this.selectedProperty.property_id}/expenses/${exp.id}`, { method: 'DELETE' });
+            this.expenses = this.expenses.filter(e => e.id !== exp.id);
+            this.showToast('Expense removed.');
+          } catch (e) {
+            this.showToast('Failed to remove expense');
+          }
+        }
+      });
     },
 
     // ===== CONTRACTORS =====
@@ -2263,18 +2381,28 @@ export default {
           this.loadTimeline(this.selectedProperty.property_id);
         }
       } catch (e) {
-        alert('Failed to assign contractor.');
+        this.showToast('Failed to assign contractor.');
       } finally {
         this.savingContractor = false;
       }
     },
     async deleteContractor(c) {
-      if (!confirm(`Remove contractor assignment "${c.name}"?`)) return;
-      try {
-        await fetch(`${API_BASE}/properties/${this.selectedProperty.property_id}/contractors/${c.id}`, { method: 'DELETE' });
-        this.contractors = this.contractors.filter(x => x.id !== c.id);
-        this.showToast('Contractor assignment removed.');
-      } catch (e) { /* ignore */ }
+      if (!c) return;
+      this.openConfirmDialog({
+        title: 'Remove Contractor Assignment',
+        subtitle: 'Project Team Reallocation',
+        message: 'Are you sure you want to unassign this contractor from this property?',
+        itemLabel: `${c.name} (${c.trade})`,
+        action: async () => {
+          try {
+            await fetch(`${API_BASE}/properties/${this.selectedProperty.property_id}/contractors/${c.id}`, { method: 'DELETE' });
+            this.contractors = this.contractors.filter(x => x.id !== c.id);
+            this.showToast('Contractor assignment removed.');
+          } catch (e) {
+            this.showToast('Failed to remove contractor');
+          }
+        }
+      });
     },
 
     // ===== TIMELINE =====
@@ -3942,5 +4070,145 @@ export default {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* Institutional Confirm Dialog */
+.confirm-dialog-card {
+  position: relative;
+  background: linear-gradient(180deg, #0A1128 0%, #050B1A 100%) !important;
+  border: 1.5px solid rgba(239, 68, 68, 0.45) !important;
+  border-radius: 12px !important;
+  max-width: 480px !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 24px rgba(239, 68, 68, 0.15) !important;
+  overflow: hidden;
+}
+
+.confirm-modal-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #D4AF37 0%, #EF4444 50%, #D4AF37 100%);
+}
+
+.confirm-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 16px 20px;
+}
+
+.confirm-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.confirm-warn-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.confirm-modal-title {
+  display: block;
+  font-size: 15px;
+  font-weight: 700;
+  color: #F8FAFC;
+}
+
+.confirm-subtitle {
+  display: block;
+  font-size: 11px;
+  color: #EF4444;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-top: 2px;
+}
+
+.confirm-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.confirm-message-text {
+  margin: 0;
+  font-size: 13px;
+  color: #CBD5E1;
+  line-height: 1.5;
+}
+
+.confirm-item-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-radius: 6px;
+  padding: 10px 12px;
+}
+
+.confirm-item-text {
+  font-size: 13px;
+  color: #F8FAFC;
+  font-weight: 600;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.confirm-danger-notice {
+  margin: 0;
+  font-size: 11px;
+  color: #FCA5A5;
+  background: rgba(239, 68, 68, 0.08);
+  border-left: 3px solid #EF4444;
+  padding: 8px 10px;
+  border-radius: 0 4px 4px 0;
+  line-height: 1.4;
+}
+
+.confirm-foot {
+  padding: 14px 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(5, 11, 26, 0.7);
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.btn-confirm-danger {
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%);
+  border: 1px solid rgba(239, 68, 68, 0.6);
+  border-radius: 6px;
+  color: #FFFFFF;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.35);
+}
+
+.btn-confirm-danger:hover {
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+  border-color: #EF4444;
+  box-shadow: 0 6px 18px rgba(239, 68, 68, 0.5);
+  transform: translateY(-1px);
 }
 </style>
