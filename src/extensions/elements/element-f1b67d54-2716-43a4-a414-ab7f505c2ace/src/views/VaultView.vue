@@ -201,6 +201,12 @@
                 <span>Error: {{ item.error }}</span>
               </div>
             </div>
+            <button type="button" class="queue-item-preview" @click.stop="previewQueueItem(item)" title="Preview Document">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
             <button v-if="!isUploading && item.status === 'pending'" class="queue-item-remove" @click="removeFromQueue(idx)" title="Remove from queue">
               ×
             </button>
@@ -1120,8 +1126,10 @@ export default {
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         let previewUrl = null;
-        if (file.type && file.type.startsWith('image/')) {
-          previewUrl = URL.createObjectURL(file);
+        if (file.type && (file.type.startsWith('image/') || file.type.includes('pdf'))) {
+          try {
+            previewUrl = URL.createObjectURL(file);
+          } catch (e) {}
         }
         this.uploadQueue.push({
           file,
@@ -1131,6 +1139,19 @@ export default {
           error: null
         });
       }
+    },
+    previewQueueItem(item) {
+      if (!item || !item.file) return;
+      this.openPreviewModal({
+        id: null,
+        filename: item.file.name,
+        original_filename: item.file.name,
+        file_size_bytes: item.file.size,
+        mime_type: item.file.type || 'application/octet-stream',
+        category: this.selectedCategory || 'Documents',
+        data_url: item.previewUrl,
+        storage_provider: 'AWS S3 (Pending Ingestion)'
+      });
     },
     removeFromQueue(idx) {
       this.uploadQueue.splice(idx, 1);
@@ -1721,6 +1742,24 @@ export default {
   padding: 0 4px;
 }
 .queue-item-remove:hover { color: #f43f5e; }
+.queue-item-preview {
+  background: rgba(212, 175, 55, 0.1);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  color: #d4af37;
+  border-radius: 4px;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.queue-item-preview:hover {
+  background: rgba(212, 175, 55, 0.25);
+  color: #fff;
+  border-color: #d4af37;
+}
 
 /* 3. Explorer Bar */
 .vault-explorer-header {

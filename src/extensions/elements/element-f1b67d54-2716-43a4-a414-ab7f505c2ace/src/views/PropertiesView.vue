@@ -2279,8 +2279,10 @@ export default {
       if (!files.length) return;
       const items = await Promise.all(files.map(async file => {
         let preview = null;
-        if (file.type.startsWith('image/')) {
-          preview = await this.readFileAsDataURL(file);
+        if (file.type.startsWith('image/') || file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
+          try {
+            preview = await this.readFileAsDataURL(file);
+          } catch (e) {}
         }
         return { file, preview, tag: 'General', caption: '' };
       }));
