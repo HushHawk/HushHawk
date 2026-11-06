@@ -450,13 +450,17 @@ export default {
         window.localStorage.getItem('ww-auth-session')
       );
       this.isLoggedIn = hasSession;
+      window.__HUSHHAWK_AUTHENTICATED__ = hasSession;
+      window.dispatchEvent(new CustomEvent('hushhawk-auth-change', { detail: { authenticated: hasSession } }));
 
       // Global logout helper callable anytime
       window.hushhawkLogout = () => {
+        window.__HUSHHAWK_AUTHENTICATED__ = false;
         window.sessionStorage.removeItem('hushhawk_session');
         window.localStorage.removeItem('hushhawk_session');
         window.localStorage.removeItem('ww-auth-session');
         window.localStorage.removeItem('hushhawk_auth_token');
+        window.dispatchEvent(new CustomEvent('hushhawk-auth-change', { detail: { authenticated: false } }));
         window.location.href = '/login';
       };
 
@@ -563,6 +567,8 @@ export default {
           window.localStorage.setItem('hushhawk_auth_token', sessionObj.token);
 
           this.isLoggedIn = true;
+          window.__HUSHHAWK_AUTHENTICATED__ = true;
+          window.dispatchEvent(new CustomEvent('hushhawk-auth-change', { detail: { authenticated: true } }));
           this.isRedirecting = true;
           this.isLoading = true;
 
@@ -583,6 +589,8 @@ export default {
           window.localStorage.setItem('hushhawk_session', JSON.stringify(activeUser));
           window.localStorage.setItem('ww-auth-session', JSON.stringify(sessionObj));
           this.isLoggedIn = true;
+          window.__HUSHHAWK_AUTHENTICATED__ = true;
+          window.dispatchEvent(new CustomEvent('hushhawk-auth-change', { detail: { authenticated: true } }));
           this.isRedirecting = true;
           window.location.replace('/');
         }
