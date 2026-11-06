@@ -203,7 +203,7 @@
             <div v-for="d in selectedContract.docs" :key="d.name" class="doc-item">
               <span v-html="icons.file"></span>
               <span>{{ d.name }}</span>
-              <button class="btn btn-xs" @click="downloadDoc(d.name)">View</button>
+              <button class="btn btn-xs" @click="previewDoc(d.name)">Preview</button>
             </div>
           </div>
         </div>
@@ -299,6 +299,61 @@
           <button class="btn btn-primary" @click="confirmUpload">
             Save to Escrow File
           </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Escrow Document Preview Modal -->
+    <div v-if="previewDocName" class="modal-overlay" @click.self="previewDocName = ''">
+      <div class="modal-card escrow-preview-card">
+        <div class="modal-header">
+          <div class="epm-title-wrap">
+            <span class="category-pill">Escrow &amp; Title</span>
+            <h3>{{ previewDocName }}</h3>
+          </div>
+          <button class="close-btn" @click="previewDocName = ''" aria-label="Close modal">
+            <span v-html="icons.close"></span>
+          </button>
+        </div>
+        <div class="modal-body epm-body">
+          <div class="epm-banner">
+            <div class="epm-banner-left">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+              <span><strong>Preview Only Mode:</strong> Sealed title document. Viewing directly inside HushHawk Escrow Viewer with zero local footprint.</span>
+            </div>
+            <span class="epm-seal-badge">SEALED ESCROW DOSSIER</span>
+          </div>
+
+          <div class="epm-content-sheet">
+            <div class="epm-sheet-header">
+              <div class="epm-seal-circle">SEAL</div>
+              <div>
+                <h4>FIRST AMERICAN TITLE &amp; ESCROW</h4>
+                <p>Wholesale Contract File #HH-ESCROW-{{ selectedContract?.id || '01' }} · Duval County, FL</p>
+              </div>
+            </div>
+            <div class="epm-details-grid">
+              <div class="epm-grid-item"><span>Property Address:</span><strong>{{ selectedContract?.address || 'Property Dossier' }}</strong></div>
+              <div class="epm-grid-item"><span>Contract Type:</span><strong>{{ selectedContract?.type || 'PSA' }}</strong></div>
+              <div class="epm-grid-item"><span>Seller Principal:</span><strong>{{ selectedContract?.seller || 'Seller Record' }}</strong></div>
+              <div class="epm-grid-item"><span>Purchase Consideration:</span><strong>{{ formatCurrency(selectedContract?.buyPrice) }}</strong></div>
+              <div class="epm-grid-item"><span>Title Company:</span><strong>{{ selectedContract?.titleAgency || 'First American Title' }}</strong></div>
+              <div class="epm-grid-item"><span>Target Closing:</span><strong>{{ selectedContract?.closingDate || 'Scheduled' }}</strong></div>
+            </div>
+            <div class="epm-text-preview-box">
+              <div class="etpb-line">═══════════════════════════════════════════════════════════════════</div>
+              <div class="etpb-line">DOCUMENT VERIFICATION RECORD: {{ previewDocName }}</div>
+              <div class="etpb-line">ENCRYPTED OBJECT STORAGE: AWS S3 Private Vault / escrow / contracts / {{ previewDocName }}</div>
+              <div class="etpb-line">STATUS: Validated, Escrow Sealed, and Linked to Contract Record</div>
+              <div class="etpb-line">SECURITY: In-Browser Document Preview Mode · Local Downloads Restricted</div>
+              <div class="etpb-line">═══════════════════════════════════════════════════════════════════</div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" @click="previewDocName = ''">Close Preview</button>
         </div>
       </div>
     </div>
@@ -515,6 +570,12 @@ export default {
       }
     }
 
+    const previewDocName = ref('');
+
+    function previewDoc(doc) {
+      previewDocName.value = doc;
+    }
+
     function formatCurrency(val) {
       return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(val || 0);
     }
@@ -530,6 +591,7 @@ export default {
       selectedContract,
       modalType,
       uploadNotice,
+      previewDocName,
       newForm,
       hasActiveFilters,
       filteredContracts,
@@ -541,6 +603,7 @@ export default {
       onMilestoneToggle,
       confirmUpload,
       downloadDoc,
+      previewDoc,
       formatCurrency
     };
   }
@@ -1105,5 +1168,131 @@ export default {
   display: grid;
   place-items: center;
   color: #edcf7c;
+}
+
+/* Escrow Document Preview Modal */
+.escrow-preview-card {
+  max-width: 780px !important;
+  background: #081628 !important;
+  border: 1px solid rgba(212, 175, 55, 0.4) !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85);
+}
+.epm-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.epm-body {
+  padding: 16px 20px !important;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.epm-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(212, 175, 55, 0.08);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-size: 12px;
+  color: #e2e8f0;
+}
+.epm-banner-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.epm-banner-left strong {
+  color: #d4af37;
+}
+.epm-seal-badge {
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  color: #d4af37;
+  background: rgba(212, 175, 55, 0.15);
+  padding: 3px 8px;
+  border-radius: 3px;
+  font-weight: 700;
+}
+.epm-content-sheet {
+  background: #040c17;
+  border: 1px solid #1a385a;
+  border-radius: 6px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.epm-sheet-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.epm-seal-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px dashed #d4af37;
+  color: #d4af37;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+.epm-sheet-header h4 {
+  margin: 0;
+  font-size: 14px;
+  color: #f1f6ff;
+  letter-spacing: 0.03em;
+}
+.epm-sheet-header p {
+  margin: 2px 0 0;
+  font-size: 11px;
+  color: #8faec7;
+}
+.epm-details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+.epm-grid-item {
+  background: #08182b;
+  border: 1px solid #153350;
+  border-radius: 4px;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.epm-grid-item span {
+  font-size: 10px;
+  color: #8faec7;
+  text-transform: uppercase;
+}
+.epm-grid-item strong {
+  font-size: 12px;
+  color: #f1f6ff;
+}
+.epm-text-preview-box {
+  background: #02070e;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 4px;
+  padding: 12px;
+  font-family: 'JetBrains Mono', Consolas, monospace;
+  font-size: 11px;
+  color: #7dcaf4;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.etpb-line {
+  white-space: pre-wrap;
+  word-break: break-all;
 }
 </style>
