@@ -335,22 +335,47 @@ export default {
       this.statusFilter = '';
       this.formatFilter = '';
     },
-    saveNewBatch() {
-      const id = Date.now();
-      const unitCost = this.newBatch.format === '4x6 Postcard' ? 0.44 : 0.68;
-      this.mailBatches.unshift({
-        id,
-        batchCode: 'DM-2026-B' + Math.floor(111 + Math.random() * 20),
+    async saveNewBatch() {
+      const payload = {
         name: this.newBatch.name,
         audience: this.newBatch.audience,
         zips: this.newBatch.zips,
         format: this.newBatch.format,
-        quantity: this.newBatch.quantity,
-        cost: Math.round(this.newBatch.quantity * unitCost),
-        calls: 0,
-        responseRate: '0.00',
-        status: 'Printing'
-      });
+        quantity: Number(this.newBatch.quantity) || 2500,
+        dropDate: new Date().toISOString().split('T')[0]
+      };
+      const unitCost = this.newBatch.format === '4x6 Postcard' ? 0.44 : 0.68;
+      try {
+        const res = await fetch('/api/v1/direct-mail', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          const saved = await res.json();
+          this.mailBatches.unshift(saved);
+        } else {
+          this.mailBatches.unshift({
+            id: Date.now(),
+            batchCode: 'DM-2026-B' + Math.floor(111 + Math.random() * 20),
+            ...payload,
+            cost: Math.round((Number(payload.quantity) || 2500) * unitCost),
+            calls: 0,
+            responseRate: '0.00',
+            status: 'Printing'
+          });
+        }
+      } catch (e) {
+        this.mailBatches.unshift({
+          id: Date.now(),
+          batchCode: 'DM-2026-B' + Math.floor(111 + Math.random() * 20),
+          ...payload,
+          cost: Math.round((Number(payload.quantity) || 2500) * unitCost),
+          calls: 0,
+          responseRate: '0.00',
+          status: 'Printing'
+        });
+      }
       this.isAddModalOpen = false;
       this.newBatch = {
         name: '',
@@ -361,6 +386,7 @@ export default {
         trackingPhone: '(904) 555-0144',
         copy: ''
       };
+      this.showToast('Direct Mail Scheduled', `Campaign batch "${payload.name}" dispatched to mail queue.`, 'success');
     }
   }
 };

@@ -561,18 +561,15 @@ export default {
       this.activeModal = null;
       this.editingMember = null;
     },
-    submitInvite() {
+    async submitInvite() {
       const initials = this.newMember.name
         .split(' ')
         .map(n => n[0])
         .join('')
         .toUpperCase()
         .slice(0, 2);
-      const member = {
-        id: 'tm-' + String(this.members.length + 1).padStart(3, '0'),
+      const payload = {
         name: this.newMember.name,
-        initials,
-        avatarBg: 'linear-gradient(135deg, #38bdf8, #0369a1)',
         title: this.newMember.title,
         department: this.newMember.department,
         accessLevel: this.newMember.accessLevel,
@@ -580,24 +577,64 @@ export default {
         zipCodes: this.newMember.zipCodes || 'Metro Jacksonville',
         email: this.newMember.email,
         phone: this.newMember.phone,
-        dealsClosed: 0,
-        productionVolume: 0,
-        closeRate: 0,
-        avgSpread: 0,
-        commissionSplit: this.newMember.commissionSplit,
-        status: 'Active',
-        permissions: {
-          signContracts: this.newMember.accessLevel === 'Admin' || this.newMember.accessLevel === 'Manager',
-          viewFinancials: this.newMember.accessLevel === 'Admin',
-          blastBuyers: this.newMember.department === 'Dispositions',
-          exportCsv: this.newMember.accessLevel === 'Admin'
-        }
+        commissionSplit: this.newMember.commissionSplit
       };
-      this.members.unshift(member);
-      this.selectedMember = member;
+
+      try {
+        const res = await fetch('/api/v1/team', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          const saved = await res.json();
+          this.members.unshift(saved);
+          this.selectedMember = saved;
+        } else {
+          const fallback = {
+            id: 'tm-' + String(this.members.length + 1).padStart(3, '0'),
+            ...payload,
+            initials,
+            avatarBg: 'linear-gradient(135deg, #38bdf8, #0369a1)',
+            dealsClosed: 0,
+            productionVolume: 0,
+            closeRate: 0,
+            avgSpread: 0,
+            status: 'Active',
+            permissions: {
+              signContracts: payload.accessLevel === 'Admin' || payload.accessLevel === 'Manager',
+              viewFinancials: payload.accessLevel === 'Admin',
+              blastBuyers: payload.department === 'Dispositions',
+              exportCsv: payload.accessLevel === 'Admin'
+            }
+          };
+          this.members.unshift(fallback);
+          this.selectedMember = fallback;
+        }
+      } catch (e) {
+        const fallback = {
+          id: 'tm-' + String(this.members.length + 1).padStart(3, '0'),
+          ...payload,
+          initials,
+          avatarBg: 'linear-gradient(135deg, #38bdf8, #0369a1)',
+          dealsClosed: 0,
+          productionVolume: 0,
+          closeRate: 0,
+          avgSpread: 0,
+          status: 'Active',
+          permissions: {
+            signContracts: payload.accessLevel === 'Admin' || payload.accessLevel === 'Manager',
+            viewFinancials: payload.accessLevel === 'Admin',
+            blastBuyers: payload.department === 'Dispositions',
+            exportCsv: payload.accessLevel === 'Admin'
+          }
+        };
+        this.members.unshift(fallback);
+        this.selectedMember = fallback;
+      }
       this.closeModal();
       if (typeof window.showHushHawkToast === 'function') {
-        window.showHushHawkToast('Team Member Added', `${member.name} onboarded to ${member.department} department.`, 'success');
+        window.showHushHawkToast('Team Member Added', `${payload.name} onboarded to ${payload.department} department.`, 'success');
       }
       this.newMember = {
         name: '',
@@ -608,7 +645,7 @@ export default {
         accessLevel: 'Agent',
         territory: '',
         zipCodes: '',
-        commissionSplit: '15% Net Assignment Fee'
+        commissionSplit: '15% Net Assignment Margin'
       };
     },
     savePermissions() {

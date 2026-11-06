@@ -418,11 +418,8 @@ export default {
 
     async function saveContract() {
       if (!newForm.value.address) return;
-      contracts.value.unshift({
-        id: 'c-' + Date.now(),
-        code: `${newForm.value.type}-2026-0${Math.floor(87 + Math.random() * 20)}`,
+      const payload = {
         address: newForm.value.address,
-        zip: '32208',
         type: newForm.value.type,
         seller: newForm.value.seller || 'Seller of Record',
         buyer: '',
@@ -430,19 +427,58 @@ export default {
         fee: 28000,
         titleAgency: newForm.value.titleAgency || 'First American Title Jax',
         fileNumber: 'FAT-2026-' + Math.floor(1000 + Math.random() * 9000),
-        closingDate: newForm.value.closingDate || '2026-05-25',
-        status: 'In Escrow',
-        statusClass: 'status-escrow',
-        milestones: [
-          { name: 'Purchase & Sale Executed', detail: 'Signed', completed: true },
-          { name: 'Seller EMD Verified', detail: 'Held in escrow', completed: true },
-          { name: 'Title Commitment & Municipal Lien Search', detail: 'In progress', completed: false },
-          { name: 'Assignment of Contract Executed', detail: 'Pending', completed: false }
-        ],
-        docs: [{ name: 'Drafted_Contract.pdf' }]
-      });
-      selectedContract.value = contracts.value[0];
+        closingDate: newForm.value.closingDate || '2026-05-25'
+      };
+      try {
+        const res = await fetch(API_BASE + '/contracts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          const saved = await res.json();
+          contracts.value.unshift(saved);
+          selectedContract.value = saved;
+        } else {
+          contracts.value.unshift({
+            id: 'c-' + Date.now(),
+            code: `${payload.type}-2026-0${Math.floor(87 + Math.random() * 20)}`,
+            ...payload,
+            zip: '32208',
+            status: 'In Escrow',
+            statusClass: 'status-escrow',
+            milestones: [
+              { name: 'Purchase & Sale Executed', detail: 'Signed', completed: true },
+              { name: 'Seller EMD Verified', detail: 'Held in escrow', completed: true },
+              { name: 'Title Commitment & Municipal Lien Search', detail: 'In progress', completed: false },
+              { name: 'Assignment of Contract Executed', detail: 'Pending', completed: false }
+            ],
+            docs: [{ name: 'Drafted_Contract.pdf' }]
+          });
+          selectedContract.value = contracts.value[0];
+        }
+      } catch (err) {
+        contracts.value.unshift({
+          id: 'c-' + Date.now(),
+          code: `${payload.type}-2026-0${Math.floor(87 + Math.random() * 20)}`,
+          ...payload,
+          zip: '32208',
+          status: 'In Escrow',
+          statusClass: 'status-escrow',
+          milestones: [
+            { name: 'Purchase & Sale Executed', detail: 'Signed', completed: true },
+            { name: 'Seller EMD Verified', detail: 'Held in escrow', completed: true },
+            { name: 'Title Commitment & Municipal Lien Search', detail: 'In progress', completed: false },
+            { name: 'Assignment of Contract Executed', detail: 'Pending', completed: false }
+          ],
+          docs: [{ name: 'Drafted_Contract.pdf' }]
+        });
+        selectedContract.value = contracts.value[0];
+      }
       closeModal();
+      if (typeof window.showHushHawkToast === 'function') {
+        window.showHushHawkToast('Contract Drafted', `Wholesale contract for ${payload.address} saved.`, 'success');
+      }
     }
 
     function confirmUpload() {

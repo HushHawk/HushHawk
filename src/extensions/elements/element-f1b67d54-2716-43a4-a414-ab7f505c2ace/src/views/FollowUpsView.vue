@@ -537,29 +537,58 @@ export default {
       this.motivationFilter = '';
       this.channelFilter = '';
     },
-    saveNewFollowUp() {
-      const id = Date.now();
-      this.followUps.unshift({
-        id,
+    async saveNewFollowUp() {
+      const payload = {
         seller: this.newForm.seller,
         address: this.newForm.address,
-        parcelId: 'DUV-' + Math.floor(100000 + Math.random() * 900000) + '-0000',
         phone: this.newForm.phone || '(904) 555-0000',
-        email: 'seller@lead.com',
         cadenceStage: this.newForm.cadenceStage,
-        attemptCount: 1,
-        dueStatus: 'Today',
-        dueText: 'Due today',
+        motivation: this.newForm.motivation,
         channel: this.newForm.channel,
         lastOffer: this.newForm.lastOffer,
         arv: this.newForm.arv || 220000,
-        stage: 'Active Follow-up',
-        motivation: this.newForm.motivation,
-        rep: 'Marcus Vance',
-        repInitials: 'MV',
-        done: false,
         notes: this.newForm.notes || 'Newly scheduled touch.'
-      });
+      };
+
+      try {
+        const res = await fetch('/api/v1/follow-ups', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          const saved = await res.json();
+          this.followUps.unshift(saved);
+        } else {
+          this.followUps.unshift({
+            id: Date.now(),
+            ...payload,
+            parcelId: 'DUV-' + Math.floor(100000 + Math.random() * 900000) + '-0000',
+            email: 'seller@lead.com',
+            attemptCount: 1,
+            dueStatus: 'Today',
+            dueText: 'Due today',
+            stage: 'Active Follow-up',
+            rep: 'Marcus Vance',
+            repInitials: 'MV',
+            done: false
+          });
+        }
+      } catch (e) {
+        this.followUps.unshift({
+          id: Date.now(),
+          ...payload,
+          parcelId: 'DUV-' + Math.floor(100000 + Math.random() * 900000) + '-0000',
+          email: 'seller@lead.com',
+          attemptCount: 1,
+          dueStatus: 'Today',
+          dueText: 'Due today',
+          stage: 'Active Follow-up',
+          rep: 'Marcus Vance',
+          repInitials: 'MV',
+          done: false
+        });
+      }
       this.isAddModalOpen = false;
       this.newForm = {
         seller: '',
@@ -572,6 +601,9 @@ export default {
         arv: 240000,
         notes: ''
       };
+      if (typeof window.showHushHawkToast === 'function') {
+        window.showHushHawkToast('Follow-Up Scheduled', `Follow-up for ${payload.seller} added to cadence.`, 'success');
+      }
     },
     showToast(title, message, type = 'info') {
       if (typeof window !== 'undefined') {

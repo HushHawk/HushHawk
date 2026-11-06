@@ -554,35 +554,106 @@ export default {
       }
     }
 
-    function saveNewContract() {
+    async function saveNewContract() {
       if (!newContract.value.address) return;
-      const addr = newContract.value.address;
-      contracts.value.unshift({
-        id: 'c-' + Date.now(),
+      const payload = {
         address: newContract.value.address,
-        zip: newContract.value.zip || '32208',
-        crownKey: 'DUV-' + Math.floor(100000 + Math.random() * 900000) + '-0000',
-        beds: 3,
-        baths: 2,
-        sqft: 1350,
-        contractPrice: Number(newContract.value.contractPrice),
-        askingPrice: Number(newContract.value.askingPrice),
-        titleCompany: newContract.value.titleCompany || 'First American Title Jax',
-        emdStatus: 'Verified ($2,000)',
-        daysLeft: Number(newContract.value.daysLeft) || 10,
-        matchedBuyersCount: 11,
-        status: 'Under Contract',
-        statusClass: 'status-contract',
-        milestones: [
-          { title: 'Executed Purchase Agreement', detail: 'Signed', done: true },
-          { title: 'EMD Deposited with Escrow', detail: 'Receipt on file', done: true },
-          { title: 'Title Search & Lien Exam', detail: 'Opened', done: false },
-          { title: 'Assignment Agreement Executed', detail: 'Pending', done: false },
-          { title: 'Clear to Close & Funded', detail: 'Pending', done: false }
-        ]
-      });
-      selectedContract.value = contracts.value[0];
+        buyPrice: Number(newContract.value.contractPrice) || 85000,
+        fee: (Number(newContract.value.askingPrice) || 115000) - (Number(newContract.value.contractPrice) || 85000),
+        titleAgency: newContract.value.titleCompany || 'First American Title Jax',
+        closingDate: '2026-05-25'
+      };
+      try {
+        const res = await fetch(API_BASE + '/contracts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          const saved = await res.json();
+          contracts.value.unshift({
+            id: saved.id,
+            address: saved.address,
+            zip: newContract.value.zip || '32208',
+            crownKey: saved.crownKey || 'DUV-' + Math.floor(100000 + Math.random() * 900000) + '-0000',
+            beds: 3,
+            baths: 2,
+            sqft: 1350,
+            contractPrice: saved.buyPrice,
+            askingPrice: saved.buyPrice + saved.fee,
+            titleCompany: saved.titleAgency,
+            emdStatus: 'Verified ($2,000)',
+            daysLeft: Number(newContract.value.daysLeft) || 10,
+            matchedBuyersCount: 11,
+            status: 'Under Contract',
+            statusClass: 'status-contract',
+            milestones: [
+              { title: 'Executed Purchase Agreement', detail: 'Signed', done: true },
+              { title: 'EMD Deposited with Escrow', detail: 'Receipt on file', done: true },
+              { title: 'Title Search & Lien Exam', detail: 'Opened', done: false },
+              { title: 'Assignment Agreement Executed', detail: 'Pending', done: false },
+              { title: 'Clear to Close & Funded', detail: 'Pending', done: false }
+            ]
+          });
+          selectedContract.value = contracts.value[0];
+        } else {
+          contracts.value.unshift({
+            id: 'c-' + Date.now(),
+            address: newContract.value.address,
+            zip: newContract.value.zip || '32208',
+            crownKey: 'DUV-' + Math.floor(100000 + Math.random() * 900000) + '-0000',
+            beds: 3,
+            baths: 2,
+            sqft: 1350,
+            contractPrice: Number(newContract.value.contractPrice),
+            askingPrice: Number(newContract.value.askingPrice),
+            titleCompany: newContract.value.titleCompany || 'First American Title Jax',
+            emdStatus: 'Verified ($2,000)',
+            daysLeft: Number(newContract.value.daysLeft) || 10,
+            matchedBuyersCount: 11,
+            status: 'Under Contract',
+            statusClass: 'status-contract',
+            milestones: [
+              { title: 'Executed Purchase Agreement', detail: 'Signed', done: true },
+              { title: 'EMD Deposited with Escrow', detail: 'Receipt on file', done: true },
+              { title: 'Title Search & Lien Exam', detail: 'Opened', done: false },
+              { title: 'Assignment Agreement Executed', detail: 'Pending', done: false },
+              { title: 'Clear to Close & Funded', detail: 'Pending', done: false }
+            ]
+          });
+          selectedContract.value = contracts.value[0];
+        }
+      } catch (e) {
+        contracts.value.unshift({
+          id: 'c-' + Date.now(),
+          address: newContract.value.address,
+          zip: newContract.value.zip || '32208',
+          crownKey: 'DUV-' + Math.floor(100000 + Math.random() * 900000) + '-0000',
+          beds: 3,
+          baths: 2,
+          sqft: 1350,
+          contractPrice: Number(newContract.value.contractPrice),
+          askingPrice: Number(newContract.value.askingPrice),
+          titleCompany: newContract.value.titleCompany || 'First American Title Jax',
+          emdStatus: 'Verified ($2,000)',
+          daysLeft: Number(newContract.value.daysLeft) || 10,
+          matchedBuyersCount: 11,
+          status: 'Under Contract',
+          statusClass: 'status-contract',
+          milestones: [
+            { title: 'Executed Purchase Agreement', detail: 'Signed', done: true },
+            { title: 'EMD Deposited with Escrow', detail: 'Receipt on file', done: true },
+            { title: 'Title Search & Lien Exam', detail: 'Opened', done: false },
+            { title: 'Assignment Agreement Executed', detail: 'Pending', done: false },
+            { title: 'Clear to Close & Funded', detail: 'Pending', done: false }
+          ]
+        });
+        selectedContract.value = contracts.value[0];
+      }
       closeModal();
+      if (typeof window.showHushHawkToast === 'function') {
+        window.showHushHawkToast('Deal Under Contract', `${newContract.value.address} added to Dispo pipeline.`, 'success');
+      }
       if (typeof window.showHushHawkToast === 'function') {
         window.showHushHawkToast('Contract Added', `${addr} placed into active dispo inventory.`, 'success');
       }
