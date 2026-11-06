@@ -23,3 +23,4 @@ CREATE INDEX IF NOT EXISTS idx_vault_files_linked_prop ON core.vault_files(linke
 CREATE INDEX IF NOT EXISTS idx_vault_files_object_key ON core.vault_files(object_key);
 CREATE INDEX IF NOT EXISTS idx_vault_files_category ON core.vault_files(category);
 CREATE INDEX IF NOT EXISTS idx_vault_files_mime ON core.vault_files(mime_type);
+

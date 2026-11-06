@@ -930,13 +930,27 @@ export default {
 
           if (!authRes.ok) throw new Error('Could not acquire S3 upload authorization');
           const auth = await authRes.json();
-          item.progress = 50;
+          item.progress = 40;
 
-          // 2. Read preview base64 data URL
+          // 2. Direct browser-to-S3 presigned PUT upload
+          if (auth.upload_url && typeof auth.upload_url === 'string' && auth.upload_url.startsWith('https://')) {
+            try {
+              await fetch(auth.upload_url, {
+                method: 'PUT',
+                headers: auth.headers || { 'Content-Type': item.file.type || 'application/octet-stream' },
+                body: item.file
+              });
+            } catch (putErr) {
+              console.warn('[Direct S3 PUT skipped / server will persist buffer]', putErr.message);
+            }
+          }
+          item.progress = 70;
+
+          // 3. Read preview base64 data URL
           const dataUrl = await this.readFileAsDataUrl(item.file);
-          item.progress = 75;
+          item.progress = 85;
 
-          // 3. Register in PostgreSQL RDS core.vault_files
+          // 4. Register in PostgreSQL RDS core.vault_files
           const regRes = await fetch(`${API_BASE}/vault/files`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -970,7 +984,7 @@ export default {
     },
     readFileAsDataUrl(file) {
       return new Promise((resolve) => {
-        if (!file.type || !file.type.startsWith('image/')) {
+        if (!file || file.size > 25 * 1024 * 1024) {
           return resolve(null);
         }
         const reader = new FileReader();
@@ -2073,3 +2087,4 @@ export default {
   }
 }
 </style>
+
