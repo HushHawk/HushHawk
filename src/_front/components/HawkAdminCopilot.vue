@@ -226,6 +226,16 @@ export default {
   },
   computed: {
     shouldShowCopilot() {
+      if (typeof window === 'undefined') return false;
+      const path = (this.$route?.path || window.location.pathname || '').toLowerCase();
+      if (path === '/login' || path.startsWith('/login') || path === '/signup' || path.startsWith('/signup') || path === '/forgot-password' || path.startsWith('/forgot-password')) {
+        return false;
+      }
+      if (typeof document !== 'undefined') {
+        if (document.querySelector('.hushhawk-auth-wrapper, .auth-card, #login-email, .hushhawk-auth-forwarding')) {
+          return false;
+        }
+      }
       return this.isLoggedIn;
     }
   },
@@ -248,13 +258,15 @@ export default {
     window.addEventListener('storage', this.checkAuthStatus);
     window.addEventListener('popstate', this.checkAuthStatus);
     window.addEventListener('hashchange', this.checkAuthStatus);
-    this.authCheckInterval = setInterval(this.checkAuthStatus, 800);
+    window.addEventListener('hushhawk-auth-change', this.checkAuthStatus);
+    this.authCheckInterval = setInterval(this.checkAuthStatus, 500);
   },
   beforeUnmount() {
     window.removeEventListener('keydown', this.handleKeyDown);
     window.removeEventListener('storage', this.checkAuthStatus);
     window.removeEventListener('popstate', this.checkAuthStatus);
     window.removeEventListener('hashchange', this.checkAuthStatus);
+    window.removeEventListener('hushhawk-auth-change', this.checkAuthStatus);
     if (this.authCheckInterval) {
       clearInterval(this.authCheckInterval);
     }
@@ -266,7 +278,7 @@ export default {
         return false;
       }
 
-      // Check current route/path/hash: strictly hide on unauthenticated auth screens
+      // 1. Strict route suppression: never show on auth routes
       const path = (this.$route?.path || window.location.pathname || '').toLowerCase();
       const hash = (window.location.hash || '').toLowerCase();
 
@@ -290,9 +302,9 @@ export default {
         return false;
       }
 
-      // If the login gateway or auth screen is currently rendered in the DOM, strictly hide
+      // 2. Strict DOM suppression: if login gateway or forwarding view is rendered, hide immediately
       if (typeof document !== 'undefined') {
-        const authDomPresent = !!document.querySelector('.hushhawk-auth-wrapper, .auth-card, #login-email');
+        const authDomPresent = !!document.querySelector('.hushhawk-auth-wrapper, .auth-card, #login-email, .hushhawk-auth-forwarding');
         if (authDomPresent) {
           this.isLoggedIn = false;
           if (this.isOpen) this.isOpen = false;
@@ -300,32 +312,29 @@ export default {
         }
       }
 
-      // Verify active authenticated session or token in storage
+      // 3. Strict global authentication flag check
+      if (typeof window.__HUSHHAWK_AUTHENTICATED__ === 'boolean' && !window.__HUSHHAWK_AUTHENTICATED__) {
+        this.isLoggedIn = false;
+        if (this.isOpen) this.isOpen = false;
+        return false;
+      }
+
+      // 4. Verify valid authenticated session payload in storage
       let hasSession = false;
       try {
         const rawSession =
           window.sessionStorage.getItem('hushhawk_session') ||
-          window.localStorage.getItem('hushhawk_session') ||
-          window.localStorage.getItem('ww-auth-session');
-        const token = window.localStorage.getItem('hushhawk_auth_token');
+          window.localStorage.getItem('hushhawk_session');
 
         if (rawSession) {
           try {
             const parsed = JSON.parse(rawSession);
-            if (parsed && (parsed.email || parsed.token || parsed.user || parsed.id || parsed.role || parsed.name)) {
+            if (parsed && (parsed.email || parsed.token || parsed.user || parsed.id || parsed.role)) {
               hasSession = true;
             }
           } catch (e) {
-            if (rawSession.length > 5) hasSession = true;
+            hasSession = false;
           }
-        }
-
-        if (token && token.length > 5) {
-          hasSession = true;
-        }
-
-        if (!hasSession && window.wwLib?.wwAuth?.getIsAuthenticated?.()) {
-          hasSession = true;
         }
       } catch (err) {
         hasSession = false;
@@ -523,6 +532,19 @@ export default {
 </script>
 
 <style scoped>
+/* Bulletproof DOM-level suppression of HawkAI on login screen */
+:global(body:has(.hushhawk-auth-wrapper)) .hawk-copilot-container,
+:global(body:has(.auth-card)) .hawk-copilot-container,
+:global(body:has(.hushhawk-auth-forwarding)) .hawk-copilot-container,
+:global(body:has(#login-email)) .hawk-copilot-container,
+:global(.hushhawk-auth-wrapper) ~ .hawk-copilot-container,
+:global(.hushhawk-auth-forwarding) ~ .hawk-copilot-container {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
 .hawk-copilot-container {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   color: #f1f5f9;
