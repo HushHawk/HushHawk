@@ -357,25 +357,49 @@ export default {
       this.priorityFilter = '';
       this.assigneeFilter = '';
     },
-    saveNewTask() {
-      const id = Date.now();
-      const initials = this.newTask.assignee.split(' ').map(n => n[0]).join('');
+    async saveNewTask() {
       const assignedRep = this.newTask.assignee;
       const taskTitle = this.newTask.title;
-      this.tasks.unshift({
-        id,
+      const payload = {
         title: this.newTask.title,
         description: this.newTask.description,
         deal: this.newTask.deal,
-        parcel: 'DUV-' + Math.floor(100000 + Math.random() * 900000) + '-0000',
         category: this.newTask.category,
         dueDate: this.newTask.dueDate,
-        dueStatus: 'today',
         priority: this.newTask.priority,
-        assignee: this.newTask.assignee,
-        repInitials: initials,
-        done: false
-      });
+        assignee: this.newTask.assignee
+      };
+      try {
+        const res = await fetch('/api/v1/tasks', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          const saved = await res.json();
+          this.tasks.unshift(saved);
+        } else {
+          const initials = assignedRep.split(' ').map(n => n[0]).join('');
+          this.tasks.unshift({
+            id: Date.now(),
+            ...payload,
+            parcel: 'DUV-' + Math.floor(100000 + Math.random() * 900000) + '-0000',
+            dueStatus: 'today',
+            repInitials: initials,
+            done: false
+          });
+        }
+      } catch (e) {
+        const initials = assignedRep.split(' ').map(n => n[0]).join('');
+        this.tasks.unshift({
+          id: Date.now(),
+          ...payload,
+          parcel: 'DUV-' + Math.floor(100000 + Math.random() * 900000) + '-0000',
+          dueStatus: 'today',
+          repInitials: initials,
+          done: false
+        });
+      }
       this.isAddModalOpen = false;
       if (typeof window.showHushHawkToast === 'function') {
         window.showHushHawkToast('Task Created', `"${taskTitle.slice(0, 35)}..." assigned to ${assignedRep}.`, 'success');

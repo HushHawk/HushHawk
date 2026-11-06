@@ -317,28 +317,64 @@ export default {
     sendDirections(ev) {
       this.showToast('Lockbox & Access Dispatched', `Sent SMS with lockbox code (${ev.lockbox || 'N/A'}) and GPS directions to ${ev.contactName} (${ev.phone || '(904) 555-0199'}).`, 'success');
     },
-    saveNewAppointment() {
-      const id = Date.now();
+    async saveNewAppointment() {
       const typeObj = this.eventTypes.find(t => t.name === this.newAppt.type) || this.eventTypes[0];
       const initials = this.newAppt.rep.split(' ').map(n => n[0]).join('');
-      this.events.push({
-        id,
-        date: this.newAppt.date,
-        dayNum: this.newAppt.date.split('-')[2] || '27',
-        dateString: this.newAppt.date,
-        time: this.newAppt.time,
+      const payload = {
         title: this.newAppt.title,
         address: this.newAppt.address,
-        parcelId: 'DUV-' + Math.floor(100000 + Math.random() * 900000) + '-0000',
         type: this.newAppt.type,
-        color: typeObj.color,
         rep: this.newAppt.rep,
-        repInitials: initials,
-        contactName: 'Field Contact',
-        phone: this.newAppt.phone || '(904) 555-0100',
-        lockbox: this.newAppt.lockbox,
+        date: this.newAppt.date,
+        time: this.newAppt.time,
         notes: this.newAppt.notes
-      });
+      };
+      try {
+        const res = await fetch('/api/v1/calendar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          const saved = await res.json();
+          this.events.push({
+            ...saved,
+            dayNum: (saved.date || '').split('-')[2] || '27',
+            dateString: saved.date,
+            color: typeObj.color,
+            repInitials: initials,
+            contactName: 'Field Contact',
+            phone: this.newAppt.phone || '(904) 555-0100',
+            lockbox: this.newAppt.lockbox
+          });
+        } else {
+          this.events.push({
+            id: Date.now(),
+            ...payload,
+            dayNum: payload.date.split('-')[2] || '27',
+            dateString: payload.date,
+            parcelId: 'DUV-' + Math.floor(100000 + Math.random() * 900000) + '-0000',
+            color: typeObj.color,
+            repInitials: initials,
+            contactName: 'Field Contact',
+            phone: this.newAppt.phone || '(904) 555-0100',
+            lockbox: this.newAppt.lockbox
+          });
+        }
+      } catch (e) {
+        this.events.push({
+          id: Date.now(),
+          ...payload,
+          dayNum: payload.date.split('-')[2] || '27',
+          dateString: payload.date,
+          parcelId: 'DUV-' + Math.floor(100000 + Math.random() * 900000) + '-0000',
+          color: typeObj.color,
+          repInitials: initials,
+          contactName: 'Field Contact',
+          phone: this.newAppt.phone || '(904) 555-0100',
+          lockbox: this.newAppt.lockbox
+        });
+      }
       this.isAddModalOpen = false;
       this.newAppt = {
         title: '',
@@ -351,6 +387,7 @@ export default {
         phone: '',
         notes: ''
       };
+      this.showToast('Appointment Booked', `"${payload.title}" scheduled for ${payload.date}.`, 'success');
     }
   }
 };
