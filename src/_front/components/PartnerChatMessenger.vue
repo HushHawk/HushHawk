@@ -852,8 +852,27 @@ export default {
       }
     },
     navigateToProperty(propId) {
+      if (!propId) return;
       if (typeof window !== 'undefined') {
-        window.location.hash = `#/properties?id=${propId}`;
+        const currentPath = (window.location.pathname || '').toLowerCase();
+        const isOnPropertiesPage = currentPath === '/properties' || currentPath.startsWith('/properties');
+
+        if (isOnPropertiesPage) {
+          // Already on properties page: update URL search param without full reload & notify view
+          const newUrl = new URL(window.location.href);
+          newUrl.searchParams.set('id', propId);
+          window.history.pushState({}, '', newUrl.toString());
+          window.dispatchEvent(new CustomEvent('hushhawk-select-property', { detail: { property_id: propId } }));
+        } else {
+          // Navigate to Properties workspace
+          if (window.wwLib && window.wwLib.wwApp && typeof window.wwLib.wwApp.goTo === 'function') {
+            window.wwLib.wwApp.goTo('/properties', { id: propId });
+          } else if (this.$router && typeof this.$router.push === 'function') {
+            this.$router.push({ path: '/properties', query: { id: propId } });
+          } else {
+            window.location.href = `/properties?id=${encodeURIComponent(propId)}`;
+          }
+        }
       }
     },
     handleExternalChatOpen(e) {
