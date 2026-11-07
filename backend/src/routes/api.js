@@ -3140,6 +3140,354 @@ apiRouter.post('/communications/messages', (req, res) => {
     }
 });
 
+// ============================================================================
+// PARTNER MULTI-CHAT & PROPERTY LAYER MESSENGER (ALEX RICHARD & WALDO ELLIS)
+// ============================================================================
+
+apiRouter.get('/chat/threads', async (req, res) => {
+    try {
+        const activeUser = req.query.user || 'Alex Richard';
+        const isAlex = activeUser.toLowerCase().includes('alex');
+        
+        let threads = [];
+        try {
+            const query = `
+                SELECT 
+                    t.id, t.title, t.thread_type, t.property_id, t.crownkey, t.created_by,
+                    t.last_message_text, t.last_message_at, t.last_message_sender, t.created_at, t.updated_at,
+                    p.address_line1, p.city, p.state_code, p.postal_code, p.parcel_raw,
+                    COUNT(m.id) FILTER (WHERE ${isAlex ? 'm.is_read_alex = false' : 'm.is_read_waldo = false'}) AS unread_count,
+                    COUNT(m.id) AS total_messages
+                FROM core.partner_chat_threads t
+                LEFT JOIN core.properties p ON t.property_id = p.property_id
+                LEFT JOIN core.partner_chat_messages m ON t.id = m.thread_id
+                GROUP BY t.id, p.address_line1, p.city, p.state_code, p.postal_code, p.parcel_raw
+                ORDER BY t.last_message_at DESC NULLS LAST, t.updated_at DESC
+            `;
+            const { rows } = await pool.query(query);
+            threads = rows.map(r => ({
+                id: r.id,
+                title: r.title,
+                thread_type: r.thread_type,
+                property_id: r.property_id,
+                crownkey: r.crownkey,
+                created_by: r.created_by,
+                last_message_text: r.last_message_text,
+                last_message_at: r.last_message_at,
+                last_message_sender: r.last_message_sender,
+                unread_count: parseInt(r.unread_count || '0', 10),
+                total_messages: parseInt(r.total_messages || '0', 10),
+                property: r.property_id ? {
+                    property_id: r.property_id,
+                    address: r.address_line1,
+                    city: r.city,
+                    state: r.state_code,
+                    zip: r.postal_code,
+                    parcel: r.parcel_raw
+                } : null
+            }));
+        } catch (dbErr) {
+            console.warn('[Chat Threads DB fallback]', dbErr.message);
+            threads = [];
+        }
+
+        const totalUnread = threads.reduce((acc, t) => acc + (t.unread_count || 0), 0);
+
+        res.json({
+            ok: true,
+            active_user: isAlex ? 'Alex Richard' : 'Waldo Ellis',
+            partner_user: isAlex ? 'Waldo Ellis' : 'Alex Richard',
+            total_unread: totalUnread,
+            threads
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+apiRouter.post('/chat/threads', async (req, res) => {
+    try {
+        const { title, thread_type, property_id, created_by } = req.body;
+        const sender = created_by || 'Alex Richard';
+
+        // If thread for property already exists, return existing
+        if (property_id) {
+            const existing = await pool.query(
+                `SELECT * FROM core.partner_chat_threads WHERE property_id = $1 LIMIT 1`,
+                [property_id]
+            );
+            if (existing.rows.length > 0) {
+                return res.json({ ok: true, thread: existing.rows[0], created: false });
+            }
+        }
+
+        // Fetch property details for crownkey & title
+        let propTitle = title;
+        let crownkey = 'ALL-PARTNER-CHANNEL';
+        if (property_id) {
+            const propRes = await pool.query(
+                `SELECT address_line1, city, state_code, postal_code, parcel_raw FROM core.properties WHERE property_id = $1`,
+                [property_id]
+            );
+            if (propRes.rows.length > 0) {
+                const p = propRes.rows[0];
+                propTitle = `${p.address_line1}, ${p.city} ${p.state_code}`;
+                crownkey = `DUV-${p.parcel_raw || p.address_line1}`;
+            }
+        }
+
+        const insertQuery = `
+            INSERT INTO core.partner_chat_threads 
+                (title, thread_type, property_id, crownkey, created_by, last_message_text, last_message_at, last_message_sender)
+            VALUES ($1, $2, $3, $4, $5, $6, now(), $7)
+            RETURNING *
+        `;
+        const { rows } = await pool.query(insertQuery, [
+            propTitle || 'New Conversation',
+            property_id ? 'property' : (thread_type || 'general'),
+            property_id || null,
+            crownkey,
+            sender,
+            'Thread created',
+            sender
+        ]);
+
+        res.status(201).json({ ok: true, thread: rows[0], created: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+apiRouter.get('/chat/threads/:threadId/messages', async (req, res) => {
+    try {
+        const { threadId } = req.params;
+        const activeUser = req.query.user || 'Alex Richard';
+        const isAlex = activeUser.toLowerCase().includes('alex');
+
+        // Fetch thread
+        const threadRes = await pool.query(`
+            SELECT t.*, p.address_line1, p.city, p.state_code, p.postal_code, p.parcel_raw
+            FROM core.partner_chat_threads t
+            LEFT JOIN core.properties p ON t.property_id = p.property_id
+            WHERE t.id = $1
+        `, [threadId]);
+
+        if (threadRes.rows.length === 0) {
+            return res.status(404).json({ error: 'Thread not found' });
+        }
+
+        // Fetch messages
+        const msgsRes = await pool.query(`
+            SELECT * FROM core.partner_chat_messages
+            WHERE thread_id = $1
+            ORDER BY created_at ASC
+        `, [threadId]);
+
+        // Auto-mark as read for activeUser
+        await pool.query(`
+            UPDATE core.partner_chat_messages
+            SET ${isAlex ? 'is_read_alex = true' : 'is_read_waldo = true'}
+            WHERE thread_id = $1 AND ${isAlex ? 'is_read_alex = false' : 'is_read_waldo = false'}
+        `, [threadId]).catch(e => console.warn('[Mark read warn]', e.message));
+
+        res.json({
+            ok: true,
+            thread: threadRes.rows[0],
+            messages: msgsRes.rows
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+apiRouter.post('/chat/threads/:threadId/messages', async (req, res) => {
+    try {
+        const { threadId } = req.params;
+        const { sender_name, sender_role, message_text, tag, attachments } = req.body;
+        if (!message_text || !message_text.trim()) {
+            return res.status(400).json({ error: 'Message text is required' });
+        }
+
+        const sender = sender_name || 'Alex Richard';
+        const isAlex = sender.toLowerCase().includes('alex');
+        const role = sender_role || (isAlex ? 'Acquisitions Lead (Admin)' : 'Dispositions Lead (Partner)');
+
+        // Get thread for property_id & title
+        const threadRes = await pool.query(`SELECT * FROM core.partner_chat_threads WHERE id = $1`, [threadId]);
+        if (threadRes.rows.length === 0) {
+            return res.status(404).json({ error: 'Thread not found' });
+        }
+        const thread = threadRes.rows[0];
+
+        // Insert message
+        const insertMsg = `
+            INSERT INTO core.partner_chat_messages
+                (thread_id, sender_name, sender_role, message_text, property_id, tag, attachments, is_read_alex, is_read_waldo)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+            RETURNING *
+        `;
+        const { rows: msgRows } = await pool.query(insertMsg, [
+            threadId,
+            sender,
+            role,
+            message_text.trim(),
+            thread.property_id || null,
+            tag || null,
+            JSON.stringify(attachments || []),
+            isAlex,
+            !isAlex
+        ]);
+
+        // Update thread
+        await pool.query(`
+            UPDATE core.partner_chat_threads
+            SET last_message_text = $1, last_message_at = now(), last_message_sender = $2, updated_at = now()
+            WHERE id = $3
+        `, [message_text.trim(), sender, threadId]);
+
+        // If tagged to property, record into core.interactions
+        if (thread.property_id) {
+            try {
+                await pool.query(`
+                    INSERT INTO core.interactions
+                        (interaction_id, property_id, method, direction, actor_id, result, notes, occurred_at)
+                    VALUES
+                        (gen_random_uuid(), $1, 'TEXT', 'OUTBOUND', $2, 'RECORDED', $3, now())
+                `, [
+                    thread.property_id,
+                    sender,
+                    `[Partner iMessage] ${sender}: ${message_text.slice(0, 300)}`
+                ]);
+            } catch (intErr) {
+                console.warn('[Partner Chat Interaction Warn]', intErr.message);
+            }
+        }
+
+        // Emit real-time operational notification
+        try {
+            await pool.query(`
+                INSERT INTO ops.notifications (title, body, category, is_read, metadata)
+                VALUES ($1, $2, 'PARTNER_CHAT', false, $3)
+            `, [
+                `New message from ${sender} (${thread.title})`,
+                message_text.slice(0, 120),
+                JSON.stringify({ threadId, property_id: thread.property_id, sender })
+            ]);
+        } catch (notifErr) {
+            console.warn('[Notification insert warn]', notifErr.message);
+        }
+
+        res.status(201).json({
+            ok: true,
+            message: msgRows[0]
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+apiRouter.patch('/chat/threads/:threadId/read', async (req, res) => {
+    try {
+        const { threadId } = req.params;
+        const activeUser = req.body.user_name || 'Alex Richard';
+        const isAlex = activeUser.toLowerCase().includes('alex');
+
+        await pool.query(`
+            UPDATE core.partner_chat_messages
+            SET ${isAlex ? 'is_read_alex = true' : 'is_read_waldo = true'}
+            WHERE thread_id = $1
+        `, [threadId]);
+
+        res.json({ ok: true, threadId, user_name: activeUser });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+apiRouter.get('/chat/presence', async (req, res) => {
+    try {
+        const { rows } = await pool.query(`
+            SELECT * FROM core.partner_presence ORDER BY user_name ASC
+        `);
+        res.json({ ok: true, presence: rows });
+    } catch (err) {
+        res.json({
+            ok: true,
+            presence: [
+                { user_name: 'Alex Richard', full_name: 'Alex Richard', status: 'online', role: 'Acquisitions Lead (Admin)' },
+                { user_name: 'Waldo Ellis', full_name: 'Waldo Ellis', status: 'online', role: 'Dispositions Lead (Partner)' }
+            ]
+        });
+    }
+});
+
+apiRouter.post('/chat/presence', async (req, res) => {
+    try {
+        const { user_name, status, current_device } = req.body;
+        if (!user_name) return res.status(400).json({ error: 'user_name required' });
+
+        await pool.query(`
+            UPDATE core.partner_presence
+            SET status = COALESCE($1, status),
+                last_active_at = now(),
+                current_device = COALESCE($2, current_device)
+            WHERE user_name = $3
+        `, [status || 'online', current_device, user_name]);
+
+        res.json({ ok: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+apiRouter.get('/chat/search-properties', async (req, res) => {
+    try {
+        const q = (req.query.q || '').trim();
+        let query = `
+            SELECT p.property_id, p.address_line1, p.city, p.state_code, p.postal_code, p.parcel_raw,
+                   t.id as existing_thread_id
+            FROM core.properties p
+            LEFT JOIN core.partner_chat_threads t ON p.property_id = t.property_id
+        `;
+        let params = [];
+        if (q) {
+            query += ` WHERE p.address_line1 ILIKE $1 OR p.city ILIKE $1 OR p.parcel_raw ILIKE $1 OR p.postal_code ILIKE $1 `;
+            params.push(`%${q}%`);
+        }
+        query += ` ORDER BY p.address_line1 ASC LIMIT 15`;
+        const { rows } = await pool.query(query, params);
+        res.json({ ok: true, properties: rows });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+apiRouter.get('/properties/:propertyId/partner-chat', async (req, res) => {
+    try {
+        const { propertyId } = req.params;
+        const threadRes = await pool.query(`
+            SELECT * FROM core.partner_chat_threads WHERE property_id = $1 LIMIT 1
+        `, [propertyId]);
+
+        if (threadRes.rows.length === 0) {
+            return res.json({ ok: true, thread: null, messages: [] });
+        }
+
+        const thread = threadRes.rows[0];
+        const msgsRes = await pool.query(`
+            SELECT * FROM core.partner_chat_messages WHERE thread_id = $1 ORDER BY created_at ASC
+        `, [thread.id]);
+
+        res.json({
+            ok: true,
+            thread,
+            messages: msgsRes.rows
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // --- Calendar Events ---
 apiRouter.get('/calendar', (req, res) => {
     try {
