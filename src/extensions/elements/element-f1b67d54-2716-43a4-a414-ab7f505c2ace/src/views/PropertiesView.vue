@@ -1895,12 +1895,39 @@ export default {
       return list;
     }
   },
+  watch: {
+    '$route.query.id'(newId) {
+      if (newId && this.properties && this.properties.length > 0) {
+        const found = this.properties.find(p => p.property_id === newId);
+        if (found) {
+          this.selectProperty(found);
+        }
+      }
+    }
+  },
   mounted() {
     this.loadProperties();
     document.addEventListener('click', this.closeAllMenus);
+    this.onCustomSelectProperty = (e) => {
+      const propId = e.detail && e.detail.property_id;
+      if (propId) {
+        if (this.properties && this.properties.length > 0) {
+          const found = this.properties.find(p => p.property_id === propId);
+          if (found) {
+            this.selectProperty(found);
+            return;
+          }
+        }
+        this.loadProperties();
+      }
+    };
+    window.addEventListener('hushhawk-select-property', this.onCustomSelectProperty);
   },
   beforeUnmount() {
     document.removeEventListener('click', this.closeAllMenus);
+    if (this.onCustomSelectProperty) {
+      window.removeEventListener('hushhawk-select-property', this.onCustomSelectProperty);
+    }
   },
   methods: {
     async openImportFromVaultModal() {
