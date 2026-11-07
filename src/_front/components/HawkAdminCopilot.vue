@@ -541,15 +541,9 @@ export default {
 </script>
 
 <style scoped>
-/* Bulletproof DOM-level suppression of HawkAI on login screen or when Partner Chat is active */
-:global(body:has(.hushhawk-auth-wrapper)) .hawk-copilot-container,
-:global(body:has(.auth-card)) .hawk-copilot-container,
-:global(body:has(.hushhawk-auth-forwarding)) .hawk-copilot-container,
-:global(body:has(#login-email)) .hawk-copilot-container,
+/* DOM-level suppression of HawkAI on login screen */
 :global(.hushhawk-auth-wrapper) ~ .hawk-copilot-container,
-:global(.hushhawk-auth-forwarding) ~ .hawk-copilot-container,
-:global(body.partner-chat-active) .hawk-copilot-container,
-:global(body:has(.partner-chat-window:not(.is-minimized))) .hawk-copilot-container {
+:global(.hushhawk-auth-forwarding) ~ .hawk-copilot-container {
   display: none !important;
   visibility: hidden !important;
   opacity: 0 !important;
