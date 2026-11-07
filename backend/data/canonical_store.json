@@ -9602,5 +9602,6 @@
       "webhookUrl": "https://hushhawk-kohl.vercel.app/api/v1/webhooks/podio",
       "lastConnected": "2026-11-02T14:43:32.472Z"
     }
-  }
+  },
+  "partner_chat_messages": []
 }

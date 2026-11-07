@@ -51,8 +51,11 @@ CREATE TABLE IF NOT EXISTS core.partner_chat_messages (
   property_id UUID REFERENCES core.properties(property_id) ON DELETE SET NULL,
   tag TEXT, -- 'Offer', 'Title', 'Rehab', 'Contract', etc.
   attachments JSONB DEFAULT '[]'::jsonb,
-  is_read_alex BOOLEAN DEFAULT true,
-  is_read_waldo BOOLEAN DEFAULT true,
+  is_read_alex BOOLEAN DEFAULT false,
+  is_read_waldo BOOLEAN DEFAULT false,
+  reply_to_id UUID REFERENCES core.partner_chat_messages(id) ON DELETE SET NULL,
+  reply_to_sender TEXT,
+  reply_to_text TEXT,
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -77,50 +80,13 @@ ON CONFLICT (user_name) DO UPDATE SET
   status = 'online',
   last_active_at = now();
 
--- 6. Seed Initial Multi-Chat Conversations
--- General Channel
+-- 6. Seed Clean Multi-Chat Layers (Ready for Real Live Messaging)
 INSERT INTO core.partner_chat_threads (id, title, thread_type, property_id, crownkey, created_by, last_message_text, last_message_at, last_message_sender)
 VALUES
-  ('00000000-0000-0000-0000-000000000001', 'General Partner Channel', 'general', NULL, 'ALL-DUV-GENERAL', 'Alex Richard', 'Going through title clearances now, looking sharp.', now() - interval '18 minutes', 'Waldo Ellis')
-ON CONFLICT (id) DO NOTHING;
-
-INSERT INTO core.partner_chat_messages (thread_id, sender_name, sender_role, message_text, is_read_alex, is_read_waldo, created_at)
-VALUES
-  ('00000000-0000-0000-0000-000000000001', 'Alex Richard', 'Acquisitions Lead', 'Hey Waldo, reviewing our Q4 disposition targets today. Let me know when you have reviewed the Clay County probate batch.', true, true, now() - interval '25 minutes'),
-  ('00000000-0000-0000-0000-000000000001', 'Waldo Ellis', 'Dispositions Lead', 'Going through title clearances now, looking sharp. We have 3 ready for cash buyers.', true, true, now() - interval '18 minutes')
-ON CONFLICT DO NOTHING;
-
--- 123 Main St Thread
-INSERT INTO core.partner_chat_threads (id, title, thread_type, property_id, crownkey, created_by, last_message_text, last_message_at, last_message_sender)
-VALUES
-  ('00000000-0000-0000-0000-000000000123', '123 Main St, Jacksonville FL', 'property', 'b0d10000-0000-0000-0000-000000123001', 'DUV-04-05-25-001230-001-00 · MAIL', 'Alex Richard', 'Drafting the agreement right now. Will attach once signed.', now() - interval '32 minutes', 'Alex Richard')
-ON CONFLICT (id) DO NOTHING;
-
-INSERT INTO core.partner_chat_messages (thread_id, sender_name, sender_role, message_text, property_id, tag, is_read_alex, is_read_waldo, created_at)
-VALUES
-  ('00000000-0000-0000-0000-000000000123', 'Alex Richard', 'Acquisitions Lead', 'Waldo, seller for 123 Main St just called back. They are willing to accept $145k cash with a 14-day close.', 'b0d10000-0000-0000-0000-000000123001', 'Offer', true, true, now() - interval '45 minutes'),
-  ('00000000-0000-0000-0000-000000000123', 'Waldo Ellis', 'Dispositions Lead', 'Great work! I ran the comps for 123 Main St. ARV is around $230k with $28k rehab. Let us send the purchase agreement today.', 'b0d10000-0000-0000-0000-000000123001', 'Analysis', true, true, now() - interval '38 minutes'),
-  ('00000000-0000-0000-0000-000000000123', 'Alex Richard', 'Acquisitions Lead', 'Drafting the agreement right now. Will attach once signed.', 'b0d10000-0000-0000-0000-000000123001', 'Contract', true, true, now() - interval '32 minutes')
-ON CONFLICT DO NOTHING;
-
--- 881 Main St Thread
-INSERT INTO core.partner_chat_threads (id, title, thread_type, property_id, crownkey, created_by, last_message_text, last_message_at, last_message_sender)
-VALUES
-  ('00000000-0000-0000-0000-000000000881', '881 Main St, Jacksonville FL', 'property', 'b0d10000-0000-0000-0000-000000881002', 'DUV-04-05-25-008810-002-00 · MAIL', 'Waldo Ellis', 'Title search showed a secondary municipal lien of $3,400.', now() - interval '12 minutes', 'Waldo Ellis')
-ON CONFLICT (id) DO NOTHING;
-
-INSERT INTO core.partner_chat_messages (thread_id, sender_name, sender_role, message_text, property_id, tag, is_read_alex, is_read_waldo, created_at)
-VALUES
-  ('00000000-0000-0000-0000-000000000881', 'Waldo Ellis', 'Dispositions Lead', 'Alex, quick heads up on 881 Main St. Title search showed a secondary municipal lien of $3,400. We need to factor that into our offer.', 'b0d10000-0000-0000-0000-000000881002', 'Title', false, true, now() - interval '12 minutes')
-ON CONFLICT DO NOTHING;
-
--- 3245 Main St Thread
-INSERT INTO core.partner_chat_threads (id, title, thread_type, property_id, crownkey, created_by, last_message_text, last_message_at, last_message_sender)
-VALUES
-  ('00000000-0000-0000-0000-000000003245', '3245 Main St, Jacksonville FL', 'property', 'b0d10000-0000-0000-0000-000003245003', 'DUV-04-05-25-032450-003-00 · MAIL', 'Waldo Ellis', 'Buyer pool is asking if the roof has an inspection report available.', now() - interval '5 minutes', 'Waldo Ellis')
-ON CONFLICT (id) DO NOTHING;
-
-INSERT INTO core.partner_chat_messages (thread_id, sender_name, sender_role, message_text, property_id, tag, is_read_alex, is_read_waldo, created_at)
-VALUES
-  ('00000000-0000-0000-0000-000000003245', 'Waldo Ellis', 'Dispositions Lead', 'Buyer pool on 3245 Main St is asking if the roof has an inspection report available in the vault.', 'b0d10000-0000-0000-0000-000003245003', 'Inspection', false, true, now() - interval '5 minutes')
-ON CONFLICT DO NOTHING;
+  ('00000000-0000-0000-0000-000000000001', 'General Partner Channel', 'general', NULL, 'ALL-DUV-GENERAL', 'Alex Richard', NULL, now(), NULL),
+  ('00000000-0000-0000-0000-000000000123', '123 Main St, Jacksonville FL', 'property', 'b0d10000-0000-0000-0000-000000123001', 'DUV-04-05-25-001230-001-00 · MAIL', 'Alex Richard', NULL, now(), NULL),
+  ('00000000-0000-0000-0000-000000000881', '881 Main St, Jacksonville FL', 'property', 'b0d10000-0000-0000-0000-000000881002', 'DUV-04-05-25-008810-002-00 · MAIL', 'Waldo Ellis', NULL, now(), NULL),
+  ('00000000-0000-0000-0000-000000003245', '3245 Main St, Jacksonville FL', 'property', 'b0d10000-0000-0000-0000-0000003245003', 'DUV-04-05-25-032450-003-00 · MAIL', 'Waldo Ellis', NULL, now(), NULL)
+ON CONFLICT (id) DO UPDATE SET
+  last_message_text = EXCLUDED.last_message_text,
+  last_message_sender = EXCLUDED.last_message_sender;

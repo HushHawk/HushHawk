@@ -1,6 +1,6 @@
 <template>
   <div v-if="shouldShowMessenger" class="partner-messenger-container">
-    <!-- 1. Floating Trigger Launcher (macOS iMessage Dock Pill) -->
+    <!-- 1. Floating Trigger Launcher (Positioned directly ABOVE HAWKAI) -->
     <transition name="pm-fade">
       <button
         v-if="!isOpen"
@@ -28,35 +28,87 @@
       </button>
     </transition>
 
-    <!-- 2. Pop-up iMessage Window -->
+    <!-- 2. Pop-up iMessage Window (z-index 10005: Never overlaid by HAWKAI) -->
     <transition name="pm-window">
-      <div v-if="isOpen" class="partner-chat-window" :class="{ 'is-wide': isWideMode, 'is-minimized': isMinimized }">
+      <div
+        v-if="isOpen"
+        class="partner-chat-window"
+        :class="{ 'is-wide': isWideMode, 'is-minimized': isMinimized }"
+      >
         <!-- macOS Window Title Bar -->
         <div class="mac-title-bar">
           <div class="mac-traffic-lights">
-            <button class="mac-dot mac-close" @click="closeWindow" title="Close Window"></button>
+            <button class="mac-dot mac-close" @click="closeWindow" title="Close Window (Esc)"></button>
             <button class="mac-dot mac-minimize" @click="toggleMinimize" title="Minimize Window"></button>
             <button class="mac-dot mac-expand" @click="toggleWide" title="Toggle Wide Screen"></button>
           </div>
+
           <div class="mac-title-text">
-            <strong>HushHawk Partner Messenger</strong>
-            <span class="mac-encryption-pill">End-to-End Encrypted RDS</span>
+            <div class="mac-title-main">
+              <span>Partner iMessage</span>
+              <span class="mac-layer-badge">{{ currentLayerShortTitle }}</span>
+            </div>
+            <div class="mac-sub-text">
+              <span class="rds-secure-dot"></span>
+              Encrypted RDS · Real-time
+            </div>
           </div>
+
           <div class="mac-header-actions">
+            <!-- Sleek Persona Switcher Segment -->
+            <div class="persona-segmented-control" title="Switch active perspective">
+              <button
+                type="button"
+                class="psc-btn"
+                :class="{ active: activePersona === 'Alex Richard' }"
+                @click="switchPersona('Alex Richard')"
+                title="Active User: Alex Richard (Me)"
+              >
+                <span class="psc-avatar alex">AR</span>
+                <span class="psc-label">Alex</span>
+              </button>
+              <button
+                type="button"
+                class="psc-btn"
+                :class="{ active: activePersona === 'Waldo Ellis' }"
+                @click="switchPersona('Waldo Ellis')"
+                title="Active User: Waldo Ellis (Partner)"
+              >
+                <span class="psc-avatar waldo">WE</span>
+                <span class="psc-label">Waldo</span>
+              </button>
+            </div>
+
+            <!-- Property Search Toggle Button -->
+            <button
+              class="mac-icon-btn"
+              :class="{ active: isSearchOpen }"
+              @click="toggleSearch"
+              title="Search Properties to Open Layer"
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </button>
+
+            <!-- Sound Alert Toggle -->
             <button
               class="mac-icon-btn"
               :class="{ active: soundEnabled }"
               @click="toggleSound"
-              :title="soundEnabled ? 'Chime sound alert: Enabled' : 'Chime sound alert: Muted'"
+              :title="soundEnabled ? 'Chime sound: Enabled' : 'Chime sound: Muted'"
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
                 <path v-if="soundEnabled" d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
                 <line v-else x1="23" y1="9" x2="17" y2="15"></line>
               </svg>
             </button>
-            <button class="mac-icon-btn" @click="refreshThreads" title="Refresh Live Threads">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" :class="{ spinning: isLoadingThreads }">
+
+            <!-- Refresh Threads -->
+            <button class="mac-icon-btn" @click="refreshThreads" title="Refresh Live Data">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" :class="{ spinning: isLoadingThreads }">
                 <path d="M23 4v6h-6"></path>
                 <path d="M1 20v-6h6"></path>
                 <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
@@ -66,255 +118,301 @@
         </div>
 
         <div v-show="!isMinimized" class="pm-window-content">
-          <!-- 3. Online Presence Box (Alex Richard & Waldo Ellis) -->
-          <div class="partner-presence-box">
-            <div class="presence-header">
-              <span class="presence-title">PARTNERS ONLINE STATUS</span>
-              <div class="persona-switch-wrap">
-                <span class="persona-label">Chatting As:</span>
-                <button
-                  type="button"
-                  class="persona-pill-btn"
-                  :class="{ active: activePersona === 'Alex Richard' }"
-                  @click="switchPersona('Alex Richard')"
-                  title="Switch active user to Alex Richard (Me)"
-                >
-                  <span class="mini-avatar alex">AR</span>
-                  Alex Richard (Me)
-                </button>
-                <button
-                  type="button"
-                  class="persona-pill-btn"
-                  :class="{ active: activePersona === 'Waldo Ellis' }"
-                  @click="switchPersona('Waldo Ellis')"
-                  title="Switch active user to Waldo Ellis (Partner)"
-                >
-                  <span class="mini-avatar waldo">WE</span>
-                  Waldo Ellis (Partner)
-                </button>
-              </div>
+          <!-- 3. Minimal Online Status Ribbon -->
+          <div class="partner-status-ribbon">
+            <div class="psr-partner" :class="{ 'is-me': activePersona === 'Alex Richard' }">
+              <span class="psr-dot online"></span>
+              <strong>Alex Richard</strong>
+              <span class="psr-role">Acquisitions (Admin)</span>
+              <span class="psr-tag-you" v-if="activePersona === 'Alex Richard'">YOU</span>
             </div>
 
-            <div class="presence-cards-row">
-              <div class="presence-card" :class="{ 'current-me': activePersona === 'Alex Richard' }">
-                <div class="pc-avatar-wrap">
-                  <div class="pc-avatar alex">AR</div>
-                  <span class="pc-dot online"></span>
-                </div>
-                <div class="pc-details">
-                  <div class="pc-name-row">
-                    <strong>Alex Richard</strong>
-                    <span class="pc-tag-me" v-if="activePersona === 'Alex Richard'">YOU</span>
-                  </div>
-                  <span class="pc-role">Acquisitions Lead · Online</span>
-                </div>
-              </div>
+            <div class="psr-divider">·</div>
 
-              <div class="presence-card" :class="{ 'current-me': activePersona === 'Waldo Ellis' }">
-                <div class="pc-avatar-wrap">
-                  <div class="pc-avatar waldo">WE</div>
-                  <span class="pc-dot online"></span>
-                </div>
-                <div class="pc-details">
-                  <div class="pc-name-row">
-                    <strong>Waldo Ellis</strong>
-                    <span class="pc-tag-me" v-if="activePersona === 'Waldo Ellis'">YOU</span>
-                  </div>
-                  <span class="pc-role">Dispositions Lead · Online</span>
-                </div>
-              </div>
+            <div class="psr-partner" :class="{ 'is-me': activePersona === 'Waldo Ellis' }">
+              <span class="psr-dot online"></span>
+              <strong>Waldo Ellis</strong>
+              <span class="psr-role">Dispositions (Partner)</span>
+              <span class="psr-tag-you" v-if="activePersona === 'Waldo Ellis'">YOU</span>
             </div>
           </div>
 
-          <!-- 4. Property Quick Search & Dropdown Box -->
-          <div class="property-search-section">
-            <div class="search-input-box">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="2">
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-              </svg>
-              <input
-                v-model="propertySearchQuery"
-                type="text"
-                placeholder="Quick search property to start or switch chat (e.g. 123 Main St)..."
-                @focus="showPropertyDropdown = true"
-                @input="filterProperties"
-              />
-              <button
-                v-if="propertySearchQuery"
-                class="search-clear-btn"
-                @click="clearPropertySearch"
-                title="Clear Search"
-              >×</button>
-            </div>
+          <!-- 4. Property Quick Search Bar (Collapsible or activated on click) -->
+          <transition name="pm-slide-down">
+            <div v-if="isSearchOpen" class="property-search-section">
+              <div class="search-input-box">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input
+                  ref="searchInputRef"
+                  v-model="propertySearchQuery"
+                  type="text"
+                  placeholder="Quick search property to start or switch chat (e.g. 123 Main St)..."
+                  @focus="showPropertyDropdown = true"
+                  @input="showPropertyDropdown = true"
+                />
+                <button
+                  v-if="propertySearchQuery"
+                  class="search-clear-btn"
+                  @click="clearPropertySearch"
+                  title="Clear Search"
+                >×</button>
+              </div>
 
-            <!-- Autocomplete Property Dropdown -->
-            <div v-if="showPropertyDropdown && filteredPropertyList.length > 0" class="property-dropdown-menu">
-              <div class="dropdown-header">
-                <span>SELECT PROPERTY FOR DEDICATED THREAD</span>
-                <button class="dropdown-close-btn" @click="showPropertyDropdown = false">Close</button>
-              </div>
-              <div
-                v-for="prop in filteredPropertyList"
-                :key="prop.property_id"
-                class="property-dropdown-item"
-                @click="selectPropertyFromDropdown(prop)"
-              >
-                <div class="pdi-icon">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="2">
-                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                  </svg>
+              <!-- Autocomplete Property Dropdown -->
+              <div v-if="showPropertyDropdown && filteredPropertyList.length > 0" class="property-dropdown-menu">
+                <div class="dropdown-header">
+                  <span>SELECT PROPERTY FOR DEDICATED THREAD</span>
+                  <button class="dropdown-close-btn" @click="showPropertyDropdown = false">Close</button>
                 </div>
-                <div class="pdi-info">
-                  <div class="pdi-address">{{ prop.address_line1 || 'Property Record' }}, {{ prop.city }} {{ prop.state_code }}</div>
-                  <div class="pdi-sub">Parcel: {{ prop.parcel_raw || 'Standard' }} · ZIP: {{ prop.postal_code }}</div>
+                <div
+                  v-for="prop in filteredPropertyList"
+                  :key="prop.property_id"
+                  class="property-dropdown-item"
+                  @click="selectPropertyFromDropdown(prop)"
+                >
+                  <div class="pdi-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="2">
+                      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    </svg>
+                  </div>
+                  <div class="pdi-info">
+                    <div class="pdi-address">{{ prop.address_line1 || 'Property Record' }}, {{ prop.city }} {{ prop.state_code }}</div>
+                    <div class="pdi-sub">Parcel: {{ prop.parcel_raw || 'Standard' }} · ZIP: {{ prop.postal_code }}</div>
+                  </div>
+                  <span class="pdi-badge" v-if="prop.existing_thread_id">Active Layer</span>
+                  <span class="pdi-badge pdi-new" v-else>+ Start Layer</span>
                 </div>
-                <span class="pdi-badge" v-if="prop.existing_thread_id">Active Layer</span>
-                <span class="pdi-badge pdi-new" v-else>+ Start Layer</span>
               </div>
             </div>
-          </div>
+          </transition>
 
           <!-- 5. Multi-Chat Layer Sliding Pill Bar -->
           <div class="multi-chat-sliding-bar-wrap">
             <button class="bar-scroll-btn left" @click="scrollTabs('left')" title="Scroll Left">‹</button>
-            <div class="multi-chat-pill-bar" ref="tabBarRef">
-              <button
+
+            <div class="multi-chat-sliding-bar" ref="tabBarRef">
+              <div
                 v-for="th in threads"
                 :key="th.id"
                 class="chat-layer-tab"
-                :class="{ active: currentThread && currentThread.id === th.id, 'has-unread': th.unread_count > 0 }"
+                :class="{ active: currentThread && currentThread.id === th.id }"
                 @click="selectThread(th)"
               >
-                <span class="tab-icon">
-                  <svg v-if="th.thread_type === 'general'" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                  </svg>
-                  <svg v-else width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <div class="clt-icon">
+                  <svg v-if="th.thread_type === 'property'" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                   </svg>
-                </span>
-                <span class="tab-title">{{ getShortTitle(th.title) }}</span>
-                <span v-if="th.unread_count > 0" class="tab-unread-dot" :title="`${th.unread_count} unread`">
-                  {{ th.unread_count }}
-                </span>
-              </button>
+                  <svg v-else width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                  </svg>
+                </div>
+                <span class="clt-name">{{ getShortTitle(th.title) }}</span>
+                <span v-if="th.unread_count > 0" class="clt-badge">{{ th.unread_count }}</span>
+              </div>
             </div>
+
             <button class="bar-scroll-btn right" @click="scrollTabs('right')" title="Scroll Right">›</button>
           </div>
 
-          <!-- 6. Active Property Context Dossier Bar -->
-          <div v-if="currentThread && currentThread.thread_type === 'property'" class="active-property-banner">
-            <div class="apb-left">
-              <span class="apb-tag">PROPERTY LAYER</span>
-              <strong class="apb-address">{{ currentThread.title }}</strong>
-              <span class="apb-crownkey font-mono">{{ currentThread.crownkey || 'DUV-PROPERTY-THREAD' }}</span>
+          <!-- 6. Active Property Context Ribbon (When chatting on a property) -->
+          <div v-if="currentThread && currentThread.property_id" class="property-context-banner">
+            <div class="pcb-left">
+              <span class="pcb-label">PROPERTY LAYER</span>
+              <strong class="pcb-title">{{ currentThread.title }}</strong>
+              <span class="pcb-crownkey" v-if="currentThread.crownkey">{{ currentThread.crownkey }}</span>
             </div>
-            <div class="apb-right">
-              <button class="btn-apb-dossier" @click="navigateToProperty(currentThread.property_id)" title="Open Full Property Dossier">
-                <span>View Dossier</span>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                  <polyline points="15 3 21 3 21 9"></polyline>
-                  <line x1="10" y1="14" x2="21" y2="3"></line>
-                </svg>
-              </button>
-            </div>
-          </div>
-          <div v-else class="active-property-banner general-banner">
-            <span class="apb-tag general">GENERAL CHAT LAYER</span>
-            <span class="general-desc">Executive direct communication between Alex Richard &amp; Waldo Ellis</span>
-          </div>
-
-          <!-- 7. iMessage Message Stream Viewport -->
-          <div class="messages-viewport" ref="messagesViewportRef">
-            <div v-if="isLoadingMessages" class="messages-loading">
-              <span class="imessage-spinner"></span>
-              <span>Loading encrypted conversation...</span>
-            </div>
-
-            <div v-else-if="messages.length === 0" class="messages-empty">
-              <div class="empty-icon-bubble">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="2">
-                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                </svg>
-              </div>
-              <p>Start a new discussion layer for <strong>{{ currentThread ? currentThread.title : 'this property' }}</strong>.</p>
-              <span class="empty-hint">All messages are tagged directly to the property's timeline ledger.</span>
-            </div>
-
-            <div v-else class="messages-stream">
-              <div class="stream-date-divider">
-                <span>iMessage with Partner</span>
-              </div>
-
-              <div
-                v-for="msg in messages"
-                :key="msg.id"
-                class="imessage-row"
-                :class="{ 'is-me': isSenderMe(msg), 'is-partner': !isSenderMe(msg) }"
-              >
-                <!-- Partner Avatar on Incoming Messages -->
-                <div v-if="!isSenderMe(msg)" class="partner-bubble-avatar" :title="msg.sender_name">
-                  {{ getInitials(msg.sender_name) }}
-                </div>
-
-                <div class="imessage-bubble-wrap">
-                  <div class="imessage-sender-header" v-if="!isSenderMe(msg)">
-                    <span class="sender-name">{{ msg.sender_name }}</span>
-                    <span class="sender-role">{{ msg.sender_role || 'Partner' }}</span>
-                  </div>
-
-                  <!-- Optional Tag Chip -->
-                  <div v-if="msg.tag" class="msg-tag-chip">{{ msg.tag }}</div>
-
-                  <div class="imessage-bubble">
-                    <p class="bubble-text">{{ msg.message_text }}</p>
-                  </div>
-
-                  <div class="bubble-meta">
-                    <span class="bubble-time">{{ formatTime(msg.created_at) }}</span>
-                    <span v-if="isSenderMe(msg)" class="bubble-status">Delivered · Read</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- 8. Quick Topic Suggestions / Action Chips -->
-          <div class="quick-tags-bar">
-            <span class="quick-tags-label">Tag:</span>
             <button
-              v-for="tag in ['Offer Update', 'Title Issue', 'Rehab Comps', 'Contract Signed', 'Buyer Pool']"
-              :key="tag"
-              class="quick-tag-chip"
-              :class="{ selected: activeTag === tag }"
-              @click="toggleTag(tag)"
+              class="pcb-dossier-link"
+              @click="navigateToProperty(currentThread.property_id)"
+              title="Open full property dossier timeline"
             >
-              {{ tag }}
+              <span>View Dossier</span>
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <line x1="10" y1="14" x2="21" y2="3"></line>
+              </svg>
             </button>
           </div>
 
-          <!-- 9. iMessage Message Input Bar -->
-          <div class="imessage-composer-box">
+          <!-- 7. Message Viewport Area -->
+          <div class="messages-viewport" ref="messagesViewportRef">
+            <div class="thread-start-marker">
+              <span class="tsm-line"></span>
+              <span class="tsm-text">
+                {{ currentThread ? currentThread.title : 'Partner Chat' }}
+              </span>
+              <span class="tsm-line"></span>
+            </div>
+
+            <!-- Loading Spinner -->
+            <div v-if="isLoadingMessages" class="messages-loading-state">
+              <span class="ml-spinner"></span>
+              <span>Loading messages from RDS…</span>
+            </div>
+
+            <!-- Empty State (Zero Test Messages) -->
+            <div v-else-if="messages.length === 0" class="messages-empty-state">
+              <div class="mes-icon-wrap">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="1.8">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+              </div>
+              <h4>Direct Partner Conversation</h4>
+              <p>No messages in this layer yet. Start chatting directly with your partner below.</p>
+              <div class="mes-shortcuts">
+                <button type="button" @click="fillDraft('Reviewed the comps, numbers looking clean.')">"Reviewed the comps..."</button>
+                <button type="button" @click="fillDraft('Seller accepted our offer! Ready to open escrow.')">"Seller accepted offer..."</button>
+              </div>
+            </div>
+
+            <!-- Messages Stream -->
+            <div v-else class="messages-stream">
+              <div
+                v-for="msg in messages"
+                :key="msg.id"
+                class="message-row"
+                :class="{ 'is-me': isSenderMe(msg), 'is-partner': !isSenderMe(msg) }"
+              >
+                <!-- Partner Avatar (for incoming messages) -->
+                <div v-if="!isSenderMe(msg)" class="msg-avatar-col">
+                  <div class="msg-avatar" :class="msg.sender_name.includes('Alex') ? 'alex' : 'waldo'">
+                    {{ getInitials(msg.sender_name) }}
+                  </div>
+                </div>
+
+                <!-- Bubble Container with Hover Action Toolbar -->
+                <div class="msg-content-col">
+                  <div v-if="!isSenderMe(msg)" class="msg-sender-header">
+                    <span class="msg-sender-name">{{ msg.sender_name }}</span>
+                    <span class="msg-sender-role" v-if="msg.sender_role">{{ msg.sender_role }}</span>
+                    <span v-if="msg.tag" class="msg-tag-badge">{{ msg.tag }}</span>
+                  </div>
+
+                  <div class="bubble-hover-wrapper">
+                    <!-- Message Bubble -->
+                    <div class="msg-bubble" :class="{ 'has-reply': msg.reply_to_text }">
+                      <!-- Quoted Reply Card (If this message is a reply to another) -->
+                      <div v-if="msg.reply_to_text" class="msg-quoted-card">
+                        <div class="mqc-sender">
+                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9 17 4 12 9 7"></polyline>
+                            <path d="M20 18v-2a4 4 0 0 0-4-4H4"></path>
+                          </svg>
+                          <span>{{ msg.reply_to_sender || 'Partner' }}</span>
+                        </div>
+                        <div class="mqc-text">{{ msg.reply_to_text }}</div>
+                      </div>
+
+                      <!-- Main Message Body -->
+                      <div class="msg-body-text">{{ msg.message_text }}</div>
+                    </div>
+
+                    <!-- Floating Action Menu (Reply, Delete) -->
+                    <div class="msg-actions-hover-bar">
+                      <button
+                        type="button"
+                        class="mah-btn reply"
+                        @click="startReply(msg)"
+                        title="Reply to message"
+                      >
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <polyline points="9 17 4 12 9 7"></polyline>
+                          <path d="M20 18v-2a4 4 0 0 0-4-4H4"></path>
+                        </svg>
+                        <span>Reply</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        class="mah-btn delete"
+                        @click="deleteMessage(msg)"
+                        title="Delete message"
+                      >
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <polyline points="3 6 5 6 21 6"></polyline>
+                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Delivery & Seen Receipts -->
+                  <div class="msg-meta-row">
+                    <span class="msg-timestamp">{{ formatTime(msg.created_at) }}</span>
+                    <span v-if="isSenderMe(msg)" class="msg-seen-status">
+                      <template v-if="isMessageSeenByPartner(msg)">
+                        <span class="seen-check">✓✓</span>
+                        <span class="seen-text">Seen</span>
+                      </template>
+                      <template v-else>
+                        <span class="delivered-check">✓</span>
+                        <span class="delivered-text">Delivered</span>
+                      </template>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 8. Interactive Reply Preview Banner (When Replying) -->
+          <transition name="pm-slide-up">
+            <div v-if="replyingTo" class="reply-active-banner">
+              <div class="rab-left">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="2">
+                  <polyline points="9 17 4 12 9 7"></polyline>
+                  <path d="M20 18v-2a4 4 0 0 0-4-4H4"></path>
+                </svg>
+                <div class="rab-info">
+                  <span class="rab-sender">Replying to {{ replyingTo.sender_name }}</span>
+                  <span class="rab-quote">{{ replyingTo.message_text }}</span>
+                </div>
+              </div>
+              <button class="rab-dismiss-btn" @click="cancelReply" title="Cancel reply">×</button>
+            </div>
+          </transition>
+
+          <!-- 9. Quick Topic Tag Chips -->
+          <div class="quick-tags-strip">
+            <span class="qts-label">Tag:</span>
+            <button
+              v-for="t in availableTags"
+              :key="t"
+              type="button"
+              class="quick-tag-chip"
+              :class="{ active: activeTag === t }"
+              @click="toggleTag(t)"
+            >
+              {{ t }}
+            </button>
+          </div>
+
+          <!-- 10. Message Composer Bar -->
+          <div class="message-composer-bar">
             <textarea
+              ref="inputTextareaRef"
               v-model="draftText"
-              class="imessage-input"
-              :placeholder="`iMessage to ${activePersona === 'Alex Richard' ? 'Waldo Ellis' : 'Alex Richard'}...`"
+              class="composer-textarea"
+              :placeholder="composerPlaceholder"
               rows="1"
               @keydown.enter.exact.prevent="sendMessage"
               @input="autoExpandTextarea"
-              ref="inputTextareaRef"
             ></textarea>
+
             <button
-              class="imessage-send-btn"
+              class="composer-send-btn"
+              :class="{ can_send: draftText.trim().length > 0 }"
               :disabled="!draftText.trim() || isSending"
               @click="sendMessage"
               title="Send Message (Enter)"
             >
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <line x1="12" y1="19" x2="12" y2="5"></line>
-                <polyline points="5 12 12 5 19 12"></polyline>
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
               </svg>
             </button>
           </div>
@@ -325,7 +423,9 @@
 </template>
 
 <script>
-const API_BASE = '/api/v1';
+const API_BASE = (typeof window !== 'undefined' && window.location.origin)
+  ? (window.location.origin.includes('localhost') ? 'http://localhost:3001/api/v1' : `${window.location.origin}/api/v1`)
+  : 'http://3.148.218.118/api/v1';
 
 export default {
   name: 'PartnerChatMessenger',
@@ -334,39 +434,55 @@ export default {
       isOpen: false,
       isMinimized: false,
       isWideMode: false,
+      isSearchOpen: false,
       soundEnabled: true,
-      activePersona: 'Alex Richard', // 'Alex Richard' or 'Waldo Ellis'
+      isLoadingThreads: false,
+      isLoadingMessages: false,
+      isSending: false,
+      activePersona: 'Alex Richard', // Default user "Me"
       threads: [],
       currentThread: null,
       messages: [],
       draftText: '',
       activeTag: null,
-      isLoadingThreads: false,
-      isLoadingMessages: false,
-      isSending: false,
+      replyingTo: null,
+      availableTags: ['Offer Update', 'Title Issue', 'Rehab Comps', 'Contract Signed', 'Escrow', 'Underwriting'],
       propertySearchQuery: '',
       showPropertyDropdown: false,
       allProperties: [],
-      pollTimer: null,
+      pollTimer: null
     };
   },
   computed: {
     shouldShowMessenger() {
-      // Don't show on auth / login routes
-      if (typeof window !== 'undefined') {
-        const path = window.location.pathname || '';
-        if (path.includes('login') || path.includes('signup') || path.includes('forgot-password')) {
-          return false;
-        }
+      if (typeof window === 'undefined') return true;
+      const path = (this.$route?.path || window.location.pathname || '').toLowerCase();
+      // Hide on login, signup, forgot-password screens
+      if (path.includes('/login') || path.includes('/signup') || path.includes('/forgot-password')) {
+        return false;
       }
       return true;
     },
     totalUnread() {
-      return this.threads.reduce((acc, t) => acc + (t.unread_count || 0), 0);
+      if (!Array.isArray(this.threads)) return 0;
+      return this.threads.reduce((sum, t) => sum + (t.unread_count || 0), 0);
+    },
+    currentPartnerName() {
+      return this.activePersona === 'Alex Richard' ? 'Waldo Ellis' : 'Alex Richard';
+    },
+    currentLayerShortTitle() {
+      if (!this.currentThread) return 'General';
+      return this.getShortTitle(this.currentThread.title);
+    },
+    composerPlaceholder() {
+      if (this.replyingTo) {
+        return `Replying to ${this.replyingTo.sender_name}...`;
+      }
+      return `Message ${this.currentPartnerName}... (Enter to send)`;
     },
     filteredPropertyList() {
-      if (!this.propertySearchQuery) return this.allProperties.slice(0, 10);
-      const q = this.propertySearchQuery.toLowerCase();
+      const q = this.propertySearchQuery.toLowerCase().trim();
+      if (!q) return this.allProperties.slice(0, 10);
       return this.allProperties.filter(p => {
         const addr = (p.address_line1 || '').toLowerCase();
         const city = (p.city || '').toLowerCase();
@@ -379,33 +495,42 @@ export default {
   watch: {
     activePersona() {
       this.refreshThreads();
+      if (this.currentThread) {
+        this.selectThread(this.currentThread);
+      }
     }
   },
   mounted() {
-    this.fetchPropertiesForDropdown();
     this.refreshThreads();
-    
-    // Global Event Listener for Property Dossier "Partner Chat" clicks
+    this.fetchPropertiesForDropdown();
+
     if (typeof window !== 'undefined') {
       window.addEventListener('open-partner-chat', this.handleExternalChatOpen);
+      window.addEventListener('keydown', this.handleGlobalKeydown);
     }
 
-    // Periodic heartbeat/poll every 8 seconds for real-time messages
+    // Fast realtime polling: every 2.5 seconds when open, every 5s when closed
     this.pollTimer = setInterval(() => {
       if (this.isOpen && this.currentThread) {
         this.fetchMessagesSilently(this.currentThread.id);
       } else {
         this.fetchThreadsSilently();
       }
-    }, 8000);
+    }, 2500);
   },
   beforeUnmount() {
     if (typeof window !== 'undefined') {
       window.removeEventListener('open-partner-chat', this.handleExternalChatOpen);
+      window.removeEventListener('keydown', this.handleGlobalKeydown);
     }
     if (this.pollTimer) clearInterval(this.pollTimer);
   },
   methods: {
+    handleGlobalKeydown(e) {
+      if (e.key === 'Escape' && this.isOpen) {
+        this.closeWindow();
+      }
+    },
     toggleOpen() {
       this.isOpen = !this.isOpen;
       if (this.isOpen) {
@@ -425,18 +550,30 @@ export default {
     toggleWide() {
       this.isWideMode = !this.isWideMode;
     },
+    toggleSearch() {
+      this.isSearchOpen = !this.isSearchOpen;
+      if (this.isSearchOpen) {
+        this.$nextTick(() => {
+          if (this.$refs.searchInputRef) this.$refs.searchInputRef.focus();
+        });
+      }
+    },
     toggleSound() {
       this.soundEnabled = !this.soundEnabled;
     },
     switchPersona(name) {
       this.activePersona = name;
-      if (this.currentThread) {
-        this.markThreadAsRead(this.currentThread.id);
-      }
     },
     isSenderMe(msg) {
       if (!msg || !msg.sender_name) return false;
       return msg.sender_name.toLowerCase().includes(this.activePersona.toLowerCase().split(' ')[0]);
+    },
+    isMessageSeenByPartner(msg) {
+      if (!msg) return false;
+      const isAlexMe = this.activePersona.toLowerCase().includes('alex');
+      // If Alex sent it, Waldo has seen it if is_read_waldo === true
+      // If Waldo sent it, Alex has seen it if is_read_alex === true
+      return isAlexMe ? !!msg.is_read_waldo : !!msg.is_read_alex;
     },
     getInitials(name) {
       if (!name) return 'AR';
@@ -456,7 +593,7 @@ export default {
     scrollTabs(dir) {
       const el = this.$refs.tabBarRef;
       if (!el) return;
-      const step = 160;
+      const step = 140;
       el.scrollBy({ left: dir === 'left' ? -step : step, behavior: 'smooth' });
     },
     autoExpandTextarea() {
@@ -475,23 +612,35 @@ export default {
     toggleTag(tag) {
       this.activeTag = this.activeTag === tag ? null : tag;
     },
+    fillDraft(text) {
+      this.draftText = text;
+      this.focusInput();
+      this.autoExpandTextarea();
+    },
+    startReply(msg) {
+      this.replyingTo = msg;
+      this.focusInput();
+    },
+    cancelReply() {
+      this.replyingTo = null;
+    },
     playChime() {
       if (!this.soundEnabled || typeof window === 'undefined') return;
       try {
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        if (!AudioContext) return;
-        const ctx = new AudioContext();
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(880, ctx.currentTime); // A5
-        osc.frequency.exponentialRampToValueAtTime(1760, ctx.currentTime + 0.12);
-        gain.gain.setValueAtTime(0.08, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
+        osc.frequency.setValueAtTime(880, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1760, ctx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.06, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
         osc.connect(gain);
         gain.connect(ctx.destination);
         osc.start();
-        osc.stop(ctx.currentTime + 0.35);
+        osc.stop(ctx.currentTime + 0.3);
       } catch (e) {}
     },
     async refreshThreads() {
@@ -526,9 +675,8 @@ export default {
     async selectThread(th) {
       if (!th) return;
       this.currentThread = th;
-      this.propertySearchQuery = '';
-      this.showPropertyDropdown = false;
       this.isLoadingMessages = true;
+      this.cancelReply();
       try {
         const res = await fetch(`${API_BASE}/chat/threads/${th.id}/messages?user=${encodeURIComponent(this.activePersona)}`);
         const data = await res.json();
@@ -551,9 +699,13 @@ export default {
         const res = await fetch(`${API_BASE}/chat/threads/${threadId}/messages?user=${encodeURIComponent(this.activePersona)}`);
         const data = await res.json();
         if (data.ok && Array.isArray(data.messages)) {
-          if (data.messages.length > this.messages.length) {
+          if (data.messages.length !== this.messages.length) {
+            const hasNewIncoming = data.messages.length > this.messages.length &&
+              !this.isSenderMe(data.messages[data.messages.length - 1]);
             this.messages = data.messages;
-            this.playChime();
+            if (hasNewIncoming) {
+              this.playChime();
+            }
             this.$nextTick(() => this.scrollToBottom());
           }
         }
@@ -569,6 +721,9 @@ export default {
         sender_role: this.activePersona === 'Alex Richard' ? 'Acquisitions Lead (Admin)' : 'Dispositions Lead (Partner)',
         message_text: text,
         tag: this.activeTag,
+        reply_to_id: this.replyingTo ? this.replyingTo.id : null,
+        reply_to_sender: this.replyingTo ? this.replyingTo.sender_name : null,
+        reply_to_text: this.replyingTo ? this.replyingTo.message_text.slice(0, 160) : null,
         attachments: []
       };
 
@@ -585,6 +740,7 @@ export default {
           this.currentThread.last_message_sender = this.activePersona;
           this.draftText = '';
           this.activeTag = null;
+          this.replyingTo = null;
           this.playChime();
           this.autoExpandTextarea();
           this.$nextTick(() => {
@@ -598,14 +754,22 @@ export default {
         this.isSending = false;
       }
     },
-    async markThreadAsRead(threadId) {
+    async deleteMessage(msg) {
+      if (!msg || !msg.id) return;
       try {
-        await fetch(`${API_BASE}/chat/threads/${threadId}/read`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ user_name: this.activePersona })
+        const res = await fetch(`${API_BASE}/chat/messages/${msg.id}`, {
+          method: 'DELETE'
         });
-      } catch (e) {}
+        const data = await res.json();
+        if (data.ok) {
+          this.messages = this.messages.filter(m => m.id !== msg.id);
+          if (this.replyingTo && this.replyingTo.id === msg.id) {
+            this.cancelReply();
+          }
+        }
+      } catch (err) {
+        console.warn('[Delete Message Err]', err);
+      }
     },
     scrollToBottom() {
       const vp = this.$refs.messagesViewportRef;
@@ -622,9 +786,6 @@ export default {
         }
       } catch (e) {}
     },
-    filterProperties() {
-      this.showPropertyDropdown = true;
-    },
     clearPropertySearch() {
       this.propertySearchQuery = '';
       this.showPropertyDropdown = false;
@@ -632,8 +793,9 @@ export default {
     async selectPropertyFromDropdown(prop) {
       this.showPropertyDropdown = false;
       this.propertySearchQuery = '';
+      this.isSearchOpen = false;
 
-      // Check if thread exists in active threads list
+      // Check if thread already exists in active threads list
       let targetThread = this.threads.find(t => t.property_id === prop.property_id);
       if (targetThread) {
         this.selectThread(targetThread);
@@ -655,83 +817,75 @@ export default {
         const data = await res.json();
         if (data.ok && data.thread) {
           await this.refreshThreads();
-          const newlyAdded = this.threads.find(t => t.id === data.thread.id);
-          this.selectThread(newlyAdded || data.thread);
+          const created = this.threads.find(t => t.id === data.thread.id);
+          if (created) this.selectThread(created);
         }
       } catch (err) {
-        console.warn('[Create Property Thread Err]', err);
-      }
-    },
-    async handleExternalChatOpen(evt) {
-      const { propertyId, propertyAddress } = evt.detail || {};
-      this.isOpen = true;
-      this.isMinimized = false;
-
-      if (!propertyId) {
-        this.refreshThreads();
-        return;
-      }
-
-      await this.refreshThreads();
-      const existing = this.threads.find(t => t.property_id === propertyId);
-      if (existing) {
-        this.selectThread(existing);
-      } else {
-        // Create new layer
-        await this.selectPropertyFromDropdown({
-          property_id: propertyId,
-          address_line1: propertyAddress || 'Property'
-        });
+        console.warn('[Create Thread Err]', err);
       }
     },
     navigateToProperty(propId) {
-      if (!propId || typeof window === 'undefined') return;
-      window.location.href = `/properties?id=${propId}`;
+      if (typeof window !== 'undefined') {
+        window.location.hash = `#/properties?id=${propId}`;
+      }
+    },
+    handleExternalChatOpen(e) {
+      this.isOpen = true;
+      this.isMinimized = false;
+      const detail = e.detail || {};
+
+      this.$nextTick(async () => {
+        await this.refreshThreads();
+        if (detail.property_id) {
+          const match = this.threads.find(t => t.property_id === detail.property_id);
+          if (match) {
+            this.selectThread(match);
+          } else {
+            // Fetch/create thread for this property
+            this.selectPropertyFromDropdown({
+              property_id: detail.property_id,
+              address_line1: detail.address || 'Property Layer',
+              city: detail.city || 'Duval County'
+            });
+          }
+        }
+      });
     }
   }
 };
 </script>
 
 <style scoped>
-/* Bulletproof suppression on Auth & Login Pages */
-:global(body:has(.hushhawk-auth-wrapper)) .partner-messenger-container,
-:global(body:has(.auth-card)) .partner-messenger-container,
-:global(body:has(#login-email)) .partner-messenger-container {
-  display: none !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
-}
+/* ==========================================================================
+   HUSHHAWK LUXURY INSTITUTIONAL PARTNER MESSENGER (MACOS IMESSAGE DOCK)
+   Institutional Dark Navy & Royal Gold (#D4AF37) Palette
+   ========================================================================== */
 
-.partner-messenger-container {
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  color: #f1f5f9;
-  z-index: 999998;
-}
-
-/* 1. Floating Dock Trigger Button */
+/* 1. Floating Launcher Button (Positioned UPPER of HAWKAI) */
 .partner-launcher-btn {
   position: fixed;
-  bottom: 24px;
-  right: 154px;
-  height: 56px;
-  padding: 0 16px 0 12px;
-  border-radius: 28px;
-  background: linear-gradient(135deg, #091528 0%, #112240 100%);
-  border: 1.5px solid #d4af37;
-  color: #fff;
-  display: flex;
+  bottom: 84px; /* Stacked directly above HAWKAI (bottom: 24px) */
+  right: 24px;
+  z-index: 9998;
+  display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+  padding: 8px 18px 8px 12px;
+  background: linear-gradient(135deg, rgba(8, 20, 38, 0.96) 0%, rgba(13, 30, 56, 0.98) 100%);
+  border: 1px solid rgba(212, 175, 55, 0.45);
+  border-radius: 9999px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 16px rgba(212, 175, 55, 0.2);
   cursor: pointer;
-  box-shadow: 0 8px 24px rgba(4, 24, 45, 0.7), 0 0 16px rgba(212, 175, 55, 0.28);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  z-index: 999998;
+  color: #f1f5f9;
 }
 
 .partner-launcher-btn:hover {
-  transform: translateY(-2px) scale(1.02);
-  border-color: #ffdf73;
-  box-shadow: 0 12px 28px rgba(4, 24, 45, 0.85), 0 0 22px rgba(212, 175, 55, 0.45);
+  transform: translateY(-2px);
+  border-color: #d4af37;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.65), 0 0 24px rgba(212, 175, 55, 0.35);
 }
 
 .launcher-avatars-cluster {
@@ -739,45 +893,49 @@ export default {
   display: flex;
   align-items: center;
   width: 44px;
-  height: 32px;
+  height: 28px;
 }
 
 .avatar-circle {
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  font-size: 11px;
-  font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1.5px solid #091528;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  border: 2px solid #081426;
+  position: absolute;
+  top: 0;
 }
 
 .avatar-alex {
-  background: linear-gradient(135deg, #d4af37 0%, #9a7b1c 100%);
-  color: #04182d;
+  left: 0;
+  background: linear-gradient(135deg, #d4af37, #aa8214);
+  color: #050b14;
   z-index: 1;
 }
 
 .avatar-waldo {
-  background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
+  left: 16px;
+  background: linear-gradient(135deg, #0284c7, #0369a1);
   color: #ffffff;
-  margin-left: -10px;
   z-index: 2;
 }
 
 .launcher-presence-dot {
   position: absolute;
-  bottom: 0;
-  right: 4px;
-  width: 8px;
-  height: 8px;
+  bottom: -2px;
+  right: 0;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
   background: #10b981;
-  border: 1.5px solid #091528;
-  box-shadow: 0 0 6px #10b981;
+  border: 2px solid #081426;
   z-index: 3;
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.8);
 }
 
 .launcher-text-wrap {
@@ -785,6 +943,7 @@ export default {
   flex-direction: column;
   align-items: flex-start;
   text-align: left;
+  line-height: 1.15;
 }
 
 .launcher-title {
@@ -793,40 +952,44 @@ export default {
   gap: 6px;
   font-size: 13px;
   font-weight: 700;
-  color: #ffdf73;
+  color: #ffffff;
 }
 
 .launcher-unread-badge {
-  background: #f43f5e;
-  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9999px;
+  background: #ef4444;
+  color: #ffffff;
   font-size: 10px;
   font-weight: 800;
-  padding: 1px 6px;
-  border-radius: 10px;
-  box-shadow: 0 0 8px rgba(244, 63, 94, 0.6);
 }
 
 .launcher-sub {
   font-size: 11px;
   color: #94a3b8;
+  font-weight: 500;
 }
 
 .launcher-pulse-ring {
   position: absolute;
-  top: -4px;
-  left: -4px;
-  right: -4px;
-  bottom: -4px;
-  border-radius: 32px;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 9999px;
   border: 2px solid #d4af37;
-  animation: pmPulse 2s infinite;
+  animation: pm-pulse 2s infinite ease-out;
   pointer-events: none;
 }
 
-@keyframes pmPulse {
+@keyframes pm-pulse {
   0% { transform: scale(1); opacity: 0.8; }
-  50% { transform: scale(1.08); opacity: 0; }
-  100% { transform: scale(1); opacity: 0; }
+  100% { transform: scale(1.15); opacity: 0; }
 }
 
 /* 2. Pop-up iMessage Window */
@@ -835,32 +998,37 @@ export default {
   bottom: 24px;
   right: 24px;
   width: 480px;
-  height: 640px;
+  height: 660px;
+  max-width: calc(100vw - 32px);
   max-height: calc(100vh - 48px);
-  background: #08111f;
-  border: 1.5px solid rgba(212, 175, 55, 0.4);
-  border-radius: 16px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.75), 0 0 30px rgba(212, 175, 55, 0.25);
+  background: #081426;
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  border-radius: 18px;
+  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.05);
   display: flex;
   flex-direction: column;
+  z-index: 10005; /* Highest z-index: HAWKAI (at 9998) will NEVER overlay or block the chat window */
   overflow: hidden;
-  z-index: 999998;
   backdrop-filter: blur(20px);
-  transition: width 0.25s ease, height 0.25s ease;
+  -webkit-backdrop-filter: blur(20px);
+  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), height 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .partner-chat-window.is-wide {
-  width: 620px;
+  width: 740px;
+  height: 740px;
 }
 
 .partner-chat-window.is-minimized {
-  height: 44px;
+  height: 48px;
+  width: 380px;
 }
 
-/* Title Bar macOS style */
+/* macOS Title Bar */
 .mac-title-bar {
-  height: 44px;
-  background: linear-gradient(180deg, #0f1c32 0%, #0a1324 100%);
+  height: 48px;
+  min-height: 48px;
+  background: linear-gradient(180deg, #0e1e36 0%, #0a172a 100%);
   border-bottom: 1px solid rgba(212, 175, 55, 0.25);
   display: flex;
   align-items: center;
@@ -872,7 +1040,7 @@ export default {
 .mac-traffic-lights {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
 }
 
 .mac-dot {
@@ -881,32 +1049,58 @@ export default {
   border-radius: 50%;
   border: none;
   cursor: pointer;
-  transition: opacity 0.15s ease;
+  padding: 0;
+  transition: opacity 0.15s;
 }
 
-.mac-close { background: #ff5f56; }
-.mac-minimize { background: #ffbd2e; }
-.mac-expand { background: #27c93f; }
 .mac-dot:hover { opacity: 0.8; }
+.mac-close { background: #ff5f56; box-shadow: 0 0 4px rgba(255, 95, 86, 0.5); }
+.mac-minimize { background: #ffbd2e; box-shadow: 0 0 4px rgba(255, 189, 46, 0.5); }
+.mac-expand { background: #27c93f; box-shadow: 0 0 4px rgba(39, 201, 63, 0.5); }
 
 .mac-title-text {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: #f1f5f9;
+  text-align: center;
 }
 
-.mac-encryption-pill {
-  font-size: 9px;
+.mac-title-main {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
   font-weight: 700;
-  text-transform: uppercase;
-  color: #10b981;
-  background: rgba(16, 185, 129, 0.12);
-  border: 1px solid rgba(16, 185, 129, 0.3);
-  padding: 1px 6px;
-  border-radius: 4px;
-  letter-spacing: 0.5px;
+  color: #ffffff;
+}
+
+.mac-layer-badge {
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: 9999px;
+  background: rgba(212, 175, 55, 0.15);
+  color: #d4af37;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  font-weight: 600;
+  max-width: 140px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mac-sub-text {
+  font-size: 10px;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.rds-secure-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #10b981;
 }
 
 .mac-header-actions {
@@ -915,29 +1109,68 @@ export default {
   gap: 6px;
 }
 
-.mac-icon-btn {
-  background: transparent;
+/* Compact Persona Segmented Control */
+.persona-segmented-control {
+  display: flex;
+  align-items: center;
+  background: rgba(15, 23, 42, 0.7);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #94a3b8;
+  border-radius: 8px;
+  padding: 2px;
+}
+
+.psc-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
   border-radius: 6px;
-  width: 26px;
-  height: 26px;
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.psc-btn.active {
+  background: rgba(212, 175, 55, 0.2);
+  color: #ffffff;
+  border: 1px solid rgba(212, 175, 55, 0.4);
+}
+
+.psc-avatar {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  font-size: 9px;
+  font-weight: 800;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.psc-avatar.alex { background: #d4af37; color: #050b14; }
+.psc-avatar.waldo { background: #0284c7; color: #ffffff; }
+
+.mac-icon-btn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  color: #94a3b8;
+  padding: 5px 6px;
   cursor: pointer;
-  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
 }
 
-.mac-icon-btn:hover {
-  background: rgba(212, 175, 55, 0.15);
+.mac-icon-btn:hover, .mac-icon-btn.active {
   color: #d4af37;
-  border-color: #d4af37;
-}
-
-.mac-icon-btn.active {
-  color: #10b981;
-  border-color: rgba(16, 185, 129, 0.4);
+  border-color: rgba(212, 175, 55, 0.4);
+  background: rgba(212, 175, 55, 0.1);
 }
 
 .spinning {
@@ -949,192 +1182,79 @@ export default {
   to { transform: rotate(360deg); }
 }
 
+/* Window Content */
 .pm-window-content {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  flex: 1;
   overflow: hidden;
+  background: #081426;
 }
 
-/* 3. Presence Status Box */
-.partner-presence-box {
-  background: #060d18;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 10px 14px;
-}
-
-.presence-header {
+/* 3. Minimal Online Status Ribbon */
+.partner-status-ribbon {
+  height: 28px;
+  min-height: 28px;
+  background: rgba(10, 23, 42, 0.65);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 8px;
-}
-
-.presence-title {
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.8px;
-  color: #d4af37;
-}
-
-.persona-switch-wrap {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.persona-label {
+  justify-content: center;
+  gap: 10px;
   font-size: 11px;
-  color: #64748b;
+  color: #cbd5e1;
+  padding: 0 14px;
 }
 
-.persona-pill-btn {
+.psr-partner {
   display: flex;
   align-items: center;
   gap: 5px;
-  font-size: 11px;
-  font-weight: 600;
-  padding: 3px 8px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: #94a3b8;
-  cursor: pointer;
-  transition: all 0.15s ease;
 }
 
-.persona-pill-btn:hover {
-  border-color: #d4af37;
-  color: #fff;
-}
-
-.persona-pill-btn.active {
-  background: rgba(212, 175, 55, 0.15);
-  border-color: #d4af37;
-  color: #ffdf73;
-}
-
-.mini-avatar {
-  width: 16px;
-  height: 16px;
+.psr-dot.online {
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 5px rgba(16, 185, 129, 0.8);
+}
+
+.psr-role {
+  color: #64748b;
+  font-size: 10px;
+}
+
+.psr-tag-you {
   font-size: 9px;
   font-weight: 800;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.mini-avatar.alex { background: #d4af37; color: #04182d; }
-.mini-avatar.waldo { background: #38bdf8; color: #fff; }
-
-.presence-cards-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-
-.presence-card {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(15, 28, 50, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 8px;
-  padding: 6px 10px;
-  transition: border-color 0.2s ease;
-}
-
-.presence-card.current-me {
-  border-color: rgba(212, 175, 55, 0.4);
-  background: rgba(212, 175, 55, 0.05);
-}
-
-.pc-avatar-wrap {
-  position: relative;
-}
-
-.pc-avatar {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  font-size: 12px;
-  font-weight: 800;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.pc-avatar.alex { background: linear-gradient(135deg, #d4af37, #9a7b1c); color: #04182d; }
-.pc-avatar.waldo { background: linear-gradient(135deg, #38bdf8, #0284c7); color: #fff; }
-
-.pc-dot {
-  position: absolute;
-  bottom: -1px;
-  right: -1px;
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  border: 1.5px solid #08111f;
-}
-
-.pc-dot.online {
-  background: #10b981;
-  box-shadow: 0 0 6px #10b981;
-}
-
-.pc-details {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.pc-name-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-}
-
-.pc-name-row strong {
-  color: #fff;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.pc-tag-me {
-  font-size: 8px;
-  font-weight: 800;
   padding: 1px 4px;
-  background: #d4af37;
-  color: #04182d;
-  border-radius: 3px;
+  border-radius: 4px;
+  background: rgba(212, 175, 55, 0.25);
+  color: #d4af37;
+  letter-spacing: 0.5px;
 }
 
-.pc-role {
-  font-size: 10px;
-  color: #10b981;
-  white-space: nowrap;
+.psr-divider {
+  color: #475569;
 }
 
-/* 4. Property Quick Search */
+/* 4. Collapsible Property Search Bar */
 .property-search-section {
   position: relative;
-  padding: 8px 14px;
-  background: #091424;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 8px 12px;
+  background: #0d1e38;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
 }
 
 .search-input-box {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: rgba(4, 18, 36, 0.85);
-  border: 1px solid rgba(212, 175, 55, 0.25);
+  background: #081426;
+  border: 1px solid rgba(212, 175, 55, 0.3);
   border-radius: 8px;
-  padding: 0 10px;
-  height: 32px;
+  padding: 6px 10px;
 }
 
 .search-input-box input {
@@ -1142,7 +1262,7 @@ export default {
   background: transparent;
   border: none;
   outline: none;
-  color: #f1f5f9;
+  color: #ffffff;
   font-size: 12px;
 }
 
@@ -1151,43 +1271,42 @@ export default {
 }
 
 .search-clear-btn {
-  background: none;
+  background: transparent;
   border: none;
-  color: #64748b;
-  font-size: 16px;
+  color: #94a3b8;
+  font-size: 14px;
   cursor: pointer;
+  padding: 0 4px;
 }
-
-.search-clear-btn:hover { color: #f1f5f9; }
 
 .property-dropdown-menu {
   position: absolute;
-  top: 44px;
-  left: 14px;
-  right: 14px;
-  background: #0c182c;
-  border: 1.5px solid #d4af37;
-  border-radius: 8px;
-  box-shadow: 0 14px 35px rgba(0,0,0,0.85);
-  z-index: 1000;
+  top: 100%;
+  left: 12px;
+  right: 12px;
   max-height: 240px;
+  background: #0d1e38;
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  border-radius: 10px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8);
   overflow-y: auto;
+  z-index: 10020;
 }
 
 .dropdown-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 6px 12px;
-  background: rgba(212, 175, 55, 0.1);
-  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+  justify-content: space-between;
+  padding: 8px 12px;
   font-size: 10px;
-  font-weight: 800;
+  font-weight: 700;
+  letter-spacing: 0.5px;
   color: #d4af37;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .dropdown-close-btn {
-  background: none;
+  background: transparent;
   border: none;
   color: #94a3b8;
   font-size: 11px;
@@ -1199,13 +1318,13 @@ export default {
   align-items: center;
   gap: 10px;
   padding: 8px 12px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   cursor: pointer;
-  transition: background 0.15s ease;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  transition: background 0.15s;
 }
 
 .property-dropdown-item:hover {
-  background: rgba(212, 175, 55, 0.15);
+  background: rgba(212, 175, 55, 0.12);
 }
 
 .pdi-info {
@@ -1216,477 +1335,675 @@ export default {
 .pdi-address {
   font-size: 12px;
   font-weight: 600;
-  color: #f1f5f9;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .pdi-sub {
   font-size: 10px;
-  color: #64748b;
+  color: #94a3b8;
 }
 
 .pdi-badge {
   font-size: 10px;
-  font-weight: 700;
-  color: #38bdf8;
-  background: rgba(56, 189, 248, 0.12);
-  border: 1px solid rgba(56, 189, 248, 0.3);
-  padding: 2px 6px;
-  border-radius: 4px;
-  white-space: nowrap;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 9999px;
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
 }
 
 .pdi-badge.pdi-new {
+  background: rgba(212, 175, 55, 0.2);
   color: #d4af37;
-  background: rgba(212, 175, 55, 0.12);
-  border-color: rgba(212, 175, 55, 0.3);
+  border-color: rgba(212, 175, 55, 0.4);
 }
 
-/* 5. Multi-Chat Sliding Pill Bar */
+/* 5. Multi-Chat Sliding Bar */
 .multi-chat-sliding-bar-wrap {
   display: flex;
   align-items: center;
-  background: #07101e;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: #09172e;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   padding: 6px 6px;
   gap: 4px;
 }
 
 .bar-scroll-btn {
-  background: rgba(255, 255, 255, 0.05);
+  background: transparent;
   border: none;
-  color: #94a3b8;
-  width: 18px;
-  height: 28px;
-  border-radius: 4px;
+  color: #64748b;
+  font-size: 16px;
+  padding: 0 4px;
   cursor: pointer;
-  font-size: 15px;
   line-height: 1;
 }
 
-.bar-scroll-btn:hover {
-  background: rgba(212, 175, 55, 0.2);
-  color: #d4af37;
-}
+.bar-scroll-btn:hover { color: #d4af37; }
 
-.multi-chat-pill-bar {
+.multi-chat-sliding-bar {
+  flex: 1;
   display: flex;
   align-items: center;
   gap: 6px;
   overflow-x: auto;
   scroll-behavior: smooth;
   scrollbar-width: none;
-  flex: 1;
 }
 
-.multi-chat-pill-bar::-webkit-scrollbar {
-  display: none;
-}
+.multi-chat-sliding-bar::-webkit-scrollbar { display: none; }
 
 .chat-layer-tab {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 5px 10px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 5px 12px;
+  border-radius: 9999px;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   color: #94a3b8;
   font-size: 11px;
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
-  transition: all 0.15s ease;
-  flex-shrink: 0;
+  transition: all 0.2s;
 }
 
 .chat-layer-tab:hover {
-  color: #fff;
-  border-color: rgba(212, 175, 55, 0.4);
+  background: rgba(212, 175, 55, 0.1);
+  color: #e2e8f0;
 }
 
 .chat-layer-tab.active {
-  background: linear-gradient(135deg, rgba(212, 175, 55, 0.2) 0%, rgba(10, 24, 45, 0.8) 100%);
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.22) 0%, rgba(8, 20, 38, 0.95) 100%);
   border-color: #d4af37;
-  color: #ffdf73;
-  box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(212, 175, 55, 0.2);
 }
 
-.chat-layer-tab.has-unread {
-  border-color: #f43f5e;
-}
-
-.tab-unread-dot {
-  background: #f43f5e;
-  color: #fff;
+.clt-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 9999px;
+  background: #ef4444;
+  color: #ffffff;
   font-size: 9px;
   font-weight: 800;
-  padding: 1px 5px;
-  border-radius: 8px;
-  min-width: 14px;
-  text-align: center;
 }
 
-/* 6. Active Property Context Banner */
-.active-property-banner {
+/* 6. Active Property Context Ribbon */
+.property-context-banner {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   padding: 6px 14px;
-  background: linear-gradient(90deg, rgba(212, 175, 55, 0.08) 0%, rgba(4, 18, 36, 0.6) 100%);
+  background: rgba(13, 30, 56, 0.7);
   border-bottom: 1px solid rgba(212, 175, 55, 0.2);
 }
 
-.active-property-banner.general-banner {
-  background: rgba(15, 28, 50, 0.4);
-  border-bottom-color: rgba(255, 255, 255, 0.06);
-}
-
-.apb-left {
+.pcb-left {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
 }
 
-.apb-tag {
+.pcb-label {
   font-size: 9px;
   font-weight: 800;
   color: #d4af37;
   letter-spacing: 0.5px;
 }
 
-.apb-tag.general {
-  color: #38bdf8;
-}
-
-.apb-address {
+.pcb-title {
   font-size: 12px;
-  color: #f1f5f9;
+  color: #ffffff;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.general-desc {
-  font-size: 11px;
-  color: #94a3b8;
-}
-
-.apb-crownkey {
+.pcb-crownkey {
   font-size: 10px;
   color: #64748b;
+  font-family: monospace;
 }
 
-.btn-apb-dossier {
-  display: flex;
+.pcb-dossier-link {
+  display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 4px 8px;
-  font-size: 11px;
-  font-weight: 600;
   background: rgba(212, 175, 55, 0.15);
   border: 1px solid rgba(212, 175, 55, 0.35);
-  color: #ffdf73;
-  border-radius: 4px;
+  border-radius: 6px;
+  color: #d4af37;
+  padding: 3px 8px;
+  font-size: 10px;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.15s;
 }
 
-.btn-apb-dossier:hover {
-  background: #d4af37;
-  color: #04182d;
+.pcb-dossier-link:hover {
+  background: rgba(212, 175, 55, 0.28);
 }
 
-/* 7. Message Stream Viewport */
+/* 7. Message Viewport */
 .messages-viewport {
   flex: 1;
   overflow-y: auto;
-  padding: 14px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  background: #060c16;
-  gap: 10px;
+  gap: 12px;
+  background: radial-gradient(circle at top right, rgba(14, 30, 54, 0.35), transparent 70%), #081426;
 }
 
-.messages-loading, .messages-empty {
+.thread-start-marker {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 4px 0 12px 0;
+  opacity: 0.6;
+}
+
+.tsm-line {
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.tsm-text {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Empty State */
+.messages-empty-state {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin: auto;
-  color: #64748b;
-  font-size: 12px;
   text-align: center;
   padding: 24px;
+  color: #64748b;
 }
 
-.empty-icon-bubble {
+.mes-icon-wrap {
   width: 52px;
   height: 52px;
   border-radius: 50%;
-  background: rgba(212, 175, 55, 0.08);
-  border: 1px solid rgba(212, 175, 55, 0.2);
+  background: rgba(212, 175, 55, 0.1);
+  border: 1px solid rgba(212, 175, 55, 0.25);
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 12px;
 }
 
-.empty-hint {
-  font-size: 11px;
-  color: #475569;
-  margin-top: 4px;
-}
-
-.stream-date-divider {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 6px 0 12px 0;
-}
-
-.stream-date-divider span {
-  font-size: 10px;
+.messages-empty-state h4 {
+  font-size: 15px;
+  color: #ffffff;
+  margin: 0 0 6px 0;
   font-weight: 600;
-  color: #64748b;
-  background: rgba(255, 255, 255, 0.04);
-  padding: 2px 10px;
-  border-radius: 10px;
-  letter-spacing: 0.5px;
 }
 
-.imessage-row {
+.messages-empty-state p {
+  font-size: 12px;
+  color: #94a3b8;
+  max-width: 300px;
+  margin: 0 0 16px 0;
+  line-height: 1.4;
+}
+
+.mes-shortcuts {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  max-width: 320px;
+}
+
+.mes-shortcuts button {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-radius: 8px;
+  padding: 7px 12px;
+  color: #cbd5e1;
+  font-size: 11px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s;
+}
+
+.mes-shortcuts button:hover {
+  background: rgba(212, 175, 55, 0.15);
+  border-color: #d4af37;
+  color: #ffffff;
+}
+
+/* Messages Stream */
+.messages-stream {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.message-row {
   display: flex;
   gap: 8px;
-  width: 100%;
+  max-width: 82%;
 }
 
-.imessage-row.is-me {
-  justify-content: flex-end;
+.message-row.is-me {
+  align-self: flex-end;
+  flex-direction: row-reverse;
 }
 
-.imessage-row.is-partner {
-  justify-content: flex-start;
+.message-row.is-partner {
+  align-self: flex-start;
 }
 
-.partner-bubble-avatar {
+.msg-avatar {
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
-  color: #fff;
-  font-size: 11px;
-  font-weight: 800;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 10px;
+  font-weight: 800;
   flex-shrink: 0;
-  margin-top: 4px;
 }
 
-.imessage-bubble-wrap {
+.msg-avatar.alex { background: #d4af37; color: #050b14; }
+.msg-avatar.waldo { background: #0284c7; color: #ffffff; }
+
+.msg-content-col {
   display: flex;
   flex-direction: column;
-  max-width: 78%;
 }
 
-.imessage-row.is-me .imessage-bubble-wrap {
+.message-row.is-me .msg-content-col {
   align-items: flex-end;
 }
 
-.imessage-row.is-partner .imessage-bubble-wrap {
-  align-items: flex-start;
-}
-
-.imessage-sender-header {
+.msg-sender-header {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 10px;
-  margin-bottom: 2px;
+  margin-bottom: 3px;
+  font-size: 11px;
 }
 
-.sender-name {
-  font-weight: 700;
+.msg-sender-name {
   color: #cbd5e1;
+  font-weight: 600;
 }
 
-.sender-role {
-  color: #10b981;
+.msg-sender-role {
+  color: #64748b;
+  font-size: 10px;
 }
 
-.msg-tag-chip {
-  align-self: flex-start;
+.msg-tag-badge {
   font-size: 9px;
-  font-weight: 800;
-  color: #d4af37;
-  background: rgba(212, 175, 55, 0.12);
-  border: 1px solid rgba(212, 175, 55, 0.25);
   padding: 1px 6px;
   border-radius: 4px;
-  margin-bottom: 2px;
+  background: rgba(212, 175, 55, 0.18);
+  color: #d4af37;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  font-weight: 600;
 }
 
-.imessage-row.is-me .msg-tag-chip {
-  align-self: flex-end;
+/* Bubble & Hover Actions Wrapper */
+.bubble-hover-wrapper {
+  position: relative;
+  display: inline-flex;
 }
 
-.imessage-bubble {
-  padding: 9px 13px;
+.msg-bubble {
+  padding: 9px 14px;
   border-radius: 16px;
-  font-size: 12.5px;
+  font-size: 13px;
   line-height: 1.45;
   word-break: break-word;
+  position: relative;
 }
 
-/* Sent by Me: macOS Deep Blue / Gold Border */
-.imessage-row.is-me .imessage-bubble {
+.message-row.is-me .msg-bubble {
   background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
   color: #ffffff;
   border-bottom-right-radius: 4px;
-  box-shadow: 0 4px 14px rgba(29, 78, 216, 0.35);
-  border: 1px solid rgba(255, 223, 115, 0.3);
+  box-shadow: 0 4px 12px rgba(29, 78, 216, 0.3);
 }
 
-/* Sent by Partner: Dark Slate Card */
-.imessage-row.is-partner .imessage-bubble {
-  background: #172439;
+.message-row.is-partner .msg-bubble {
+  background: #142742;
   color: #f1f5f9;
   border-bottom-left-radius: 4px;
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
-.bubble-text {
-  margin: 0;
+/* Quoted Reply inside Bubble */
+.msg-quoted-card {
+  background: rgba(0, 0, 0, 0.25);
+  border-left: 3px solid #d4af37;
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin-bottom: 6px;
+  font-size: 11px;
 }
 
-.bubble-meta {
+.mqc-sender {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #d4af37;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.mqc-text {
+  color: #e2e8f0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 240px;
+}
+
+/* Hover Action Bar */
+.msg-actions-hover-bar {
+  position: absolute;
+  top: -12px;
+  display: none;
+  align-items: center;
+  gap: 4px;
+  background: #0d1e38;
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  border-radius: 6px;
+  padding: 2px 4px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+  z-index: 10;
+}
+
+.message-row.is-me .msg-actions-hover-bar {
+  right: 0;
+}
+
+.message-row.is-partner .msg-actions-hover-bar {
+  left: 0;
+}
+
+.bubble-hover-wrapper:hover .msg-actions-hover-bar {
+  display: flex;
+}
+
+.mah-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  padding: 2px 6px;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.15s;
+}
+
+.mah-btn:hover {
+  background: rgba(212, 175, 55, 0.18);
+  color: #ffffff;
+}
+
+.mah-btn.delete:hover {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+/* Delivery & Seen Meta */
+.msg-meta-row {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 9px;
-  color: #64748b;
   margin-top: 3px;
+  font-size: 10px;
+  color: #64748b;
 }
 
-.bubble-status {
+.seen-check {
   color: #38bdf8;
+  font-weight: 800;
+  letter-spacing: -1px;
 }
 
-/* 8. Quick Tags Bar */
-.quick-tags-bar {
+.seen-text {
+  color: #38bdf8;
+  font-weight: 600;
+}
+
+.delivered-check {
+  color: #94a3b8;
+  font-weight: 700;
+}
+
+.delivered-text {
+  color: #94a3b8;
+}
+
+/* 8. Reply Preview Banner */
+.reply-active-banner {
   display: flex;
   align-items: center;
-  gap: 5px;
+  justify-content: space-between;
   padding: 6px 14px;
-  background: #08111f;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(212, 175, 55, 0.12);
+  border-top: 1px solid rgba(212, 175, 55, 0.3);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.rab-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.rab-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.rab-sender {
+  font-size: 10px;
+  font-weight: 700;
+  color: #d4af37;
+}
+
+.rab-quote {
+  font-size: 11px;
+  color: #e2e8f0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 320px;
+}
+
+.rab-dismiss-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0 4px;
+}
+
+.rab-dismiss-btn:hover { color: #ffffff; }
+
+/* 9. Quick Tags Strip */
+.quick-tags-strip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: #09172e;
   overflow-x: auto;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
   scrollbar-width: none;
 }
 
-.quick-tags-bar::-webkit-scrollbar {
-  display: none;
-}
+.quick-tags-strip::-webkit-scrollbar { display: none; }
 
-.quick-tags-label {
+.qts-label {
   font-size: 10px;
   font-weight: 700;
   color: #64748b;
+  text-transform: uppercase;
+  flex-shrink: 0;
 }
 
 .quick-tag-chip {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 9999px;
+  padding: 3px 9px;
   color: #94a3b8;
   font-size: 10px;
-  padding: 2px 8px;
-  border-radius: 10px;
+  font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
-  transition: all 0.15s ease;
+  transition: all 0.15s;
 }
 
 .quick-tag-chip:hover {
-  border-color: #d4af37;
-  color: #fff;
+  background: rgba(212, 175, 55, 0.1);
+  color: #e2e8f0;
 }
 
-.quick-tag-chip.selected {
-  background: rgba(212, 175, 55, 0.2);
+.quick-tag-chip.active {
+  background: rgba(212, 175, 55, 0.22);
   border-color: #d4af37;
-  color: #ffdf73;
+  color: #d4af37;
 }
 
-/* 9. Composer Box */
-.imessage-composer-box {
+/* 10. Message Composer Bar */
+.message-composer-bar {
   display: flex;
   align-items: flex-end;
   gap: 8px;
   padding: 10px 14px;
-  background: #0a1424;
+  background: #0a172c;
   border-top: 1px solid rgba(212, 175, 55, 0.25);
 }
 
-.imessage-input {
+.composer-textarea {
   flex: 1;
-  background: #050c17;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 18px;
-  padding: 8px 14px;
-  color: #fff;
-  font-size: 12.5px;
+  background: #081426;
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  border-radius: 12px;
+  padding: 9px 12px;
+  color: #ffffff;
+  font-size: 13px;
   font-family: inherit;
   resize: none;
   outline: none;
-  max-height: 120px;
   line-height: 1.4;
-  transition: border-color 0.2s ease;
+  max-height: 120px;
+  transition: border-color 0.2s;
 }
 
-.imessage-input:focus {
+.composer-textarea:focus {
   border-color: #d4af37;
-  box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.25);
 }
 
-.imessage-send-btn {
-  width: 34px;
-  height: 34px;
+.composer-textarea::placeholder {
+  color: #64748b;
+}
+
+.composer-send-btn {
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #d4af37 0%, #b89320 100%);
-  border: none;
-  color: #04182d;
+  background: #142742;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #64748b;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
-  transition: all 0.15s ease;
-  flex-shrink: 0;
-}
-
-.imessage-send-btn:hover:not(:disabled) {
-  transform: scale(1.06);
-  background: #ffdf73;
-}
-
-.imessage-send-btn:disabled {
-  opacity: 0.35;
   cursor: not-allowed;
-  box-shadow: none;
+  flex-shrink: 0;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Transitions */
-.pm-fade-enter-active, .pm-fade-leave-active {
-  transition: opacity 0.2s ease, transform 0.2s ease;
+.composer-send-btn.can_send {
+  background: linear-gradient(135deg, #d4af37 0%, #b89120 100%);
+  border-color: #d4af37;
+  color: #050b14;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(212, 175, 55, 0.4);
 }
-.pm-fade-enter-from, .pm-fade-leave-to {
-  opacity: 0;
-  transform: translateY(10px);
+
+.composer-send-btn.can_send:hover {
+  transform: scale(1.06);
+  box-shadow: 0 6px 18px rgba(212, 175, 55, 0.55);
 }
+
+/* Animations */
+.pm-fade-enter-active, .pm-fade-leave-active { transition: opacity 0.2s ease; }
+.pm-fade-enter-from, .pm-fade-leave-to { opacity: 0; }
 
 .pm-window-enter-active, .pm-window-leave-active {
-  transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .pm-window-enter-from, .pm-window-leave-to {
   opacity: 0;
   transform: translateY(20px) scale(0.96);
+}
+
+.pm-slide-down-enter-active, .pm-slide-down-leave-active {
+  transition: all 0.2s ease;
+}
+.pm-slide-down-enter-from, .pm-slide-down-leave-to {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+
+.pm-slide-up-enter-active, .pm-slide-up-leave-active {
+  transition: all 0.2s ease;
+}
+.pm-slide-up-enter-from, .pm-slide-up-leave-to {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 520px) {
+  .partner-chat-window {
+    right: 8px;
+    bottom: 8px;
+    width: calc(100vw - 16px);
+    height: calc(100vh - 16px);
+    border-radius: 14px;
+  }
+  .partner-launcher-btn {
+    bottom: 80px;
+    right: 12px;
+  }
 }
 </style>
