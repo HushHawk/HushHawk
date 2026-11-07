@@ -28,34 +28,29 @@
       </button>
     </transition>
 
-    <!-- 2. Pop-up iMessage Window (z-index 10005: Never overlaid by HAWKAI) -->
+    <!-- 2. Pop-up iMessage Window (z-index 2000000: Suppresses HAWKAI while open) -->
     <transition name="pm-window">
       <div
         v-if="isOpen"
         class="partner-chat-window"
         :class="{ 'is-wide': isWideMode, 'is-minimized': isMinimized }"
       >
-        <!-- macOS Window Title Bar -->
+        <!-- macOS Window Title Bar (Single Unbroken Line) -->
         <div class="mac-title-bar">
-          <div class="mac-traffic-lights">
-            <button class="mac-dot mac-close" @click="closeWindow" title="Close Window (Esc)"></button>
-            <button class="mac-dot mac-minimize" @click="toggleMinimize" title="Minimize Window"></button>
-            <button class="mac-dot mac-expand" @click="toggleWide" title="Toggle Wide Screen"></button>
+          <div class="mac-bar-left">
+            <div class="mac-traffic-lights">
+              <button class="mac-dot mac-close" @click="closeWindow" title="Close Window (Esc)"></button>
+              <button class="mac-dot mac-minimize" @click="toggleMinimize" title="Minimize Window"></button>
+              <button class="mac-dot mac-expand" @click="toggleWide" title="Toggle Wide Screen"></button>
+            </div>
+            <span class="mac-app-title">Partner Messenger</span>
+            <span class="mac-active-layer-pill" :title="currentThread?.title">
+              {{ currentLayerShortTitle }}
+            </span>
           </div>
 
-          <div class="mac-title-text">
-            <div class="mac-title-main">
-              <span>Partner iMessage</span>
-              <span class="mac-layer-badge">{{ currentLayerShortTitle }}</span>
-            </div>
-            <div class="mac-sub-text">
-              <span class="rds-secure-dot"></span>
-              Encrypted RDS · Real-time
-            </div>
-          </div>
-
-          <div class="mac-header-actions">
-            <!-- Sleek Persona Switcher Segment -->
+          <div class="mac-bar-right">
+            <!-- Persona Switcher Segment -->
             <div class="persona-segmented-control" title="Switch active perspective">
               <button
                 type="button"
@@ -84,7 +79,7 @@
               class="mac-icon-btn"
               :class="{ active: isSearchOpen }"
               @click="toggleSearch"
-              title="Search Properties to Open Layer"
+              title="Quick Search Property Layer"
             >
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="11" cy="11" r="8"></circle>
@@ -118,26 +113,35 @@
         </div>
 
         <div v-show="!isMinimized" class="pm-window-content">
-          <!-- 3. Minimal Online Status Ribbon -->
+          <!-- 3. Online Status & Encryption Ribbon (Single Unbroken Line) -->
           <div class="partner-status-ribbon">
-            <div class="psr-partner" :class="{ 'is-me': activePersona === 'Alex Richard' }">
-              <span class="psr-dot online"></span>
-              <strong>Alex Richard</strong>
-              <span class="psr-role">Acquisitions (Admin)</span>
-              <span class="psr-tag-you" v-if="activePersona === 'Alex Richard'">YOU</span>
+            <div class="psr-left">
+              <div class="psr-item" :class="{ 'is-me': activePersona === 'Alex Richard' }">
+                <span class="psr-dot online"></span>
+                <strong class="psr-name">Alex Richard</strong>
+                <span class="psr-role">Acquisitions (Admin)</span>
+                <span class="psr-you" v-if="activePersona === 'Alex Richard'">YOU</span>
+              </div>
+
+              <span class="psr-sep">·</span>
+
+              <div class="psr-item" :class="{ 'is-me': activePersona === 'Waldo Ellis' }">
+                <span class="psr-dot online"></span>
+                <strong class="psr-name">Waldo Ellis</strong>
+                <span class="psr-role">Dispositions (Partner)</span>
+                <span class="psr-you" v-if="activePersona === 'Waldo Ellis'">YOU</span>
+              </div>
             </div>
 
-            <div class="psr-divider">·</div>
-
-            <div class="psr-partner" :class="{ 'is-me': activePersona === 'Waldo Ellis' }">
-              <span class="psr-dot online"></span>
-              <strong>Waldo Ellis</strong>
-              <span class="psr-role">Dispositions (Partner)</span>
-              <span class="psr-tag-you" v-if="activePersona === 'Waldo Ellis'">YOU</span>
+            <div class="psr-right">
+              <span class="psr-secure">
+                <span class="psr-secure-dot"></span>
+                Encrypted RDS
+              </span>
             </div>
           </div>
 
-          <!-- 4. Property Quick Search Bar (Collapsible or activated on click) -->
+          <!-- 4. Collapsible Property Quick Search Bar -->
           <transition name="pm-slide-down">
             <div v-if="isSearchOpen" class="property-search-section">
               <div class="search-input-box">
@@ -189,7 +193,7 @@
             </div>
           </transition>
 
-          <!-- 5. Multi-Chat Layer Sliding Pill Bar -->
+          <!-- 5. Multi-Chat Layer Sliding Pill Bar (Single Unbroken Line) -->
           <div class="multi-chat-sliding-bar-wrap">
             <button class="bar-scroll-btn left" @click="scrollTabs('left')" title="Scroll Left">‹</button>
 
@@ -217,25 +221,27 @@
             <button class="bar-scroll-btn right" @click="scrollTabs('right')" title="Scroll Right">›</button>
           </div>
 
-          <!-- 6. Active Property Context Ribbon (When chatting on a property) -->
+          <!-- 6. Active Property Context Banner (Single Unbroken Line) -->
           <div v-if="currentThread && currentThread.property_id" class="property-context-banner">
             <div class="pcb-left">
-              <span class="pcb-label">PROPERTY LAYER</span>
-              <strong class="pcb-title">{{ currentThread.title }}</strong>
+              <span class="pcb-tag">PROPERTY LAYER</span>
+              <strong class="pcb-address" :title="currentThread.title">{{ currentThread.title }}</strong>
               <span class="pcb-crownkey" v-if="currentThread.crownkey">{{ currentThread.crownkey }}</span>
             </div>
-            <button
-              class="pcb-dossier-link"
-              @click="navigateToProperty(currentThread.property_id)"
-              title="Open full property dossier timeline"
-            >
-              <span>View Dossier</span>
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                <polyline points="15 3 21 3 21 9"></polyline>
-                <line x1="10" y1="14" x2="21" y2="3"></line>
-              </svg>
-            </button>
+            <div class="pcb-right">
+              <button
+                class="pcb-dossier-link"
+                @click="navigateToProperty(currentThread.property_id)"
+                title="Open full property dossier timeline"
+              >
+                <span>View Dossier</span>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                  <polyline points="15 3 21 3 21 9"></polyline>
+                  <line x1="10" y1="14" x2="21" y2="3"></line>
+                </svg>
+              </button>
+            </div>
           </div>
 
           <!-- 7. Message Viewport Area -->
@@ -378,7 +384,7 @@
 
           <!-- 9. Quick Topic Tag Chips -->
           <div class="quick-tags-strip">
-            <span class="qts-label">Tag:</span>
+            <span class="qts-label">TAG:</span>
             <button
               v-for="t in availableTags"
               :key="t"
@@ -391,17 +397,19 @@
             </button>
           </div>
 
-          <!-- 10. Message Composer Bar -->
+          <!-- 10. Message Composer Bar (Clean, Unobstructed, Send Button 100% Accessible) -->
           <div class="message-composer-bar">
-            <textarea
-              ref="inputTextareaRef"
-              v-model="draftText"
-              class="composer-textarea"
-              :placeholder="composerPlaceholder"
-              rows="1"
-              @keydown.enter.exact.prevent="sendMessage"
-              @input="autoExpandTextarea"
-            ></textarea>
+            <div class="composer-input-wrap">
+              <textarea
+                ref="inputTextareaRef"
+                v-model="draftText"
+                class="composer-textarea"
+                :placeholder="composerPlaceholder"
+                rows="1"
+                @keydown.enter.exact.prevent="sendMessage"
+                @input="autoExpandTextarea"
+              ></textarea>
+            </div>
 
             <button
               class="composer-send-btn"
@@ -493,6 +501,12 @@ export default {
     }
   },
   watch: {
+    isOpen() {
+      this.syncPartnerChatActiveState();
+    },
+    isMinimized() {
+      this.syncPartnerChatActiveState();
+    },
     activePersona() {
       this.refreshThreads();
       if (this.currentThread) {
@@ -522,10 +536,21 @@ export default {
     if (typeof window !== 'undefined') {
       window.removeEventListener('open-partner-chat', this.handleExternalChatOpen);
       window.removeEventListener('keydown', this.handleGlobalKeydown);
+      document.body.classList.remove('partner-chat-active');
+      window.dispatchEvent(new CustomEvent('hushhawk-partner-chat-state', { detail: { open: false } }));
     }
     if (this.pollTimer) clearInterval(this.pollTimer);
   },
   methods: {
+    syncPartnerChatActiveState() {
+      const isActive = this.isOpen && !this.isMinimized;
+      if (typeof document !== 'undefined') {
+        document.body.classList.toggle('partner-chat-active', isActive);
+      }
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('hushhawk-partner-chat-state', { detail: { open: isActive } }));
+      }
+    },
     handleGlobalKeydown(e) {
       if (e.key === 'Escape' && this.isOpen) {
         this.closeWindow();
@@ -540,12 +565,15 @@ export default {
           this.focusInput();
         });
       }
+      this.syncPartnerChatActiveState();
     },
     closeWindow() {
       this.isOpen = false;
+      this.syncPartnerChatActiveState();
     },
     toggleMinimize() {
       this.isMinimized = !this.isMinimized;
+      this.syncPartnerChatActiveState();
     },
     toggleWide() {
       this.isWideMode = !this.isWideMode;
@@ -571,8 +599,6 @@ export default {
     isMessageSeenByPartner(msg) {
       if (!msg) return false;
       const isAlexMe = this.activePersona.toLowerCase().includes('alex');
-      // If Alex sent it, Waldo has seen it if is_read_waldo === true
-      // If Waldo sent it, Alex has seen it if is_read_alex === true
       return isAlexMe ? !!msg.is_read_waldo : !!msg.is_read_alex;
     },
     getInitials(name) {
@@ -580,7 +606,7 @@ export default {
       return name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
     },
     getShortTitle(title) {
-      if (!title) return 'Layer';
+      if (!title) return 'General';
       if (title.includes('General')) return 'General';
       const parts = title.split(',');
       return parts[0].trim();
@@ -832,6 +858,7 @@ export default {
     handleExternalChatOpen(e) {
       this.isOpen = true;
       this.isMinimized = false;
+      this.syncPartnerChatActiveState();
       const detail = e.detail || {};
 
       this.$nextTick(async () => {
@@ -861,7 +888,7 @@ export default {
    Institutional Dark Navy & Royal Gold (#D4AF37) Palette
    ========================================================================== */
 
-/* 1. Floating Launcher Button (Positioned UPPER of HAWKAI) */
+/* 1. Floating Launcher Button (Positioned directly ABOVE HAWKAI) */
 .partner-launcher-btn {
   position: fixed;
   bottom: 84px; /* Stacked directly above HAWKAI (bottom: 24px) */
@@ -997,17 +1024,17 @@ export default {
   position: fixed;
   bottom: 24px;
   right: 24px;
-  width: 480px;
-  height: 660px;
-  max-width: calc(100vw - 32px);
-  max-height: calc(100vh - 48px);
+  width: 580px; /* Spacious width so nothing wraps or divides awkwardly */
+  height: 680px;
+  max-width: calc(100vw - 24px);
+  max-height: calc(100vh - 36px);
   background: #081426;
   border: 1px solid rgba(212, 175, 55, 0.4);
   border-radius: 18px;
-  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.05);
   display: flex;
   flex-direction: column;
-  z-index: 10005; /* Highest z-index: HAWKAI (at 9998) will NEVER overlay or block the chat window */
+  z-index: 2000000; /* Ultra-high z-index so HAWKAI never overlays the chat window */
   overflow: hidden;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -1015,8 +1042,8 @@ export default {
 }
 
 .partner-chat-window.is-wide {
-  width: 740px;
-  height: 740px;
+  width: 820px;
+  height: 760px;
 }
 
 .partner-chat-window.is-minimized {
@@ -1024,7 +1051,7 @@ export default {
   width: 380px;
 }
 
-/* macOS Title Bar */
+/* macOS Title Bar (Single Unbroken Row) */
 .mac-title-bar {
   height: 48px;
   min-height: 48px;
@@ -1035,6 +1062,15 @@ export default {
   justify-content: space-between;
   padding: 0 14px;
   user-select: none;
+  white-space: nowrap;
+}
+
+.mac-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex-shrink: 0;
 }
 
 .mac-traffic-lights {
@@ -1058,29 +1094,21 @@ export default {
 .mac-minimize { background: #ffbd2e; box-shadow: 0 0 4px rgba(255, 189, 46, 0.5); }
 .mac-expand { background: #27c93f; box-shadow: 0 0 4px rgba(39, 201, 63, 0.5); }
 
-.mac-title-text {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-.mac-title-main {
-  display: flex;
-  align-items: center;
-  gap: 6px;
+.mac-app-title {
   font-size: 13px;
   font-weight: 700;
   color: #ffffff;
+  letter-spacing: -0.2px;
+  white-space: nowrap;
 }
 
-.mac-layer-badge {
-  font-size: 10px;
-  padding: 2px 7px;
+.mac-active-layer-pill {
+  font-size: 11px;
+  padding: 2px 8px;
   border-radius: 9999px;
   background: rgba(212, 175, 55, 0.15);
   color: #d4af37;
-  border: 1px solid rgba(212, 175, 55, 0.3);
+  border: 1px solid rgba(212, 175, 55, 0.35);
   font-weight: 600;
   max-width: 140px;
   white-space: nowrap;
@@ -1088,33 +1116,19 @@ export default {
   text-overflow: ellipsis;
 }
 
-.mac-sub-text {
-  font-size: 10px;
-  color: #64748b;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.rds-secure-dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: #10b981;
-}
-
-.mac-header-actions {
+.mac-bar-right {
   display: flex;
   align-items: center;
   gap: 6px;
+  flex-shrink: 0;
 }
 
 /* Compact Persona Segmented Control */
 .persona-segmented-control {
   display: flex;
   align-items: center;
-  background: rgba(15, 23, 42, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 8px;
   padding: 2px;
 }
@@ -1132,12 +1146,13 @@ export default {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.15s;
+  white-space: nowrap;
 }
 
 .psc-btn.active {
-  background: rgba(212, 175, 55, 0.2);
+  background: rgba(212, 175, 55, 0.22);
   color: #ffffff;
-  border: 1px solid rgba(212, 175, 55, 0.4);
+  border: 1px solid rgba(212, 175, 55, 0.45);
 }
 
 .psc-avatar {
@@ -1191,25 +1206,34 @@ export default {
   background: #081426;
 }
 
-/* 3. Minimal Online Status Ribbon */
+/* 3. Online Status & Encryption Ribbon (Single Unbroken Line) */
 .partner-status-ribbon {
-  height: 28px;
-  min-height: 28px;
-  background: rgba(10, 23, 42, 0.65);
+  height: 32px;
+  min-height: 32px;
+  background: rgba(10, 23, 42, 0.7);
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 10px;
+  justify-content: space-between;
+  padding: 0 16px;
   font-size: 11px;
   color: #cbd5e1;
-  padding: 0 14px;
+  white-space: nowrap;
 }
 
-.psr-partner {
+.psr-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.psr-item {
   display: flex;
   align-items: center;
   gap: 5px;
+  white-space: nowrap;
 }
 
 .psr-dot.online {
@@ -1218,6 +1242,12 @@ export default {
   border-radius: 50%;
   background: #10b981;
   box-shadow: 0 0 5px rgba(16, 185, 129, 0.8);
+  flex-shrink: 0;
+}
+
+.psr-name {
+  color: #f1f5f9;
+  font-weight: 600;
 }
 
 .psr-role {
@@ -1225,24 +1255,46 @@ export default {
   font-size: 10px;
 }
 
-.psr-tag-you {
+.psr-you {
   font-size: 9px;
   font-weight: 800;
-  padding: 1px 4px;
+  padding: 1px 5px;
   border-radius: 4px;
   background: rgba(212, 175, 55, 0.25);
   color: #d4af37;
   letter-spacing: 0.5px;
+  flex-shrink: 0;
 }
 
-.psr-divider {
+.psr-sep {
   color: #475569;
+}
+
+.psr-right {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.psr-secure {
+  font-size: 10px;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.psr-secure-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #10b981;
 }
 
 /* 4. Collapsible Property Search Bar */
 .property-search-section {
   position: relative;
-  padding: 8px 12px;
+  padding: 8px 14px;
   background: #0d1e38;
   border-bottom: 1px solid rgba(212, 175, 55, 0.2);
 }
@@ -1252,7 +1304,7 @@ export default {
   align-items: center;
   gap: 8px;
   background: #081426;
-  border: 1px solid rgba(212, 175, 55, 0.3);
+  border: 1px solid rgba(212, 175, 55, 0.35);
   border-radius: 8px;
   padding: 6px 10px;
 }
@@ -1282,8 +1334,8 @@ export default {
 .property-dropdown-menu {
   position: absolute;
   top: 100%;
-  left: 12px;
-  right: 12px;
+  left: 14px;
+  right: 14px;
   max-height: 240px;
   background: #0d1e38;
   border: 1px solid rgba(212, 175, 55, 0.4);
@@ -1362,14 +1414,15 @@ export default {
   border-color: rgba(212, 175, 55, 0.4);
 }
 
-/* 5. Multi-Chat Sliding Bar */
+/* 5. Multi-Chat Sliding Bar (Single Unbroken Line) */
 .multi-chat-sliding-bar-wrap {
   display: flex;
   align-items: center;
   background: #09172e;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  padding: 6px 6px;
-  gap: 4px;
+  padding: 6px 8px;
+  gap: 6px;
+  white-space: nowrap;
 }
 
 .bar-scroll-btn {
@@ -1380,6 +1433,7 @@ export default {
   padding: 0 4px;
   cursor: pointer;
   line-height: 1;
+  flex-shrink: 0;
 }
 
 .bar-scroll-btn:hover { color: #d4af37; }
@@ -1392,6 +1446,7 @@ export default {
   overflow-x: auto;
   scroll-behavior: smooth;
   scrollbar-width: none;
+  white-space: nowrap;
 }
 
 .multi-chat-sliding-bar::-webkit-scrollbar { display: none; }
@@ -1409,6 +1464,7 @@ export default {
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
+  flex-shrink: 0;
   transition: all 0.2s;
 }
 
@@ -1438,14 +1494,17 @@ export default {
   font-weight: 800;
 }
 
-/* 6. Active Property Context Ribbon */
+/* 6. Active Property Context Ribbon (Single Unbroken Line) */
 .property-context-banner {
+  height: 38px;
+  min-height: 38px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 6px 14px;
-  background: rgba(13, 30, 56, 0.7);
-  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+  padding: 0 14px;
+  background: rgba(13, 30, 56, 0.85);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.25);
+  white-space: nowrap;
 }
 
 .pcb-left {
@@ -1453,28 +1512,43 @@ export default {
   align-items: center;
   gap: 8px;
   min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
-.pcb-label {
+.pcb-tag {
   font-size: 9px;
   font-weight: 800;
   color: #d4af37;
   letter-spacing: 0.5px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(212, 175, 55, 0.15);
+  flex-shrink: 0;
 }
 
-.pcb-title {
+.pcb-address {
   font-size: 12px;
   color: #ffffff;
   font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  max-width: 220px;
 }
 
 .pcb-crownkey {
-  font-size: 10px;
-  color: #64748b;
+  font-size: 11px;
+  color: #94a3b8;
   font-family: monospace;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.pcb-right {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
 }
 
 .pcb-dossier-link {
@@ -1485,10 +1559,11 @@ export default {
   border: 1px solid rgba(212, 175, 55, 0.35);
   border-radius: 6px;
   color: #d4af37;
-  padding: 3px 8px;
-  font-size: 10px;
+  padding: 4px 9px;
+  font-size: 11px;
   font-weight: 600;
   cursor: pointer;
+  white-space: nowrap;
   transition: all 0.15s;
 }
 
@@ -1562,7 +1637,7 @@ export default {
 .messages-empty-state p {
   font-size: 12px;
   color: #94a3b8;
-  max-width: 300px;
+  max-width: 320px;
   margin: 0 0 16px 0;
   line-height: 1.4;
 }
@@ -1572,7 +1647,7 @@ export default {
   flex-direction: column;
   gap: 6px;
   width: 100%;
-  max-width: 320px;
+  max-width: 340px;
 }
 
 .mes-shortcuts button {
@@ -1721,7 +1796,7 @@ export default {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 240px;
+  max-width: 260px;
 }
 
 /* Hover Action Bar */
@@ -1841,7 +1916,7 @@ export default {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 320px;
+  max-width: 360px;
 }
 
 .rab-dismiss-btn {
@@ -1865,6 +1940,7 @@ export default {
   overflow-x: auto;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
   scrollbar-width: none;
+  white-space: nowrap;
 }
 
 .quick-tags-strip::-webkit-scrollbar { display: none; }
@@ -1887,6 +1963,7 @@ export default {
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
+  flex-shrink: 0;
   transition: all 0.15s;
 }
 
@@ -1905,18 +1982,26 @@ export default {
 .message-composer-bar {
   display: flex;
   align-items: flex-end;
-  gap: 8px;
-  padding: 10px 14px;
+  gap: 10px;
+  padding: 12px 16px;
   background: #0a172c;
   border-top: 1px solid rgba(212, 175, 55, 0.25);
+  position: relative;
+  z-index: 20;
+}
+
+.composer-input-wrap {
+  flex: 1;
+  display: flex;
+  min-width: 0;
 }
 
 .composer-textarea {
-  flex: 1;
+  width: 100%;
   background: #081426;
   border: 1px solid rgba(212, 175, 55, 0.35);
   border-radius: 12px;
-  padding: 9px 12px;
+  padding: 10px 14px;
   color: #ffffff;
   font-size: 13px;
   font-family: inherit;
@@ -1924,12 +2009,12 @@ export default {
   outline: none;
   line-height: 1.4;
   max-height: 120px;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .composer-textarea:focus {
   border-color: #d4af37;
-  box-shadow: 0 0 10px rgba(212, 175, 55, 0.25);
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.25);
 }
 
 .composer-textarea::placeholder {
@@ -1937,8 +2022,8 @@ export default {
 }
 
 .composer-send-btn {
-  width: 38px;
-  height: 38px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   background: #142742;
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -1993,7 +2078,7 @@ export default {
 }
 
 /* Mobile Responsiveness */
-@media (max-width: 520px) {
+@media (max-width: 600px) {
   .partner-chat-window {
     right: 8px;
     bottom: 8px;
