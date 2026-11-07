@@ -536,7 +536,6 @@ export default {
     if (typeof window !== 'undefined') {
       window.removeEventListener('open-partner-chat', this.handleExternalChatOpen);
       window.removeEventListener('keydown', this.handleGlobalKeydown);
-      document.body.classList.remove('partner-chat-active');
       window.dispatchEvent(new CustomEvent('hushhawk-partner-chat-state', { detail: { open: false } }));
     }
     if (this.pollTimer) clearInterval(this.pollTimer);
@@ -544,11 +543,13 @@ export default {
   methods: {
     syncPartnerChatActiveState() {
       const isActive = this.isOpen && !this.isMinimized;
-      if (typeof document !== 'undefined') {
-        document.body.classList.toggle('partner-chat-active', isActive);
-      }
       if (typeof window !== 'undefined') {
         window.dispatchEvent(new CustomEvent('hushhawk-partner-chat-state', { detail: { open: isActive } }));
+        // Direct DOM safeguard to guarantee HawkAI never overlays the chat window
+        const hawkEls = document.querySelectorAll('.hawk-copilot-container, .hawk-launcher-btn');
+        hawkEls.forEach(el => {
+          el.style.display = isActive ? 'none' : '';
+        });
       }
     },
     handleGlobalKeydown(e) {
