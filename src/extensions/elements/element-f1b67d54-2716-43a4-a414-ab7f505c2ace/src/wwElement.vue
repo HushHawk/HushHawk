@@ -1749,19 +1749,58 @@ export default {
     padding: 0 10px !important;
     height: 52px !important;
     gap: 8px !important;
+    border-left: none !important;
+    overflow: hidden !important;
+    max-width: 100vw !important;
   }
-  .live-clock {
+  .live-clock,
+  .btn-topbar-properties {
     display: none !important;
   }
-  .btn-topbar-properties {
-    padding: 6px 8px !important;
+  .user-identity .identity-text {
+    display: none !important;
+  }
+  .user-identity {
+    padding: 4px 6px !important;
+    gap: 4px !important;
+  }
+  .btn-gold {
+    padding: 6px 10px !important;
     font-size: 11px !important;
   }
-  .hero h1 {
-    font-size: 24px;
+  .global-search {
+    max-width: 180px !important;
+    padding: 4px 8px !important;
   }
-  .hero-motto {
-    display: none;
+  .global-search input {
+    font-size: 13px !important;
+  }
+  .hero {
+    padding: 14px 10px !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    min-height: auto !important;
+  }
+  .hero h1 {
+    font-size: 22px !important;
+  }
+  .hero-motto,
+  .jacksonville-calligraphy {
+    display: none !important;
+  }
+  .principles {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    font-size: 10px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .global-search {
+    display: none !important;
+  }
+  .btn-gold .caret-icon {
+    display: none !important;
   }
 }
 </style>

@@ -559,6 +559,13 @@ return{icons,isEditing,navigation,navOpen,query,county,records,imported,checked,
   .nav-open .sidebar{display:flex!important;position:fixed!important;left:0!important;top:0!important;bottom:0!important;z-index:2000!important;width:240px!important;max-width:80vw!important;box-shadow:10px 0 40px rgba(0,0,0,0.85)!important}
   .workspace{margin-left:0!important;width:100%!important}
   .mobile-menu{display:flex!important;align-items:center;justify-content:center;width:36px;height:36px;border-radius:6px;background:rgba(255,255,255,0.08)}
+  .topbar{padding:0 10px!important;height:52px!important;gap:8px!important;border-left:none!important;overflow:hidden!important}
+  .live-clock,.btn-topbar-properties{display:none!important}
+  .user-identity .identity-text{display:none!important}
+  .user-identity{padding:4px 6px!important;gap:4px!important}
+  .global-search{max-width:180px!important;padding:4px 8px!important}
+  .county-grid{grid-template-columns:1fr!important}
+  .county-app .metrics{grid-template-columns:repeat(2,minmax(0,1fr))!important}
 }
 @media(max-width:650px){.county-app .hero h1{font-size:25px}.county-app .hero-copy>p{font-size:13px}.county-app .principles{font-size:7px}.county-app .metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.county-app .metric small{font-size:9px}.county-app .metric strong{font-size:23px}.import-panel{grid-template-columns:1.2fr .8fr}.county-stats{font-size:9px}.import-action{grid-column:1/-1}.import-panel figure svg{height:95px}.county-choice select{font-size:15px}.right-stack{display:flex}.records .panel-head{flex-wrap:wrap}.records .panel-head h2{flex-basis:100%}.checks label{font-size:9px}.county-app footer span:last-child{display:none}}
 
