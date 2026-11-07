@@ -51,3 +51,255 @@
         text-decoration: unset;
     }
 }
+
+/* ======================================================== */
+/* HUSHHAWK INSTITUTIONAL MOBILE RESPONSIVE ENGINE (A TO Z) */
+/* ======================================================== */
+
+@media (max-width: 860px) {
+    /* 1. Prevent Horizontal Viewport Bleed */
+    html, body, #app {
+        max-width: 100vw !important;
+        overflow-x: hidden !important;
+        -webkit-text-size-adjust: 100% !important;
+    }
+
+    /* 2. Global Shells & Workspaces */
+    .workspace,
+    .hushhawk-command-center,
+    .properties-workspace,
+    .county-app,
+    .seller-app,
+    .acq-app,
+    .view-container {
+        width: 100% !important;
+        max-width: 100vw !important;
+        margin-left: 0 !important;
+        box-sizing: border-box !important;
+        overflow-x: hidden !important;
+    }
+
+    /* 3. Global KPI & Metrics Grids */
+    .metrics-grid,
+    .kpi-row,
+    .kpis,
+    .stats-grid,
+    .stats-cards,
+    .overview-quick-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 8px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .metric-card,
+    .kpi-card,
+    .stat-card,
+    .kpi {
+        padding: 10px 12px !important;
+        gap: 8px !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+    }
+
+    .metric-card strong,
+    .kpi strong,
+    .stat-val,
+    .metric strong {
+        font-size: 18px !important;
+        line-height: 1.2 !important;
+    }
+
+    /* 4. Split Layouts & Drawers */
+    .content-split,
+    .content-split.has-drawer,
+    .acquisition-layout,
+    .columns,
+    .main-layout,
+    .split-grid,
+    .two-column-layout {
+        grid-template-columns: 1fr !important;
+        width: 100% !important;
+        gap: 12px !important;
+    }
+
+    .drawer-panel,
+    .side-drawer,
+    .detail-drawer,
+    .drawer {
+        width: 100% !important;
+        max-width: 100% !important;
+        position: static !important;
+    }
+
+    /* 5. Tables & Data Grids Horizontal Scrolling */
+    .table-wrap,
+    .table-container,
+    .table-scroll,
+    .data-table-container,
+    .all-leads,
+    .ag-root-wrapper,
+    .custom-table-wrap {
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        display: block !important;
+        box-sizing: border-box !important;
+    }
+
+    .table-wrap table,
+    .table-container table,
+    .table-scroll table,
+    .all-leads table {
+        min-width: 580px;
+    }
+
+    /* 6. Filter Bars, Search Bars, & Toolbars */
+    .filter-bar,
+    .filters,
+    .actions-bar,
+    .toolbar,
+    .table-actions,
+    .action-header {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 8px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .filter-group,
+    .search-box-wrap,
+    .filters > div,
+    .filter-item {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .tabs,
+    .nav-tabs,
+    .feed-tabs,
+    .prop-tabs,
+    .section-tabs {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        scrollbar-width: none !important;
+        flex-wrap: nowrap !important;
+        padding-bottom: 4px !important;
+        max-width: 100% !important;
+    }
+
+    .tabs::-webkit-scrollbar,
+    .prop-tabs::-webkit-scrollbar,
+    .nav-tabs::-webkit-scrollbar {
+        display: none !important;
+    }
+
+    .tab-btn,
+    .tabs button,
+    .nav-tabs a {
+        white-space: nowrap !important;
+        flex-shrink: 0 !important;
+    }
+
+    /* 7. Modals & Dialog Windows */
+    .modal,
+    .modal-card,
+    .modal-content,
+    .modal-box,
+    .dialog-box,
+    .add-prop-modal {
+        width: 95vw !important;
+        max-width: 95vw !important;
+        max-height: 88dvh !important;
+        padding: 16px 14px !important;
+        box-sizing: border-box !important;
+    }
+
+    .modal-backdrop,
+    .video-modal-backdrop {
+        padding: 10px !important;
+    }
+
+    .form-grid-2,
+    .form-row-2,
+    .form-two,
+    .two-col {
+        grid-template-columns: 1fr !important;
+        gap: 8px !important;
+    }
+
+    /* 8. Inputs on Mobile (Prevent iOS Auto-Zoom) */
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="number"],
+    input[type="search"],
+    input[type="tel"],
+    select,
+    textarea {
+        font-size: 16px !important;
+    }
+
+    /* 9. Hero Banners & Section Headers */
+    .hero,
+    .view-header,
+    .page-header {
+        padding: 14px 10px !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 10px !important;
+        min-height: auto !important;
+        box-sizing: border-box !important;
+    }
+
+    .hero h1,
+    .page-title {
+        font-size: 22px !important;
+        line-height: 1.2 !important;
+    }
+
+    .hero-actions,
+    .header-actions {
+        width: 100% !important;
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+    }
+
+    /* 10. Floating Launchers Safe Area & Positioning */
+    .partner-launcher-btn {
+        bottom: calc(76px + env(safe-area-inset-bottom, 0px)) !important;
+        right: 14px !important;
+    }
+
+    .hawk-launcher-btn {
+        bottom: calc(16px + env(safe-area-inset-bottom, 0px)) !important;
+        right: 14px !important;
+    }
+}
+
+/* 11. Guaranteed Complete Suppression of HawkAI when Partner Chat is Active */
+body.partner-chat-active .hawk-copilot-container,
+body.partner-chat-active .hawk-launcher-btn,
+body.partner-chat-active .hawk-copilot-drawer {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+@media (max-width: 480px) {
+    .metrics-grid,
+    .kpi-row,
+    .kpis,
+    .stats-grid,
+    .stats-cards {
+        grid-template-columns: 1fr !important;
+    }
+
+    .hero h1,
+    .page-title {
+        font-size: 20px !important;
+    }
+}

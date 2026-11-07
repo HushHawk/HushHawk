@@ -542,6 +542,9 @@ export default {
     if (typeof window !== 'undefined') {
       window.removeEventListener('open-partner-chat', this.handleExternalChatOpen);
       window.removeEventListener('keydown', this.handleGlobalKeydown);
+      if (typeof document !== 'undefined' && document.body) {
+        document.body.classList.remove('partner-chat-active');
+      }
       window.dispatchEvent(new CustomEvent('hushhawk-partner-chat-state', { detail: { open: false } }));
     }
     if (this.pollTimer) clearInterval(this.pollTimer);
@@ -550,6 +553,13 @@ export default {
     syncPartnerChatActiveState() {
       const isActive = this.isOpen && !this.isMinimized;
       if (typeof window !== 'undefined') {
+        if (typeof document !== 'undefined' && document.body) {
+          if (isActive) {
+            document.body.classList.add('partner-chat-active');
+          } else {
+            document.body.classList.remove('partner-chat-active');
+          }
+        }
         window.dispatchEvent(new CustomEvent('hushhawk-partner-chat-state', { detail: { open: isActive } }));
         // Direct DOM safeguard to guarantee HawkAI never overlays the chat window
         const hawkEls = document.querySelectorAll('.hawk-copilot-container, .hawk-launcher-btn');
@@ -914,10 +924,10 @@ export default {
    Institutional Dark Navy & Royal Gold (#D4AF37) Palette
    ========================================================================== */
 
-/* 1. Floating Launcher Button (Positioned directly ABOVE HAWKAI) */
+/* 1. Floating Launcher Button (Positioned cleanly ABOVE HAWKAI) */
 .partner-launcher-btn {
   position: fixed;
-  bottom: 84px; /* Stacked directly above HAWKAI (bottom: 24px) */
+  bottom: 92px; /* Stacked cleanly above HAWKAI (bottom: 24px, height: 56px) with 12px gap */
   right: 24px;
   z-index: 9998;
   display: inline-flex;
