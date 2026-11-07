@@ -3303,7 +3303,16 @@ apiRouter.get('/chat/threads/:threadId/messages', async (req, res) => {
 apiRouter.post('/chat/threads/:threadId/messages', async (req, res) => {
     try {
         const { threadId } = req.params;
-        const { sender_name, sender_role, message_text, tag, attachments } = req.body;
+        const {
+            sender_name,
+            sender_role,
+            message_text,
+            tag,
+            attachments,
+            reply_to_id,
+            reply_to_sender,
+            reply_to_text
+        } = req.body;
         if (!message_text || !message_text.trim()) {
             return res.status(400).json({ error: 'Message text is required' });
         }
@@ -3322,8 +3331,8 @@ apiRouter.post('/chat/threads/:threadId/messages', async (req, res) => {
         // Insert message
         const insertMsg = `
             INSERT INTO core.partner_chat_messages
-                (thread_id, sender_name, sender_role, message_text, property_id, tag, attachments, is_read_alex, is_read_waldo)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+                (thread_id, sender_name, sender_role, message_text, property_id, tag, attachments, is_read_alex, is_read_waldo, reply_to_id, reply_to_sender, reply_to_text)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
             RETURNING *
         `;
         const { rows: msgRows } = await pool.query(insertMsg, [
@@ -3335,7 +3344,10 @@ apiRouter.post('/chat/threads/:threadId/messages', async (req, res) => {
             tag || null,
             JSON.stringify(attachments || []),
             isAlex,
-            !isAlex
+            !isAlex,
+            reply_to_id || null,
+            reply_to_sender || null,
+            reply_to_text || null
         ]);
 
         // Update thread
@@ -3399,6 +3411,47 @@ apiRouter.patch('/chat/threads/:threadId/read', async (req, res) => {
         `, [threadId]);
 
         res.json({ ok: true, threadId, user_name: activeUser });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+apiRouter.delete('/chat/messages/:messageId', async (req, res) => {
+    try {
+        const { messageId } = req.params;
+        const msgRes = await pool.query(`SELECT thread_id, property_id FROM core.partner_chat_messages WHERE id = $1`, [messageId]);
+        if (msgRes.rows.length === 0) {
+            return res.status(404).json({ error: 'Message not found' });
+        }
+        const { thread_id: threadId } = msgRes.rows[0];
+
+        // Delete message
+        await pool.query(`DELETE FROM core.partner_chat_messages WHERE id = $1`, [messageId]);
+
+        // Recalculate latest message in thread
+        const lastMsgRes = await pool.query(`
+            SELECT message_text, sender_name, created_at 
+            FROM core.partner_chat_messages 
+            WHERE thread_id = $1 
+            ORDER BY created_at DESC 
+            LIMIT 1
+        `, [threadId]);
+
+        if (lastMsgRes.rows.length > 0) {
+            await pool.query(`
+                UPDATE core.partner_chat_threads
+                SET last_message_text = $1, last_message_sender = $2, last_message_at = $3, updated_at = now()
+                WHERE id = $4
+            `, [lastMsgRes.rows[0].message_text, lastMsgRes.rows[0].sender_name, lastMsgRes.rows[0].created_at, threadId]);
+        } else {
+            await pool.query(`
+                UPDATE core.partner_chat_threads
+                SET last_message_text = NULL, last_message_sender = NULL, updated_at = now()
+                WHERE id = $1
+            `, [threadId]);
+        }
+
+        res.json({ ok: true, deleted_id: messageId, threadId });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
