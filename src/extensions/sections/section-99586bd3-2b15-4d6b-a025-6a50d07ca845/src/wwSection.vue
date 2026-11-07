@@ -392,7 +392,7 @@ export default {
       clockTimer: null,
       authorizedCredentials: [
         {
-          badge: '👑 MAIN ADMIN',
+          badge: 'MAIN ADMIN',
           roleTitle: 'Master Administrator',
           name: 'Main Administrator',
           email: 'admin@hushhawk.com',
@@ -400,7 +400,7 @@ export default {
           role: 'System Superadmin & Managing Partner'
         },
         {
-          badge: '🦅 ACQUISITIONS',
+          badge: 'ACQUISITIONS',
           roleTitle: 'Acquisitions Director',
           name: 'Dejon Ellis',
           email: 'dejon@hushhawk.com',

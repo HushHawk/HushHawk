@@ -72,12 +72,14 @@
     .seller-app,
     .acq-app,
     .view-container,
+    .workspace,
     .command {
         width: 100% !important;
         max-width: 100vw !important;
         margin-left: 0 !important;
         box-sizing: border-box !important;
         overflow-x: hidden !important;
+        padding-bottom: 120px !important;
     }
 
     /* 3. Universal Topbars & Navigation Headers */
@@ -90,13 +92,15 @@
         width: 100% !important;
         max-width: 100vw !important;
         box-sizing: border-box !important;
-        overflow: hidden !important;
+        overflow: visible !important;
     }
 
     .topbar-right {
         gap: 6px !important;
         flex-shrink: 0 !important;
         margin-left: auto !important;
+        display: flex !important;
+        align-items: center !important;
     }
 
     .mobile-menu {
@@ -127,15 +131,79 @@
         font-size: 13px !important;
     }
 
+    .user-identity-wrap {
+        position: relative !important;
+        flex-shrink: 0 !important;
+    }
+
     .user-identity {
-        padding: 4px 6px !important;
-        gap: 4px !important;
+        width: 32px !important;
+        height: 32px !important;
+        min-width: 32px !important;
+        border-radius: 50% !important;
+        padding: 0 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        flex-shrink: 0 !important;
+        background: rgba(212, 175, 55, 0.16) !important;
+        border: 1.5px solid #d4af37 !important;
+        box-sizing: border-box !important;
+        cursor: pointer !important;
     }
 
     .user-identity .identity-text,
     .user-identity small,
-    .user-identity strong {
+    .user-identity strong,
+    .user-identity .identity-caret {
         display: none !important;
+    }
+
+    .user-identity .identity-logo {
+        width: 20px !important;
+        height: 20px !important;
+        border-radius: 50% !important;
+        box-shadow: none !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    .user-identity .identity-logo svg {
+        width: 18px !important;
+        height: 18px !important;
+    }
+
+    .user-menu-dropdown {
+        position: fixed !important;
+        top: 56px !important;
+        right: 10px !important;
+        left: auto !important;
+        width: min(290px, calc(100vw - 20px)) !important;
+        max-width: calc(100vw - 20px) !important;
+        z-index: 10001 !important;
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85) !important;
+    }
+
+    .quick-add-menu {
+        position: fixed !important;
+        top: 56px !important;
+        right: 10px !important;
+        left: auto !important;
+        width: min(280px, calc(100vw - 20px)) !important;
+        max-width: calc(100vw - 20px) !important;
+        z-index: 10001 !important;
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85) !important;
+    }
+
+    .hushhawk-notif-dropdown {
+        position: fixed !important;
+        top: 56px !important;
+        right: 10px !important;
+        left: auto !important;
+        width: min(340px, calc(100vw - 20px)) !important;
+        max-width: calc(100vw - 20px) !important;
+        z-index: 10002 !important;
     }
 
     .btn-gold,
@@ -435,7 +503,32 @@ body.partner-chat-active .hawk-copilot-drawer {
     .stats-grid,
     .stats-cards,
     .metrics {
-        grid-template-columns: 1fr !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 8px !important;
+    }
+
+    .metric,
+    .kpi,
+    .metric-card,
+    .stat-card {
+        min-height: 56px !important;
+        padding: 8px 10px !important;
+        gap: 6px !important;
+    }
+
+    .metric-card strong,
+    .kpi strong,
+    .stat-val,
+    .metric strong {
+        font-size: 16px !important;
+        line-height: 1.2 !important;
+    }
+
+    .metric small,
+    .kpi small,
+    .metric-label {
+        font-size: 10px !important;
+        line-height: 1.2 !important;
     }
 
     .stage-grid {
