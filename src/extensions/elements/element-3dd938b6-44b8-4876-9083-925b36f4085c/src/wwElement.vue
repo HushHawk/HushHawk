@@ -48,7 +48,7 @@
         <!-- User Dropdown Menu with One-Click Logout -->
         <div v-if="isUserMenuOpen" class="user-menu-dropdown" @click.stop>
           <div class="user-menu-header">
-            <span class="user-menu-badge">👑 MAIN ADMIN</span>
+            <span class="user-menu-badge">MAIN ADMIN</span>
             <strong class="user-menu-name">{{ activeUserName }}</strong>
             <span class="user-menu-email">{{ activeUserEmail }}</span>
             <span class="user-menu-status">
@@ -143,7 +143,7 @@ const activeUser=ref({
   name: 'Main Administrator',
   role: 'Superadmin & Managing Partner',
   email: 'admin@hushhawk.com',
-  avatar: '👑'
+  avatar: ''
 });
 if(typeof window!=='undefined'){
   try{
@@ -559,10 +559,14 @@ return{icons,isEditing,navigation,navOpen,query,county,records,imported,checked,
   .nav-open .sidebar{display:flex!important;position:fixed!important;left:0!important;top:0!important;bottom:0!important;z-index:2000!important;width:240px!important;max-width:80vw!important;box-shadow:10px 0 40px rgba(0,0,0,0.85)!important}
   .workspace{margin-left:0!important;width:100%!important}
   .mobile-menu{display:flex!important;align-items:center;justify-content:center;width:36px;height:36px;border-radius:6px;background:rgba(255,255,255,0.08)}
-  .topbar{padding:0 10px!important;height:52px!important;gap:8px!important;border-left:none!important;overflow:hidden!important}
+  .topbar{padding:0 10px!important;height:52px!important;gap:8px!important;border-left:none!important;overflow:visible!important;max-width:100vw!important;box-sizing:border-box!important}
   .live-clock,.btn-topbar-properties{display:none!important}
-  .user-identity .identity-text{display:none!important}
-  .user-identity{padding:4px 6px!important;gap:4px!important}
+  .user-identity-wrap{position:relative!important;flex-shrink:0!important}
+  .user-identity{width:32px!important;height:32px!important;min-width:32px!important;border-radius:50%!important;padding:0!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;flex-shrink:0!important;background:rgba(212,175,55,0.16)!important;border:1.5px solid #d4af37!important;box-sizing:border-box!important;cursor:pointer!important}
+  .user-identity .identity-text,.user-identity .identity-caret{display:none!important}
+  .user-identity .identity-logo{width:20px!important;height:20px!important;border-radius:50%!important;box-shadow:none!important;display:flex!important;align-items:center!important;justify-content:center!important}
+  .user-identity .identity-logo svg{width:18px!important;height:18px!important}
+  .user-menu-dropdown{position:fixed!important;top:56px!important;right:10px!important;left:auto!important;width:min(290px,calc(100vw - 20px))!important;max-width:calc(100vw - 20px)!important;z-index:10001!important;box-shadow:0 16px 40px rgba(0,0,0,0.85)!important}
   .global-search{max-width:180px!important;padding:4px 8px!important}
   .county-grid{grid-template-columns:1fr!important}
   .county-app .metrics{grid-template-columns:repeat(2,minmax(0,1fr))!important}

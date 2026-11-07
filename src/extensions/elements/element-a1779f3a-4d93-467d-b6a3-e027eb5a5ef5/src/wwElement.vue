@@ -166,7 +166,7 @@
         <!-- User Dropdown Menu with One-Click Logout -->
         <div v-if="isUserMenuOpen" class="user-menu-dropdown" @click.stop>
           <div class="user-menu-header">
-            <span class="user-menu-badge">👑 MAIN ADMIN</span>
+            <span class="user-menu-badge">MAIN ADMIN</span>
             <strong class="user-menu-name">{{ activeUserName }}</strong>
             <span class="user-menu-email">{{ activeUserEmail }}</span>
             <span class="user-menu-status">
@@ -887,23 +887,79 @@ return{icons,uid,feedMode,isEditing,heroStyle,metrics,query,zip,checked,tasks,im
     height: 52px !important;
     gap: 8px !important;
     border-left: none !important;
-    overflow: hidden !important;
+    overflow: visible !important;
     max-width: 100vw !important;
+    box-sizing: border-box !important;
+  }
+  .topbar-right {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    margin-left: auto !important;
+    flex-shrink: 0 !important;
   }
   .live-clock,
   .btn-topbar-properties {
     display: none !important;
   }
-  .user-identity .identity-text {
-    display: none !important;
+  .user-identity-wrap {
+    position: relative !important;
+    flex-shrink: 0 !important;
   }
   .user-identity {
-    padding: 4px 6px !important;
-    gap: 4px !important;
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    border-radius: 50% !important;
+    padding: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0 !important;
+    background: rgba(212, 175, 55, 0.16) !important;
+    border: 1.5px solid #d4af37 !important;
+    box-sizing: border-box !important;
+    cursor: pointer !important;
+  }
+  .user-identity .identity-text,
+  .user-identity .identity-caret {
+    display: none !important;
+  }
+  .user-identity .identity-logo {
+    width: 20px !important;
+    height: 20px !important;
+    border-radius: 50% !important;
+    box-shadow: none !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  .user-identity .identity-logo svg {
+    width: 18px !important;
+    height: 18px !important;
+  }
+  .user-menu-dropdown {
+    position: fixed !important;
+    top: 56px !important;
+    right: 10px !important;
+    left: auto !important;
+    width: min(290px, calc(100vw - 20px)) !important;
+    max-width: calc(100vw - 20px) !important;
+    z-index: 10001 !important;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85) !important;
+  }
+  .quick-add-menu {
+    position: fixed !important;
+    top: 56px !important;
+    right: 10px !important;
+    width: min(280px, calc(100vw - 20px)) !important;
+    z-index: 10001 !important;
   }
   .btn-gold {
     padding: 6px 10px !important;
     font-size: 11px !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
   }
   .global-search {
     max-width: 180px !important;
@@ -987,13 +1043,29 @@ return{icons,uid,feedMode,isEditing,heroStyle,metrics,query,zip,checked,tasks,im
     display: none !important;
   }
   .metrics {
-    grid-template-columns: 1fr !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+  .metric {
+    min-height: 56px !important;
+    padding: 8px 10px !important;
+  }
+  .metric strong {
+    font-size: 16px !important;
+  }
+  .metric small,
+  .metric .metric-label {
+    font-size: 10px !important;
   }
   .stage-grid {
     grid-template-columns: repeat(2, 1fr) !important;
   }
   .btn-gold .caret-icon {
     display: none !important;
+  }
+  .btn-gold {
+    font-size: 11px !important;
+    padding: 6px 8px !important;
   }
 }
 

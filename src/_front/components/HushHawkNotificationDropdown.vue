@@ -99,7 +99,7 @@ export default {
       if (props.icons && props.icons[iconName]) {
         return props.icons[iconName];
       }
-      return props.icons?.bell || '🔔';
+      return props.icons?.bell || '';
     }
 
     function handleCardClick(n) {
