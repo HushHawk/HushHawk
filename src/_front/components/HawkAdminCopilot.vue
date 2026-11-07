@@ -222,10 +222,12 @@ export default {
         },
       ],
       messages: [],
+      isSuppressedByPartnerChat: false,
     };
   },
   computed: {
     shouldShowCopilot() {
+      if (this.isSuppressedByPartnerChat) return false;
       if (typeof window === 'undefined') return false;
       const path = (this.$route?.path || window.location.pathname || '').toLowerCase();
       if (path === '/login' || path.startsWith('/login') || path === '/signup' || path.startsWith('/signup') || path === '/forgot-password' || path.startsWith('/forgot-password')) {
@@ -259,6 +261,10 @@ export default {
     window.addEventListener('popstate', this.checkAuthStatus);
     window.addEventListener('hashchange', this.checkAuthStatus);
     window.addEventListener('hushhawk-auth-change', this.checkAuthStatus);
+    this.partnerChatHandler = (e) => {
+      this.isSuppressedByPartnerChat = !!(e.detail && e.detail.open);
+    };
+    window.addEventListener('hushhawk-partner-chat-state', this.partnerChatHandler);
     this.authCheckInterval = setInterval(this.checkAuthStatus, 500);
   },
   beforeUnmount() {
@@ -267,6 +273,9 @@ export default {
     window.removeEventListener('popstate', this.checkAuthStatus);
     window.removeEventListener('hashchange', this.checkAuthStatus);
     window.removeEventListener('hushhawk-auth-change', this.checkAuthStatus);
+    if (this.partnerChatHandler) {
+      window.removeEventListener('hushhawk-partner-chat-state', this.partnerChatHandler);
+    }
     if (this.authCheckInterval) {
       clearInterval(this.authCheckInterval);
     }
@@ -532,13 +541,15 @@ export default {
 </script>
 
 <style scoped>
-/* Bulletproof DOM-level suppression of HawkAI on login screen */
+/* Bulletproof DOM-level suppression of HawkAI on login screen or when Partner Chat is active */
 :global(body:has(.hushhawk-auth-wrapper)) .hawk-copilot-container,
 :global(body:has(.auth-card)) .hawk-copilot-container,
 :global(body:has(.hushhawk-auth-forwarding)) .hawk-copilot-container,
 :global(body:has(#login-email)) .hawk-copilot-container,
 :global(.hushhawk-auth-wrapper) ~ .hawk-copilot-container,
-:global(.hushhawk-auth-forwarding) ~ .hawk-copilot-container {
+:global(.hushhawk-auth-forwarding) ~ .hawk-copilot-container,
+:global(body.partner-chat-active) .hawk-copilot-container,
+:global(body:has(.partner-chat-window:not(.is-minimized))) .hawk-copilot-container {
   display: none !important;
   visibility: hidden !important;
   opacity: 0 !important;
