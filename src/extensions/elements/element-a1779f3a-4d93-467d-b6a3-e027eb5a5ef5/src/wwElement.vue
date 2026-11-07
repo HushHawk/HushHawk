@@ -1,7 +1,11 @@
 <template>
 <section class="hushhawk-command-center" :class="{ 'nav-open': navOpen }">
+  <!-- Mobile Backdrop -->
+  <div v-if="navOpen" class="sidebar-backdrop" @click="navOpen = false"></div>
+
   <!-- Left Navigation Sidebar -->
   <aside class="sidebar">
+    <button class="sidebar-close-btn" @click="navOpen = false" title="Close Menu" aria-label="Close menu">✕</button>
     <a href="/home" class="brand" @click="handleNav('/home', $event)">
       <span class="brand-icon" v-html="icons.logo"></span>
       <strong>HUSHHAWK<br>INTELLIGENCE</strong>
@@ -819,10 +823,40 @@ return{icons,uid,feedMode,isEditing,heroStyle,metrics,query,zip,checked,tasks,im
   cursor: pointer;
 }
 
+.sidebar-backdrop, .sidebar-close-btn {
+  display: none;
+}
+
 @media (max-width: 860px) {
+  .sidebar-backdrop {
+    display: block !important;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.72);
+    backdrop-filter: blur(4px);
+    z-index: 1999;
+  }
+  .sidebar-close-btn {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.12);
+    border: none;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    z-index: 10;
+  }
   .sidebar {
     display: none !important;
-    left: -210px !important;
+    left: -240px !important;
   }
   .nav-open .sidebar {
     display: flex !important;
@@ -831,14 +865,22 @@ return{icons,uid,feedMode,isEditing,heroStyle,metrics,query,zip,checked,tasks,im
     top: 0 !important;
     bottom: 0 !important;
     z-index: 2000 !important;
-    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.8) !important;
+    width: 240px !important;
+    max-width: 80vw !important;
+    box-shadow: 10px 0 40px rgba(0, 0, 0, 0.85) !important;
   }
   .workspace {
     margin-left: 0 !important;
     width: 100% !important;
   }
   .mobile-menu {
-    display: block !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.08);
   }
 }
 

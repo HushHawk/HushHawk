@@ -1,6 +1,8 @@
 <template>
 <section class="county-app" :class="{'nav-open':navOpen}">
+ <div v-if="navOpen" class="sidebar-backdrop" @click="navOpen = false"></div>
  <aside class="sidebar">
+  <button class="sidebar-close-btn" @click="navOpen = false" title="Close Menu" aria-label="Close menu">✕</button>
   <a href="/home" class="brand" @click="guard"><span class="brand-icon" v-html="icons.logo"></span><strong>HUSHHAWK<br>INTELLIGENCE</strong><small>PEOPLE • PROPERTIES • PROSPERITY</small></a>
   <nav aria-label="HushHawk navigation"><a v-for="(item,i) in navigation.slice(0,13)" :key="item.path" :href="item.path" :class="{active:item.name==='County Data',secondary:i>12}" @click="guard"><span class="icon" v-html="icons[item.icon]"></span>{{item.name}}</a><details class="more-workspaces" open><summary>More workspaces</summary><a v-for="item in navigation.slice(13)" :key="item.path" :href="item.path" @click="guard"><span class="icon" v-html="icons[item.icon]"></span>{{item.name}}</a><a href="/deal-analyzer" @click="guard"><span class="icon" v-html="icons.chart"></span>Deal Analyzer</a></details></nav>
   
@@ -522,7 +524,42 @@ return{icons,isEditing,navigation,navOpen,query,county,records,imported,checked,
 .lead-filters{min-height:132px}.lead-filters .panel-head{min-height:32px}.lead-filters h2{font-size:14px}.filter-body{display:flex;gap:12px;align-items:center;padding:9px 10px}.checks{display:grid;grid-template-columns:1fr 1fr;gap:7px 12px;flex:1}.checks label{display:flex;align-items:center;gap:6px;font-size:10px;white-space:nowrap}.county-app input[type=checkbox]{accent-color:#e7c66a;width:13px;height:13px;margin:0}.apply{padding-left:10px;border-left:1px solid #245170;text-align:center}.blue{background:linear-gradient(#148cff,#0757ef);color:white;border:1px solid #217ed0;border-radius:4px;padding:9px 12px;font-weight:650}.apply button{font-size:11px;white-space:nowrap}.apply small{display:block;font-size:7px;color:#acc7dc;margin-top:7px}.records .panel-head{min-height:36px}.records .panel-head h2{font-size:13px;gap:8px;white-space:normal}.records h2 small{font-size:10px;font-weight:400}.records table{font-size:8px}.records td,.records th{height:18px;padding:2px 5px}.records th{font-size:8px;height:23px}.records .tag{padding:1px 5px;border:0;border-radius:8px;font-size:7px;margin-right:3px}.tag.red{background:#b63a51;color:white}.tag.purple{background:#5144a4;color:white}.tag.teal{background:#14766a;color:#c7fff0}.tag.blue-tag{background:#345ba6;color:white}.record-status{display:block;background:linear-gradient(#168fdc,#0867ac);border:1px solid #4facda;border-radius:10px;text-align:center;min-width:57px;font-size:7px;padding:1px 6px;color:#fff}.record-status.contacted{background:linear-gradient(#149968,#097b5b);border-color:#31af7c}.record-status.follow-up{background:#d9b549;border-color:#efd486;color:#182c3e}.table-foot{display:flex;justify-content:space-between;font-size:7px;color:#aac4d9;padding:4px 8px;gap:10px}.right-stack{display:flex;flex-direction:column;gap:8px}.conversation .panel-head,.campaigns .panel-head{min-height:33px}.right-stack h2{font-size:14px}.messages{padding:8px 10px 5px;display:flex;flex-direction:column;gap:8px}.message{display:flex;gap:8px;align-items:center}.message p{background:#2c4664;font-size:11px;padding:9px 10px;border-radius:5px;margin:0;max-width:83%;position:relative;line-height:1.4}.message p small{display:block;text-align:right;color:#b9d1ed;font-size:7px;margin-top:4px}.message.outgoing p{background:linear-gradient(130deg,#1687ff,#0064ee)}.message.outgoing:last-child{justify-content:flex-end}.message .avatar{width:31px;height:31px;font-size:9px;background:#40a0df;color:#07294d;border:0}.message .avatar.muted{background:#aebdd3}.sender{font-size:9px;color:#abc1da;padding-left:42px}.compose{display:flex;gap:7px;padding:5px 9px}.compose input{min-width:0;flex:1;background:#102c46;border:1px solid #315e85;padding:8px;border-radius:4px;color:white;font-size:10px}.compose button{font-size:10px;white-space:nowrap}.draft-note{display:block;font-size:7px;color:#94b1cb;padding:0 10px 6px}.campaigns table{font-size:8px}.campaigns td,.campaigns th{padding:3px 5px;height:21px}.campaigns th{font-size:7px}.campaign-status{background:#0a6856;color:#dbfff0;border-radius:10px;padding:2px 9px;font-size:7px}.county-app footer{display:flex;justify-content:space-between;gap:10px;padding:11px 3px 5px;font-size:7px;color:#a2bad1}.column-check{flex-direction:row!important;align-items:center;gap:9px!important}.column-check input{width:14px!important}.campaign-option{display:flex;width:100%;justify-content:space-between;background:#0c2d4c;border:1px solid #326386;padding:12px;margin:7px 0;border-radius:4px;font-size:11px}.campaign-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;font-size:10px}.campaign-summary b{display:block;font-size:23px;color:#6ccef3}
 @media(max-width:1300px){.county-grid{grid-template-columns:minmax(0,1.5fr) minmax(320px,1fr)}.import-panel{grid-template-columns:1.4fr .65fr 1fr}.county-stats{display:none}.county-choice h2{font-size:12px}.import-action>button{font-size:10px}.county-app .metric{padding:8px;gap:7px}.mini-icon{display:none}.county-app .metric-icon{width:23px;height:23px}.county-app .metric strong{font-size:20px}.county-app .metric small{font-size:7px}.checks{gap:8px}.checks label{font-size:8px}.filter-body{gap:6px;padding:8px}.apply{padding-left:6px}.apply button{padding:9px 6px;font-size:10px}.county-app .hero h1{font-size:30px}.records table{min-width:790px}}
 @media(max-width:1000px){.county-grid{grid-template-columns:1fr}.county-app .metrics{grid-template-columns:repeat(4,minmax(0,1fr))}.county-app .metric:last-child{grid-column:span 2}.import-panel{grid-template-columns:1.3fr .7fr 1fr 1.2fr}.county-stats{display:block}.right-stack{display:grid;grid-template-columns:1fr 1fr}.county-app .jacksonville{opacity:.35;left:52%}.county-app .hero-copy{z-index:2}.checks label{font-size:11px}.apply button{font-size:12px}.lead-filters{min-height:0}.filter-body{padding:10px}.county-app footer{flex-wrap:wrap}}
-@media(max-width:860px){.sidebar{display:none!important;left:-210px!important}.nav-open .sidebar{display:flex!important;position:fixed!important;left:0!important;top:0!important;bottom:0!important;z-index:2000!important;width:210px!important;box-shadow:10px 0 30px #0009!important}.workspace{margin-left:0!important;width:100%!important}.mobile-menu{display:block}}
+.sidebar-backdrop, .sidebar-close-btn {
+  display: none;
+}
+
+@media(max-width:860px){
+  .sidebar-backdrop {
+    display: block !important;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.72);
+    backdrop-filter: blur(4px);
+    z-index: 1999;
+  }
+  .sidebar-close-btn {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.12);
+    border: none;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    z-index: 10;
+  }
+  .sidebar{display:none!important;left:-240px!important}
+  .nav-open .sidebar{display:flex!important;position:fixed!important;left:0!important;top:0!important;bottom:0!important;z-index:2000!important;width:240px!important;max-width:80vw!important;box-shadow:10px 0 40px rgba(0,0,0,0.85)!important}
+  .workspace{margin-left:0!important;width:100%!important}
+  .mobile-menu{display:flex!important;align-items:center;justify-content:center;width:36px;height:36px;border-radius:6px;background:rgba(255,255,255,0.08)}
+}
 @media(max-width:650px){.county-app .hero h1{font-size:25px}.county-app .hero-copy>p{font-size:13px}.county-app .principles{font-size:7px}.county-app .metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.county-app .metric small{font-size:9px}.county-app .metric strong{font-size:23px}.import-panel{grid-template-columns:1.2fr .8fr}.county-stats{font-size:9px}.import-action{grid-column:1/-1}.import-panel figure svg{height:95px}.county-choice select{font-size:15px}.right-stack{display:flex}.records .panel-head{flex-wrap:wrap}.records .panel-head h2{flex-basis:100%}.checks label{font-size:9px}.county-app footer span:last-child{display:none}}
 
 
