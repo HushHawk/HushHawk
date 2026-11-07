@@ -38,6 +38,12 @@
         <!-- macOS Window Title Bar (Single Unbroken Line) -->
         <div class="mac-title-bar">
           <div class="mac-bar-left">
+            <button class="mobile-close-btn" @click="closeWindow" title="Close Window" aria-label="Close">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
             <div class="mac-traffic-lights">
               <button class="mac-dot mac-close" @click="closeWindow" title="Close Window (Esc)"></button>
               <button class="mac-dot mac-minimize" @click="toggleMinimize" title="Minimize Window"></button>
@@ -2097,18 +2103,272 @@ export default {
   transform: translateY(8px);
 }
 
+.mobile-close-btn {
+  display: none;
+}
+
 /* Mobile Responsiveness */
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .partner-chat-window {
-    right: 8px;
-    bottom: 8px;
-    width: calc(100vw - 16px);
-    height: calc(100vh - 16px);
-    border-radius: 14px;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: 100% !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    border-radius: 0 !important;
+    border: none !important;
+    margin: 0 !important;
+    padding-top: env(safe-area-inset-top, 0px);
+    box-shadow: none !important;
+    z-index: 2000000 !important;
   }
+
+  .partner-chat-window.is-minimized {
+    top: auto !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100vw !important;
+    height: 54px !important;
+    border-radius: 16px 16px 0 0 !important;
+    border-top: 1px solid rgba(212, 175, 55, 0.4) !important;
+  }
+
+  .mac-traffic-lights {
+    display: none !important;
+  }
+
+  .mobile-close-btn {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #e2e8f0;
+    cursor: pointer;
+    padding: 0;
+    flex-shrink: 0;
+    transition: all 0.15s ease;
+  }
+
+  .mobile-close-btn:active {
+    background: rgba(239, 68, 68, 0.3);
+    border-color: #ef4444;
+    color: #ffffff;
+  }
+
+  .mac-title-bar {
+    height: 52px;
+    min-height: 52px;
+    padding: 0 10px;
+    gap: 6px;
+  }
+
+  .mac-app-title {
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .mac-active-layer-pill {
+    max-width: 90px;
+    font-size: 10px;
+    padding: 2px 6px;
+  }
+
+  .mac-bar-right {
+    gap: 4px;
+  }
+
+  .persona-segmented-control {
+    padding: 2px;
+  }
+
+  .psc-btn {
+    padding: 3px 5px !important;
+    gap: 0 !important;
+  }
+
+  .psc-label {
+    display: none !important;
+  }
+
+  .psc-avatar {
+    width: 22px !important;
+    height: 22px !important;
+    font-size: 10px !important;
+  }
+
+  /* Status Ribbon on Mobile */
+  .partner-status-ribbon {
+    height: 28px;
+    min-height: 28px;
+    padding: 0 10px;
+    font-size: 10px;
+  }
+
+  .psr-role {
+    display: none !important;
+  }
+
+  .psr-name {
+    font-size: 11px;
+  }
+
+  .psr-secure {
+    font-size: 9px;
+  }
+
+  /* Multi-Chat Layer Tabs on Mobile */
+  .bar-scroll-btn {
+    display: none !important;
+  }
+
+  .multi-chat-sliding-bar {
+    padding: 2px 4px;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+  }
+
+  .chat-layer-tab {
+    padding: 5px 10px;
+    font-size: 11px;
+    scroll-snap-align: start;
+  }
+
+  /* Property Context Banner on Mobile */
+  .property-context-banner {
+    height: 36px;
+    min-height: 36px;
+    padding: 0 10px;
+    gap: 6px;
+  }
+
+  .pcb-tag {
+    font-size: 8px;
+    padding: 1px 4px;
+  }
+
+  .pcb-address {
+    font-size: 11px;
+    max-width: 140px;
+  }
+
+  .pcb-crownkey {
+    display: none !important;
+  }
+
+  .pcb-dossier-link {
+    padding: 4px 8px;
+    font-size: 10px;
+  }
+
+  /* Messages on Mobile */
+  .messages-viewport {
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .message-bubble {
+    max-width: 86% !important;
+  }
+
+  .bubble-text {
+    font-size: 13.5px !important;
+    line-height: 1.45 !important;
+  }
+
+  .bubble-actions {
+    opacity: 0.8 !important;
+    pointer-events: auto !important;
+    position: static !important;
+    margin-top: 4px !important;
+    display: inline-flex !important;
+  }
+
+  /* Quick Tags on Mobile */
+  .qts-label {
+    display: none !important;
+  }
+
+  .quick-tags-strip {
+    padding: 6px 10px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .quick-tag-chip {
+    padding: 4px 9px;
+    font-size: 10px;
+    flex-shrink: 0;
+  }
+
+  /* Composer on Mobile (prevents iOS Safari auto-zoom) */
+  .message-composer-bar {
+    padding: 8px 10px calc(8px + env(safe-area-inset-bottom, 0px)) 10px !important;
+  }
+
+  .composer-textarea {
+    font-size: 16px !important;
+    padding: 9px 12px !important;
+    min-height: 42px;
+  }
+
+  .composer-send-btn {
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+    border-radius: 50% !important;
+  }
+
+  /* Launcher Button on Mobile */
   .partner-launcher-btn {
-    bottom: 80px;
-    right: 12px;
+    bottom: 76px !important;
+    right: 12px !important;
+    padding: 6px 14px 6px 8px !important;
+    touch-action: manipulation !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6), 0 0 14px rgba(212, 175, 55, 0.3) !important;
+  }
+
+  .launcher-avatars-cluster {
+    width: 38px;
+    height: 24px;
+  }
+
+  .avatar-circle {
+    width: 24px;
+    height: 24px;
+    font-size: 10px;
+  }
+
+  .launcher-title span:first-child {
+    font-size: 12px;
+  }
+
+  .launcher-sub {
+    font-size: 9px;
+  }
+}
+
+@media (max-width: 480px) {
+  .mac-icon-btn[title*="Chime"] {
+    display: none !important;
+  }
+
+  .mac-app-title {
+    font-size: 12px;
+  }
+
+  .mac-active-layer-pill {
+    max-width: 75px;
   }
 }
 </style>
