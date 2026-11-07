@@ -10,7 +10,7 @@
     </transition>
 
     <!-- Left Panel: Properties List -->
-    <aside class="prop-sidebar">
+    <aside class="prop-sidebar" :class="{ 'mobile-hidden': !mobileShowList }">
       <div class="prop-sidebar-header">
         <h2>Properties</h2>
         <button class="btn-add-prop" @click="showAddModal = true">
@@ -59,7 +59,15 @@
     </aside>
 
     <!-- Right Panel: Property Detail -->
-    <div class="prop-detail" v-if="selectedProperty">
+    <div class="prop-detail" v-if="selectedProperty" :class="{ 'mobile-hidden': mobileShowList }">
+
+      <!-- Mobile Back to All Properties Button -->
+      <button class="mobile-back-to-props" @click="mobileShowList = true">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+        <span>All Properties</span>
+      </button>
 
       <!-- Breadcrumbs -->
       <div class="prop-breadcrumb">
@@ -1727,6 +1735,7 @@ export default {
       propSearch: '',
       selectedProperty: null,
       selectedPropertyId: null,
+      mobileShowList: false,
 
       // Detail navigation
       activeTab: 'overview',
@@ -2280,6 +2289,7 @@ export default {
     async selectProperty(prop) {
       this.selectedProperty = prop;
       this.selectedPropertyId = prop.property_id;
+      this.mobileShowList = false;
       // Load all associated data in parallel
       await Promise.all([
         this.loadPhotos(prop.property_id),
@@ -4303,12 +4313,90 @@ export default {
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
+.mobile-back-to-props {
+  display: none;
+}
+
 @media (max-width: 768px) {
-  .prop-sidebar { width: 100%; min-width: unset; position: absolute; z-index: 50; }
-  .prop-header { flex-direction: column; }
-  .prop-hero-thumb { width: 100%; height: 160px; }
-  .photo-grid.grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
-  .overview-quick-stats { grid-template-columns: 1fr; }
+  .properties-workspace {
+    flex-direction: column !important;
+    min-height: calc(100dvh - 56px) !important;
+    overflow-x: hidden !important;
+  }
+  .prop-sidebar {
+    width: 100% !important;
+    min-width: 100% !important;
+    position: relative !important;
+    border-right: none !important;
+    border-bottom: 1px solid #0d2845 !important;
+    max-height: none !important;
+    z-index: 1 !important;
+  }
+  .prop-sidebar.mobile-hidden {
+    display: none !important;
+  }
+  .prop-detail {
+    width: 100% !important;
+    min-width: 100% !important;
+    padding: 14px 12px !important;
+    display: flex;
+    flex-direction: column;
+  }
+  .prop-detail.mobile-hidden {
+    display: none !important;
+  }
+  .mobile-back-to-props {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    background: rgba(212, 175, 55, 0.15);
+    border: 1px solid rgba(212, 175, 55, 0.4);
+    border-radius: 8px;
+    color: #edcf7c;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    cursor: pointer;
+    align-self: flex-start;
+    transition: all 0.15s ease;
+  }
+  .mobile-back-to-props:active {
+    background: rgba(212, 175, 55, 0.28);
+  }
+  .prop-header {
+    flex-direction: column !important;
+    gap: 14px !important;
+  }
+  .prop-hero-thumb {
+    width: 100% !important;
+    height: 180px !important;
+  }
+  .prop-header-actions {
+    flex-wrap: wrap !important;
+    width: 100% !important;
+    gap: 8px !important;
+  }
+  .prop-tabs {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+    flex-wrap: nowrap !important;
+    gap: 6px !important;
+    padding-bottom: 4px !important;
+  }
+  .tab-btn {
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+    padding: 8px 12px !important;
+    font-size: 12px !important;
+  }
+  .photo-grid.grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  .overview-quick-stats {
+    grid-template-columns: 1fr !important;
+  }
 }
 
 /* ======================================================== */

@@ -1136,4 +1136,35 @@ export default {
   transform: translateY(20px) scale(0.96);
   opacity: 0;
 }
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .hawk-launcher-btn {
+    bottom: 16px !important;
+    right: 12px !important;
+    height: 48px !important;
+    padding: 0 14px 0 10px !important;
+  }
+
+  .hawk-copilot-drawer {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: 100% !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    border-radius: 0 !important;
+    border: none !important;
+    padding-top: env(safe-area-inset-top, 0) !important;
+    padding-bottom: env(safe-area-inset-bottom, 0) !important;
+  }
+
+  .hawk-input-textarea {
+    font-size: 16px !important;
+  }
+}
 </style>
