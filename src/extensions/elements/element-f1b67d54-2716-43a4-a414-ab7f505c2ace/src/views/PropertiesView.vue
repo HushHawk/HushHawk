@@ -92,6 +92,11 @@
           </div>
         </div>
         <div class="prop-header-actions">
+          <button class="btn-partner-chat-head" @click="openPartnerChatModal(selectedProperty)" title="Open iMessage Partner Chat (Alex & Waldo)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <span>Partner Chat</span>
+            <span class="partner-pulse-dot"></span>
+          </button>
           <button class="btn-edit-prop" @click="openEditModal">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
             Edit Property
@@ -103,6 +108,10 @@
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6,9 12,15 18,9"/></svg>
             </button>
             <div v-if="actionsOpen" class="actions-menu">
+              <button @click="openPartnerChatModal(selectedProperty); actionsOpen=false">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                Partner Chat (Alex &amp; Waldo)
+              </button>
               <button @click="triggerCamera(); actionsOpen=false">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
                 Take Photo
@@ -669,6 +678,68 @@
               <p class="tc-desc">{{ ev.description }}</p>
               <span class="tc-badge">{{ ev.badge }}</span>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PARTNER CHAT TAB -->
+      <div v-if="activeTab === 'partner_chat'" class="tab-content-panel">
+        <div class="tab-panel-header">
+          <div>
+            <h3 class="tab-panel-title">Internal Partner Chat Log</h3>
+            <p class="tab-panel-subtitle">Dedicated confidential dialogue between Alex Richard &amp; Waldo Ellis tagged to this parcel.</p>
+          </div>
+          <div class="partner-chat-tab-actions">
+            <button class="btn-primary-gold" @click="openPartnerChatModal(selectedProperty)" title="Open in Floating iMessage Window">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              Pop-out iMessage
+            </button>
+            <button class="btn-icon" @click="loadPropertyPartnerChat(selectedProperty.property_id)" title="Refresh Chat">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div v-if="loadingPropertyChat" class="panel-loading">
+          <div class="hushhawk-logo-spinner" v-html="icons.logoSpinner"></div>
+          <span>Loading partner conversation…</span>
+        </div>
+
+        <div v-else-if="propertyChatMessages.length === 0" class="panel-empty">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#2a4a6a" stroke-width="1"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <p>No partner chat records for this property yet.</p>
+          <button class="btn-primary-gold" @click="openPartnerChatModal(selectedProperty)">Start Discussion with Waldo Ellis</button>
+        </div>
+
+        <div v-else class="property-chat-stream-card">
+          <div class="prop-chat-list">
+            <div v-for="m in propertyChatMessages" :key="m.id" class="prop-chat-item">
+              <div class="pci-avatar" :class="m.sender_name.toLowerCase().includes('alex') ? 'alex' : 'waldo'">
+                {{ m.sender_name.toLowerCase().includes('alex') ? 'AR' : 'WE' }}
+              </div>
+              <div class="pci-body">
+                <div class="pci-head">
+                  <strong class="pci-sender">{{ m.sender_name }}</strong>
+                  <span class="pci-role">{{ m.sender_role || 'Partner' }}</span>
+                  <span v-if="m.tag" class="pci-tag">{{ m.tag }}</span>
+                  <span class="pci-time">{{ formatDate(m.created_at) }}</span>
+                </div>
+                <div class="pci-text">{{ m.message_text }}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="prop-chat-inline-composer">
+            <input
+              v-model="inlinePartnerChatText"
+              type="text"
+              class="inline-chat-input"
+              placeholder="Quick partner reply on this property (Alex & Waldo)..."
+              @keydown.enter="sendInlinePropertyChat"
+            />
+            <button class="btn-inline-send" :disabled="!inlinePartnerChatText.trim()" @click="sendInlinePropertyChat">
+              Send
+            </button>
           </div>
         </div>
       </div>
@@ -1683,7 +1754,13 @@ export default {
         { key: 'expenses', label: 'Expenses', icon: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>' },
         { key: 'contractors', label: 'Contractors', icon: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>' },
         { key: 'timeline', label: 'Timeline', icon: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>' },
+        { key: 'partner_chat', label: 'Partner Chat', icon: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>' },
       ],
+
+      // Partner Chat State
+      propertyChatMessages: [],
+      loadingPropertyChat: false,
+      inlinePartnerChatText: '',
 
       // Photos state
       photos: [],
@@ -2152,6 +2229,7 @@ export default {
       if (key === 'tasks') return this.pendingTasksCount || null;
       if (key === 'expenses') return this.expenses.length || null;
       if (key === 'contractors') return this.contractors.length || null;
+      if (key === 'partner_chat') return this.propertyChatMessages.length || null;
       return null;
     },
     async loadProperties() {
@@ -2183,10 +2261,79 @@ export default {
         this.loadExpenses(prop.property_id),
         this.loadContractors(prop.property_id),
         this.loadTimeline(prop.property_id),
+        this.loadPropertyPartnerChat(prop.property_id),
       ]);
     },
     changeTab(tabKey) {
       this.activeTab = tabKey;
+      if (tabKey === 'partner_chat' && this.selectedProperty) {
+        this.loadPropertyPartnerChat(this.selectedProperty.property_id);
+      }
+    },
+    openPartnerChatModal(prop) {
+      if (!prop) return;
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('open-partner-chat', {
+          detail: {
+            propertyId: prop.property_id,
+            propertyAddress: prop.address_line1 || 'Property Record'
+          }
+        }));
+      }
+    },
+    async loadPropertyPartnerChat(propId) {
+      if (!propId) return;
+      this.loadingPropertyChat = true;
+      try {
+        const res = await fetch(`${API_BASE}/properties/${propId}/partner-chat`);
+        const data = await res.json();
+        if (data.ok) {
+          this.propertyChatMessages = data.messages || [];
+        }
+      } catch (err) {
+        console.warn('[Load Prop Chat Err]', err);
+      } finally {
+        this.loadingPropertyChat = false;
+      }
+    },
+    async sendInlinePropertyChat() {
+      const text = this.inlinePartnerChatText.trim();
+      if (!text || !this.selectedProperty) return;
+      try {
+        const tRes = await fetch(`${API_BASE}/chat/threads`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: `${this.selectedProperty.address_line1}, ${this.selectedProperty.city}`,
+            thread_type: 'property',
+            property_id: this.selectedProperty.property_id,
+            created_by: 'Alex Richard'
+          })
+        });
+        const tData = await tRes.json();
+        const threadId = tData.thread?.id;
+        if (threadId) {
+          const mRes = await fetch(`${API_BASE}/chat/threads/${threadId}/messages`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              sender_name: 'Alex Richard',
+              sender_role: 'Acquisitions Lead (Admin)',
+              message_text: text,
+              tag: 'Dossier Note'
+            })
+          });
+          const mData = await mRes.json();
+          if (mData.ok && mData.message) {
+            this.propertyChatMessages.push(mData.message);
+            this.inlinePartnerChatText = '';
+            this.showToast('Partner chat message recorded in property dossier.');
+            this.loadTimeline(this.selectedProperty.property_id);
+          }
+        }
+      } catch (err) {
+        console.warn('[Send Inline Chat Err]', err);
+      }
     },
 
     // ===== EDIT PROPERTY =====
@@ -3073,6 +3220,24 @@ export default {
 }
 .prop-header-actions {
   display: flex; gap: 8px; align-items: flex-start; flex-shrink: 0;
+}
+.btn-partner-chat-head {
+  display: flex; align-items: center; gap: 6px;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(10, 30, 53, 0.8) 100%);
+  border: 1px solid #d4af37;
+  color: #ffdf73; font-size: 12px; font-weight: 700;
+  padding: 8px 14px; border-radius: 5px; cursor: pointer;
+  transition: all .2s; white-space: nowrap;
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+}
+.btn-partner-chat-head:hover {
+  background: #d4af37; color: #04182d;
+  box-shadow: 0 0 16px rgba(212, 175, 55, 0.4);
+}
+.partner-pulse-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 6px #10b981;
 }
 .btn-edit-prop {
   display: flex; align-items: center; gap: 6px;
@@ -4969,5 +5134,131 @@ export default {
   border-color: #EF4444;
   box-shadow: 0 6px 18px rgba(239, 68, 68, 0.5);
   transform: translateY(-1px);
+}
+
+/* Partner Chat Tab Styles */
+.partner-chat-tab-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.property-chat-stream-card {
+  background: #060d19;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.prop-chat-list {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-height: 480px;
+  overflow-y: auto;
+}
+.prop-chat-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.pci-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.pci-avatar.alex {
+  background: linear-gradient(135deg, #d4af37, #9a7b1c);
+  color: #04182d;
+}
+.pci-avatar.waldo {
+  background: linear-gradient(135deg, #38bdf8, #0284c7);
+  color: #ffffff;
+}
+.pci-body {
+  flex: 1;
+  background: rgba(15, 28, 50, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+.pci-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.pci-sender {
+  font-size: 12px;
+  color: #fff;
+}
+.pci-role {
+  font-size: 10px;
+  color: #10b981;
+}
+.pci-tag {
+  font-size: 9px;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: rgba(212, 175, 55, 0.15);
+  color: #ffdf73;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+}
+.pci-time {
+  font-size: 10px;
+  color: #64748b;
+  margin-left: auto;
+}
+.pci-text {
+  font-size: 13px;
+  color: #e2e8f0;
+  line-height: 1.45;
+}
+.prop-chat-inline-composer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: #091527;
+  border-top: 1px solid rgba(212, 175, 55, 0.2);
+}
+.inline-chat-input {
+  flex: 1;
+  background: #050c17;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  padding: 8px 12px;
+  color: #fff;
+  font-size: 12px;
+  outline: none;
+}
+.inline-chat-input:focus {
+  border-color: #d4af37;
+}
+.btn-inline-send {
+  background: linear-gradient(135deg, #d4af37, #b89320);
+  border: none;
+  color: #04182d;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.btn-inline-send:hover:not(:disabled) {
+  background: #ffdf73;
+}
+.btn-inline-send:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 </style>
