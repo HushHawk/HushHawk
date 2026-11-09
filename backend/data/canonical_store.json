@@ -4378,7 +4378,45 @@
         "cost": 1540,
         "status": "In Production",
         "compliance_status": "APPROVED_FOR_DISPATCH",
-        "created_at": "2026-11-07T05:40:42.797Z"
+        "created_at": "2026-11-07T05:40:42.797Z",
+        "scans": 3,
+        "calls": 3,
+        "responseRate": "0.09",
+        "scan_activity": [
+          {
+            "scanId": "d7831a52-fc39-43f3-898f-2bc5d2025c5d",
+            "crownKey": "DUV-FC-32221",
+            "pillar": "Foreclosure",
+            "pillarCode": "FC",
+            "targetAddress": "1 E 2nd St, New York, NY 10003, USA, Jacksonville FL",
+            "time": "Just now",
+            "timestamp": "2026-11-09T05:05:43.774Z",
+            "ip": "98.174.22.10",
+            "city": "Jacksonville"
+          },
+          {
+            "scanId": "5af45f23-9fda-431c-9e29-9545c10bb09f",
+            "crownKey": "DUV-FC-32221",
+            "pillar": "Foreclosure",
+            "pillarCode": "FC",
+            "targetAddress": "1 E 2nd St, New York, NY 10003, USA, Jacksonville FL",
+            "time": "Just now",
+            "timestamp": "2026-11-09T05:03:16.198Z",
+            "ip": "::1",
+            "city": "Jacksonville"
+          },
+          {
+            "scanId": "16e3d429-63cc-40f4-91bb-495edb3dfa72",
+            "crownKey": "DUV-FC-32221",
+            "pillar": "Foreclosure",
+            "pillarCode": "FC",
+            "targetAddress": "1 E 2nd St, New York, NY 10003, USA, Jacksonville FL",
+            "time": "Just now",
+            "timestamp": "2026-11-09T05:03:12.679Z",
+            "ip": "98.174.22.10",
+            "city": "Jacksonville"
+          }
+        ]
       },
       {
         "id": 1793991942683,
@@ -4590,7 +4628,49 @@
       }
     ],
     "county_records": [],
-    "communications": [],
+    "communications": [
+      {
+        "id": 1794200604167,
+        "contact": "Jacksonville Seller",
+        "phone": "+19045550199",
+        "address": "1 E 2nd St, New York, NY 10003, USA, Jacksonville FL",
+        "type": "Calls",
+        "role": "Distressed Seller",
+        "rep": "Alex Richard",
+        "repInitials": "AR",
+        "lastMessage": "smrtPhone Call completed with seller (1m 28s).",
+        "time": "Just now",
+        "unread": true,
+        "lastOffer": 145000,
+        "arv": 230000,
+        "source": "smrtPhone",
+        "podioItemId": null,
+        "messages": [
+          {
+            "sender": "contact",
+            "name": "Jacksonville Seller",
+            "text": "smrtPhone Call completed with seller (2m 22s).",
+            "time": "Just now",
+            "timestamp": "2026-11-09T05:03:21.821Z",
+            "isCall": true,
+            "duration": "2m 22s",
+            "recordingUrl": "https://api.smrtphone.io/recordings/rec_test123.mp3",
+            "source": "smrtPhone"
+          },
+          {
+            "sender": "contact",
+            "name": "Jacksonville Seller",
+            "text": "smrtPhone Call completed with seller (1m 28s).",
+            "time": "Just now",
+            "timestamp": "2026-11-09T05:05:45.526Z",
+            "isCall": true,
+            "duration": "1m 28s",
+            "recordingUrl": "https://api.smrtphone.io/recordings/rec_clean.mp3",
+            "source": "smrtPhone"
+          }
+        ]
+      }
+    ],
     "calendar_events": [],
     "team_members": []
   },
