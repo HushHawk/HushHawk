@@ -9,10 +9,14 @@
               <span v-html="icons.mail"></span>
               Omnichannel Comms
             </h3>
-            <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+              <button class="simulate-call-btn" @click="simulateInboundCall" title="Simulate Real-Time smrtPhone Inbound Call">
+                <span v-html="icons.phone"></span>
+                <span>Test Live Call Popup</span>
+              </button>
               <button class="sync-crm-btn" @click="syncPodioAndSmrtPhone" :disabled="isSyncing" title="Sync Podio & smrtPhone">
                 <span v-html="icons.refresh" :class="{ 'spin-anim': isSyncing }"></span>
-                <span>{{ isSyncing ? 'Syncing...' : 'Sync Podio & smrtPhone' }}</span>
+                <span>{{ isSyncing ? 'Syncing...' : 'Sync Podio' }}</span>
               </button>
               <span class="badge-count">{{ unreadCount }} unread</span>
             </div>
@@ -277,6 +281,42 @@ export default {
     this.loadCommunications();
   },
   methods: {
+    async simulateInboundCall() {
+      try {
+        const res = await fetch('/api/v1/integrations/smrtphone/simulate-call', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contact_name: 'David & Linda Miller',
+            property_address: '3221 Duval Rd, Jacksonville FL',
+            signal: 'FORECLOSURE (DUV-FC-32221)',
+            from: '(904) 555-0144',
+            duration: 185
+          })
+        });
+        const data = await res.json();
+        if (data && data.ok) {
+          this.showToast('smrtPhone Inbound Call', 'Incoming caller ID screen pop triggered live.', 'success');
+          if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('hushhawk-incoming-call', {
+              detail: {
+                call: {
+                  callId: data.result?.eventId || 'call_' + Date.now(),
+                  contactName: 'David & Linda Miller',
+                  fromNumber: '(904) 555-0144',
+                  propertyAddress: '3221 Duval Rd, Jacksonville FL',
+                  signal: 'FORECLOSURE (DUV-FC-32221)',
+                  duration: '3m 5s'
+                }
+              }
+            }));
+          }
+          await this.loadCommunications();
+        }
+      } catch (err) {
+        this.showToast('Call Simulated', 'Testing screen popup.', 'info');
+      }
+    },
     async syncPodioAndSmrtPhone() {
       if (this.isSyncing) return;
       this.isSyncing = true;
@@ -714,6 +754,27 @@ export default {
 
 .bubble-text {
   margin: 0;
+}
+
+.simulate-call-btn {
+  background: rgba(34, 197, 94, 0.15);
+  border: 1px solid rgba(34, 197, 94, 0.4);
+  color: #4ade80;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.simulate-call-btn:hover {
+  background: rgba(34, 197, 94, 0.25);
+  border-color: #4ade80;
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.35);
 }
 
 .sync-crm-btn {

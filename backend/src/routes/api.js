@@ -2057,6 +2057,16 @@ apiRouter.get('/integrations/smrtphone/status', (req, res) => {
     });
 });
 
+apiRouter.get('/integrations/smrtphone/active-call', (req, res) => {
+    const call = SmrtPhoneService.getActiveCall();
+    res.json({ ok: true, activeCall: call });
+});
+
+apiRouter.post('/integrations/smrtphone/dismiss-call', (req, res) => {
+    const result = SmrtPhoneService.dismissActiveCall();
+    res.json(result);
+});
+
 apiRouter.post('/integrations/smrtphone/simulate-call', async (req, res) => {
     try {
         const payload = {

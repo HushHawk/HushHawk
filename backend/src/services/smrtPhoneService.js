@@ -3,6 +3,17 @@ import { pool } from '../store/pgClient.js';
 import { db } from '../store/database.js';
 
 export class SmrtPhoneService {
+    static activeCall = null;
+
+    static getActiveCall() {
+        return this.activeCall;
+    }
+
+    static dismissActiveCall() {
+        this.activeCall = null;
+        return { ok: true, dismissed: true };
+    }
+
     /**
      * Process an incoming smrtPhone webhook event (Call or SMS)
      * Compatible with smrtPhone's standard webhook payload structure
@@ -158,6 +169,22 @@ export class SmrtPhoneService {
             );
         } catch (auditErr) {
             console.warn('[smrtPhone] Audit RDS Warn:', auditErr.message);
+        }
+
+        if (isCall) {
+            SmrtPhoneService.activeCall = {
+                callId: eventId,
+                interactionId,
+                fromNumber,
+                contactName,
+                propertyAddress,
+                propertyId: validPropertyUuid,
+                duration: durationFormatted,
+                recordingUrl,
+                status: 'RINGING',
+                signal: payload.crown_key || payload.signal || 'FORECLOSURE (DUV-FC-32221)',
+                receivedAt: now
+            };
         }
 
         return {
