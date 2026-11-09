@@ -3,6 +3,7 @@
     <router-view />
     <HawkAdminCopilot />
     <PartnerChatMessenger />
+    <SmrtPhoneCallPopup />
     <!-- wwFront:end -->
 </template>
 
@@ -10,11 +11,13 @@
 import { reactive, computed, provide, onMounted, watch } from 'vue';
 import HawkAdminCopilot from './components/HawkAdminCopilot.vue';
 import PartnerChatMessenger from './components/PartnerChatMessenger.vue';
+import SmrtPhoneCallPopup from './components/SmrtPhoneCallPopup.vue';
 
 export default {
     components: {
         HawkAdminCopilot,
         PartnerChatMessenger,
+        SmrtPhoneCallPopup,
     },
     setup() {
         const wwFrontState = reactive({

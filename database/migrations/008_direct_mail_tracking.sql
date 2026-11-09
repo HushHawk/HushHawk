@@ -34,3 +34,4 @@ CREATE TABLE IF NOT EXISTS core.direct_mail_scans (
 CREATE INDEX IF NOT EXISTS idx_direct_mail_pieces_key ON core.direct_mail_pieces(crown_key);
 CREATE INDEX IF NOT EXISTS idx_direct_mail_pieces_pillar ON core.direct_mail_pieces(pillar_code);
 CREATE INDEX IF NOT EXISTS idx_direct_mail_scans_key ON core.direct_mail_scans(crown_key);
+
