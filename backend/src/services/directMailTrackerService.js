@@ -221,6 +221,7 @@ export class DirectMailTrackerService {
             targetAddress,
             ownerName,
             scannedAt: now,
+            ctaUrl: `/properties?crownKey=${encodeURIComponent(parsed.cleanKey)}&scanned=1&pillar=${parsed.pillarCode}&utm_source=direct_mail&utm_campaign=${parsed.pillarCode}`,
             audienceLabPayload: {
                 event: 'DirectMail_Scanned',
                 crownKey: parsed.cleanKey,
