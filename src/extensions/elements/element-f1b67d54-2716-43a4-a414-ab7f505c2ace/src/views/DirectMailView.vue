@@ -421,6 +421,221 @@
         </div>
       </div>
     </div>
+
+    <!-- 1. USPS IMb Delivery & CrownKey Batch Tracking Modal (The Eye Icon) -->
+    <div v-if="isTrackingModalOpen && selectedBatch" class="modal-overlay" @click.self="isTrackingModalOpen = false">
+      <div class="modal-content modal-lg tracking-inspector-modal">
+        <div class="modal-header">
+          <div class="tracking-head-title">
+            <span class="icon-title text-cyan" v-html="icons.eye"></span>
+            <div>
+              <h3>Batch Tracking &amp; USPS IMb Intelligence</h3>
+              <p class="font-mono text-muted">{{ selectedBatch.batchCode }} &bull; {{ selectedBatch.name }}</p>
+            </div>
+          </div>
+          <button class="close-btn" @click="isTrackingModalOpen = false">
+            <span v-html="icons.close"></span>
+          </button>
+        </div>
+
+        <div class="modal-body tracking-modal-body">
+          <!-- Status Banner & CrownKey Pill -->
+          <div class="tracking-top-banner">
+            <div class="top-banner-left">
+              <span class="p-code-badge font-mono">{{ selectedBatch.pillarCode || 'FC' }}</span>
+              <span class="tracking-pillar-name">{{ getPillarName(selectedBatch.pillarCode || 'FC') }}</span>
+              <span class="status-chip" :class="(selectedBatch.status || 'in-transit').toLowerCase().replace(/[\s&]+/g, '-')">
+                {{ selectedBatch.status || 'In-Transit' }}
+              </span>
+            </div>
+            <div class="top-banner-right">
+              <span class="lbl-small">PRIMARY CROWNKEY:</span>
+              <strong class="font-mono text-gold">{{ getCrownKeySample(selectedBatch.batchCode) }}</strong>
+            </div>
+          </div>
+
+          <!-- USPS Intelligent Mail Barcode (IMb) Progression Stepper -->
+          <div class="imb-progression-panel">
+            <div class="imb-header">
+              <h4>USPS Intelligent Mail Barcode (IMb) Delivery Chain</h4>
+              <span class="imb-status-tag font-mono text-gold">{{ selectedBatch.imbStatus || '100% In-Home' }}</span>
+            </div>
+            
+            <div class="delivery-stepper">
+              <div class="step-node completed">
+                <div class="node-circle">✓</div>
+                <div class="node-label">CASS / NCOA</div>
+                <div class="node-sub">Hygiene Passed</div>
+              </div>
+              <div class="step-line completed"></div>
+              <div class="step-node completed">
+                <div class="node-circle">✓</div>
+                <div class="node-label">Pre-Sorted</div>
+                <div class="node-sub">Trayed &amp; Palletized</div>
+              </div>
+              <div class="step-line completed"></div>
+              <div class="step-node completed">
+                <div class="node-circle">✓</div>
+                <div class="node-label">Jacksonville P&amp;DC</div>
+                <div class="node-sub">USPS Acceptance</div>
+              </div>
+              <div class="step-line" :class="{ completed: selectedBatch.status === 'Delivered' }"></div>
+              <div class="step-node" :class="{ completed: selectedBatch.status === 'Delivered', active: selectedBatch.status !== 'Delivered' }">
+                <div class="node-circle">{{ selectedBatch.status === 'Delivered' ? '✓' : '4' }}</div>
+                <div class="node-label">Carrier Route</div>
+                <div class="node-sub">Out for Delivery</div>
+              </div>
+              <div class="step-line" :class="{ completed: selectedBatch.status === 'Delivered' }"></div>
+              <div class="step-node" :class="{ completed: selectedBatch.status === 'Delivered' }">
+                <div class="node-circle">5</div>
+                <div class="node-label">In-Home</div>
+                <div class="node-sub">Delivered to Letterbox</div>
+              </div>
+            </div>
+
+            <!-- IMb Barcode Graphic Simulation -->
+            <div class="imb-graphic-box">
+              <div class="imb-bars">
+                |||| | ||| |||| | || | |||| ||| || | ||| |||| | |||| | ||| |||| | || | |||| ||| || | ||| |||| | |||| | ||| ||||
+              </div>
+              <div class="imb-digits font-mono">
+                IMb: 01-701-901234567-{{ selectedBatch.zips ? selectedBatch.zips.split(',')[0].trim() : '32206' }}-8901 &bull; Class: First-Class Presort Full Service
+              </div>
+            </div>
+          </div>
+
+          <!-- 4-Stat Metric Summary Grid -->
+          <div class="tracking-metrics-grid">
+            <div class="t-metric-card">
+              <span class="t-label">PIECES MAILED</span>
+              <strong class="t-val font-mono">{{ (selectedBatch.quantity || 2500).toLocaleString() }}</strong>
+              <span class="t-sub text-muted">100% Injected</span>
+            </div>
+            <div class="t-metric-card">
+              <span class="t-label">CONFIRMED DELIVERED</span>
+              <strong class="t-val font-mono text-green">{{ (selectedBatch.delivered || selectedBatch.quantity || 2465).toLocaleString() }}</strong>
+              <span class="t-sub text-green">{{ Math.round(((selectedBatch.delivered || selectedBatch.quantity || 2465) / (selectedBatch.quantity || 2500)) * 100) }}% Verified</span>
+            </div>
+            <div class="t-metric-card">
+              <span class="t-label">HOMEOWNER QR SCANS</span>
+              <strong class="t-val font-mono text-cyan">{{ selectedBatch.scans || 142 }}</strong>
+              <span class="t-sub text-cyan">{{ selectedBatch.responseRate || '5.20' }}% CTR</span>
+            </div>
+            <div class="t-metric-card">
+              <span class="t-label">CLOSED PIPELINE</span>
+              <strong class="t-val font-mono text-gold">${{ ((selectedBatch.grossRevenue || 36000) / 1000).toFixed(0) }}k</strong>
+              <span class="t-sub text-gold">{{ selectedBatch.deals || 3 }} Deals Closed</span>
+            </div>
+          </div>
+
+          <!-- Campaign Configuration Details -->
+          <div class="tracking-config-panel">
+            <div class="config-row">
+              <span class="lbl">Format:</span>
+              <strong class="val">{{ selectedBatch.format }}</strong>
+            </div>
+            <div class="config-row">
+              <span class="lbl">Target Audience:</span>
+              <strong class="val">{{ selectedBatch.audience }}</strong>
+            </div>
+            <div class="config-row">
+              <span class="lbl">Target ZIP Codes:</span>
+              <strong class="val font-mono">{{ selectedBatch.zips }}</strong>
+            </div>
+            <div class="config-row">
+              <span class="lbl">Assigned smrtPhone Line:</span>
+              <strong class="val text-gold font-mono">{{ selectedBatch.trackingPhone || '(904) 555-0144' }}</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" @click="downloadCsv(selectedBatch)">
+            <span v-html="icons.download"></span>
+            Download Recipient CSV
+          </button>
+          <button type="button" class="btn btn-gold" @click="isTrackingModalOpen = false; simulateBatchScan(selectedBatch)">
+            <span v-html="icons.zap"></span>
+            Simulate QR Scan Now
+          </button>
+          <button type="button" class="btn btn-secondary" @click="isTrackingModalOpen = false">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Real-Time CrownKey QR Scan Triggered HUD Modal (The Lightning Bolt) -->
+    <div v-if="isScanResultModalOpen && scannedResult" class="modal-overlay" @click.self="isScanResultModalOpen = false">
+      <div class="modal-content scan-alert-modal">
+        <div class="modal-header scan-alert-header">
+          <div class="scan-beacon-title">
+            <span class="pulse-beacon"></span>
+            <div>
+              <h3>Real-Time Homeowner QR Scan Detected</h3>
+              <p>USPS Mailer scanned by distressed property owner</p>
+            </div>
+          </div>
+          <button class="close-btn" @click="isScanResultModalOpen = false">
+            <span v-html="icons.close"></span>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <!-- CrownKey Hero Banner -->
+          <div class="scan-key-banner">
+            <span class="scan-key-label">RESOLVED CROWNKEY</span>
+            <div class="scan-key-val font-mono">{{ scannedResult.crownKey }}</div>
+            <div class="scan-pillar-badge">
+              <span class="p-code-badge font-mono">{{ scannedResult.pillarCode }}</span>
+              <span>{{ scannedResult.pillarName }}</span>
+            </div>
+          </div>
+
+          <!-- Matched Dossier Box -->
+          <div class="scan-dossier-box">
+            <div class="dossier-line">
+              <span class="d-label">Target Address:</span>
+              <strong class="d-val text-white">{{ scannedResult.targetAddress }}</strong>
+            </div>
+            <div class="dossier-line">
+              <span class="d-label">Owner Name:</span>
+              <strong class="d-val text-gold">{{ scannedResult.ownerName }}</strong>
+            </div>
+            <div class="dossier-line">
+              <span class="d-label">Assigned Batch:</span>
+              <span class="d-val font-mono">{{ scannedResult.batchCode }} &bull; {{ scannedResult.batchName }}</span>
+            </div>
+            <div class="dossier-line">
+              <span class="d-label">Device &amp; IP:</span>
+              <span class="d-val text-muted">{{ scannedResult.location }}</span>
+            </div>
+            <div class="dossier-line">
+              <span class="d-label">Timestamp:</span>
+              <span class="d-val text-cyan font-mono">Today at {{ scannedResult.scannedAt }}</span>
+            </div>
+            <div class="dossier-line">
+              <span class="d-label">Assigned Phone:</span>
+              <span class="d-val text-green font-mono">{{ scannedResult.trackingPhone }} (smrtPhone)</span>
+            </div>
+          </div>
+
+          <!-- Live Scan Telephony Trigger -->
+          <div class="scan-actions-grid">
+            <a :href="scannedResult.ctaUrl" class="btn btn-primary btn-block text-center" target="_blank" @click="isScanResultModalOpen = false">
+              <span v-html="icons.zap"></span>
+              Open Homeowner Property Dossier
+            </a>
+            <button type="button" class="btn btn-gold btn-block" @click="triggerSmrtPhoneCallFromScan">
+              <span v-html="icons.phone"></span>
+              Trigger smrtPhone Inbound Call HUD
+            </button>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" @click="isScanResultModalOpen = false">Dismiss</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -440,6 +655,10 @@ export default {
       formatFilter: '',
       isAddModalOpen: false,
       isQrModalOpen: false,
+      isTrackingModalOpen: false,
+      selectedBatch: null,
+      isScanResultModalOpen: false,
+      scannedResult: null,
       qrGen: {
         countyCode: 'DUV',
         pillarCode: 'FC',
@@ -600,8 +819,22 @@ export default {
       if (t.includes('VAC')) return 'VAC · Vacant Home';
       return 'ABS · Absentee Equity';
     },
+    getPillarName(code) {
+      const map = {
+        'FC': 'Judicial Foreclosure',
+        'TAX': 'Tax Delinquency',
+        'CODE': 'Code Violations',
+        'PRB': 'Probate / Estate',
+        'VAC': 'Vacant Property',
+        'ABS': 'Absentee High Equity'
+      };
+      return map[code] || 'Distress Pillar';
+    },
     getCrownKeySample(batchCode = '') {
       if (!batchCode) return 'DUV-FC-32221';
+      if (batchCode.includes('B101')) return 'DUV-FC-32221';
+      if (batchCode.includes('B102')) return 'CLY-TAX-18440';
+      if (batchCode.includes('B103')) return 'STJ-ABS-41020';
       return batchCode.replace('DM-', 'DUV-FC-');
     },
     async simulateLiveScan() {
@@ -622,21 +855,59 @@ export default {
       }
     },
     async simulateBatchScan(batch) {
-      const sampleKey = this.getCrownKeySample(batch.batchCode);
+      const sampleKey = this.getCrownKeySample(batch ? batch.batchCode : '');
+      const pillarCode = (batch && batch.pillarCode) ? batch.pillarCode : 'FC';
+      
+      // Real-time optimistic UI update: immediately bump batch scans & pillar stats
+      if (batch) {
+        batch.scans = (Number(batch.scans) || 0) + 1;
+      }
+      if (this.pillarStats && this.pillarStats[pillarCode]) {
+        this.pillarStats[pillarCode].scans = (Number(this.pillarStats[pillarCode].scans) || 0) + 1;
+      }
+
+      const defaultAddress = pillarCode === 'FC' ? '3221 Duval St, Jacksonville FL 32206'
+        : pillarCode === 'TAX' ? '1844 College Dr, Orange Park FL 32073'
+        : pillarCode === 'CODE' ? '1540 Liberty St, Jacksonville FL 32206'
+        : pillarCode === 'PRB' ? '884 Magnolia Ave, St Augustine FL 32084'
+        : pillarCode === 'VAC' ? '2910 Post St, Jacksonville FL 32205'
+        : '4102 Ocean Way, St Augustine FL 32080';
+
+      const defaultOwner = pillarCode === 'FC' ? 'Harold & Linda Finch'
+        : pillarCode === 'TAX' ? 'Derrick Montgomery'
+        : pillarCode === 'CODE' ? 'Marcus Vance'
+        : pillarCode === 'PRB' ? 'Estate of Eleanor Vance'
+        : pillarCode === 'VAC' ? 'Apex Capital Holdings'
+        : 'William Sterling Trust';
+
+      this.scannedResult = {
+        crownKey: sampleKey,
+        batchCode: batch ? batch.batchCode : 'DM-2026-B101',
+        batchName: batch ? batch.name : 'Duval Direct Mail',
+        pillarCode: pillarCode,
+        pillarName: this.getPillarName(pillarCode),
+        targetAddress: batch?.address || defaultAddress,
+        ownerName: batch?.ownerName || defaultOwner,
+        trackingPhone: batch?.trackingPhone || '(904) 555-0144',
+        scannedAt: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+        location: 'Jacksonville, FL (IP: 98.174.22.10 · Safari iOS Mobile)',
+        ctaUrl: `/properties?crownKey=${encodeURIComponent(sampleKey)}&scanned=1&pillar=${pillarCode}`
+      };
+
+      // Open the interactive Scan HUD modal immediately
+      this.isScanResultModalOpen = true;
+
       try {
         const res = await fetch('/api/v1/direct-mail/simulate-scan', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ crownKey: sampleKey })
         });
-        const data = await res.json();
-        if (data.ok) {
-          this.showToast('Direct Mail QR Scanned!', `Scan for ${sampleKey} recorded. smrtPhone call attribution updated.`, 'success');
+        if (res.ok) {
           this.loadPillarStats();
-          this.loadDirectMail();
         }
       } catch (e) {
-        this.showToast('Direct Mail QR Scanned!', `Scan for ${sampleKey} recorded.`, 'success');
+        console.warn('[DirectMail] Scan offline sync:', e.message);
       }
     },
     async simulateScanForGenerated() {
@@ -705,7 +976,31 @@ export default {
       this.showToast('USPS IMb Tracking', 'Queried USPS API: 98.4% of in-delivery pieces scanned at Jacksonville P&DC.', 'success');
     },
     viewTracking(b) {
-      this.showToast('Batch Tracking', `USPS IMb scan breakdown loaded for ${b.batchCode}: ${b.delivered} / ${b.pieceCount} pieces confirmed.`, 'info');
+      this.selectedBatch = b;
+      this.isTrackingModalOpen = true;
+    },
+    async triggerSmrtPhoneCallFromScan() {
+      if (!this.scannedResult) return;
+      const callerName = this.scannedResult.ownerName;
+      const callerPhone = this.scannedResult.trackingPhone;
+      const callerAddress = this.scannedResult.targetAddress;
+      this.isScanResultModalOpen = false;
+
+      try {
+        await fetch('/api/v1/integrations/smrtphone/simulate-call', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            from: callerPhone || '(904) 555-0144',
+            contact_name: callerName || 'Harold Finch',
+            property_address: callerAddress || '3221 Duval St, Jacksonville FL',
+            body: `Homeowner scanned direct mail QR for ${this.scannedResult.crownKey}. Inbound seller inquiry.`
+          })
+        });
+        this.showToast('smrtPhone Screen Pop Active', `Live inbound call simulation started for ${callerName}. Check top right HUD!`, 'success');
+      } catch (e) {
+        this.showToast('smrtPhone Screen Pop Active', `Live inbound call simulation started for ${callerName}.`, 'success');
+      }
     },
     downloadCsv(b) {
       try {
@@ -1649,5 +1944,367 @@ export default {
   font-size: 0.65rem;
   color: #94a3b8;
   text-align: center;
+}
+
+/* ----------------------------------------------------
+   USPS IMb & Batch Tracking Modal (The Eye Icon)
+---------------------------------------------------- */
+.tracking-inspector-modal {
+  max-width: 760px;
+  background: #06192e;
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), 0 0 24px rgba(212, 175, 55, 0.12);
+}
+
+.tracking-head-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tracking-head-title h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #f8fafc;
+  margin: 0;
+}
+
+.tracking-head-title p {
+  font-size: 0.78rem;
+  color: #94a3b8;
+  margin: 2px 0 0;
+}
+
+.tracking-top-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(4, 24, 45, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 14px;
+}
+
+.top-banner-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tracking-pillar-name {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.top-banner-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.75rem;
+}
+
+.lbl-small {
+  color: #94a3b8;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  font-size: 0.68rem;
+}
+
+.imb-progression-panel {
+  background: rgba(8, 39, 74, 0.4);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+}
+
+.imb-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.imb-header h4 {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #e2e8f0;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.imb-status-tag {
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  background: rgba(212, 175, 55, 0.15);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  border-radius: 999px;
+}
+
+.delivery-stepper {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  position: relative;
+  margin: 10px 0 14px;
+}
+
+.step-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 90px;
+  z-index: 2;
+}
+
+.node-circle {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #08274a;
+  border: 2px solid #64748b;
+  color: #94a3b8;
+  font-size: 0.72rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 6px;
+  transition: all 0.2s ease;
+}
+
+.step-node.completed .node-circle {
+  background: #22c55e;
+  border-color: #22c55e;
+  color: #ffffff;
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
+}
+
+.step-node.active .node-circle {
+  background: #d4af37;
+  border-color: #fde68a;
+  color: #04182d;
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.6);
+}
+
+.node-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #f8fafc;
+  line-height: 1.1;
+}
+
+.node-sub {
+  font-size: 0.62rem;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+.step-line {
+  flex: 1;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.12);
+  margin-top: 13px;
+}
+
+.step-line.completed {
+  background: #22c55e;
+  box-shadow: 0 0 6px rgba(34, 197, 94, 0.4);
+}
+
+.imb-graphic-box {
+  background: #020d1a;
+  border: 1px dashed rgba(212, 175, 55, 0.3);
+  border-radius: 6px;
+  padding: 8px 12px;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.imb-bars {
+  font-family: monospace;
+  font-size: 0.85rem;
+  letter-spacing: 2px;
+  color: #f1f5f9;
+}
+
+.imb-digits {
+  font-size: 0.65rem;
+  color: #94a3b8;
+  margin-top: 4px;
+}
+
+.tracking-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.t-metric-card {
+  background: rgba(4, 24, 45, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.t-label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #94a3b8;
+  letter-spacing: 0.05em;
+}
+
+.t-val {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.t-sub {
+  font-size: 0.68rem;
+  font-weight: 600;
+}
+
+.tracking-config-panel {
+  background: rgba(4, 24, 45, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.config-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+}
+
+.config-row .lbl {
+  color: #94a3b8;
+}
+
+.config-row .val {
+  color: #f8fafc;
+}
+
+/* ----------------------------------------------------
+   Live QR Scan Detected HUD Modal (The Lightning Bolt)
+---------------------------------------------------- */
+.scan-alert-modal {
+  max-width: 540px;
+  background: #06192e;
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(34, 197, 94, 0.15);
+}
+
+.scan-beacon-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.scan-beacon-title h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #f8fafc;
+  margin: 0;
+}
+
+.scan-beacon-title p {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  margin: 2px 0 0;
+}
+
+.pulse-beacon {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 14px #22c55e;
+  animation: pulseBeacon 1.5s infinite;
+}
+
+@keyframes pulseBeacon {
+  0% { transform: scale(0.9); box-shadow: 0 0 6px #22c55e; }
+  50% { transform: scale(1.15); box-shadow: 0 0 18px #22c55e; }
+  100% { transform: scale(0.9); box-shadow: 0 0 6px #22c55e; }
+}
+
+.scan-key-banner {
+  background: linear-gradient(135deg, rgba(8, 39, 74, 0.9) 0%, rgba(4, 24, 45, 0.95) 100%);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  border-radius: 10px;
+  padding: 14px;
+  text-align: center;
+  margin-bottom: 12px;
+  box-shadow: inset 0 0 16px rgba(212, 175, 55, 0.08);
+}
+
+.scan-key-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #edcf7c;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.scan-key-val {
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: 0.05em;
+  margin: 4px 0 8px;
+}
+
+.scan-pillar-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.scan-dossier-box {
+  background: rgba(4, 24, 45, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.dossier-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.78rem;
+}
+
+.dossier-line .d-label {
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.scan-actions-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 </style>
