@@ -541,15 +541,6 @@ export default {
 </script>
 
 <style scoped>
-/* DOM-level suppression of HawkAI on login screen */
-:global(.hushhawk-auth-wrapper) ~ .hawk-copilot-container,
-:global(.hushhawk-auth-forwarding) ~ .hawk-copilot-container {
-  display: none !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-}
-
 .hawk-copilot-container {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   color: #f1f5f9;

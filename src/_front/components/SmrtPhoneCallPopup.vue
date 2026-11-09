@@ -443,3 +443,4 @@ export default {
   transform: translate(-50%, -24px);
 }
 </style>
+
