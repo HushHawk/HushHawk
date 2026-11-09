@@ -892,10 +892,10 @@ export default {
         const res = await fetch('/api/v1/direct-mail');
         if (res.ok) {
           const data = await res.json();
-          if (data && Array.isArray(data.mailBatches) && data.mailBatches.length > 0) {
-            this.mailBatches = data.mailBatches;
-          } else if (data && Array.isArray(data.batches) && data.batches.length > 0) {
-            this.mailBatches = data.batches;
+          const incoming = data && Array.isArray(data.mailBatches) ? data.mailBatches : (data && Array.isArray(data.batches) ? data.batches : []);
+          const cleanBatches = incoming.filter(b => b && b.batchCode && !b.batchCode.startsWith('DM-TEST-'));
+          if (cleanBatches.length > 0) {
+            this.mailBatches = cleanBatches;
           }
         }
       } catch (err) {

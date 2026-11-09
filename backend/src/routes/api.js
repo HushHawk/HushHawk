@@ -3077,7 +3077,9 @@ apiRouter.patch('/follow-ups/:id', (req, res) => {
 // --- Direct Mail ---
 apiRouter.get('/direct-mail', (req, res) => {
     try {
-        const directMail = db.data.crm.direct_mail || [];
+        let directMail = db.data.crm.direct_mail || [];
+        // Filter out leftover test suites / test runs
+        directMail = directMail.filter(b => b && b.batchCode && !b.batchCode.startsWith('DM-TEST-'));
         res.json({ total: directMail.length, mailBatches: directMail });
     } catch (err) {
         res.status(500).json({ error: err.message });

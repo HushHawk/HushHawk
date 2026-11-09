@@ -64,6 +64,8 @@ async function runBlueprintSubsystemTests() {
         };
         if (!db.data.crm.direct_mail) db.data.crm.direct_mail = [];
         db.data.crm.direct_mail.unshift(mailBatch);
+        if (!createdIds.mailBatchCodes) createdIds.mailBatchCodes = [];
+        createdIds.mailBatchCodes.push(batchCode);
 
         // 1c. Record Direct Mail Audit Event in PostgreSQL
         const mailAuditId = crypto.randomUUID();
@@ -322,6 +324,9 @@ async function runBlueprintSubsystemTests() {
         }
         if (createdIds.notifIds.length) {
             await pool.query('DELETE FROM ops.notifications WHERE notification_id = ANY($1)', [createdIds.notifIds]);
+        }
+        if (createdIds.mailBatchCodes && createdIds.mailBatchCodes.length && db.data.crm?.direct_mail) {
+            db.data.crm.direct_mail = db.data.crm.direct_mail.filter(b => !createdIds.mailBatchCodes.includes(b.batchCode));
         }
         console.log('  ✓ PASS: All temporary test records purged; AWS RDS database remains pristine!');
 
