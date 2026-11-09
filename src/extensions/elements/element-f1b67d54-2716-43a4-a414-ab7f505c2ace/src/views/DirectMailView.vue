@@ -31,9 +31,9 @@
             <span v-html="icons.zap"></span>
             CrownKey QR Mailer
           </button>
-          <button class="btn btn-secondary btn-sm" @click="simulateLiveScan">
+          <button class="btn btn-secondary btn-sm" @click="refreshAllData">
             <span v-html="icons.refresh"></span>
-            Test QR Scan
+            Sync Live Data
           </button>
         </div>
       </div>
@@ -219,10 +219,10 @@
               </td>
               <td>
                 <div class="row-actions">
-                  <button class="btn btn-gold btn-sm" title="Simulate Homeowner QR Scan" @click="simulateBatchScan(b)">
+                  <button class="btn btn-gold btn-sm" title="CrownKey QR Mailer &amp; Print Spec" @click="openBatchQr(b)">
                     <span v-html="icons.zap"></span>
                   </button>
-                  <button class="btn btn-subtle btn-sm" title="View CrownKey Details" @click="viewTracking(b)">
+                  <button class="btn btn-subtle btn-sm" title="USPS IMb &amp; Batch Tracking" @click="viewTracking(b)">
                     <span v-html="icons.eye"></span>
                   </button>
                   <button class="btn btn-subtle btn-sm" title="Download Recipient CSV" @click="downloadCsv(b)">
@@ -395,7 +395,7 @@
                 </div>
               </div>
 
-              <!-- Physical Envelope & Letter Mockup -->
+              <!-- Physical Envelope & Letter Print Preview -->
               <div class="mail-mockup-card">
                 <div class="envelope-stamp">
                   <span class="stamp-pill font-mono">{{ generatedCrownKey }}</span>
@@ -408,13 +408,20 @@
                 </div>
               </div>
 
-              <!-- Interactive Simulator Trigger -->
-              <div class="sim-actions">
-                <button type="button" class="btn btn-gold btn-block" @click="simulateScanForGenerated">
-                  <span v-html="icons.zap"></span>
-                  Simulate Homeowner QR Scan
+              <!-- Production QR Code Actions -->
+              <div class="qr-action-buttons">
+                <button type="button" class="btn btn-primary btn-block" @click="copyTrackingUrl">
+                  <span v-html="icons.file"></span>
+                  Copy Production QR Link
                 </button>
-                <small class="sim-note">Fires live scan to PostgreSQL RDS, creates interaction, and triggers real-time notification</small>
+                <a :href="qrTrackingUrl" target="_blank" class="btn btn-gold btn-block text-center">
+                  <span v-html="icons.zap"></span>
+                  Open Live Landing Page
+                </a>
+                <button type="button" class="btn btn-secondary btn-block" @click="downloadQrSvg">
+                  <span v-html="icons.download"></span>
+                  Download Print-Ready QR (SVG)
+                </button>
               </div>
             </div>
           </div>
@@ -554,85 +561,11 @@
             <span v-html="icons.download"></span>
             Download Recipient CSV
           </button>
-          <button type="button" class="btn btn-gold" @click="isTrackingModalOpen = false; simulateBatchScan(selectedBatch)">
+          <button type="button" class="btn btn-gold" @click="isTrackingModalOpen = false; openBatchQr(selectedBatch)">
             <span v-html="icons.zap"></span>
-            Simulate QR Scan Now
+            View Batch QR Mailer
           </button>
           <button type="button" class="btn btn-secondary" @click="isTrackingModalOpen = false">Close</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- 2. Real-Time CrownKey QR Scan Triggered HUD Modal (The Lightning Bolt) -->
-    <div v-if="isScanResultModalOpen && scannedResult" class="modal-overlay" @click.self="isScanResultModalOpen = false">
-      <div class="modal-content scan-alert-modal">
-        <div class="modal-header scan-alert-header">
-          <div class="scan-beacon-title">
-            <span class="pulse-beacon"></span>
-            <div>
-              <h3>Real-Time Homeowner QR Scan Detected</h3>
-              <p>USPS Mailer scanned by distressed property owner</p>
-            </div>
-          </div>
-          <button class="close-btn" @click="isScanResultModalOpen = false">
-            <span v-html="icons.close"></span>
-          </button>
-        </div>
-
-        <div class="modal-body">
-          <!-- CrownKey Hero Banner -->
-          <div class="scan-key-banner">
-            <span class="scan-key-label">RESOLVED CROWNKEY</span>
-            <div class="scan-key-val font-mono">{{ scannedResult.crownKey }}</div>
-            <div class="scan-pillar-badge">
-              <span class="p-code-badge font-mono">{{ scannedResult.pillarCode }}</span>
-              <span>{{ scannedResult.pillarName }}</span>
-            </div>
-          </div>
-
-          <!-- Matched Dossier Box -->
-          <div class="scan-dossier-box">
-            <div class="dossier-line">
-              <span class="d-label">Target Address:</span>
-              <strong class="d-val text-white">{{ scannedResult.targetAddress }}</strong>
-            </div>
-            <div class="dossier-line">
-              <span class="d-label">Owner Name:</span>
-              <strong class="d-val text-gold">{{ scannedResult.ownerName }}</strong>
-            </div>
-            <div class="dossier-line">
-              <span class="d-label">Assigned Batch:</span>
-              <span class="d-val font-mono">{{ scannedResult.batchCode }} &bull; {{ scannedResult.batchName }}</span>
-            </div>
-            <div class="dossier-line">
-              <span class="d-label">Device &amp; IP:</span>
-              <span class="d-val text-muted">{{ scannedResult.location }}</span>
-            </div>
-            <div class="dossier-line">
-              <span class="d-label">Timestamp:</span>
-              <span class="d-val text-cyan font-mono">Today at {{ scannedResult.scannedAt }}</span>
-            </div>
-            <div class="dossier-line">
-              <span class="d-label">Assigned Phone:</span>
-              <span class="d-val text-green font-mono">{{ scannedResult.trackingPhone }} (smrtPhone)</span>
-            </div>
-          </div>
-
-          <!-- Live Scan Telephony Trigger -->
-          <div class="scan-actions-grid">
-            <a :href="scannedResult.ctaUrl" class="btn btn-primary btn-block text-center" target="_blank" @click="isScanResultModalOpen = false">
-              <span v-html="icons.zap"></span>
-              Open Homeowner Property Dossier
-            </a>
-            <button type="button" class="btn btn-gold btn-block" @click="triggerSmrtPhoneCallFromScan">
-              <span v-html="icons.phone"></span>
-              Trigger smrtPhone Inbound Call HUD
-            </button>
-          </div>
-        </div>
-
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" @click="isScanResultModalOpen = false">Dismiss</button>
         </div>
       </div>
     </div>
@@ -657,8 +590,6 @@ export default {
       isQrModalOpen: false,
       isTrackingModalOpen: false,
       selectedBatch: null,
-      isScanResultModalOpen: false,
-      scannedResult: null,
       qrGen: {
         countyCode: 'DUV',
         pillarCode: 'FC',
@@ -837,100 +768,47 @@ export default {
       if (batchCode.includes('B103')) return 'STJ-ABS-41020';
       return batchCode.replace('DM-', 'DUV-FC-');
     },
-    async simulateLiveScan() {
-      try {
-        const res = await fetch('/api/v1/direct-mail/simulate-scan', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ crownKey: 'DUV-FC-32221' })
-        });
-        const data = await res.json();
-        if (data.ok) {
-          this.showToast('Direct Mail QR Scanned!', 'Scan for DUV-FC-32221 recorded to PostgreSQL RDS. Homeowner intent active!', 'success');
-          this.loadPillarStats();
-          this.loadDirectMail();
-        }
-      } catch (e) {
-        this.showToast('Direct Mail QR Scanned!', 'Scan for DUV-FC-32221 recorded to PostgreSQL RDS.', 'success');
-      }
-    },
-    async simulateBatchScan(batch) {
-      const sampleKey = this.getCrownKeySample(batch ? batch.batchCode : '');
-      const pillarCode = (batch && batch.pillarCode) ? batch.pillarCode : 'FC';
-      
-      // Real-time optimistic UI update: immediately bump batch scans & pillar stats
+    openBatchQr(batch) {
       if (batch) {
-        batch.scans = (Number(batch.scans) || 0) + 1;
+        const sampleKey = this.getCrownKeySample(batch.batchCode);
+        const parts = sampleKey.split('-');
+        this.qrGen.countyCode = parts[0] || 'DUV';
+        this.qrGen.pillarCode = parts[1] || batch.pillarCode || 'FC';
+        this.qrGen.identifier = parts[2] || '32221';
+        this.qrGen.address = batch.address || (this.qrGen.pillarCode === 'FC' ? '3221 Duval St, Jacksonville FL 32206' : '1844 College Dr, Orange Park FL 32073');
+        this.qrGen.ownerName = batch.ownerName || (this.qrGen.pillarCode === 'FC' ? 'Harold & Linda Finch' : 'Derrick Montgomery');
+        this.qrGen.trackingPhone = batch.trackingPhone || '(904) 555-0144';
       }
-      if (this.pillarStats && this.pillarStats[pillarCode]) {
-        this.pillarStats[pillarCode].scans = (Number(this.pillarStats[pillarCode].scans) || 0) + 1;
-      }
-
-      const defaultAddress = pillarCode === 'FC' ? '3221 Duval St, Jacksonville FL 32206'
-        : pillarCode === 'TAX' ? '1844 College Dr, Orange Park FL 32073'
-        : pillarCode === 'CODE' ? '1540 Liberty St, Jacksonville FL 32206'
-        : pillarCode === 'PRB' ? '884 Magnolia Ave, St Augustine FL 32084'
-        : pillarCode === 'VAC' ? '2910 Post St, Jacksonville FL 32205'
-        : '4102 Ocean Way, St Augustine FL 32080';
-
-      const defaultOwner = pillarCode === 'FC' ? 'Harold & Linda Finch'
-        : pillarCode === 'TAX' ? 'Derrick Montgomery'
-        : pillarCode === 'CODE' ? 'Marcus Vance'
-        : pillarCode === 'PRB' ? 'Estate of Eleanor Vance'
-        : pillarCode === 'VAC' ? 'Apex Capital Holdings'
-        : 'William Sterling Trust';
-
-      this.scannedResult = {
-        crownKey: sampleKey,
-        batchCode: batch ? batch.batchCode : 'DM-2026-B101',
-        batchName: batch ? batch.name : 'Duval Direct Mail',
-        pillarCode: pillarCode,
-        pillarName: this.getPillarName(pillarCode),
-        targetAddress: batch?.address || defaultAddress,
-        ownerName: batch?.ownerName || defaultOwner,
-        trackingPhone: batch?.trackingPhone || '(904) 555-0144',
-        scannedAt: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
-        location: 'Jacksonville, FL (IP: 98.174.22.10 · Safari iOS Mobile)',
-        ctaUrl: `/properties?crownKey=${encodeURIComponent(sampleKey)}&scanned=1&pillar=${pillarCode}`
-      };
-
-      // Open the interactive Scan HUD modal immediately
-      this.isScanResultModalOpen = true;
-
-      try {
-        const res = await fetch('/api/v1/direct-mail/simulate-scan', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ crownKey: sampleKey })
-        });
-        if (res.ok) {
-          this.loadPillarStats();
-        }
-      } catch (e) {
-        console.warn('[DirectMail] Scan offline sync:', e.message);
+      this.isQrModalOpen = true;
+    },
+    copyTrackingUrl() {
+      if (typeof navigator !== 'undefined' && navigator.clipboard) {
+        navigator.clipboard.writeText(this.qrTrackingUrl);
+        this.showToast('Copied to Clipboard', `Production QR redirect link copied: ${this.qrTrackingUrl}`, 'success');
+      } else {
+        this.showToast('Production Link', this.qrTrackingUrl, 'info');
       }
     },
-    async simulateScanForGenerated() {
-      const sampleKey = this.generatedCrownKey;
-      try {
-        const res = await fetch('/api/v1/direct-mail/simulate-scan', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            crownKey: sampleKey,
-            address: this.qrGen.address,
-            ownerName: this.qrGen.ownerName
-          })
-        });
-        const data = await res.json();
-        if (data.ok) {
-          this.showToast('Direct Mail QR Scanned!', `Real-time scan recorded in RDS for ${sampleKey}. Notification dispatched!`, 'success');
-          this.loadPillarStats();
-          this.loadDirectMail();
-        }
-      } catch (e) {
-        this.showToast('Direct Mail QR Scanned!', `Real-time scan recorded for ${sampleKey}.`, 'success');
-      }
+    downloadQrSvg() {
+      const svgEl = document.querySelector('.qr-code-box svg');
+      if (!svgEl) return;
+      const svgData = new XMLSerializer().serializeToString(svgEl);
+      const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+      const svgUrl = URL.createObjectURL(svgBlob);
+      const downloadLink = document.createElement('a');
+      downloadLink.href = svgUrl;
+      downloadLink.download = `${this.generatedCrownKey}_Print_QR.svg`;
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+      this.showToast('Print QR Downloaded', `High-resolution SVG saved as ${this.generatedCrownKey}_Print_QR.svg for print vendor.`, 'success');
+    },
+    async refreshAllData() {
+      await Promise.all([
+        this.loadPillarStats(),
+        this.loadDirectMail()
+      ]);
+      this.showToast('Live Data Synchronized', 'Direct Mail telemetry and Distress Pillar rates up to date.', 'success');
     },
     async loadPillarStats() {
       try {
@@ -978,29 +856,6 @@ export default {
     viewTracking(b) {
       this.selectedBatch = b;
       this.isTrackingModalOpen = true;
-    },
-    async triggerSmrtPhoneCallFromScan() {
-      if (!this.scannedResult) return;
-      const callerName = this.scannedResult.ownerName;
-      const callerPhone = this.scannedResult.trackingPhone;
-      const callerAddress = this.scannedResult.targetAddress;
-      this.isScanResultModalOpen = false;
-
-      try {
-        await fetch('/api/v1/integrations/smrtphone/simulate-call', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            from: callerPhone || '(904) 555-0144',
-            contact_name: callerName || 'Harold Finch',
-            property_address: callerAddress || '3221 Duval St, Jacksonville FL',
-            body: `Homeowner scanned direct mail QR for ${this.scannedResult.crownKey}. Inbound seller inquiry.`
-          })
-        });
-        this.showToast('smrtPhone Screen Pop Active', `Live inbound call simulation started for ${callerName}. Check top right HUD!`, 'success');
-      } catch (e) {
-        this.showToast('smrtPhone Screen Pop Active', `Live inbound call simulation started for ${callerName}.`, 'success');
-      }
     },
     downloadCsv(b) {
       try {
