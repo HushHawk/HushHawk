@@ -38,28 +38,48 @@
         </div>
       </div>
       <div class="pillar-cards-grid">
-        <div v-for="(p, code) in pillarStats" :key="code" class="pillar-card" :class="code.toLowerCase()">
-          <div class="p-card-top">
-            <span class="p-code-badge font-mono">{{ code }}</span>
-            <strong class="p-name">{{ p.name }}</strong>
-            <span class="p-rate font-mono text-gold">{{ p.scanRate }} CTR</span>
+        <div v-for="(p, code) in pillarStats" :key="code" class="distress-pillar-card" :class="code.toLowerCase()">
+          <!-- Card Top Bar: Code Badge + CTR Pill -->
+          <div class="p-card-header">
+            <div class="p-badge-wrap">
+              <span class="p-code-badge font-mono">{{ code }}</span>
+              <span class="p-signal-dot"></span>
+            </div>
+            <div class="p-rate-pill font-mono">
+              <span class="p-rate-num">{{ p.scanRate }}</span>
+              <span class="p-rate-lbl">CTR</span>
+            </div>
           </div>
-          <div class="p-stats-row">
-            <div class="p-stat-col">
-              <span class="lbl">Mailed:</span>
-              <strong>{{ p.mailed.toLocaleString() }}</strong>
+
+          <!-- Pillar Title (never truncated, clear typography) -->
+          <div class="p-title-wrap">
+            <h4 class="p-pillar-title">{{ p.name }}</h4>
+          </div>
+
+          <!-- Metrics 2x2 Grid with individual micro-cards -->
+          <div class="p-metrics-grid">
+            <div class="p-metric-cell">
+              <span class="p-metric-label">Mailed</span>
+              <span class="p-metric-value font-mono">{{ p.mailed.toLocaleString() }}</span>
             </div>
-            <div class="p-stat-col">
-              <span class="lbl">QR Scans:</span>
-              <strong class="text-cyan">{{ p.scans }}</strong>
+            <div class="p-metric-cell">
+              <span class="p-metric-label">QR Scans</span>
+              <span class="p-metric-value font-mono text-cyan">{{ p.scans }}</span>
             </div>
-            <div class="p-stat-col">
-              <span class="lbl">Calls:</span>
-              <strong class="text-green">{{ p.calls }}</strong>
+            <div class="p-metric-cell">
+              <span class="p-metric-label">Calls</span>
+              <span class="p-metric-value font-mono text-green">{{ p.calls }}</span>
             </div>
-            <div class="p-stat-col">
-              <span class="lbl">Deals:</span>
-              <strong class="text-gold">${{ (p.gross / 1000).toFixed(0) }}k</strong>
+            <div class="p-metric-cell">
+              <span class="p-metric-label">Pipeline</span>
+              <span class="p-metric-value font-mono text-gold">${{ Math.round(p.gross / 1000) }}k</span>
+            </div>
+          </div>
+
+          <!-- Performance Conversion Progress Bar -->
+          <div class="p-card-footer">
+            <div class="p-progress-track" :title="`Scan Conversion: ${p.scanRate}`">
+              <div class="p-progress-fill" :style="{ width: Math.min(parseFloat(p.scanRate) * 12, 100) + '%' }"></div>
             </div>
           </div>
         </div>
@@ -74,7 +94,7 @@
             <span class="icon-title" v-html="icons.mail"></span>
             Direct Mail Batches &amp; USPS Intelligent Mail Barcode (IMb)
           </h2>
-          <span class="badge-count">{{ mailBatches.length }} active drop batches</span>
+          <span class="badge-count">{{ (mailBatches || []).length }} active drop batches</span>
         </div>
         <div class="header-actions">
           <button class="btn btn-secondary" @click="trackAllBatches">
@@ -150,7 +170,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-if="filteredBatches.length === 0">
+            <tr v-if="(filteredBatches || []).length === 0">
               <td colspan="9" style="text-align: center; color: #64748b; padding: 36px;">
                 No direct mail campaign batches found. Click "Launch Mail Drop" to schedule your first postcard or letter drop.
               </td>
@@ -445,7 +465,65 @@ export default {
         trackingPhone: '(904) 555-0144',
         copy: ''
       },
-      mailBatches: []
+      mailBatches: [
+        {
+          id: 1,
+          batchCode: 'DM-2026-B101',
+          name: 'Duval Foreclosure Wave 1',
+          pillarCode: 'FC',
+          format: '4x6 Postcard',
+          audience: 'Pre-Foreclosure NOD / Lis Pendens',
+          quantity: 2500,
+          mailedDate: '2026-10-14',
+          zips: '32206, 32208, 32209',
+          cost: 1100,
+          delivered: 2465,
+          scans: 142,
+          calls: 38,
+          deals: 3,
+          grossRevenue: 36000,
+          status: 'Delivered',
+          imbStatus: '100% In-Home'
+        },
+        {
+          id: 2,
+          batchCode: 'DM-2026-B102',
+          name: 'Clay County Tax Delinquent Letters',
+          pillarCode: 'TAX',
+          format: 'Handwritten Letter',
+          audience: 'Tax Lien Auction 2+ Yrs Delinquent',
+          quantity: 1800,
+          mailedDate: '2026-10-22',
+          zips: '32065, 32073',
+          cost: 1224,
+          delivered: 1780,
+          scans: 89,
+          calls: 24,
+          deals: 2,
+          grossRevenue: 24000,
+          status: 'In-Transit',
+          imbStatus: 'Out for Delivery'
+        },
+        {
+          id: 3,
+          batchCode: 'DM-2026-B103',
+          name: 'St. Johns Absentee High Equity Snap',
+          pillarCode: 'ABS',
+          format: 'Snap Pack (Official)',
+          audience: 'Absentee Owner >60% Equity',
+          quantity: 3200,
+          mailedDate: '2026-11-01',
+          zips: '32080, 32084, 32086',
+          cost: 2176,
+          delivered: 3120,
+          scans: 115,
+          calls: 29,
+          deals: 1,
+          grossRevenue: 18000,
+          status: 'In-Transit',
+          imbStatus: 'En Route Hub'
+        }
+      ]
     };
   },
   computed: {
@@ -476,7 +554,7 @@ export default {
       return Boolean(this.searchQuery || this.statusFilter || this.formatFilter);
     },
     filteredBatches() {
-      return this.mailBatches.filter(b => {
+      return (this.mailBatches || []).filter(b => {
         if (this.statusFilter && b.status !== this.statusFilter) return false;
         if (this.formatFilter && b.format !== this.formatFilter) return false;
         if (this.searchQuery) {
@@ -599,9 +677,13 @@ export default {
     async loadDirectMail() {
       try {
         const res = await fetch('/api/v1/direct-mail');
-        const data = await res.json();
-        if (data) {
-          this.mailBatches = data.mailBatches;
+        if (res.ok) {
+          const data = await res.json();
+          if (data && Array.isArray(data.mailBatches) && data.mailBatches.length > 0) {
+            this.mailBatches = data.mailBatches;
+          } else if (data && Array.isArray(data.batches) && data.batches.length > 0) {
+            this.mailBatches = data.batches;
+          }
         }
       } catch (err) {
         console.warn('[DirectMail] Using local cache:', err.message);
@@ -1220,73 +1302,167 @@ export default {
 
 .pillar-cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 12px;
 }
 
-.pillar-card {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 8px;
-  padding: 0.65rem 0.8rem;
+@media (min-width: 1400px) {
+  .pillar-cards-grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+
+.distress-pillar-card {
+  background: linear-gradient(145deg, rgba(8, 39, 74, 0.45) 0%, rgba(4, 24, 45, 0.75) 100%);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: 10px;
+  padding: 12px 14px;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  transition: transform 0.15s ease, border-color 0.15s ease;
+  gap: 8px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.pillar-card:hover {
-  border-color: rgba(212, 175, 55, 0.4);
+.distress-pillar-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.4), transparent);
+  opacity: 0.7;
+}
+
+.distress-pillar-card:hover {
   transform: translateY(-2px);
+  border-color: rgba(212, 175, 55, 0.55);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35), 0 0 14px rgba(212, 175, 55, 0.12);
 }
 
-.p-card-top {
+.p-card-header {
   display: flex;
   align-items: center;
-  gap: 0.45rem;
-  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.p-badge-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .p-code-badge {
   font-size: 0.68rem;
   font-weight: 800;
-  padding: 2px 5px;
+  padding: 2px 7px;
   border-radius: 4px;
-  background: rgba(212, 175, 55, 0.2);
+  background: rgba(212, 175, 55, 0.15);
   color: #edcf7c;
-  border: 1px solid rgba(212, 175, 55, 0.4);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  letter-spacing: 0.04em;
 }
 
-.p-name {
-  font-size: 0.78rem;
-  color: #f8fafc;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  flex: 1;
+.p-signal-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 6px rgba(34, 197, 94, 0.6);
 }
 
-.p-rate {
+.p-rate-pill {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.28);
+}
+
+.p-rate-num {
   font-size: 0.72rem;
-  font-weight: 700;
+  font-weight: 800;
+  color: #4ade80;
 }
 
-.p-stats-row {
+.p-rate-lbl {
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: #86efac;
+  letter-spacing: 0.03em;
+}
+
+.p-title-wrap {
+  display: flex;
+  align-items: center;
+  min-height: 2.3em;
+}
+
+.p-pillar-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+  line-height: 1.25;
+  white-space: normal;
+  letter-spacing: -0.01em;
+}
+
+.p-metrics-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 0.35rem 0.65rem;
-  font-size: 0.72rem;
+  gap: 6px;
+  margin-top: 2px;
 }
 
-.p-stat-col {
+.p-metric-cell {
+  background: rgba(4, 24, 45, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  padding: 6px 8px;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  gap: 2px;
 }
 
-.p-stat-col .lbl {
+.p-metric-label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
   color: #94a3b8;
-  font-size: 0.68rem;
+}
+
+.p-metric-value {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #f8fafc;
+  line-height: 1.1;
+}
+
+.p-card-footer {
+  margin-top: 2px;
+}
+
+.p-progress-track {
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.p-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #d4af37, #4ade80);
+  border-radius: 999px;
+  transition: width 0.4s ease;
 }
 
 /* Signal Badges in Table */
