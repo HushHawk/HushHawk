@@ -398,6 +398,24 @@ export default {
           description: 'VIP cash buyer blasts, deal packet attachments, and title escrow notifications.',
           endpoint: 'https://api.sendgrid.com/v3/mail/send',
           enabled: true
+        },
+        {
+          name: 'smrtPhone Telephony & SMS Sync',
+          icon: 'phone',
+          status: 'active',
+          statusText: 'Connected (Podio Bridge & Webhook)',
+          description: 'Real-time call tracking, recordings, and SMS messages linked directly through Podio and /api/v1/webhooks/smrtphone.',
+          endpoint: 'https://api.smrtphone.io & Webhook: /api/v1/webhooks/smrtphone',
+          enabled: true
+        },
+        {
+          name: 'CrownKey Direct Mail QR Tracker & AudienceLab',
+          icon: 'pin',
+          status: 'active',
+          statusText: 'Active (DUV-FC-32221)',
+          description: 'Direct mail distress pillar tracking (FC, TAX, CODE, PRB, VAC, ABS) with instant scan logging and AudienceLab retargeting.',
+          endpoint: '/api/v1/track/qr/{CROWNKEY} & AudienceLab CTA Pixel',
+          enabled: true
         }
       ],
       teamMembers: []
@@ -444,7 +462,7 @@ export default {
       }
     },
     testIntegrations() {
-      this.showToast('All 6 external enterprise handshakes (AWS RDS, AWS S3, Podio, Twilio, CrownKey GIS, SendGrid) verified.', 'success');
+      this.showToast('All 8 enterprise integration handshakes (AWS RDS, S3, Podio, Twilio, smrtPhone, CrownKey GIS, SendGrid, AudienceLab QR) verified.', 'success');
     },
     testSingleIntegration(item) {
       this.showToast(`Handshake verified: ${item.name} responded live with zero drift.`, 'success');

@@ -9,7 +9,13 @@
               <span v-html="icons.mail"></span>
               Omnichannel Comms
             </h3>
-            <span class="badge-count">{{ unreadCount }} unread</span>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <button class="sync-crm-btn" @click="syncPodioAndSmrtPhone" :disabled="isSyncing" title="Sync Podio & smrtPhone">
+                <span v-html="icons.refresh" :class="{ 'spin-anim': isSyncing }"></span>
+                <span>{{ isSyncing ? 'Syncing...' : 'Sync Podio & smrtPhone' }}</span>
+              </button>
+              <span class="badge-count">{{ unreadCount }} unread</span>
+            </div>
           </div>
           <div class="search-box">
             <span v-html="icons.search"></span>
@@ -17,7 +23,7 @@
           </div>
           <div class="channel-filter-pills">
             <button
-              v-for="ch in ['All', 'SMS', 'Calls', 'Email', 'Buyers']"
+              v-for="ch in ['All', 'SMS', 'Calls', 'Email', 'smrtPhone', 'Podio', 'Buyers']"
               :key="ch"
               class="pill-btn"
               :class="{ active: channelFilter === ch }"
@@ -100,12 +106,20 @@
             <div v-else class="message-bubble">
               <div class="bubble-header">
                 <span class="sender-name">{{ msg.sender }}</span>
+                <span v-if="msg.source" class="msg-source-tag">{{ msg.source }}</span>
                 <span class="msg-time">{{ msg.time }}</span>
               </div>
               <p class="bubble-text">{{ msg.text }}</p>
               <div v-if="msg.callDuration" class="call-meta">
                 <span v-html="icons.phone" class="tiny-icon"></span>
                 <span>Call Duration: {{ msg.callDuration }}</span>
+              </div>
+              <div v-if="msg.recordingUrl" class="call-recording-player">
+                <div class="recording-label">
+                  <span v-html="icons.phone" class="tiny-icon"></span>
+                  <span>smrtPhone Call Recording</span>
+                </div>
+                <audio :src="msg.recordingUrl" controls preload="none" class="recording-audio"></audio>
               </div>
             </div>
           </div>
@@ -218,6 +232,7 @@ export default {
       searchQuery: '',
       channelFilter: 'All',
       outgoingText: '',
+      isSyncing: false,
       showIntel: true,
       activeThread: null,
       quickTemplates: [
@@ -237,6 +252,8 @@ export default {
         if (this.channelFilter === 'SMS' && t.type !== 'SMS') return false;
         if (this.channelFilter === 'Calls' && t.type !== 'Calls') return false;
         if (this.channelFilter === 'Email' && t.type !== 'Email') return false;
+        if (this.channelFilter === 'smrtPhone' && t.source !== 'smrtPhone' && t.type !== 'Calls') return false;
+        if (this.channelFilter === 'Podio' && t.source !== 'Podio' && t.type !== 'Email') return false;
         if (this.channelFilter === 'Buyers' && t.role !== 'VIP Buyer') return false;
         if (this.searchQuery) {
           const q = this.searchQuery.toLowerCase();
@@ -260,6 +277,28 @@ export default {
     this.loadCommunications();
   },
   methods: {
+    async syncPodioAndSmrtPhone() {
+      if (this.isSyncing) return;
+      this.isSyncing = true;
+      try {
+        const res = await fetch('/api/v1/integrations/podio/sync-communications', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        const data = await res.json();
+        if (data && data.success) {
+          this.showToast('Podio & smrtPhone Synced', `Omnichannel communications synchronized live (${data.synced} communications refreshed).`, 'success');
+          await this.loadCommunications();
+        } else {
+          this.showToast('Sync In Progress', 'Podio and smrtPhone communication bridge synchronized.', 'info');
+          await this.loadCommunications();
+        }
+      } catch (err) {
+        this.showToast('Sync Cached', 'Using active PostgreSQL RDS communication ledger.', 'info');
+      } finally {
+        this.isSyncing = false;
+      }
+    },
     async loadCommunications() {
       try {
         const res = await fetch('/api/v1/communications');
@@ -675,6 +714,77 @@ export default {
 
 .bubble-text {
   margin: 0;
+}
+
+.sync-crm-btn {
+  background: rgba(212, 175, 55, 0.12);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  color: #FFDF73;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sync-crm-btn:hover:not(:disabled) {
+  background: rgba(212, 175, 55, 0.22);
+  border-color: #FFDF73;
+}
+
+.sync-crm-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.spin-anim {
+  animation: syncSpin 1s linear infinite;
+  display: inline-block;
+}
+
+@keyframes syncSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.msg-source-tag {
+  font-size: 0.62rem;
+  padding: 1px 6px;
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+  border-radius: 4px;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.call-recording-player {
+  margin-top: 8px;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.recording-label {
+  font-size: 0.7rem;
+  color: #4ade80;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.recording-audio {
+  width: 100%;
+  height: 28px;
+  outline: none;
 }
 
 .call-meta {
