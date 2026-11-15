@@ -126,6 +126,26 @@ export class PodioService {
     }
 
     /**
+     * Get App Definition including full field schema
+     * @param {string} accessToken
+     * @param {string|number} appId
+     */
+    static async fetchApp(accessToken, appId) {
+        const res = await fetch(`${this.BASE_URL}/app/${appId}`, {
+            headers: {
+                'Authorization': `OAuth2 ${accessToken}`
+            }
+        });
+
+        if (!res.ok) {
+            const err = await res.text();
+            throw new Error(`Podio Fetch App Failed [HTTP ${res.status}]: ${err}`);
+        }
+
+        return await res.json();
+    }
+
+    /**
      * Fetch a single item from Podio
      * @param {string} accessToken
      * @param {string|number} itemId

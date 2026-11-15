@@ -1879,6 +1879,19 @@ apiRouter.post('/leads', async (req, res) => {
                 primary_email: email
             });
 
+            // Also push to Podio Leads App 30087410
+            try {
+                await PodioSyncService.createLeadInPodio({
+                    fullName: name,
+                    phone,
+                    email,
+                    source: source || 'Website',
+                    notes: `Lead created from HushHawk UI. Address: ${address || 'Duval County'}`
+                });
+            } catch (pErr) {
+                console.warn('[Podio Lead Push Note]:', pErr.message);
+            }
+
             return res.status(201).json({
                 success: true,
                 id: leadId,

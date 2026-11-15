@@ -596,6 +596,48 @@ export class PodioSyncService {
         }
     }
 
+    /**
+     * Create a real Lead in Podio App 30087410
+     */
+    static async createLeadInPodio({ firstName, lastName, fullName, phone, email, status = 'New Untouched', source = 'Website', notes = '' }) {
+        try {
+            console.log(`[PodioSync] Pushing new Lead to Podio App 30087410: ${fullName || firstName}`);
+            const auth = await PodioService.authenticateApp(this.LEADS_APP_ID, this.APP_TOKEN);
+            
+            const fName = firstName || (fullName ? fullName.split(' ')[0] : 'Lead');
+            const lName = lastName || (fullName ? fullName.split(' ').slice(1).join(' ') : 'Contact');
+
+            const fields = {
+                269571344: fName,
+                269571345: lName || 'Seller'
+            };
+
+            if (phone) {
+                fields[269571346] = [{ value: phone, type: 'work' }];
+            }
+            if (email) {
+                fields[269571347] = [{ value: email, type: 'work' }];
+            }
+            if (notes) {
+                fields[269571357] = notes;
+            }
+
+            // Status: 1 = 'New Untouched'
+            fields[269571353] = 1;
+
+            // Source: 3 = 'Website', 1 = 'Cold Calling', 2 = 'Texting', 4 = 'Facebook', 10 = 'Emailing'
+            const sMap = { 'cold calling': 1, 'texting': 2, 'website': 3, 'facebook': 4, 'emailing': 10 };
+            fields[269571355] = sMap[source.toLowerCase()] || 3;
+
+            const res = await PodioService.createItem(auth.access_token, this.LEADS_APP_ID, fields);
+            console.log(`[PodioSync] Lead created in Podio! Item ID: ${res.item_id}`);
+            return res;
+        } catch (err) {
+            console.error('[PodioSync.createLeadInPodio Error]:', err.message);
+            return null;
+        }
+    }
+
     // =========================================================================
     // REMAINING 13 PODIO APPS SYNCHRONIZATION METHODS
     // =========================================================================
