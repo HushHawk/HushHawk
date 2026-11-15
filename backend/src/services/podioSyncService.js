@@ -35,6 +35,26 @@ export class PodioSyncService {
     static OUTBOUND_PHONE = process.env.PODIO_OUTBOUND_PHONE || '+19043030775';
     static OUTBOUND_EMAIL = process.env.PODIO_OUTBOUND_EMAIL || 'ellis@elitehomes1.com';
 
+    // Complete Registry of all 16 Apps in Podio Workspace 'Elite Homes USA Group LLC'
+    static APPS = {
+        LEADS: { id: '30087410', name: 'Leads', hushhawkWorkspace: 'Seller Leads (/seller-leads)', role: 'Core seller lead intake, status & assignment' },
+        OFFERS: { id: '30087411', name: 'Offers', hushhawkWorkspace: 'Acquisitions (/acquisitions)', role: 'Offer creation, price & escrow underwriting' },
+        DEAL_SHOWINGS: { id: '30087412', name: 'Deal Showings', hushhawkWorkspace: 'Calendar (/calendar)', role: 'Property walk-throughs & on-site appointments' },
+        WHITEBOARD: { id: '30087413', name: 'Whiteboard', hushhawkWorkspace: 'Dispositions (/dispositions)', role: 'Active wholesale deal board & pipeline status' },
+        CONTACTS: { id: '30087414', name: 'Contacts', hushhawkWorkspace: 'Contacts (/contacts)', role: 'Unified rolodex for buyers, sellers & title agents' },
+        PROPERTIES: { id: '30087415', name: 'Properties', hushhawkWorkspace: 'Properties (/properties)', role: 'Subject property records & CrownKey parcel sync' },
+        APPOINTMENTS: { id: '30087416', name: 'Appointments', hushhawkWorkspace: 'Calendar (/calendar)', role: 'Seller consultations & inspection schedule' },
+        CAMPAIGNS: { id: '30087417', name: 'Campaigns', hushhawkWorkspace: 'Marketing (/marketing)', role: 'Direct mail distress pillars & ad channels' },
+        DRIP_SEQUENCES: { id: '30087418', name: 'Drip Sequences', hushhawkWorkspace: 'Automations (/automations)', role: 'Multi-step SMS & email automated follow-up' },
+        SEQUENCE_TEMPLATES: { id: '30087419', name: 'Sequence Templates', hushhawkWorkspace: 'Automations (/automations)', role: 'Reusable quick-text and email follow-up copy' },
+        BROADCASTS: { id: '30087420', name: 'Broadcasts', hushhawkWorkspace: 'Direct Mail (/direct-mail)', role: 'Bulk email blasts & cash buyer deal blasts' },
+        FEEDS: { id: '30087421', name: 'Feeds', hushhawkWorkspace: 'Communications (/communications)', role: 'Omnichannel SMS, phone calls, recordings & emails' },
+        SETTINGS: { id: '30087422', name: 'Settings', hushhawkWorkspace: 'Settings (/settings)', role: 'Workspace configuration & team routing rules' },
+        CASH_BUYERS: { id: '30087423', name: 'Cash Buyers', hushhawkWorkspace: 'Cash Buyers (/cash-buyers)', role: 'Vetted investor network & buying criteria' },
+        TEAM_MEMBERS: { id: '30087424', name: 'Team Members', hushhawkWorkspace: 'Team (/team)', role: 'Operator roster, access levels & passkeys' },
+        COLD_LEADS: { id: '30087425', name: 'Cold Leads', hushhawkWorkspace: 'Skip Tracing (/skip-tracing)', role: 'High-distress cold records for skip tracing' }
+    };
+
     static _cachedStatus = null;
     static _statusExpiresAt = 0;
 

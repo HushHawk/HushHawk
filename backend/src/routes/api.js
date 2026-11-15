@@ -2093,6 +2093,16 @@ apiRouter.get('/integrations/podio/status', async (req, res) => {
     }
 });
 
+apiRouter.get('/integrations/podio/apps', (req, res) => {
+    res.json({
+        ok: true,
+        workspace: 'Elite Homes USA Group LLC',
+        spaceId: 10347996,
+        totalApps: Object.keys(PodioSyncService.APPS).length,
+        apps: PodioSyncService.APPS
+    });
+});
+
 apiRouter.post('/integrations/podio/sync', async (req, res) => {
     try {
         const [propsCount, leadsCount] = await Promise.all([
