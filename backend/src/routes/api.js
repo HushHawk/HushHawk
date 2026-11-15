@@ -2010,7 +2010,7 @@ apiRouter.post('/webhooks/podio', async (req, res) => {
                             await pool.query(`UPDATE core.leads SET status = 'LOST', updated_at = NOW() WHERE lead_id = $1`, [internal_uuid]);
                         }
                         await pool.query(
-                            `UPDATE crm.external_sync_map SET status = 'DELETED', last_sync_at = NOW() WHERE external_system = 'PODIO' AND external_item_id = $1`,
+                            `DELETE FROM crm.external_sync_map WHERE external_system = 'PODIO' AND external_item_id = $1`,
                             [externalItemId]
                         );
                     }
