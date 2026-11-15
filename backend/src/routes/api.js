@@ -3060,6 +3060,16 @@ apiRouter.get('/outreach-actions/mailers', async (req, res) => {
     }
 });
 
+apiRouter.post('/outreach-actions/mailers/queue', async (req, res) => {
+    try {
+        const { propertyIds, limit } = req.body;
+        const queued = await OutreachActionsService.queueProperties({ propertyIds, limit });
+        res.status(201).json({ queued, count: queued.length });
+    } catch (err) {
+        res.status(400).json({ error: err.message });
+    }
+});
+
 apiRouter.post('/outreach-actions/mailers/batch', async (req, res) => {
     try {
         const { template, postage, propertyIds } = req.body;
@@ -3076,6 +3086,15 @@ apiRouter.get('/outreach-actions/calls', async (req, res) => {
         res.json({ total: calls.length, calls });
     } catch (err) {
         res.status(500).json({ error: err.message });
+    }
+});
+
+apiRouter.post('/outreach-actions/calls/queue', async (req, res) => {
+    try {
+        const queued = await OutreachActionsService.queueCall(req.body);
+        res.status(201).json(queued);
+    } catch (err) {
+        res.status(400).json({ error: err.message });
     }
 });
 
@@ -3107,6 +3126,15 @@ apiRouter.get('/outreach-actions/texts', async (req, res) => {
     }
 });
 
+apiRouter.post('/outreach-actions/texts/queue', async (req, res) => {
+    try {
+        const queued = await OutreachActionsService.queueText(req.body);
+        res.status(201).json(queued);
+    } catch (err) {
+        res.status(400).json({ error: err.message });
+    }
+});
+
 apiRouter.post('/outreach-actions/texts/send', async (req, res) => {
     try {
         const { textId, phone, recipientPhone, contactName, message, propertyId } = req.body;
@@ -3130,6 +3158,15 @@ apiRouter.get('/outreach-actions/emails', async (req, res) => {
         res.json({ total: emails.length, emails });
     } catch (err) {
         res.status(500).json({ error: err.message });
+    }
+});
+
+apiRouter.post('/outreach-actions/emails/queue', async (req, res) => {
+    try {
+        const queued = await OutreachActionsService.queueEmail(req.body);
+        res.status(201).json(queued);
+    } catch (err) {
+        res.status(400).json({ error: err.message });
     }
 });
 

@@ -92,7 +92,18 @@
             <h3>Direct Mail Campaign Dispatch</h3>
             <span class="modal-badge">{{ mailersQueue.length }} Properties Selected</span>
           </div>
-          <button type="button" class="modal-close-btn" @click="closeModals">✕</button>
+          <div class="header-actions">
+            <button
+              v-if="mailersQueue.length === 0"
+              type="button"
+              class="btn-header-action"
+              :disabled="isSubmitting"
+              @click="queuePropertiesFromCRM"
+            >
+              {{ isSubmitting ? 'Queueing…' : '+ Auto-Queue Top Properties' }}
+            </button>
+            <button type="button" class="modal-close-btn" @click="closeModals">✕</button>
+          </div>
         </header>
 
         <div class="modal-body">
@@ -115,7 +126,7 @@
             </div>
           </div>
 
-          <div class="queue-table-wrap">
+          <div v-if="mailersQueue.length > 0" class="queue-table-wrap">
             <table class="queue-table">
               <thead>
                 <tr>
@@ -132,14 +143,22 @@
                   <td><strong>{{ item.property_address }}</strong><small>{{ item.city }}, FL {{ item.zip }}</small></td>
                   <td>{{ item.owner_name }}</td>
                   <td>
-                    <span class="status-tag" :class="item.distress_category.toLowerCase()">
+                    <span class="status-tag" :class="(item.distress_category || 'default').toLowerCase()">
                       {{ item.distress_category }}
                     </span>
                   </td>
-                  <td>${{ Number(item.equity_estimate).toLocaleString() }}</td>
+                  <td>${{ Number(item.equity_estimate || 0).toLocaleString() }}</td>
                 </tr>
               </tbody>
             </table>
+          </div>
+          <div v-else class="empty-queue-container">
+            <div class="empty-icon-box" v-html="icons.mail"></div>
+            <h4>No Properties in Direct Mail Queue</h4>
+            <p>Direct mail queue is currently at 0. Auto-queue verified high-equity target addresses directly from your Florida properties database to prepare a direct mail batch.</p>
+            <button type="button" class="btn-submit empty-action-btn" :disabled="isSubmitting" @click="queuePropertiesFromCRM">
+              {{ isSubmitting ? 'Pulling Records…' : '+ Auto-Queue Top 5 Properties from Database ↗' }}
+            </button>
           </div>
         </div>
 
@@ -174,11 +193,62 @@
             <h3>Priority Seller Follow-Up Calls</h3>
             <span class="modal-badge">{{ callsQueue.length }} Pending</span>
           </div>
-          <button type="button" class="modal-close-btn" @click="closeModals">✕</button>
+          <div class="header-actions">
+            <button type="button" class="btn-header-action" @click="isAddingCall = !isAddingCall">
+              {{ isAddingCall ? 'Cancel' : '+ Schedule Call' }}
+            </button>
+            <button type="button" class="modal-close-btn" @click="closeModals">✕</button>
+          </div>
         </header>
 
         <div class="modal-body">
-          <div class="queue-table-wrap">
+          <!-- Schedule Call Drawer -->
+          <div v-if="isAddingCall" class="drawer-panel" style="margin-bottom: 14px;">
+            <div class="drawer-header">
+              <h4>Schedule New Seller Call</h4>
+              <button type="button" class="btn-mini-close" @click="isAddingCall = false">✕</button>
+            </div>
+            <div class="drawer-body">
+              <div class="batch-config-row">
+                <div class="config-field">
+                  <label>Seller Contact Name *</label>
+                  <input v-model="newCallForm.contactName" type="text" placeholder="e.g. Ellis Sterling" />
+                </div>
+                <div class="config-field">
+                  <label>Phone Number *</label>
+                  <input v-model="newCallForm.phone" type="text" placeholder="(904) 555-0192" />
+                </div>
+              </div>
+              <div class="batch-config-row">
+                <div class="config-field">
+                  <label>Property Address</label>
+                  <input v-model="newCallForm.propertyAddress" type="text" placeholder="e.g. 1450 W 16th St, Jacksonville, FL" />
+                </div>
+                <div class="config-field">
+                  <label>Priority</label>
+                  <select v-model="newCallForm.priority">
+                    <option value="Overdue">Overdue (Urgent)</option>
+                    <option value="High">High Priority</option>
+                    <option value="Normal">Normal</option>
+                  </select>
+                </div>
+              </div>
+              <div class="config-field">
+                <label>Cadence Stage / Notes</label>
+                <input v-model="newCallForm.notes" type="text" placeholder="e.g. Discuss cash offer & timeline" />
+              </div>
+              <button
+                type="button"
+                class="btn-submit"
+                :disabled="!newCallForm.contactName || !newCallForm.phone || isSubmitting"
+                @click="submitNewCall"
+              >
+                {{ isSubmitting ? 'Saving…' : 'Save & Queue Call ↗' }}
+              </button>
+            </div>
+          </div>
+
+          <div v-if="callsQueue.length > 0" class="queue-table-wrap">
             <table class="queue-table">
               <thead>
                 <tr>
@@ -216,6 +286,14 @@
                 </tr>
               </tbody>
             </table>
+          </div>
+          <div v-else-if="!isAddingCall" class="empty-queue-container">
+            <div class="empty-icon-box" v-html="icons.phone"></div>
+            <h4>All Seller Follow-Up Calls Are Cleared</h4>
+            <p>0 pending seller calls in queue. Schedule a new seller outreach or follow-up call to track conversations and record disposition notes.</p>
+            <button type="button" class="btn-submit empty-action-btn" @click="isAddingCall = true">
+              + Schedule New Seller Call ↗
+            </button>
           </div>
 
           <!-- Log Call Outcome Drawer -->
@@ -272,11 +350,52 @@
             <h3>Opted-In Text Outreach Queue</h3>
             <span class="modal-badge">{{ textsQueue.length }} Contacts Ready</span>
           </div>
-          <button type="button" class="modal-close-btn" @click="closeModals">✕</button>
+          <div class="header-actions">
+            <button type="button" class="btn-header-action" @click="isAddingText = !isAddingText">
+              {{ isAddingText ? 'Cancel' : '+ Compose SMS' }}
+            </button>
+            <button type="button" class="modal-close-btn" @click="closeModals">✕</button>
+          </div>
         </header>
 
         <div class="modal-body">
-          <div class="queue-table-wrap">
+          <!-- Compose SMS Drawer -->
+          <div v-if="isAddingText" class="drawer-panel" style="margin-bottom: 14px;">
+            <div class="drawer-header">
+              <h4>Compose New Text Outreach</h4>
+              <button type="button" class="btn-mini-close" @click="isAddingText = false">✕</button>
+            </div>
+            <div class="drawer-body">
+              <div class="batch-config-row">
+                <div class="config-field">
+                  <label>Contact Name *</label>
+                  <input v-model="newTextForm.contactName" type="text" placeholder="e.g. Ronald Davis" />
+                </div>
+                <div class="config-field">
+                  <label>Mobile Phone *</label>
+                  <input v-model="newTextForm.phone" type="text" placeholder="(904) 555-0144" />
+                </div>
+              </div>
+              <div class="config-field">
+                <label>Property Address</label>
+                <input v-model="newTextForm.propertyAddress" type="text" placeholder="e.g. 1890 Kingsley Ave, Orange Park, FL" />
+              </div>
+              <div class="config-field">
+                <label>SMS Message / Template</label>
+                <textarea v-model="newTextForm.recommendedTemplate" rows="2" placeholder="Hi Ronald, this is Alex with HushHawk. Just following up on our cash offer..."></textarea>
+              </div>
+              <button
+                type="button"
+                class="btn-submit"
+                :disabled="!newTextForm.contactName || !newTextForm.phone || isSubmitting"
+                @click="submitNewText"
+              >
+                {{ isSubmitting ? 'Queueing…' : 'Queue SMS Outreach ↗' }}
+              </button>
+            </div>
+          </div>
+
+          <div v-if="textsQueue.length > 0" class="queue-table-wrap">
             <table class="queue-table">
               <thead>
                 <tr>
@@ -303,6 +422,14 @@
                 </tr>
               </tbody>
             </table>
+          </div>
+          <div v-else-if="!isAddingText" class="empty-queue-container">
+            <div class="empty-icon-box" v-html="icons.text"></div>
+            <h4>No Pending SMS Outreach</h4>
+            <p>0 opted-in contacts currently in queue. Compose a new SMS outreach message to follow up with leads and schedule property walkthroughs.</p>
+            <button type="button" class="btn-submit empty-action-btn" @click="isAddingText = true">
+              + Compose New SMS Outreach ↗
+            </button>
           </div>
 
           <!-- Quick SMS Send Drawer -->
@@ -349,11 +476,67 @@
             <h3>Title &amp; Cash Buyer Email Queue</h3>
             <span class="modal-badge">{{ emailsQueue.length }} Messages Pending</span>
           </div>
-          <button type="button" class="modal-close-btn" @click="closeModals">✕</button>
+          <div class="header-actions">
+            <button type="button" class="btn-header-action" @click="isAddingEmail = !isAddingEmail">
+              {{ isAddingEmail ? 'Cancel' : '+ Compose Email' }}
+            </button>
+            <button type="button" class="modal-close-btn" @click="closeModals">✕</button>
+          </div>
         </header>
 
         <div class="modal-body">
-          <div class="queue-table-wrap">
+          <!-- Compose Email Drawer -->
+          <div v-if="isAddingEmail" class="drawer-panel" style="margin-bottom: 14px;">
+            <div class="drawer-header">
+              <h4>Compose New Email Outreach</h4>
+              <button type="button" class="btn-mini-close" @click="isAddingEmail = false">✕</button>
+            </div>
+            <div class="drawer-body">
+              <div class="batch-config-row">
+                <div class="config-field">
+                  <label>Recipient Name *</label>
+                  <input v-model="newEmailForm.recipientName" type="text" placeholder="e.g. First Coast Title Escrow" />
+                </div>
+                <div class="config-field">
+                  <label>Email Address *</label>
+                  <input v-model="newEmailForm.email" type="email" placeholder="closing@firstcoasttitle.com" />
+                </div>
+              </div>
+              <div class="batch-config-row">
+                <div class="config-field">
+                  <label>Role</label>
+                  <select v-model="newEmailForm.recipientRole">
+                    <option value="Title Company">Title Company</option>
+                    <option value="Cash Buyer">Cash Buyer</option>
+                    <option value="Escrow Agent">Escrow Agent</option>
+                    <option value="Lender / Partner">Lender / Partner</option>
+                  </select>
+                </div>
+                <div class="config-field">
+                  <label>Property Address</label>
+                  <input v-model="newEmailForm.propertyAddress" type="text" placeholder="e.g. 10725 Meadowlea Dr" />
+                </div>
+              </div>
+              <div class="config-field">
+                <label>Subject Line *</label>
+                <input v-model="newEmailForm.subject" type="text" placeholder="e.g. Title Commitment & Earnest Money Deposit" />
+              </div>
+              <div class="config-field">
+                <label>Body Message</label>
+                <textarea v-model="newEmailForm.bodySnippet" rows="3" placeholder="Attached is the executed purchase and sale agreement..."></textarea>
+              </div>
+              <button
+                type="button"
+                class="btn-submit"
+                :disabled="!newEmailForm.recipientName || !newEmailForm.email || !newEmailForm.subject || isSubmitting"
+                @click="submitNewEmail"
+              >
+                {{ isSubmitting ? 'Queueing…' : 'Queue Email ↗' }}
+              </button>
+            </div>
+          </div>
+
+          <div v-if="emailsQueue.length > 0" class="queue-table-wrap">
             <table class="queue-table">
               <thead>
                 <tr>
@@ -384,6 +567,14 @@
                 </tr>
               </tbody>
             </table>
+          </div>
+          <div v-else-if="!isAddingEmail" class="empty-queue-container">
+            <div class="empty-icon-box" v-html="icons.mail"></div>
+            <h4>All Title &amp; Buyer Emails Are Cleared</h4>
+            <p>0 title and buyer follow-up messages in queue. Compose a new email to dispatch closing packages, title requests, or cash buyer updates.</p>
+            <button type="button" class="btn-submit empty-action-btn" @click="isAddingEmail = true">
+              + Compose New Title / Buyer Email ↗
+            </button>
           </div>
 
           <!-- Email Dispatch Drawer -->
@@ -430,31 +621,31 @@ import { icons } from '../../../element-f1b67d54-2716-43a4-a414-ab7f505c2ace/src
 const summary = ref({
   mailers: {
     title: 'SEND MAILERS',
-    count: 34,
-    subtitle: '34 selected properties',
+    count: 0,
+    subtitle: '0 selected properties',
     tags: ['Foreclosure', 'Default', 'Cash'],
-    actionLabel: 'Create Batch ↗'
+    actionLabel: '+ Queue Mailers ↗'
   },
   calls: {
     title: 'CALL',
-    count: 12,
-    subtitle: '12 seller follow-ups',
-    description: 'Priority: Generate (Current = High)',
-    actionLabel: 'Open Call List ↗'
+    count: 0,
+    subtitle: '0 seller follow-ups',
+    description: 'No pending calls',
+    actionLabel: '+ Schedule Call ↗'
   },
   texts: {
     title: 'TEXT',
-    count: 18,
-    subtitle: '18 opted-in contacts',
-    description: 'Send follow-up & reply to responses',
-    actionLabel: 'Open Text Queue ↗'
+    count: 0,
+    subtitle: '0 opted-in contacts',
+    description: 'No queued SMS',
+    actionLabel: '+ Compose Text ↗'
   },
   emails: {
     title: 'EMAIL',
-    count: 9,
-    subtitle: '9 title/buyer follow-ups',
-    description: 'Updates, docs & next steps',
-    actionLabel: 'Open Email Queue ↗'
+    count: 0,
+    subtitle: '0 title/buyer follow-ups',
+    description: 'No queued emails',
+    actionLabel: '+ Compose Email ↗'
   }
 });
 
@@ -472,6 +663,15 @@ const batchForm = ref({
 
 const callsQueue = ref([]);
 const selectedCallItem = ref(null);
+const isAddingCall = ref(false);
+const newCallForm = ref({
+  contactName: '',
+  phone: '',
+  propertyAddress: '',
+  priority: 'High',
+  cadenceStage: 'Follow-Up Call',
+  notes: ''
+});
 const callLogForm = ref({
   result: 'Connected',
   notes: ''
@@ -479,12 +679,28 @@ const callLogForm = ref({
 
 const textsQueue = ref([]);
 const selectedTextItem = ref(null);
+const isAddingText = ref(false);
+const newTextForm = ref({
+  contactName: '',
+  phone: '',
+  propertyAddress: '',
+  recommendedTemplate: 'Follow-up on purchase offer'
+});
 const textSendForm = ref({
   message: ''
 });
 
 const emailsQueue = ref([]);
 const selectedEmailItem = ref(null);
+const isAddingEmail = ref(false);
+const newEmailForm = ref({
+  recipientName: '',
+  email: '',
+  recipientRole: 'Cash Buyer',
+  subject: '',
+  bodySnippet: '',
+  propertyAddress: ''
+});
 const emailSendForm = ref({
   subject: '',
   body: ''
@@ -583,6 +799,100 @@ function closeModals() {
   selectedCallItem.value = null;
   selectedTextItem.value = null;
   selectedEmailItem.value = null;
+  isAddingCall.value = false;
+  isAddingText.value = false;
+  isAddingEmail.value = false;
+}
+
+// Queue Management Actions
+async function queuePropertiesFromCRM() {
+  isSubmitting.value = true;
+  try {
+    const res = await fetch('/api/v1/outreach-actions/mailers/queue', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ limit: 5 })
+    });
+    if (res.ok) {
+      const data = await res.json();
+      showOutreachToast('Properties Queued', `Queued ${data.count} high-equity Florida properties for direct mail.`, 'success');
+      await openMailersModal();
+      await fetchSummary();
+    }
+  } catch (err) {
+    showOutreachToast('Queue Error', err.message, 'warning');
+  } finally {
+    isSubmitting.value = false;
+  }
+}
+
+async function submitNewCall() {
+  if (!newCallForm.value.contactName || !newCallForm.value.phone || isSubmitting.value) return;
+  isSubmitting.value = true;
+  try {
+    const res = await fetch('/api/v1/outreach-actions/calls/queue', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newCallForm.value)
+    });
+    if (res.ok) {
+      showOutreachToast('Call Scheduled', `Added ${newCallForm.value.contactName} to follow-up call queue.`, 'success');
+      newCallForm.value = { contactName: '', phone: '', propertyAddress: '', priority: 'High', cadenceStage: 'Follow-Up Call', notes: '' };
+      isAddingCall.value = false;
+      await openCallsModal();
+      await fetchSummary();
+    }
+  } catch (err) {
+    showOutreachToast('Schedule Error', err.message, 'warning');
+  } finally {
+    isSubmitting.value = false;
+  }
+}
+
+async function submitNewText() {
+  if (!newTextForm.value.contactName || !newTextForm.value.phone || isSubmitting.value) return;
+  isSubmitting.value = true;
+  try {
+    const res = await fetch('/api/v1/outreach-actions/texts/queue', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newTextForm.value)
+    });
+    if (res.ok) {
+      showOutreachToast('SMS Queued', `Queued text outreach for ${newTextForm.value.contactName}.`, 'success');
+      newTextForm.value = { contactName: '', phone: '', propertyAddress: '', recommendedTemplate: 'Follow-up on purchase offer' };
+      isAddingText.value = false;
+      await openTextsModal();
+      await fetchSummary();
+    }
+  } catch (err) {
+    showOutreachToast('Queue Error', err.message, 'warning');
+  } finally {
+    isSubmitting.value = false;
+  }
+}
+
+async function submitNewEmail() {
+  if (!newEmailForm.value.recipientName || !newEmailForm.value.email || !newEmailForm.value.subject || isSubmitting.value) return;
+  isSubmitting.value = true;
+  try {
+    const res = await fetch('/api/v1/outreach-actions/emails/queue', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newEmailForm.value)
+    });
+    if (res.ok) {
+      showOutreachToast('Email Queued', `Queued email for ${newEmailForm.value.recipientName}.`, 'success');
+      newEmailForm.value = { recipientName: '', email: '', recipientRole: 'Cash Buyer', subject: '', bodySnippet: '', propertyAddress: '' };
+      isAddingEmail.value = false;
+      await openEmailsModal();
+      await fetchSummary();
+    }
+  } catch (err) {
+    showOutreachToast('Queue Error', err.message, 'warning');
+  } finally {
+    isSubmitting.value = false;
+  }
 }
 
 // Actions Execution
@@ -1224,6 +1534,79 @@ onUnmounted(() => {
 .btn-submit:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* Empty Queue States & Header Controls */
+.empty-queue-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 38px 24px;
+  background: rgba(13, 30, 52, 0.45);
+  border: 1px dashed rgba(212, 175, 55, 0.35);
+  border-radius: 8px;
+  margin: 12px 0;
+}
+
+.empty-icon-box {
+  width: 38px;
+  height: 38px;
+  color: #eac16a;
+  margin-bottom: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-icon-box :deep(svg) {
+  width: 100%;
+  height: 100%;
+}
+
+.empty-queue-container h4 {
+  margin: 0 0 6px 0;
+  font-size: 15px;
+  color: #fff9e6;
+  font-weight: 600;
+}
+
+.empty-queue-container p {
+  margin: 0 0 16px 0;
+  font-size: 12.5px;
+  color: #94a3b8;
+  max-width: 480px;
+  line-height: 1.45;
+}
+
+.empty-action-btn {
+  font-size: 12.5px;
+  padding: 8px 20px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-header-action {
+  padding: 5px 12px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #f7e7b4;
+  background: rgba(212, 175, 55, 0.15);
+  border: 1px solid rgba(212, 175, 55, 0.5);
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-header-action:hover {
+  background: rgba(212, 175, 55, 0.3);
+  color: #ffffff;
+  border-color: #ffd875;
 }
 
 @media (max-width: 900px) {

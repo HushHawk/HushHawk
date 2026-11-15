@@ -48,50 +48,55 @@ export class OutreachActionsService {
                 `)
             ]);
 
+            const mailersTotal = mailersRes.rows[0]?.total ?? 0;
+            const callsTotal = callsRes.rows[0]?.total ?? 0;
+            const textsTotal = textsRes.rows[0]?.total ?? 0;
+            const emailsTotal = emailsRes.rows[0]?.total ?? 0;
+
             return {
                 mailers: {
                     title: 'SEND MAILERS',
-                    count: mailersRes.rows[0]?.total ?? 34,
-                    subtitle: `${mailersRes.rows[0]?.total ?? 34} selected properties`,
+                    count: mailersTotal,
+                    subtitle: mailersTotal > 0 ? `${mailersTotal} selected properties` : '0 selected properties',
                     tags: ['Foreclosure', 'Default', 'Cash'],
                     distressBreakdown: {
-                        foreclosure: mailersRes.rows[0]?.foreclosure_count ?? 12,
-                        default: mailersRes.rows[0]?.default_count ?? 12,
-                        cash: mailersRes.rows[0]?.cash_count ?? 10
+                        foreclosure: mailersRes.rows[0]?.foreclosure_count || 0,
+                        default: mailersRes.rows[0]?.default_count || 0,
+                        cash: mailersRes.rows[0]?.cash_count || 0
                     },
-                    actionLabel: 'Create Batch ↗'
+                    actionLabel: mailersTotal > 0 ? 'Create Batch ↗' : '+ Queue Mailers ↗'
                 },
                 calls: {
                     title: 'CALL',
-                    count: callsRes.rows[0]?.total ?? 12,
-                    subtitle: `${callsRes.rows[0]?.total ?? 12} seller follow-ups`,
-                    description: 'Priority ordered (Overdue → High)',
-                    overdueCount: callsRes.rows[0]?.overdue_count ?? 3,
-                    highCount: callsRes.rows[0]?.high_count ?? 9,
-                    actionLabel: 'Open Call List ↗'
+                    count: callsTotal,
+                    subtitle: callsTotal > 0 ? `${callsTotal} seller follow-ups` : '0 seller follow-ups',
+                    description: callsTotal > 0 ? 'Priority ordered (Overdue → High)' : 'No pending calls',
+                    overdueCount: callsRes.rows[0]?.overdue_count || 0,
+                    highCount: callsRes.rows[0]?.high_count || 0,
+                    actionLabel: callsTotal > 0 ? 'Open Call List ↗' : '+ Schedule Call ↗'
                 },
                 texts: {
                     title: 'TEXT',
-                    count: textsRes.rows[0]?.total ?? 18,
-                    subtitle: `${textsRes.rows[0]?.total ?? 18} opted-in contacts`,
-                    description: 'Send follow-up & reply to responses',
-                    actionLabel: 'Open Text Queue ↗'
+                    count: textsTotal,
+                    subtitle: textsTotal > 0 ? `${textsTotal} opted-in contacts` : '0 opted-in contacts',
+                    description: textsTotal > 0 ? 'Send follow-up & reply to responses' : 'No queued SMS',
+                    actionLabel: textsTotal > 0 ? 'Open Text Queue ↗' : '+ Compose Text ↗'
                 },
                 emails: {
                     title: 'EMAIL',
-                    count: emailsRes.rows[0]?.total ?? 9,
-                    subtitle: `${emailsRes.rows[0]?.total ?? 9} title/buyer follow-ups`,
-                    description: 'Updates, docs & next steps',
-                    actionLabel: 'Open Email Queue ↗'
+                    count: emailsTotal,
+                    subtitle: emailsTotal > 0 ? `${emailsTotal} title/buyer follow-ups` : '0 title/buyer follow-ups',
+                    description: emailsTotal > 0 ? 'Updates, docs & next steps' : 'No queued emails',
+                    actionLabel: emailsTotal > 0 ? 'Open Email Queue ↗' : '+ Compose Email ↗'
                 }
             };
         } catch (err) {
             console.warn('[OutreachActionsService] getSummary DB error, fallback to defaults:', err.message);
             return {
-                mailers: { title: 'SEND MAILERS', count: 34, subtitle: '34 selected properties', tags: ['Foreclosure', 'Default', 'Cash'], actionLabel: 'Create Batch ↗' },
-                calls: { title: 'CALL', count: 12, subtitle: '12 seller follow-ups', description: 'Priority ordered (Overdue → High)', actionLabel: 'Open Call List ↗' },
-                texts: { title: 'TEXT', count: 18, subtitle: '18 opted-in contacts', description: 'Send follow-up & reply to responses', actionLabel: 'Open Text Queue ↗' },
-                emails: { title: 'EMAIL', count: 9, subtitle: '9 title/buyer follow-ups', description: 'Updates, docs & next steps', actionLabel: 'Open Email Queue ↗' }
+                mailers: { title: 'SEND MAILERS', count: 0, subtitle: '0 selected properties', tags: ['Foreclosure', 'Default', 'Cash'], actionLabel: '+ Queue Mailers ↗' },
+                calls: { title: 'CALL', count: 0, subtitle: '0 seller follow-ups', description: 'No pending calls', actionLabel: '+ Schedule Call ↗' },
+                texts: { title: 'TEXT', count: 0, subtitle: '0 opted-in contacts', description: 'No queued SMS', actionLabel: '+ Compose Text ↗' },
+                emails: { title: 'EMAIL', count: 0, subtitle: '0 title/buyer follow-ups', description: 'No queued emails', actionLabel: '+ Compose Email ↗' }
             };
         }
     }
@@ -353,5 +358,100 @@ export class OutreachActionsService {
             ...emailRecord,
             carrier: carrierResult
         };
+    }
+
+    /**
+     * Queue real properties into core.outreach_mailers
+     */
+    static async queueProperties({ propertyIds = [], limit = 5 }) {
+        let rows = [];
+        if (propertyIds && propertyIds.length > 0) {
+            const res = await pool.query(`
+                SELECT p.property_id, p.address_line1, p.city, p.state_code, p.postal_code, p.assessed_value, p.property_type,
+                       COALESCE(pe.full_name, 'Property Owner') as owner_name
+                FROM core.properties p
+                LEFT JOIN core.leads l ON p.property_id = l.property_id
+                LEFT JOIN core.people pe ON l.person_id = pe.person_id
+                WHERE p.property_id = ANY($1::uuid[])
+            `, [propertyIds]);
+            rows = res.rows;
+        } else {
+            const res = await pool.query(`
+                SELECT p.property_id, p.address_line1, p.city, p.state_code, p.postal_code, p.assessed_value, p.property_type,
+                       COALESCE(pe.full_name, 'Property Owner') as owner_name
+                FROM core.properties p
+                LEFT JOIN core.leads l ON p.property_id = l.property_id
+                LEFT JOIN core.people pe ON l.person_id = pe.person_id
+                WHERE p.property_id NOT IN (SELECT property_id FROM core.outreach_mailers WHERE property_id IS NOT NULL)
+                ORDER BY p.assessed_value DESC NULLS LAST
+                LIMIT $1
+            `, [limit]);
+            rows = res.rows;
+        }
+
+        const queued = [];
+        for (const r of rows) {
+            const id = 'om-' + Date.now() + '-' + crypto.randomInt(100, 999);
+            const ins = await pool.query(`
+                INSERT INTO core.outreach_mailers (
+                    id, property_id, owner_name, property_address, city, state, zip, equity_estimate, distress_category, status, created_at, updated_at
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, 'READY', now(), now())
+                RETURNING *
+            `, [
+                id,
+                r.property_id,
+                r.owner_name,
+                r.address_line1,
+                r.city || 'Jacksonville',
+                r.state_code || 'FL',
+                r.postal_code || '32204',
+                Math.round(Number(r.assessed_value || 85000) * 0.45),
+                'Default'
+            ]);
+            queued.push(ins.rows[0]);
+        }
+        return queued;
+    }
+
+    /**
+     * Queue a call into core.outreach_calls
+     */
+    static async queueCall({ contactName, phone, propertyAddress, propertyId, priority = 'High', cadenceStage = 'Follow-Up Call', notes = '' }) {
+        const id = 'call-' + Date.now();
+        const ins = await pool.query(`
+            INSERT INTO core.outreach_calls (
+                id, contact_name, phone, property_address, property_id, priority, cadence_stage, notes, status, created_at, updated_at
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'PENDING', now(), now())
+            RETURNING *
+        `, [id, contactName, phone, propertyAddress, propertyId || null, priority, cadenceStage, notes]);
+        return ins.rows[0];
+    }
+
+    /**
+     * Queue a text into core.outreach_texts
+     */
+    static async queueText({ contactName, phone, propertyAddress, propertyId, recommendedTemplate = 'Follow-up on purchase offer' }) {
+        const id = 'txt-' + Date.now();
+        const ins = await pool.query(`
+            INSERT INTO core.outreach_texts (
+                id, contact_name, phone, property_address, property_id, recommended_template, status, created_at, updated_at
+            ) VALUES ($1, $2, $3, $4, $5, $6, 'QUEUED', now(), now())
+            RETURNING *
+        `, [id, contactName, phone, propertyAddress, propertyId || null, recommendedTemplate]);
+        return ins.rows[0];
+    }
+
+    /**
+     * Queue an email into core.outreach_emails
+     */
+    static async queueEmail({ recipientName, email, subject, bodySnippet, propertyAddress, propertyId, recipientRole = 'Cash Buyer' }) {
+        const id = 'em-' + Date.now();
+        const ins = await pool.query(`
+            INSERT INTO core.outreach_emails (
+                id, recipient_name, recipient_role, email, subject, property_address, property_id, body_snippet, status, created_at, updated_at
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'QUEUED', now(), now())
+            RETURNING *
+        `, [id, recipientName, recipientRole, email, subject, propertyAddress, propertyId || null, bodySnippet]);
+        return ins.rows[0];
     }
 }
