@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import { db } from '../store/database.js';
 import { evaluateIdentityLadder } from '../../../packages/identity/index.js';
+import { pool } from '../store/pgClient.js';
 
 export class IdentityService {
     /**
@@ -89,6 +90,35 @@ export class IdentityService {
             entityType: 'IDENTITY_CANDIDATE',
             entityId: candidateId,
             redactedDiff: { decision, reason },
+        });
+
+        // Asynchronously persist review decision and candidate status to AWS RDS PostgreSQL
+        pool.query(
+            `INSERT INTO rel.review_decisions (decision_id, candidate_id, reviewer, decision, reason, reversal_status, created_at)
+             VALUES ($1, $2, $3, $4, $5, $6, $7)
+             ON CONFLICT (decision_id) DO NOTHING`,
+            [
+                decisionRecord.decision_id,
+                decisionRecord.candidate_id,
+                decisionRecord.reviewer,
+                decisionRecord.decision,
+                decisionRecord.reason,
+                decisionRecord.reversal_status,
+                decisionRecord.created_at
+            ]
+        ).catch(err => {
+            if (process.env.DEBUG_SQL === 'true') {
+                console.warn('[ReviewDecision PG Warn]', err.message);
+            }
+        });
+
+        pool.query(
+            `UPDATE rel.identity_candidates SET status = $1 WHERE candidate_id = $2`,
+            [candidate.status, candidate.candidate_id]
+        ).catch(err => {
+            if (process.env.DEBUG_SQL === 'true') {
+                console.warn('[CandidateStatus PG Warn]', err.message);
+            }
         });
 
         db.persist();

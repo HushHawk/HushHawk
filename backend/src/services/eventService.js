@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import { db } from '../store/database.js';
 import { CrownKeyService } from './crownkeyService.js';
+import { pool } from '../store/pgClient.js';
 
 export class EventService {
     /**
@@ -103,6 +104,35 @@ export class EventService {
         };
 
         db.data.core.pillar_events.push(newEvent);
+
+        // Asynchronously persist to AWS RDS PostgreSQL core.pillar_events
+        pool.query(
+            `INSERT INTO core.pillar_events (
+                event_id, property_id, pillar_code, event_number, external_event_id,
+                case_reference, event_status, verification_status, event_date, filing_amount, created_at
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+            ON CONFLICT (event_id) DO UPDATE SET
+                case_reference = EXCLUDED.case_reference,
+                filing_amount = EXCLUDED.filing_amount,
+                verification_status = EXCLUDED.verification_status`,
+            [
+                newEvent.event_id,
+                newEvent.property_id,
+                newEvent.pillar_code,
+                newEvent.event_number,
+                newEvent.external_event_id,
+                newEvent.case_reference,
+                newEvent.event_status,
+                newEvent.verification_status,
+                newEvent.event_date,
+                newEvent.filing_amount,
+                newEvent.created_at
+            ]
+        ).catch(err => {
+            if (process.env.DEBUG_SQL === 'true') {
+                console.warn('[PillarEvent PG Sync Warn]', err.message);
+            }
+        });
 
         // Attach source evidence
         if (sourceRecordId) {

@@ -96,6 +96,11 @@ class CanonicalStore {
         } else {
             this.seedInitialData();
         }
+
+        // Hydrate from PostgreSQL in background
+        this.syncFromPostgres().catch(err => {
+            console.warn('[DB] Init PG sync background error:', err.message);
+        });
     }
 
     persist() {
@@ -103,6 +108,71 @@ class CanonicalStore {
             fs.writeFileSync(DATA_FILE, JSON.stringify(this.data, null, 2), 'utf8');
         } catch (err) {
             console.error('[DB] Persist error:', err.message);
+        }
+    }
+
+    /**
+     * Bidirectional PostgreSQL Synchronization
+     * Hydrates the in-memory/JSON store directly from AWS RDS PostgreSQL canonical truth.
+     */
+    async syncFromPostgres() {
+        try {
+            // 1. Properties
+            const propsRes = await pool.query(`
+                SELECT p.property_id, p.county_id, p.parcel_raw, p.parcel_match, p.address_line1, p.city, p.state_code, p.postal_code,
+                       p.property_type, p.legal_description, p.assessed_value, COALESCE(c.county_code, 'DUV') as county_code
+                FROM core.properties p
+                LEFT JOIN ref.counties c ON p.county_id = c.county_id
+                ORDER BY p.property_id
+            `);
+            if (propsRes.rows && propsRes.rows.length > 0) {
+                this.data.core.properties = propsRes.rows;
+            }
+
+            // 2. Pillar Events
+            const eventsRes = await pool.query(`
+                SELECT event_id, property_id, pillar_code, event_number, external_event_id, case_reference,
+                       event_status, verification_status, event_date::text, filing_amount, created_at
+                FROM core.pillar_events
+                ORDER BY created_at ASC
+            `);
+            if (eventsRes.rows) {
+                this.data.core.pillar_events = eventsRes.rows;
+            }
+
+            // 3. Event Counters
+            const countersRes = await pool.query('SELECT property_id, pillar_code, last_number FROM ops.event_counters');
+            if (countersRes.rows) {
+                this.data.ops.event_counters = {};
+                for (const row of countersRes.rows) {
+                    this.data.ops.event_counters[`${row.property_id}:${row.pillar_code}`] = Number(row.last_number);
+                }
+            }
+
+            // 4. Identity Candidates
+            const candRes = await pool.query('SELECT * FROM rel.identity_candidates ORDER BY created_at DESC');
+            if (candRes.rows) {
+                this.data.rel.identity_candidates = candRes.rows;
+            }
+
+            // 5. Reference Pillars
+            const pillarsRes = await pool.query('SELECT * FROM ref.pillars ORDER BY pillar_code ASC');
+            if (pillarsRes.rows && pillarsRes.rows.length > 0) {
+                this.data.ref.pillars = pillarsRes.rows;
+            }
+
+            // 6. Outbox Events
+            const outboxRes = await pool.query('SELECT * FROM ops.outbox_events ORDER BY created_at DESC LIMIT 100');
+            if (outboxRes.rows) {
+                this.data.ops.outbox_events = outboxRes.rows;
+            }
+
+            this.persist();
+            if (process.env.DEBUG_SQL === 'true') {
+                console.log(`[DB] Synchronized ${propsRes.rows.length} properties and ${eventsRes.rows.length} pillar events from PostgreSQL.`);
+            }
+        } catch (err) {
+            console.warn('[DB] PostgreSQL sync skipped or failed:', err.message);
         }
     }
 
@@ -118,6 +188,20 @@ class CanonicalStore {
         const nextNumber = current + 1;
         this.data.ops.event_counters[key] = nextNumber;
         this.persist();
+
+        // Atomically upsert to PostgreSQL ops.event_counters
+        pool.query(
+            `INSERT INTO ops.event_counters (property_id, pillar_code, last_number)
+             VALUES ($1, $2, $3)
+             ON CONFLICT (property_id, pillar_code)
+             DO UPDATE SET last_number = EXCLUDED.last_number`,
+            [propertyId, pillarCode, nextNumber]
+        ).catch(err => {
+            if (process.env.DEBUG_SQL === 'true') {
+                console.warn('[EventCounter PG Warn]', err.message);
+            }
+        });
+
         return nextNumber;
     }
 
@@ -178,6 +262,28 @@ class CanonicalStore {
         };
         this.data.ops.outbox_events.unshift(outboxEvent);
         this.persist();
+
+        // Asynchronously persist to PostgreSQL ops.outbox_events
+        pool.query(
+            `INSERT INTO ops.outbox_events (outbox_id, aggregate_type, aggregate_id, event_type, payload, created_at, published_at, attempts)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+             ON CONFLICT (outbox_id) DO NOTHING`,
+            [
+                outboxEvent.outbox_id,
+                outboxEvent.aggregate_type,
+                outboxEvent.aggregate_id,
+                outboxEvent.event_type,
+                outboxEvent.payload || {},
+                outboxEvent.created_at,
+                outboxEvent.published_at,
+                outboxEvent.attempts
+            ]
+        ).catch(err => {
+            if (process.env.DEBUG_SQL === 'true') {
+                console.warn('[Outbox PG Warn]', err.message);
+            }
+        });
+
         return outboxEvent;
     }
 
