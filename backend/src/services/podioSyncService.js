@@ -597,13 +597,31 @@ export class PodioSyncService {
     }
 
     /**
-     * Create a real Lead in Podio App 30087410
+     * Create a real Lead in Podio App 30087410 (with optional automatic Property link in App 30087415)
      */
-    static async createLeadInPodio({ firstName, lastName, fullName, phone, email, status = 'New Untouched', source = 'Website', notes = '' }) {
+    static async createLeadInPodio({ firstName, lastName, fullName, phone, email, address, propertyAddress, status = 'New Untouched', source = 'Website', notes = '' }) {
         try {
             console.log(`[PodioSync] Pushing new Lead to Podio App 30087410: ${fullName || firstName}`);
             const auth = await PodioService.authenticateApp(this.LEADS_APP_ID, this.APP_TOKEN);
+            const token = auth.access_token;
             
+            const subjAddress = address || propertyAddress || '';
+            let propertyItemId = null;
+
+            // If an address is provided, find or create the Property in Properties App 30087415
+            // so Podio workflow automation tokens (e.g. "[Property Address]") are properly populated
+            if (subjAddress) {
+                try {
+                    const propRes = await PodioService.createItem(token, this.PROPS_APP_ID, {
+                        269571426: subjAddress
+                    });
+                    propertyItemId = propRes.item_id;
+                    console.log(`[PodioSync] Subject Property item #${propertyItemId} created in Properties App (${this.PROPS_APP_ID})`);
+                } catch (propErr) {
+                    console.warn('[PodioSync] Property link warn:', propErr.message);
+                }
+            }
+
             const fName = firstName || (fullName ? fullName.split(' ')[0] : 'Lead');
             const lName = lastName || (fullName ? fullName.split(' ').slice(1).join(' ') : 'Contact');
 
@@ -613,10 +631,15 @@ export class PodioSyncService {
             };
 
             if (phone) {
-                fields[269571346] = [{ value: phone, type: 'work' }];
+                // Ensure proper E.164 phone formatting
+                const cleanPhone = phone.startsWith('+') ? phone : (phone.length === 10 ? `+1${phone}` : `+1${phone.replace(/\D/g, '')}`);
+                fields[269571346] = [{ value: cleanPhone, type: 'work' }];
             }
             if (email) {
                 fields[269571347] = [{ value: email, type: 'work' }];
+            }
+            if (propertyItemId) {
+                fields[269571348] = [propertyItemId]; // Link to Properties App
             }
             if (notes) {
                 fields[269571357] = notes;
@@ -626,16 +649,166 @@ export class PodioSyncService {
             fields[269571353] = 1;
 
             // Source: 3 = 'Website', 1 = 'Cold Calling', 2 = 'Texting', 4 = 'Facebook', 10 = 'Emailing'
-            const sMap = { 'cold calling': 1, 'texting': 2, 'website': 3, 'facebook': 4, 'emailing': 10 };
+            const sMap = { 'cold calling': 1, 'texting': 2, 'website': 3, 'facebook': 4, 'emailing': 10, 'direct mail': 3 };
             fields[269571355] = sMap[source.toLowerCase()] || 3;
 
-            const res = await PodioService.createItem(auth.access_token, this.LEADS_APP_ID, fields);
+            const res = await PodioService.createItem(token, this.LEADS_APP_ID, fields);
             console.log(`[PodioSync] Lead created in Podio! Item ID: ${res.item_id}`);
-            return res;
+            return {
+                ...res,
+                property_item_id: propertyItemId
+            };
         } catch (err) {
             console.error('[PodioSync.createLeadInPodio Error]:', err.message);
             return null;
         }
+    }
+
+    /**
+     * Create a real Cash Buyer in Podio App 30087423
+     */
+    static async createCashBuyerInPodio({ name, company, phone, email, criteria, min, max, propertyType, notes }) {
+        try {
+            console.log(`[PodioSync] Pushing new Cash Buyer to Podio App 30087423: ${name || company}`);
+            const auth = await PodioService.authenticateApp(this.LEADS_APP_ID, this.APP_TOKEN);
+            const token = auth.access_token;
+
+            const fName = name ? name.split(' ')[0] : 'Investor';
+            const lName = name ? name.split(' ').slice(1).join(' ') : 'Buyer';
+
+            const fields = {
+                269571705: fName,
+                269571706: lName || 'Partner',
+                269571709: company || name || 'Private Investor Group'
+            };
+
+            if (phone) {
+                const cleanPhone = phone.startsWith('+') ? phone : (phone.length === 10 ? `+1${phone}` : `+1${phone.replace(/\D/g, '')}`);
+                fields[269571707] = [{ value: cleanPhone, type: 'work' }];
+            }
+            if (email) {
+                fields[269571708] = [{ value: email, type: 'work' }];
+            }
+            if (criteria) {
+                fields[269571716] = criteria;
+            }
+            if (notes) {
+                fields[269571718] = notes;
+            }
+
+            // Ideal Price Range: 6 = '$200k - $500k', 5 = '$100k - $200k', 7 = '$500k+'
+            const maxVal = Number(max) || 350000;
+            if (maxVal > 500000) fields[269571714] = 7;
+            else if (maxVal > 200000) fields[269571714] = 6;
+            else fields[269571714] = 5;
+
+            // Buyer is looking for: 1 = 'Houses to rehab and sell', 2 = 'Houses to hold as rentals'
+            fields[269571711] = 1;
+
+            // Cash buyer type: 1 = 'Rehab / Retail', 2 = 'Buy / Hold'
+            fields[269571712] = 1;
+
+            // Type of property: 1 = 'Single Family', 2 = 'Multifamily'
+            fields[269571713] = 1;
+
+            const res = await PodioService.createItem(token, 30087423, fields);
+            console.log(`[PodioSync] Cash Buyer created in Podio! Item ID: ${res.item_id}`);
+            return res;
+        } catch (err) {
+            console.error('[PodioSync.createCashBuyerInPodio Error]:', err.message);
+            return null;
+        }
+    }
+
+    /**
+     * Create a real Offer in Podio App 30087411
+     */
+    static async createOfferInPodio({ leadItemId, address, buyPrice, emd = 1000, status = 'Determining Offer', notes = '' }) {
+        try {
+            console.log(`[PodioSync] Pushing new Offer to Podio App 30087411 for ${address}`);
+            const auth = await PodioService.authenticateApp(this.LEADS_APP_ID, this.APP_TOKEN);
+            const token = auth.access_token;
+
+            const fields = {
+                269571382: { value: String(buyPrice || 95000), currency: 'USD' },
+                269571383: { value: String(emd || 1000), currency: 'USD' },
+                269571384: 'Duval County',
+                269571385: address || 'Jacksonville, FL Subject Property',
+                269571386: 'Standard AS-IS Cash Purchase Contract with 14-day inspection.'
+            };
+
+            if (leadItemId) {
+                fields[269571378] = [Number(leadItemId)];
+            }
+
+            // Status: 1 = 'Determining Offer', 5 = 'COUNTERED/NEGOTIATING', 2 = 'Contract Sent', 3 = 'Accepted', 4 = 'Rejected'
+            const stLower = String(status).toLowerCase();
+            if (stLower.includes('sent')) fields[269571379] = 2;
+            else if (stLower.includes('accept') || stLower.includes('contract')) fields[269571379] = 3;
+            else if (stLower.includes('reject')) fields[269571379] = 4;
+            else fields[269571379] = 1;
+
+            // Sent by: 1 = 'Email', 3 = 'Mail', 2 = 'Fax'
+            fields[269571380] = 1;
+
+            if (notes) {
+                fields[269571391] = notes;
+            }
+
+            const res = await PodioService.createItem(token, 30087411, fields);
+            console.log(`[PodioSync] Offer created in Podio! Item ID: ${res.item_id}`);
+            return res;
+        } catch (err) {
+            console.error('[PodioSync.createOfferInPodio Error]:', err.message);
+            return null;
+        }
+    }
+
+    /**
+     * Ensure all 3 webhook types (create, update, delete) are registered across all key Podio apps
+     */
+    static async registerAllWebhooks(targetUrl = 'http://3.148.218.118/api/v1/webhooks/podio') {
+        const auth = await PodioService.authenticateApp(this.LEADS_APP_ID, this.APP_TOKEN);
+        const token = auth.access_token;
+
+        const apps = [
+            { id: '30087410', name: 'Leads' },
+            { id: '30087415', name: 'Properties' },
+            { id: '30087421', name: 'Feeds' },
+            { id: '30087411', name: 'Offers' },
+            { id: '30087423', name: 'Cash Buyers' },
+            { id: '30087414', name: 'Contacts' }
+        ];
+
+        const types = ['item.create', 'item.update', 'item.delete'];
+        const results = [];
+
+        for (const app of apps) {
+            // Fetch existing hooks on this app
+            const existingRes = await fetch(`https://api.podio.com/hook/app/${app.id}/`, {
+                headers: { 'Authorization': `OAuth2 ${token}` }
+            });
+            const existingHooks = existingRes.ok ? await existingRes.json() : [];
+
+            for (const type of types) {
+                const alreadyRegistered = existingHooks.some(h => 
+                    h.url === targetUrl && h.type === type && (h.status === 'active' || h.status === 'unverified')
+                );
+
+                if (alreadyRegistered) {
+                    results.push({ app: app.name, appId: app.id, type, status: 'ALREADY_ACTIVE' });
+                } else {
+                    try {
+                        const newHook = await PodioService.registerWebhook(token, app.id, targetUrl, type);
+                        results.push({ app: app.name, appId: app.id, type, hookId: newHook.hook_id, status: 'REGISTERED' });
+                    } catch (rErr) {
+                        results.push({ app: app.name, appId: app.id, type, error: rErr.message, status: 'FAILED' });
+                    }
+                }
+            }
+        }
+
+        return results;
     }
 
     // =========================================================================

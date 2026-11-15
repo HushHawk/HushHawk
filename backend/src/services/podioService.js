@@ -82,8 +82,9 @@ export class PodioService {
      * @param {string} accessToken 
      * @param {string} appId 
      * @param {string} webhookUrl 
+     * @param {string} type - 'item.create', 'item.update', 'item.delete'
      */
-    static async registerWebhook(accessToken, appId, webhookUrl) {
+    static async registerWebhook(accessToken, appId, webhookUrl, type = 'item.create') {
         const res = await fetch(`${this.BASE_URL}/hook/app/${appId}/`, {
             method: 'POST',
             headers: {
@@ -92,7 +93,7 @@ export class PodioService {
             },
             body: JSON.stringify({
                 url: webhookUrl,
-                type: 'item.create'
+                type: type
             })
         });
 
@@ -239,5 +240,50 @@ export class PodioService {
         }
 
         return await res.json();
+    }
+
+    /**
+     * Update an existing item in Podio
+     * @param {string} accessToken
+     * @param {string|number} itemId
+     * @param {object} fields
+     */
+    static async updateItem(accessToken, itemId, fields) {
+        const res = await fetch(`${this.BASE_URL}/item/${itemId}`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `OAuth2 ${accessToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ fields })
+        });
+
+        if (!res.ok) {
+            const err = await res.text();
+            throw new Error(`Podio Update Item Failed [HTTP ${res.status}]: ${err}`);
+        }
+
+        return await res.json();
+    }
+
+    /**
+     * Delete an item in Podio
+     * @param {string} accessToken
+     * @param {string|number} itemId
+     */
+    static async deleteItem(accessToken, itemId) {
+        const res = await fetch(`${this.BASE_URL}/item/${itemId}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `OAuth2 ${accessToken}`
+            }
+        });
+
+        if (!res.ok) {
+            const err = await res.text();
+            throw new Error(`Podio Delete Item Failed [HTTP ${res.status}]: ${err}`);
+        }
+
+        return { ok: true, deleted: true, itemId };
     }
 }

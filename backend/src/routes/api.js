@@ -1885,6 +1885,7 @@ apiRouter.post('/leads', async (req, res) => {
                     fullName: name,
                     phone,
                     email,
+                    address,
                     source: source || 'Website',
                     notes: `Lead created from HushHawk UI. Address: ${address || 'Duval County'}`
                 });
@@ -1992,7 +1993,39 @@ apiRouter.post('/webhooks/podio', async (req, res) => {
             return res.json({ status: 'VERIFIED', hook_id, code, message: 'Podio webhook endpoint verified and activated successfully' });
         }
 
-        // 2. Podio Item Ingestion / Sync (Fetch live fields directly from Podio API)
+        // 2. Podio Item Deletion Webhook
+        if (type === 'item.delete') {
+            const externalItemId = String(item_id || req.body.item_id || '');
+            console.log(`[Podio Webhook] Processing item.delete for Item #${externalItemId}...`);
+            if (externalItemId) {
+                try {
+                    // Check external sync map
+                    const mapRes = await pool.query(
+                        `SELECT internal_entity_type, internal_uuid FROM crm.external_sync_map WHERE external_system = 'PODIO' AND external_item_id = $1`,
+                        [externalItemId]
+                    );
+                    if (mapRes.rows.length > 0) {
+                        const { internal_entity_type, internal_uuid } = mapRes.rows[0];
+                        if (internal_entity_type === 'LEAD') {
+                            await pool.query(`UPDATE core.leads SET status = 'LOST', updated_at = NOW() WHERE lead_id = $1`, [internal_uuid]);
+                        }
+                        await pool.query(
+                            `UPDATE crm.external_sync_map SET status = 'DELETED', last_sync_at = NOW() WHERE external_system = 'PODIO' AND external_item_id = $1`,
+                            [externalItemId]
+                        );
+                    }
+                    // Remove from buyers and contacts if present
+                    await pool.query(`DELETE FROM crm.cash_buyers WHERE id = $1`, ['b-' + externalItemId]);
+                    await pool.query(`DELETE FROM crm.seller_contacts WHERE id = $1`, ['c-' + externalItemId]);
+                    await pool.query(`DELETE FROM crm.deal_funnel WHERE id = $1`, ['off-' + externalItemId]);
+                } catch (delErr) {
+                    console.warn(`[Podio Webhook Delete Warn]:`, delErr.message);
+                }
+            }
+            return res.status(200).json({ ok: true, type: 'DELETE', item_id: externalItemId, status: 'PROCESSED' });
+        }
+
+        // 3. Podio Item Ingestion / Sync (Fetch live fields directly from Podio API)
         if (type === 'item.create' || type === 'item.update') {
             const externalItemId = item_id || req.body.item?.item_id;
             if (!externalItemId) {
@@ -2044,40 +2077,72 @@ apiRouter.post('/webhooks/podio', async (req, res) => {
                 });
             }
 
-            // B. If Item is in CASH BUYERS App (30087423) -> Ingest Cash Buyer
+            // B. If Item is in CASH BUYERS App (30087423) -> Ingest / Update Cash Buyer
             if (itemAppId === '30087423' || liveItem?.app?.url_label === 'cash-buyers') {
-                const entityName = getF('Company / Entity Name')?.value || liveItem?.title || 'Cash Buyer';
+                const entityName = getF('Entity Name')?.value || liveItem?.title || 'Cash Buyer';
                 const phone = getF('Phone #(s)')?.value || '+13866273499';
                 const email = getF('Email ID(s)')?.value || 'buyer@elitehomes1.com';
-                const criteria = getF('Criteria')?.value || '';
+                const criteria = getF('About Cash Buyer/Criteria')?.value?.replace(/<[^>]+>/g, ' ').trim() || '';
                 const propType = getF('Type Of Property Buyer is Looking For?')?.value?.text || 'Single Family';
 
                 await pool.query(`
-                    INSERT INTO crm.cash_buyers (id, full_name, company, phone, email, buy_box, status, created_at, updated_at)
-                    VALUES ($1, $2, $3, $4, $5, $6, 'ACTIVE', NOW(), NOW())
-                    ON CONFLICT (id) DO UPDATE SET full_name = EXCLUDED.full_name, phone = EXCLUDED.phone, email = EXCLUDED.email
+                    INSERT INTO crm.cash_buyers (id, full_name, company, phone, email, buy_box, status, created_at)
+                    VALUES ($1, $2, $3, $4, $5, $6, 'Active VIP Buyer', NOW())
+                    ON CONFLICT (id) DO UPDATE SET 
+                        full_name = EXCLUDED.full_name,
+                        company = EXCLUDED.company,
+                        phone = EXCLUDED.phone,
+                        email = EXCLUDED.email,
+                        buy_box = EXCLUDED.buy_box
                 `, ['b-' + externalItemId, entityName, entityName, phone, email, `${propType} · ${criteria}`]);
 
                 return res.status(200).json({ ok: true, type: 'BUYER', item_id: externalItemId, status: 'INGESTED' });
             }
 
-            // C. If Item is in CONTACTS App (30087414) -> Ingest Contact
+            // C. If Item is in CONTACTS App (30087414) -> Ingest / Update Contact
             if (itemAppId === '30087414' || liveItem?.app?.url_label === 'contacts') {
                 const contactName = liveItem?.title || 'Contact';
                 const phone = getF('Phone #(s)')?.value || '+13866273499';
                 const email = getF('Email ID(s)')?.value || 'contact@elitehomes1.com';
-                const company = getF('Company')?.value || '';
 
                 await pool.query(`
-                    INSERT INTO crm.seller_contacts (contact_id, name, phone, email, company, notes, status, created_at, updated_at)
-                    VALUES ($1, $2, $3, $4, $5, 'Ingested via Podio Webhook', 'Active', NOW(), NOW())
-                    ON CONFLICT (contact_id) DO UPDATE SET name = EXCLUDED.name, phone = EXCLUDED.phone, email = EXCLUDED.email
-                `, ['c-' + externalItemId, contactName, phone, email, company]);
+                    INSERT INTO crm.seller_contacts (id, seller_name, phone, email, property_address, lead_status, lead_score, created_at)
+                    VALUES ($1, $2, $3, $4, 'Jacksonville, FL', 'Active', 75, NOW())
+                    ON CONFLICT (id) DO UPDATE SET 
+                        seller_name = EXCLUDED.seller_name, 
+                        phone = EXCLUDED.phone, 
+                        email = EXCLUDED.email
+                `, ['c-' + externalItemId, contactName, phone, email]);
 
                 return res.status(200).json({ ok: true, type: 'CONTACT', item_id: externalItemId, status: 'INGESTED' });
             }
 
-            // D. If Item is in LEADS App (30087410) -> Ingest Lead into PostgreSQL
+            // D. If Item is in OFFERS App (30087411) -> Ingest / Update Offer
+            if (itemAppId === '30087411' || liveItem?.app?.url_label === 'offers') {
+                const price = parseFloat(getF('Purchase Price')?.value || 95000);
+                const emd = parseFloat(getF('EMD')?.value || 1000);
+                const status = getF('STATUS')?.value?.text || 'Determining Offer';
+                const legalDesc = getF('Legal Description')?.value || liveItem?.title || 'Jacksonville Subject Property';
+                const notes = getF('Notes')?.value || 'Podio Synced Offer';
+
+                await pool.query(`
+                    INSERT INTO crm.deal_funnel (
+                        id, code, milestone_index, address, city, state, zip, county, seller,
+                        buy_price, fee, days_in_stage, source, notes, created_at, updated_at
+                    ) VALUES (
+                        $1, $2, 3, $3, 'Jacksonville', 'FL', '32208', 'Duval', 'Motivated Seller',
+                        $4, 25000, 0, 'Podio Offers App', $5, NOW(), NOW()
+                    )
+                    ON CONFLICT (id) DO UPDATE SET
+                        buy_price = EXCLUDED.buy_price,
+                        notes = EXCLUDED.notes,
+                        updated_at = NOW()
+                `, ['off-' + externalItemId, `OFF-2026-0${externalItemId.slice(-3)}`, legalDesc, price, `Status: ${status} | ${notes}`]);
+
+                return res.status(200).json({ ok: true, type: 'OFFER', item_id: externalItemId, status: 'INGESTED' });
+            }
+
+            // E. If Item is in LEADS App (30087410) -> Ingest / Update Lead into PostgreSQL
             const fName = getF('First Name')?.value || (liveItem?.title ? liveItem.title.split(' ')[0] : 'Lead');
             const lName = getF('Last / Sur Name')?.value || (liveItem?.title ? liveItem.title.split(' ').slice(1).join(' ') : 'Contact');
             const sellerName = getF('Full Name')?.value || liveItem?.title || `${fName} ${lName}`;
@@ -2096,7 +2161,40 @@ apiRouter.post('/webhooks/podio', async (req, res) => {
             else if (sUpper.includes('FOLLOW')) normalizedStatus = 'FOLLOW_UP';
             else if (sUpper.includes('NO RESPONSE') || sUpper.includes('REALTOR') || sUpper.includes('LOST')) normalizedStatus = 'LOST';
 
-            // Resolve Person and Property in PostgreSQL
+            // Check if this Podio item is already tracked in crm.external_sync_map
+            const existingSync = await pool.query(
+                `SELECT internal_uuid FROM crm.external_sync_map WHERE external_system = 'PODIO' AND external_item_id = $1 AND internal_entity_type = 'LEAD'`,
+                [String(externalItemId)]
+            );
+
+            if (existingSync.rows.length > 0) {
+                // UPDATE EXISTING RECORD (Prevents duplicate row creation on item.update)
+                const existingLeadId = existingSync.rows[0].internal_uuid;
+                const leadUpdate = await pool.query(
+                    `UPDATE core.leads SET status = $1, updated_at = NOW() WHERE lead_id = $2 RETURNING person_id, property_id`,
+                    [normalizedStatus, existingLeadId]
+                );
+                if (leadUpdate.rows[0]?.person_id) {
+                    await pool.query(
+                        `UPDATE core.people SET full_name = $1, primary_phone = COALESCE($2, primary_phone), primary_email = COALESCE($3, primary_email), updated_at = NOW() WHERE person_id = $4`,
+                        [sellerName, phone, email, leadUpdate.rows[0].person_id]
+                    );
+                }
+                await pool.query(
+                    `UPDATE crm.external_sync_map SET last_sync_at = NOW(), status = 'SYNCED' WHERE external_system = 'PODIO' AND external_item_id = $1`,
+                    [String(externalItemId)]
+                );
+
+                return res.status(200).json({
+                    ok: true,
+                    type: 'UPDATE',
+                    lead_id: existingLeadId,
+                    external_item_id: externalItemId,
+                    status: 'UPDATED'
+                });
+            }
+
+            // INSERT NEW RECORD (First time ingestion)
             const personId = crypto.randomUUID();
             const leadId = crypto.randomUUID();
             let propertyId = null;
@@ -2125,6 +2223,13 @@ apiRouter.post('/webhooks/podio', async (req, res) => {
                 ON CONFLICT DO NOTHING
             `, [leadId, `Podio Webhook Ingest (Item #${externalItemId})`, propertyId, personId, normalizedStatus]);
 
+            await pool.query(`
+                INSERT INTO crm.external_sync_map (internal_entity_type, internal_uuid, external_system, external_app_id, external_item_id, last_sync_at, status)
+                VALUES ('LEAD', $1, 'PODIO', $2, $3, NOW(), 'SYNCED')
+                ON CONFLICT (internal_entity_type, internal_uuid, external_system) DO UPDATE
+                SET last_sync_at = NOW(), external_item_id = EXCLUDED.external_item_id
+            `, [leadId, String(itemAppId), String(externalItemId)]);
+
             return res.status(201).json({
                 ok: true,
                 message: `Podio item #${externalItemId} (${sellerName}) synchronized to HushHawk canonical lead ${leadId}`,
@@ -2134,7 +2239,7 @@ apiRouter.post('/webhooks/podio', async (req, res) => {
             });
         }
 
-        // 3. Podio Comment / Communication Ingestion (e.g. smrtPhone Call or Email logged into Podio)
+        // 4. Podio Comment / Communication Ingestion (e.g. smrtPhone Call or Email logged into Podio)
         if (type === 'comment.create') {
             const commentValue = req.body.value || req.body.comment || '';
             const itemId = String(item_id || req.body.item_id || 'podio-comment');
@@ -2155,6 +2260,16 @@ apiRouter.post('/webhooks/podio', async (req, res) => {
         res.json({ ok: true, received: true });
     } catch (err) {
         console.error('[Podio Webhook Error]', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+apiRouter.post('/integrations/podio/register-all-webhooks', async (req, res) => {
+    try {
+        const webhookUrl = req.body?.webhookUrl || process.env.PODIO_WEBHOOK_URL || 'http://3.148.218.118/api/v1/webhooks/podio';
+        const results = await PodioSyncService.registerAllWebhooks(webhookUrl);
+        res.json({ success: true, webhookUrl, results });
+    } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
@@ -3022,6 +3137,26 @@ const handlePostBuyer = async (req, res) => {
             console.warn('[Buyer Insert PG Warn]', pgErr.message);
         }
 
+        // Also push to Podio Cash Buyers App 30087423
+        try {
+            const podioBuyer = await PodioSyncService.createCashBuyerInPodio({
+                name,
+                company,
+                phone,
+                email,
+                criteria: notes || types || 'SFR Buy Box',
+                min,
+                max,
+                propertyType: types,
+                notes: `Created via HushHawk Command Center (${buyerId})`
+            });
+            if (podioBuyer?.item_id) {
+                newBuyer.podioItemId = podioBuyer.item_id;
+            }
+        } catch (pBuyerErr) {
+            console.warn('[Podio Cash Buyer Push Warn]:', pBuyerErr.message);
+        }
+
         if (!db.data.crm.buyers) db.data.crm.buyers = [];
         db.data.crm.buyers.unshift(newBuyer);
         db.logAudit({
@@ -3583,7 +3718,40 @@ apiRouter.post('/contracts', async (req, res) => {
         });
         db.persist();
 
+        // Also push to Podio Offers App 30087411
+        try {
+            await PodioSyncService.createOfferInPodio({
+                address,
+                buyPrice: Number(buyPrice) || 95000,
+                emd: 2000,
+                status: 'Contract Sent',
+                notes: `Drafted from HushHawk Contract Desk (${code})`
+            });
+        } catch (pOfferErr) {
+            console.warn('[Podio Offer Push Warn]:', pOfferErr.message);
+        }
+
         res.status(201).json(newContract);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+apiRouter.post('/offers', async (req, res) => {
+    try {
+        const { address, buyPrice, emd, status, notes, leadItemId } = req.body || {};
+        if (!address && !leadItemId) {
+            return res.status(400).json({ error: 'Property address or leadItemId is required' });
+        }
+        const offer = await PodioSyncService.createOfferInPodio({
+            address,
+            buyPrice,
+            emd,
+            status,
+            notes,
+            leadItemId
+        });
+        res.status(201).json({ success: true, offer });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
