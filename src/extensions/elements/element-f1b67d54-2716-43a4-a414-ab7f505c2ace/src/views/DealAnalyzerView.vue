@@ -349,7 +349,7 @@ export default {
     exportPdf() {
       try {
         const addr = this.property.address || 'Jacksonville Property';
-        const crownKey = this.property.crownKey || 'DUV-091823-0000';
+        const crownKey = this.property.crownKey || this.property.parcel || this.property.parcelId || '';
         const arvStr = Number(this.arv || 240000).toLocaleString();
         const repairsStr = Number(this.totalRepairs || 35000).toLocaleString();
         const maoStr = Number(this.calculatedMAO || 133000).toLocaleString();

@@ -617,8 +617,8 @@ export default {
           this.followUps.unshift({
             id: 'f-' + Date.now(),
             ...payload,
-            parcelId: 'DUV-091823-0000',
-            email: 'seller@lead.com',
+            parcelId: '',
+            email: '',
             attemptCount: 1,
             dueStatus: 'Today',
             dueText: 'Due today',
@@ -632,8 +632,8 @@ export default {
         this.followUps.unshift({
           id: 'f-' + Date.now(),
           ...payload,
-          parcelId: 'DUV-091823-0000',
-          email: 'seller@lead.com',
+          parcelId: '',
+          email: '',
           attemptCount: 1,
           dueStatus: 'Today',
           dueText: 'Due today',

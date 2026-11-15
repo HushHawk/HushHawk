@@ -74,9 +74,7 @@
           <label>Assignee:</label>
           <select v-model="assigneeFilter">
             <option value="">All Reps</option>
-            <option value="Marcus Vance">Marcus Vance</option>
-            <option value="Sarah Jenkins">Sarah Jenkins</option>
-            <option value="Elena Rostova">Elena Rostova</option>
+            <option v-for="rep in availableAssignees" :key="rep" :value="rep">{{ rep }}</option>
           </select>
         </div>
 
@@ -128,7 +126,7 @@
                     <span v-html="icons.pin" class="tiny-icon"></span>
                     {{ task.deal }}
                   </span>
-                  <span class="deal-parcel font-mono">{{ task.parcel || 'DUV-091823-0000' }}</span>
+                  <span v-if="task.parcel" class="deal-parcel font-mono">{{ task.parcel }}</span>
                 </div>
                 <span v-else class="text-muted">General Operation</span>
               </td>
@@ -149,8 +147,8 @@
               </td>
               <td>
                 <div class="rep-chip">
-                  <span class="rep-avatar">{{ task.repInitials || 'MV' }}</span>
-                  <span>{{ task.assignee || 'Marcus Vance' }}</span>
+                  <span class="rep-avatar">{{ task.repInitials || (task.assignee ? task.assignee.slice(0, 2).toUpperCase() : 'OP') }}</span>
+                  <span>{{ task.assignee || 'Unassigned' }}</span>
                 </div>
               </td>
               <td>
@@ -222,11 +220,7 @@
             </div>
             <div class="form-group">
               <label>Assign To</label>
-              <select v-model="newTask.assignee">
-                <option value="Marcus Vance">Marcus Vance</option>
-                <option value="Sarah Jenkins">Sarah Jenkins</option>
-                <option value="Elena Rostova">Elena Rostova</option>
-              </select>
+              <input v-model="newTask.assignee" type="text" placeholder="Alex Richard (or assign to rep)" />
             </div>
             <div class="form-group full">
               <label>Description &amp; Checklist Instructions</label>
@@ -266,13 +260,20 @@ export default {
         category: 'Title & Escrow',
         priority: 'High',
         dueDate: 'Today 5:00 PM',
-        assignee: 'Marcus Vance',
+        assignee: 'Alex Richard',
         description: ''
       },
       tasks: []
     };
   },
   computed: {
+    availableAssignees() {
+      const reps = new Set();
+      (this.tasks || []).forEach(t => {
+        if (t && t.assignee) reps.add(t.assignee);
+      });
+      return Array.from(reps);
+    },
     metrics() {
       const list = this.tasks || [];
       const open = list.filter(t => t && !t.done).length;
@@ -319,8 +320,8 @@ export default {
         const data = await res.json();
         if (data && Array.isArray(data.tasks)) {
           this.tasks = data.tasks.map(t => {
-            const assignee = t.assignee || t.owner_id || 'Marcus Vance';
-            const repInitials = t.repInitials || assignee.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'MV';
+            const assignee = t.assignee || t.owner_id || 'Alex Richard';
+            const repInitials = t.repInitials || assignee.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'AR';
             const dueDate = t.dueDate || t.due_date || t.due_time || 'Today 5:00 PM';
             const dueStatus = t.dueStatus || (dueDate.toLowerCase().includes('today') ? 'today' : (dueDate.toLowerCase().includes('overdue') ? 'overdue' : 'normal'));
             return {
@@ -402,22 +403,22 @@ export default {
           const saved = await res.json();
           this.tasks.unshift(saved);
         } else {
-          const initials = assignedRep.split(' ').map(n => n[0]).join('');
+          const initials = assignedRep.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'AR';
           this.tasks.unshift({
             id: 'tsk-' + Date.now(),
             ...payload,
-            parcel: 'DUV-091823-0000',
+            parcel: '',
             dueStatus: 'today',
             repInitials: initials,
             done: false
           });
         }
       } catch (e) {
-        const initials = assignedRep.split(' ').map(n => n[0]).join('');
+        const initials = assignedRep.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'AR';
         this.tasks.unshift({
           id: 'tsk-' + Date.now(),
           ...payload,
-          parcel: 'DUV-091823-0000',
+          parcel: '',
           dueStatus: 'today',
           repInitials: initials,
           done: false
@@ -433,7 +434,7 @@ export default {
         category: 'Title & Escrow',
         priority: 'High',
         dueDate: 'Today 5:00 PM',
-        assignee: 'Marcus Vance',
+        assignee: 'Alex Richard',
         description: ''
       };
     }

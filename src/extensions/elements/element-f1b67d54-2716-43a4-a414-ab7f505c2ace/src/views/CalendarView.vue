@@ -367,13 +367,13 @@ export default {
           this.events.push({
             id: 'ev-' + Date.now(),
             ...payload,
-            dayNum: payload.date.split('-')[2] || '27',
+            dayNum: payload.date.split('-')[2] || '01',
             dateString: payload.date,
-            parcelId: 'DUV-091823-0000',
+            parcelId: '',
             color: typeObj.color,
             repInitials: initials,
             contactName: 'Field Contact',
-            phone: this.newAppt.phone || '(904) 555-0100',
+            phone: this.newAppt.phone || '',
             lockbox: this.newAppt.lockbox
           });
         }
@@ -381,13 +381,13 @@ export default {
         this.events.push({
           id: 'ev-' + Date.now(),
           ...payload,
-          dayNum: payload.date.split('-')[2] || '27',
+          dayNum: payload.date.split('-')[2] || '01',
           dateString: payload.date,
-          parcelId: 'DUV-091823-0000',
+          parcelId: '',
           color: typeObj.color,
           repInitials: initials,
           contactName: 'Field Contact',
-          phone: this.newAppt.phone || '(904) 555-0100',
+          phone: this.newAppt.phone || '',
           lockbox: this.newAppt.lockbox
         });
       }

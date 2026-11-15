@@ -2266,9 +2266,14 @@ apiRouter.get('/tasks', async (req, res) => {
     try {
         try {
             const { rows } = await pool.query(`
-                SELECT task_id, title, due_date, status, owner_id, category, priority, is_completed, due_time, linked_entity_type, created_at
-                FROM core.tasks
-                ORDER BY is_completed ASC, created_at DESC
+                SELECT t.task_id, t.title, t.due_date, t.status, t.owner_id, t.category, t.priority,
+                       t.is_completed, t.due_time, t.linked_entity_type, t.linked_entity_id, t.created_at,
+                       p.address_line1 as property_address, p.city as property_city, p.parcel_raw,
+                       pe.full_name as rep_name
+                FROM core.tasks t
+                LEFT JOIN core.properties p ON t.linked_entity_id = p.property_id
+                LEFT JOIN core.people pe ON t.owner_id = pe.person_id::text
+                ORDER BY t.is_completed ASC, t.created_at DESC
             `);
             if (rows && rows.length > 0) {
                 const formatted = rows.map(r => {
@@ -2276,8 +2281,12 @@ apiRouter.get('/tasks', async (req, res) => {
                     const dueStatus = dueDateStr.toLowerCase().includes('today')
                         ? 'today'
                         : (dueDateStr.toLowerCase().includes('overdue') ? 'overdue' : 'normal');
-                    const assignee = r.owner_id || 'Marcus Vance';
-                    const initials = assignee.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'MV';
+                    const dealAddress = r.property_address
+                        ? `${r.property_address}${r.property_city ? ', ' + r.property_city : ''}`
+                        : '';
+                    const parcelNumber = r.parcel_raw ? `DUV-${r.parcel_raw}` : '';
+                    const assignee = r.rep_name || r.owner_id || 'Alex Richard';
+                    const initials = assignee.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'AR';
                     return {
                         id: r.task_id,
                         task_id: r.task_id,
@@ -2290,8 +2299,8 @@ apiRouter.get('/tasks', async (req, res) => {
                         priority: r.priority || 'High',
                         dueDate: dueDateStr,
                         dueStatus: dueStatus,
-                        deal: '4155 County Rd 218',
-                        parcel: 'DUV-091823-0000',
+                        deal: dealAddress,
+                        parcel: parcelNumber,
                         assignee: assignee,
                         repInitials: initials,
                         created_at: r.created_at
@@ -2315,13 +2324,14 @@ apiRouter.post('/tasks', async (req, res) => {
         if (!title) return res.status(400).json({ error: 'Task title is required' });
 
         const taskId = crypto.randomUUID ? crypto.randomUUID() : ('tk-' + Date.now());
+        const rep = assignee || 'Alex Richard';
 
         try {
             const insertRes = await pool.query(`
                 INSERT INTO core.tasks (task_id, title, status, category, priority, is_completed, due_time, owner_id, created_at)
                 VALUES ($1, $2, 'PENDING', $3, $4, false, $5, $6, NOW())
                 RETURNING *
-            `, [taskId, title, category || 'Title & Escrow', priority || 'High', dueDate || 'Today 5:00 PM', assignee || 'Marcus Vance']);
+            `, [taskId, title, category || 'Title & Escrow', priority || 'High', dueDate || 'Today 5:00 PM', rep]);
 
             if (insertRes.rows.length) {
                 const row = insertRes.rows[0];
@@ -2329,15 +2339,14 @@ apiRouter.post('/tasks', async (req, res) => {
                 const dueStatus = dueDateStr.toLowerCase().includes('today')
                     ? 'today'
                     : (dueDateStr.toLowerCase().includes('overdue') ? 'overdue' : 'normal');
-                const rep = row.owner_id || assignee || 'Marcus Vance';
-                const initials = rep.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'MV';
+                const initials = rep.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'AR';
                 return res.status(201).json({
                     id: row.task_id,
                     task_id: row.task_id,
                     title: row.title,
                     description: description || '',
-                    deal: deal || '4155 County Rd 218',
-                    parcel: 'DUV-091823-0000',
+                    deal: deal || '',
+                    parcel: '',
                     status: row.status,
                     done: false,
                     is_completed: false,
@@ -2360,13 +2369,13 @@ apiRouter.post('/tasks', async (req, res) => {
             title,
             description: description || '',
             deal: deal || '',
-            parcel: 'DUV-091823-0000',
+            parcel: '',
             category: category || 'Title & Escrow',
             dueDate: dueDate || 'Today 5:00 PM',
             dueStatus: 'today',
             priority: priority || 'High',
-            assignee: assignee || 'Marcus Vance',
-            repInitials: (assignee || 'Marcus Vance').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'MV',
+            assignee: rep,
+            repInitials: rep.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'AR',
             done: false,
             status: 'PENDING',
             created_at: new Date().toISOString()
@@ -3833,10 +3842,10 @@ apiRouter.post('/facebook-leads', (req, res) => {
         const newLead = {
             id: leadId,
             name,
-            phone: phone || '(904) 555-0100',
-            email: email || 'lead@example.com',
+            phone: phone || '',
+            email: email || '',
             address: address || 'Jacksonville, FL',
-            parcelId: 'DUV-091823-0000',
+            parcelId: '',
             campaign: campaign || 'Duval Inherited & Probate',
             motivationScore: 88,
             motivationClass: 'score-hot',
@@ -3925,9 +3934,9 @@ apiRouter.get('/follow-ups', async (req, res) => {
                         id: r.id || ('f-' + idx),
                         seller,
                         address: r.property_address || 'Jacksonville, FL',
-                        parcelId: r.parcel_raw ? `DUV-${r.parcel_raw}` : 'DUV-091823-0000',
-                        phone: r.phone || '(904) 555-0100',
-                        email: 'seller@lead.com',
+                        parcelId: r.parcel_raw ? `DUV-${r.parcel_raw}` : '',
+                        phone: r.phone || '',
+                        email: r.email || '',
                         cadenceStage: r.cadence_stage || 'Day 1 Post-Offer',
                         motivation: r.priority === 'High' || r.priority === 'Overdue' ? 'Hot' : 'Warm',
                         channel: 'Call',
@@ -3966,9 +3975,9 @@ apiRouter.post('/follow-ups', async (req, res) => {
             id: followUpId,
             seller: seller || 'Property Owner',
             address: address || 'Jacksonville, FL',
-            parcelId: 'DUV-091823-0000',
-            phone: phone || '(904) 555-0100',
-            email: 'seller@example.com',
+            parcelId: '',
+            phone: phone || '',
+            email: '',
             cadenceStage: cadenceStage || 'Day 1 Post-Offer',
             motivation: motivation || 'Hot',
             channel: channel || 'Call',
@@ -4988,9 +4997,9 @@ apiRouter.post('/calendar', (req, res) => {
             time: time || '10:00 AM',
             title,
             address: address || 'Jacksonville, FL',
-            parcel: 'DUV-091823-0000',
+            parcel: '',
             type: type || 'Seller Walkthrough',
-            rep: rep || 'Marcus Vance',
+            rep: rep || 'Alex Richard',
             notes: notes || 'Scheduled inspection/walkthrough.',
             completed: false,
             created_at: new Date().toISOString()

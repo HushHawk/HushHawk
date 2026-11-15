@@ -545,7 +545,7 @@
             <div v-if="activeSnapshot" class="analyzer-body">
               <div class="analyzer-prop-header">
                 <strong class="property">{{activeSnapshot.address}}</strong>
-                <p>{{activeSnapshot.cityStateZip}}</p>
+                <p class="analyzer-prop-sub">{{activeSnapshot.cityStateZip}}</p>
               </div>
               <dl class="analyzer-dl">
                 <div><dt>After-repair value</dt><dd>{{money(activeSnapshot.arv)}}</dd></div>
@@ -556,6 +556,8 @@
                 <span>Illustrative spread*</span>
                 <strong>{{money(activeSnapshot.spread)}}</strong>
               </div>
+            </div>
+            <div v-if="activeSnapshot" class="analyzer-footer">
               <small class="profit-sub">*ARV − purchase − repairs; before fees &amp; costs.</small>
             </div>
             <div v-else style="padding: 16px; text-align: center; color: #64748b; font-size: 11px;">
@@ -4169,32 +4171,34 @@ td a { color: #f5cf72 !important; }
   display: flex;
   flex-direction: column;
   flex: 1;
-  padding: 2px 0 6px;
+  padding: 2px 0 4px;
 }
 .analyzer-prop-header {
   padding: 8px 12px 4px;
 }
 .analyzer-prop-header .property {
-  font-size: 11.5px;
-  display: block;
-  padding: 0;
-  margin: 0;
-  color: #ffffff;
-  font-weight: 700;
+  font-size: 11.5px !important;
+  display: block !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
   letter-spacing: 0.15px;
+  line-height: 1.3 !important;
 }
-.analyzer-prop-header p {
-  font-size: 9.5px;
-  color: #94a3b8;
-  margin: 2px 0 0;
-  line-height: 1.35;
-  font-weight: 500;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.analyzer-prop-header p,
+.analyzer-prop-header .analyzer-prop-sub {
+  font-size: 9.5px !important;
+  color: #94a3b8 !important;
+  margin: 2px 0 0 !important;
+  line-height: 1.35 !important;
+  font-weight: 500 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
 }
 .analyzer dl, .analyzer-dl {
-  margin: 6px 12px;
+  margin: 4px 12px;
   font-size: 8.5px;
   padding: 0;
 }
@@ -4203,7 +4207,7 @@ td a { color: #f5cf72 !important; }
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  padding: 4px 0;
+  padding: 3px 0;
 }
 .analyzer dt, .analyzer-dl dt { color: #94a3b8; margin: 0; font-size: 8.5px; }
 .analyzer dd, .analyzer-dl dd { margin: 0; color: #ffffff; font-weight: 600; font-size: 9px; }
@@ -4211,8 +4215,8 @@ td a { color: #f5cf72 !important; }
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 6px 10px 4px;
-  padding: 6px 9px;
+  margin: 4px 10px 4px;
+  padding: 5px 9px;
   border: 1px solid rgba(34, 197, 94, 0.3);
   border-radius: 6px;
   background: rgba(34, 197, 94, 0.08);
@@ -4225,17 +4229,27 @@ td a { color: #f5cf72 !important; }
   font-weight: 600;
 }
 .profit strong {
-  font-size: 13.5px;
+  font-size: 13px !important;
   color: #ffffff;
   font-weight: 850;
 }
-.profit-sub, .analyzer > small {
+.analyzer-footer {
+  padding: 6px 12px;
+  background: rgba(4, 18, 35, 0.65);
   font-size: 7.5px;
-  color: #64748b;
-  display: block;
-  padding: 3px 12px 6px;
-  margin: 0;
-  line-height: 1.35;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom-left-radius: 9px !important;
+  border-bottom-right-radius: 9px !important;
+  margin-top: auto;
+  box-sizing: border-box;
+}
+.profit-sub, .analyzer-footer small {
+  font-size: 7.5px !important;
+  color: #64748b !important;
+  display: block !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  line-height: 1.35 !important;
 }
 
 /* Pulse & Capital Desk */
