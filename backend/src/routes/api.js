@@ -2058,7 +2058,7 @@ apiRouter.get('/integrations/smrtphone/status', (req, res) => {
         webhookUrl: 'https://hushhawk-kohl.vercel.app/api/v1/webhooks/smrtphone',
         podioCoexistence: 'ACTIVE',
         capabilities: ['Inbound Call Logging', 'Outbound Click-to-Call', 'Audio Recordings', 'Two-Way SMS', 'Podio Sync'],
-        phoneNumbers: ['(904) 555-0144', '(904) 712-4411'],
+        phoneNumbers: ['+13866273499', '+19045790065'],
         lastSync: new Date().toISOString()
     });
 });
@@ -2101,6 +2101,42 @@ apiRouter.get('/integrations/podio/apps', (req, res) => {
         totalApps: Object.keys(PodioSyncService.APPS).length,
         apps: PodioSyncService.APPS
     });
+});
+
+apiRouter.post('/integrations/podio/sync-all', async (req, res) => {
+    try {
+        const summary = await PodioSyncService.syncAll();
+        res.json(summary);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+apiRouter.get('/acquisitions/offers', async (req, res) => {
+    try {
+        const offers = await PodioSyncService.syncOffers();
+        res.json({ total: offers.length, offers });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+apiRouter.get('/offers', async (req, res) => {
+    try {
+        const offers = await PodioSyncService.syncOffers();
+        res.json({ total: offers.length, offers });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+apiRouter.get('/dispositions/whiteboard', async (req, res) => {
+    try {
+        const whiteboard = await PodioSyncService.syncWhiteboard();
+        res.json({ total: whiteboard.length, deals: whiteboard });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 apiRouter.post('/integrations/podio/sync', async (req, res) => {
@@ -2780,33 +2816,38 @@ const handleGetBuyers = async (req, res) => {
     try {
         let buyers = [];
         try {
-            const { rows } = await pool.query(`SELECT * FROM crm.cash_buyers ORDER BY created_at DESC`);
-            if (rows && rows.length > 0) {
-                buyers = rows.map(r => ({
-                    id: r.id,
-                    name: r.full_name || 'Cash Buyer',
-                    company: r.company || 'Private Real Estate Investor',
-                    phone: r.phone || '(904) 555-0100',
-                    email: r.email || 'investor@example.com',
-                    location: 'Jacksonville, FL',
-                    zips: ['32204', '32208', '32209', '32210'],
-                    min: 65000,
-                    max: 450000,
-                    types: r.buy_box || 'SFR / Duplex',
-                    pofVerified: true,
-                    response: 95,
-                    dealsClosed: 3,
-                    tier: 'VIP Tier 1',
-                    tierClass: 'tier-gold',
-                    notes: r.status || 'Active VIP Buyer in Duval & Clay County',
-                    created_at: r.created_at
-                }));
-            }
-        } catch (dbErr) {
-            console.warn('[Buyers PG Warn]', dbErr.message);
+            buyers = await PodioSyncService.syncCashBuyers();
+        } catch (pErr) {
+            console.warn('[Podio Buyers Sync Warn]', pErr.message);
         }
-        if (!buyers.length) {
-            buyers = db.data.crm.buyers || [];
+
+        if (!buyers || !buyers.length) {
+            try {
+                const { rows } = await pool.query(`SELECT * FROM crm.cash_buyers ORDER BY created_at DESC`);
+                if (rows && rows.length > 0) {
+                    buyers = rows.map(r => ({
+                        id: r.id,
+                        name: r.full_name || 'Cash Buyer',
+                        company: r.company || 'Private Real Estate Investor',
+                        phone: r.phone || '(904) 579-0065',
+                        email: r.email || 'investor@elitehomes1.com',
+                        location: 'Jacksonville, FL',
+                        zips: ['32204', '32205', '32207', '32208', '32210', '32246'],
+                        min: 75000,
+                        max: 450000,
+                        types: r.buy_box || 'SFR / Duplex',
+                        pofVerified: true,
+                        response: 95,
+                        dealsClosed: 3,
+                        tier: 'VIP Tier 1',
+                        tierClass: 'tier-gold',
+                        notes: r.status || 'Active VIP Buyer in Jacksonville',
+                        created_at: r.created_at
+                    }));
+                }
+            } catch (dbErr) {
+                console.warn('[Buyers PG Warn]', dbErr.message);
+            }
         }
         res.json({ total: buyers.length, buyers });
     } catch (err) {
@@ -2830,8 +2871,8 @@ const handlePostBuyer = async (req, res) => {
             id: buyerId,
             name,
             company: company || 'Private Investor',
-            phone: phone || '(904) 555-0000',
-            email: email || 'investor@example.com',
+            phone: phone || '+13866273499',
+            email: email || 'team@elitehomes1.com',
             location: location || 'Jacksonville, FL',
             zips: zipList,
             min: Number(min) || 50000,
@@ -3042,7 +3083,7 @@ apiRouter.post('/lead-desk/send', async (req, res) => {
             return res.status(201).json(sentEmail);
         } else {
             const sentText = await OutreachActionsService.sendText({
-                recipientPhone: recipientPhone || recipient || '(904) 555-0100',
+                recipientPhone: recipientPhone || recipient || '+13866273499',
                 contactName: req.body.contactName || 'Lead',
                 message: msgText
             });
@@ -3570,38 +3611,43 @@ apiRouter.post('/dispositions/blast', async (req, res) => {
     }
 });
 
-// --- Contacts Rolodex (PostgreSQL crm.seller_contacts) ---
+// --- Contacts Rolodex (Podio App 30087414 Live Sync with PostgreSQL) ---
 apiRouter.get('/contacts', async (req, res) => {
     try {
         let contacts = [];
         try {
-            const { rows } = await pool.query(`SELECT * FROM crm.seller_contacts ORDER BY created_at DESC`);
-            if (rows && rows.length > 0) {
-                contacts = rows.map(r => {
-                    const name = r.seller_name || 'Seller Contact';
-                    const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-                    return {
-                        id: r.id,
-                        name,
-                        company: 'Property Owner',
-                        type: 'Distressed Seller',
-                        phone: r.phone || '(904) 555-0100',
-                        email: r.email || 'seller@example.com',
-                        tags: [r.lead_status || 'Active', 'Score: ' + (r.lead_score || 85)],
-                        property: r.property_address || 'Jacksonville, FL',
-                        status: r.lead_status || 'Active',
-                        initials,
-                        lastTouch: 'Recent',
-                        notes: `Seller lead with motivation score ${r.lead_score || 85}%.`,
-                        created_at: r.created_at
-                    };
-                });
-            }
-        } catch (dbErr) {
-            console.warn('[Contacts PG Warn]', dbErr.message);
+            contacts = await PodioSyncService.syncContacts();
+        } catch (pErr) {
+            console.warn('[Podio Contacts Sync Warn]', pErr.message);
         }
-        if (!contacts.length) {
-            contacts = db.data.crm.contacts || [];
+
+        if (!contacts || !contacts.length) {
+            try {
+                const { rows } = await pool.query(`SELECT * FROM crm.seller_contacts ORDER BY created_at DESC`);
+                if (rows && rows.length > 0) {
+                    contacts = rows.map(r => {
+                        const name = r.seller_name || 'Seller Contact';
+                        const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+                        return {
+                            id: r.id,
+                            name,
+                            company: 'Property Owner',
+                            type: 'Distressed Seller',
+                            phone: r.phone || '(904) 579-0065',
+                            email: r.email || 'seller@elitehomes1.com',
+                            tags: [r.lead_status || 'Active', 'Score: ' + (r.lead_score || 85)],
+                            property: r.property_address || 'Jacksonville, FL',
+                            status: r.lead_status || 'Active',
+                            initials,
+                            lastTouch: 'Recent',
+                            notes: `Seller lead with motivation score ${r.lead_score || 85}%.`,
+                            created_at: r.created_at
+                        };
+                    });
+                }
+            } catch (dbErr) {
+                console.warn('[Contacts PG Warn]', dbErr.message);
+            }
         }
         res.json({ total: contacts.length, contacts });
     } catch (err) {
@@ -3625,8 +3671,8 @@ apiRouter.post('/contacts', async (req, res) => {
             name,
             company: company || '',
             type: type || 'Distressed Seller',
-            phone: phone || '(904) 555-0100',
-            email: email || 'contact@example.com',
+            phone: phone || '+13866273499',
+            email: email || 'team@elitehomes1.com',
             tags,
             property: property || '',
             status: 'Active',
@@ -3679,10 +3725,32 @@ apiRouter.delete('/contacts/:id', (req, res) => {
 
 
 
-// --- Skip Tracing (Real Database Ingestion & Enrichment) ---
-apiRouter.get('/skip-tracing', (req, res) => {
+// --- Skip Tracing (Podio App 30087425 Cold Leads Live Sync) ---
+apiRouter.get('/skip-tracing', async (req, res) => {
     try {
-        const traces = db.data.crm.skip_traces || [];
+        let coldLeads = [];
+        try {
+            coldLeads = await PodioSyncService.syncColdLeads();
+        } catch (pErr) {
+            console.warn('[Podio Cold Leads Sync Warn]', pErr.message);
+        }
+
+        const traces = (coldLeads && coldLeads.length) 
+            ? coldLeads.map(cl => ({
+                id: cl.id,
+                ownerName: cl.name,
+                address: cl.address,
+                phone: cl.phone,
+                email: cl.email,
+                mailingAddress: cl.address,
+                equity: cl.equity,
+                distress: cl.distress,
+                status: 'Enriched',
+                confidence: 96,
+                created_at: new Date().toISOString()
+            }))
+            : (db.data.crm.skip_traces || []);
+
         res.json({ total: traces.length, traces });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -4476,7 +4544,7 @@ apiRouter.get('/communications', async (req, res) => {
             return {
                 id: t.id,
                 contact: t.contact_name,
-                phone: t.contact_phone || '(904) 555-0100',
+                phone: t.contact_phone || '+13866273499',
                 email: t.contact_email,
                 address: t.property_address || 'Jacksonville, FL',
                 type: commType,
@@ -5105,6 +5173,11 @@ apiRouter.get('/rbac/sections', (req, res) => {
 // 2. Team Members Management
 apiRouter.get('/team', async (req, res) => {
     try {
+        try {
+            await PodioSyncService.syncTeamMembers();
+        } catch (tErr) {
+            console.warn('[Podio Team Sync Warn]:', tErr.message);
+        }
         const members = await RbacService.getTeamMembers();
         res.json({ total: members.length, members });
     } catch (err) {
@@ -5587,12 +5660,27 @@ apiRouter.post('/integrations/test/:name', async (req, res) => {
 });
 
 // ============================================================================
-// Automations API
+// Automations API (Podio App 30087418 Drip Sequences & 30087419 Templates Live Sync)
 // ============================================================================
-apiRouter.get('/automations', (req, res) => {
+apiRouter.get('/automations', async (req, res) => {
     try {
-        const automations = db.data.automations || [];
-        res.json({ automations, total: automations.length });
+        let data = { sequences: [], templates: [] };
+        try {
+            data = await PodioSyncService.syncAutomations();
+        } catch (pErr) {
+            console.warn('[Podio Automations Sync Warn]', pErr.message);
+        }
+
+        const automations = (data.sequences && data.sequences.length) 
+            ? data.sequences 
+            : (db.data.automations || []);
+
+        res.json({ 
+            total: automations.length, 
+            automations,
+            templatesCount: (data.templates || []).length,
+            templates: data.templates || []
+        });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -5740,7 +5828,14 @@ apiRouter.get('/marketing', async (req, res) => {
             { channel: 'Driving for Dollars / Inbound', spend: '$400', leads: websiteCount, cpl: '$' + Math.round(400 / websiteCount), contracts: 1, roi: '680%' }
         ];
 
-        let campaigns = db.data.marketing_campaigns || [];
+        let podioCampaigns = [];
+        try {
+            podioCampaigns = await PodioSyncService.syncCampaigns();
+        } catch (pErr) {
+            console.warn('[Podio Campaigns Sync Warn]', pErr.message);
+        }
+
+        let campaigns = (podioCampaigns && podioCampaigns.length) ? podioCampaigns : (db.data.marketing_campaigns || []);
         if (campaigns.length === 0) {
             campaigns = [
                 { id: 'm-1', name: 'Duval High-Equity Direct Mail Drop #4', channel: 'Direct Mail', targetAudience: 'Duval County 40%+ Equity Homeowners', spend: 2800, leads: directMailCount, cpl: 100, contracts: 3, roi: 520, status: 'Active', dateRange: 'May 1 - May 30' },

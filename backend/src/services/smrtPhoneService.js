@@ -30,8 +30,8 @@ export class SmrtPhoneService {
         const isSms = eventType.includes('sms') || eventType.includes('message') || Boolean(payload.body || payload.message);
 
         // 2. Extract Key Fields
-        const fromNumber = payload.from || payload.caller_id || payload.from_number || '(904) 555-0144';
-        const toNumber = payload.to || payload.to_number || '(904) 712-4411';
+        const fromNumber = payload.from || payload.caller_id || payload.from_number || '+13866273499';
+        const toNumber = payload.to || payload.to_number || '+19045790065';
         const direction = (payload.direction || 'INBOUND').toUpperCase();
         const durationSec = Number(payload.call_duration || payload.duration) || (isCall ? 84 : 0);
         const durationFormatted = durationSec > 0 ? `${Math.floor(durationSec / 60)}m ${durationSec % 60}s` : '0m 45s';

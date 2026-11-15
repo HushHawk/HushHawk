@@ -293,7 +293,7 @@ export class LeadDeskService {
         `, [
             callId,
             thread.contact_name,
-            thread.contact_phone || '(904) 555-0100',
+            thread.contact_phone || '+13866273499',
             thread.property_address || 'Jacksonville, FL',
             thread.property_id || null,
             'Desk Cadence (' + dueDate + ')',

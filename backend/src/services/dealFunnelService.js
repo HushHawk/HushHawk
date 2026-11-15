@@ -348,7 +348,7 @@ export class DealFunnelService {
                 dealData.zip || '32204',
                 dealData.county || 'Duval',
                 dealData.seller || 'Seller Record',
-                dealData.phone || '(904) 555-0100',
+                dealData.phone || '+13866273499',
                 dealData.email || 'seller@example.com',
                 dealData.buyer || '—',
                 Number(dealData.buyPrice) || 120000,

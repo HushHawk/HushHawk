@@ -27,9 +27,9 @@ let savedTasks = [
 const sellerContacts = [
     {
         id: 'sel-1',
-        seller_name: 'James R. Carter',
-        phone: '(904) 555-0198',
-        email: 'jcarter@email.com',
+        seller_name: 'Darren Richardson',
+        phone: '+13866273499',
+        email: 'team@elitehomes1.com',
         property_address: '1234 Oak Ridge Dr, Jacksonville, FL 32277',
         lead_status: 'New',
         lead_score: 94,
@@ -39,10 +39,10 @@ const sellerContacts = [
 const buyerContacts = [
     {
         id: 'buy-1',
-        full_name: 'Marcus Vance',
-        phone: '(904) 555-9101',
-        email: 'marcus@vancecapitalinvestments.com',
-        company: 'Vance Capital Holdings',
+        full_name: 'Travis Hassle Free buyers',
+        phone: '9046679496',
+        email: 'travis@hasslefreebuyers.com',
+        company: 'Hassle Free Buyers',
         status: 'Active VIP Buyer',
         buy_box: 'Duval County SFH $80K-$220K',
     },

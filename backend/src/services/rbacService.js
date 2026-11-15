@@ -188,7 +188,7 @@ export class RbacService {
                     name,
                     initials,
                     email: u.email,
-                    phone: u.phone || '(904) 555-0100',
+                    phone: u.phone || '+13866273499',
                     role: u.role,
                     roleName: u.role_name || u.role,
                     title: u.role_name || (u.role === 'SUPER_ADMIN' ? 'Managing Partner' : 'Acquisitions Specialist'),

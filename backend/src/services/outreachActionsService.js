@@ -336,7 +336,7 @@ export class OutreachActionsService {
             `, [
                 targetId,
                 contactName || 'Lead Contact',
-                phone || '(904) 555-0100',
+                phone || '+13866273499',
                 propertyAddress || 'Duval County',
                 propertyId || null,
                 notes || 'Voice call logged'
@@ -399,7 +399,7 @@ export class OutreachActionsService {
         }
 
         if (!textRecord) {
-            const targetPhone = phone || recipientPhone || '(904) 555-0199';
+            const targetPhone = phone || recipientPhone || '+13866273499';
             const targetId = (textId && !textId.startsWith('new-')) ? textId : 'txt-' + Date.now();
             const insRes = await pool.query(`
                 INSERT INTO core.outreach_texts (
@@ -493,7 +493,7 @@ export class OutreachActionsService {
             `, [
                 targetId,
                 recipientName || 'Partner',
-                email || 'outreach@hushhawk.com',
+                email || 'team@elitehomes1.com',
                 subject || 'Wholesale Opportunity',
                 propertyAddress || 'Duval County',
                 propertyId || null,

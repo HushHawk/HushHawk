@@ -192,7 +192,7 @@
                   <td class="contact-cell">
                     <span class="phone-text font-mono">
                       <span class="mini-icon" v-html="icons.phone"></span>
-                      {{ member.phone || '(904) 555-0100' }}
+                      {{ member.phone || '+13866273499' }}
                     </span>
                   </td>
 
@@ -321,7 +321,7 @@
               </div>
               <div class="profile-details">
                 <strong>{{ selectedMember.name }}</strong>
-                <p class="phone-link"><span v-html="icons.phone"></span> {{ selectedMember.phone || '(904) 555-0100' }}</p>
+                <p class="phone-link"><span v-html="icons.phone"></span> {{ selectedMember.phone || '+13866273499' }}</p>
                 <p><span v-html="icons.mail"></span> {{ selectedMember.email }}</p>
                 <div class="profile-badges">
                   <span class="badge-tag gold">{{ selectedMember.roleName || selectedMember.role }}</span>
@@ -1237,15 +1237,15 @@ export const DEFAULT_ROLES = [
 
 export const DEFAULT_MEMBERS = [
   {
-    id: "01111111-1111-1111-1111-111111111111",
-    user_id: "01111111-1111-1111-1111-111111111111",
-    name: "Sarah Connor",
-    initials: "SC",
-    email: "admin@hushhawk.internal",
-    phone: "(904) 555-6406",
+    id: "podio-dr-76975190",
+    user_id: "podio-dr-76975190",
+    name: "Darren Richardson",
+    initials: "DR",
+    email: "team@elitehomes1.com",
+    phone: "+13866273499",
     role: "SUPER_ADMIN",
-    roleName: "Master Administrator",
-    title: "Master Administrator",
+    roleName: "Owner & Relation Manager",
+    title: "Owner & Relation Manager",
     department: "Executive Leadership",
     accessLevel: "SUPER_ADMIN",
     status: "Active",
@@ -1256,12 +1256,31 @@ export const DEFAULT_MEMBERS = [
     avatarBg: "#1e3a5f"
   },
   {
+    id: "podio-de-77103547",
+    user_id: "podio-de-77103547",
+    name: "Dejon Ellis",
+    initials: "DE",
+    email: "ellis@elitehomes1.com",
+    phone: "+19043030775",
+    role: "SUPER_ADMIN",
+    roleName: "Managing Partner",
+    title: "Managing Partner & Acquisitions Lead",
+    department: "Executive Leadership",
+    accessLevel: "SUPER_ADMIN",
+    status: "Active",
+    statusClass: "status-active",
+    password: "admin123",
+    permissions: DEFAULT_SECTIONS.map(s => s.path),
+    allowedCount: 23,
+    avatarBg: "#0f766e"
+  },
+  {
     id: "00000000-0000-0000-0000-0000000000a1",
     user_id: "00000000-0000-0000-0000-0000000000a1",
     name: "Alex Richard",
     initials: "AR",
-    email: "alex.richard@hushhawk.internal",
-    phone: "(904) 555-3464",
+    email: "alex.richard@elitehomes1.com",
+    phone: "+19045790065",
     role: "SUPER_ADMIN",
     roleName: "Master Administrator",
     title: "Managing Partner & Dispo Lead",
@@ -1279,8 +1298,8 @@ export const DEFAULT_MEMBERS = [
     user_id: "00000000-0000-0000-0000-0000000000e1",
     name: "Waldo Ellis",
     initials: "WE",
-    email: "waldo.ellis@hushhawk.internal",
-    phone: "(904) 555-5011",
+    email: "waldo.ellis@elitehomes1.com",
+    phone: "+19047803358",
     role: "SUPER_ADMIN",
     roleName: "Master Administrator",
     title: "Chief Investment Officer",
@@ -1298,8 +1317,8 @@ export const DEFAULT_MEMBERS = [
     user_id: "02222222-2222-2222-2222-222222222222",
     name: "Marcus Vance",
     initials: "MV",
-    email: "manager@hushhawk.internal",
-    phone: "(904) 555-3424",
+    email: "manager@elitehomes1.com",
+    phone: "+19045790065",
     role: "ACQUISITIONS_REP",
     roleName: "Acquisitions Specialist",
     title: "Senior Acquisitions Director",
@@ -1336,8 +1355,8 @@ export const DEFAULT_MEMBERS = [
     user_id: "04444444-4444-4444-4444-444444444444",
     name: "David Sterling",
     initials: "DS",
-    email: "reviewer@hushhawk.internal",
-    phone: "(904) 555-8872",
+    email: "reviewer@elitehomes1.com",
+    phone: "+19045790065",
     role: "DISPOSITIONS_REP",
     roleName: "Dispositions & Buyer Desk",
     title: "Dispositions Lead & Buyer Relations",
@@ -1355,8 +1374,8 @@ export const DEFAULT_MEMBERS = [
     user_id: "05555555-5555-5555-5555-555555555555",
     name: "Chloe Bennett",
     initials: "CB",
-    email: "marketing@hushhawk.internal",
-    phone: "(904) 555-8756",
+    email: "marketing@elitehomes1.com",
+    phone: "+19047803358",
     role: "MARKETING_LEAD",
     roleName: "Campaigns & Marketing Manager",
     title: "Growth & Campaigns Manager",
@@ -1374,8 +1393,8 @@ export const DEFAULT_MEMBERS = [
     user_id: "06666666-6666-6666-6666-666666666666",
     name: "Alex Mercer",
     initials: "AM",
-    email: "ops@hushhawk.internal",
-    phone: "(904) 555-5094",
+    email: "ops@elitehomes1.com",
+    phone: "+19045790065",
     role: "FIELD_OPS",
     roleName: "Field Inspector & Media",
     title: "Field Inspector & Logistics",
@@ -1393,8 +1412,8 @@ export const DEFAULT_MEMBERS = [
     user_id: "5193494a-6cb7-4d9d-9ad3-5c4860306254",
     name: "Jordan Miller",
     initials: "JM",
-    email: "jordan@hushhawk.com",
-    phone: "(904) 555-9090",
+    email: "jordan@elitehomes1.com",
+    phone: "+19047803358",
     role: "DIRECT_MAIL_SPECIALIST",
     roleName: "Direct Mail Specialist",
     title: "Direct Mail Specialist",
