@@ -64,7 +64,7 @@
           <div class="metric-icon-wrap green"><span v-html="icons.clock"></span></div>
           <div class="metric-info">
             <span class="metric-label">Audit Events Today</span>
-            <strong class="metric-val">{{ auditMetrics.todayCount || 54 }} Events</strong>
+            <strong class="metric-val">{{ auditMetrics.todayCount }} Events</strong>
             <span class="metric-change positive">Active real-time audit ledger</span>
           </div>
         </div>
@@ -73,7 +73,7 @@
           <div class="metric-icon-wrap purple"><span v-html="icons.key"></span></div>
           <div class="metric-info">
             <span class="metric-label">Security &amp; Auth Ledger</span>
-            <strong class="metric-val">{{ auditMetrics.securityEvents || 153 }} Verified</strong>
+            <strong class="metric-val">{{ auditMetrics.securityEvents }} Verified</strong>
             <span class="metric-change">Passkeys &amp; Role Integrity</span>
           </div>
         </div>
@@ -540,7 +540,7 @@
             <div class="metric-icon-wrap gold"><span v-html="icons.clock"></span></div>
             <div class="metric-info">
               <span class="metric-label">Today's Audit Events</span>
-              <strong class="metric-val">{{ auditMetrics.todayCount || 54 }} Logged</strong>
+              <strong class="metric-val">{{ auditMetrics.todayCount }} Logged</strong>
               <span class="metric-change positive">● Live PostgreSQL capture</span>
             </div>
           </div>
@@ -549,7 +549,7 @@
             <div class="metric-icon-wrap cyan"><span v-html="icons.users"></span></div>
             <div class="metric-info">
               <span class="metric-label">Active Actors &amp; Roles</span>
-              <strong class="metric-val">{{ auditMetrics.uniqueActors || 16 }} Accounts</strong>
+              <strong class="metric-val">{{ auditMetrics.uniqueActors }} Accounts</strong>
               <span class="metric-change">System &amp; Team Operators</span>
             </div>
           </div>
@@ -558,7 +558,7 @@
             <div class="metric-icon-wrap purple"><span v-html="icons.key"></span></div>
             <div class="metric-info">
               <span class="metric-label">Security &amp; Auth Logs</span>
-              <strong class="metric-val">{{ auditMetrics.securityEvents || 153 }} Events</strong>
+              <strong class="metric-val">{{ auditMetrics.securityEvents }} Events</strong>
               <span class="metric-change">Logins, Roles, Passwords</span>
             </div>
           </div>
@@ -567,7 +567,7 @@
             <div class="metric-icon-wrap red"><span v-html="icons.trash"></span></div>
             <div class="metric-info">
               <span class="metric-label">Critical Mutations</span>
-              <strong class="metric-val">{{ auditMetrics.criticalChanges || 59 }} Deletions</strong>
+              <strong class="metric-val">{{ auditMetrics.criticalChanges }} Deletions</strong>
               <span class="metric-change">Deletions &amp; Overrides</span>
             </div>
           </div>
@@ -581,7 +581,7 @@
                 <span class="icon-title" v-html="icons.clock"></span>
                 Master Activity &amp; Audit Trail
               </h2>
-              <span class="badge-count">{{ auditTotal || (auditLogs && auditLogs.length) || 1134 }} total captured events</span>
+              <span class="badge-count">{{ auditTotal }} total captured events</span>
             </div>
             <div class="header-actions">
               <button class="btn btn-secondary" @click="exportAuditCsv">
@@ -722,7 +722,15 @@
                   </td>
                 </tr>
 
-                <tr v-if="auditLogs.length === 0">
+                <tr v-if="isLoadingAudit">
+                  <td colspan="6" class="empty-state">
+                    <div class="empty-inner">
+                      <span class="empty-icon" v-html="icons.refresh"></span>
+                      <p>Loading audit ledger from PostgreSQL...</p>
+                    </div>
+                  </td>
+                </tr>
+                <tr v-else-if="auditLogs.length === 0">
                   <td colspan="6" class="empty-state">
                     <div class="empty-inner">
                       <span class="empty-icon" v-html="icons.clock"></span>
@@ -1421,134 +1429,11 @@ export const DEFAULT_MEMBERS = [
 ];
 
 export const DEFAULT_AUDIT_METRICS = {
-  todayCount: 54,
-  uniqueActors: 16,
-  criticalChanges: 59,
-  securityEvents: 153
+  todayCount: 0,
+  uniqueActors: 0,
+  criticalChanges: 0,
+  securityEvents: 0
 };
-
-export const DEFAULT_AUDIT_LOGS = [
-  {
-    id: "73ad1313-f40a-4a1e-b65c-e57ed7531469",
-    auditId: "73ad1313-f40a-4a1e-b65c-e57ed7531469",
-    actor: "Main Administrator",
-    action: "ROLE_DELETED",
-    actionLabel: "ROLE DELETED",
-    category: "DELETION",
-    badgeClass: "badge-danger",
-    entityType: "ROLE",
-    entityId: "340b1953-2131-4826-8b60-5b89dd88e168",
-    details: { roleKey: "COLD_CALLER_REP", deletedRole: "Cold Caller Rep" },
-    dateStr: "Nov 15, 2026",
-    timeStr: "06:47:42 PM",
-    fullTimestamp: "Nov 15, 2026 at 06:47:42 PM"
-  },
-  {
-    id: "36293431-c0b8-4a68-86fb-e45365d09f21",
-    auditId: "36293431-c0b8-4a68-86fb-e45365d09f21",
-    actor: "Main Administrator",
-    action: "USER_DELETED",
-    actionLabel: "USER DELETED",
-    category: "DELETION",
-    badgeClass: "badge-danger",
-    entityType: "USER",
-    entityId: "73768cb2-21ea-4a6b-add3-77e6f0f0d954",
-    details: { name: "Taylor Brooks", role: "COLD_CALLER_REP", deletedUser: "taylor.brooks@hushhawk.com" },
-    dateStr: "Nov 15, 2026",
-    timeStr: "06:47:40 PM",
-    fullTimestamp: "Nov 15, 2026 at 06:47:40 PM"
-  },
-  {
-    id: "9e9a9cc7-b467-450e-83c9-4bad68e06d4b",
-    auditId: "9e9a9cc7-b467-450e-83c9-4bad68e06d4b",
-    actor: "Main Administrator",
-    action: "PASSWORD_RESET",
-    actionLabel: "PASSWORD RESET",
-    category: "SECURITY",
-    badgeClass: "badge-purple",
-    entityType: "USER",
-    entityId: "73768cb2-21ea-4a6b-add3-77e6f0f0d954",
-    details: { mode: "auto-generated", targetName: "Taylor Brooks", targetUser: "taylor.brooks@hushhawk.com" },
-    dateStr: "Nov 15, 2026",
-    timeStr: "06:47:36 PM",
-    fullTimestamp: "Nov 15, 2026 at 06:47:36 PM"
-  },
-  {
-    id: "02ba5d09-e285-4cf1-8cef-4623a30b25d8",
-    auditId: "02ba5d09-e285-4cf1-8cef-4623a30b25d8",
-    actor: "Main Administrator",
-    action: "PASSWORD_CHANGED",
-    actionLabel: "PASSWORD CHANGED",
-    category: "MODIFICATION",
-    badgeClass: "badge-warning",
-    entityType: "USER",
-    entityId: "73768cb2-21ea-4a6b-add3-77e6f0f0d954",
-    details: { mode: "manual", targetName: "Taylor Brooks", targetUser: "taylor.brooks@hushhawk.com" },
-    dateStr: "Nov 15, 2026",
-    timeStr: "06:47:35 PM",
-    fullTimestamp: "Nov 15, 2026 at 06:47:35 PM"
-  },
-  {
-    id: "d844d012-4f2d-4e61-bd51-b1148ff5bac2",
-    auditId: "d844d012-4f2d-4e61-bd51-b1148ff5bac2",
-    actor: "Jordan Miller",
-    action: "USER_LOGIN",
-    actionLabel: "USER LOGIN",
-    category: "SECURITY",
-    badgeClass: "badge-purple",
-    entityType: "AUTH",
-    entityId: "5193494a-6cb7-4d9d-9ad3-5c4860306254",
-    details: { role: "DIRECT_MAIL_SPECIALIST", email: "jordan@hushhawk.com", client: "Web Command Center" },
-    dateStr: "Nov 15, 2026",
-    timeStr: "06:35:39 PM",
-    fullTimestamp: "Nov 15, 2026 at 06:35:39 PM"
-  },
-  {
-    id: "53a06709-cba0-4246-86cb-b0ebad1694f2",
-    auditId: "53a06709-cba0-4246-86cb-b0ebad1694f2",
-    actor: "Main Administrator",
-    action: "ROLE_CREATED",
-    actionLabel: "ROLE CREATED",
-    category: "CREATION",
-    badgeClass: "badge-success",
-    entityType: "ROLE",
-    entityId: "fbd3f3af-a301-4849-94b2-4345160875b5",
-    details: { name: "Direct Mail Specialist", roleKey: "DIRECT_MAIL_SPECIALIST", allowedSections: 2 },
-    dateStr: "Nov 15, 2026",
-    timeStr: "06:34:57 PM",
-    fullTimestamp: "Nov 15, 2026 at 06:34:57 PM"
-  },
-  {
-    id: "a1b2c3d4-e5f6-7890-1234-56789abcdef0",
-    auditId: "a1b2c3d4-e5f6-7890-1234-56789abcdef0",
-    actor: "Sarah Connor",
-    action: "LEAD_STATUS_UPDATE",
-    actionLabel: "LEAD STATUS UPDATE",
-    category: "MODIFICATION",
-    badgeClass: "badge-warning",
-    entityType: "LEAD",
-    entityId: "lead-duval-1890-kingsley",
-    details: { address: "1890 Kingsley Ave", previousStatus: "Underwriting", newStatus: "Offer Sent", offerAmount: 184275 },
-    dateStr: "Nov 15, 2026",
-    timeStr: "05:12:18 PM",
-    fullTimestamp: "Nov 15, 2026 at 05:12:18 PM"
-  },
-  {
-    id: "b2c3d4e5-f6a7-8901-2345-6789abcdef01",
-    auditId: "b2c3d4e5-f6a7-8901-2345-6789abcdef01",
-    actor: "Alex Richard",
-    action: "DISPOSITION_MATCH",
-    actionLabel: "BUYER DISPATCHED",
-    category: "CREATION",
-    badgeClass: "badge-success",
-    entityType: "DISPOSITION",
-    entityId: "dispo-4218-commonwealth",
-    details: { property: "4218 Commonwealth Ave", buyersContacted: 14, buyerName: "Apex Duval Equity Partners" },
-    dateStr: "Nov 15, 2026",
-    timeStr: "04:45:00 PM",
-    fullTimestamp: "Nov 15, 2026 at 04:45:00 PM"
-  }
-];
 
 export default {
   name: 'TeamView',
@@ -1600,8 +1485,8 @@ export default {
       },
 
       // Audit Trail Data & Filters
-      auditLogs: [...DEFAULT_AUDIT_LOGS],
-      auditTotal: 1134,
+      auditLogs: [],
+      auditTotal: 0,
       auditLimit: 25,
       auditOffset: 0,
       auditSearch: '',
@@ -1611,6 +1496,7 @@ export default {
       auditCategoryFilter: '',
       auditMetrics: { ...DEFAULT_AUDIT_METRICS },
       selectedAuditItem: null,
+      isLoadingAudit: false,
 
       // Toast Notification
       alertToast: {
@@ -1731,6 +1617,7 @@ export default {
     },
 
     async fetchAuditLogs() {
+      this.isLoadingAudit = true;
       try {
         const params = new URLSearchParams();
         params.set('limit', String(this.auditLimit));
@@ -1763,8 +1650,8 @@ export default {
         if (res) {
           const data = await res.json();
           if (data && data.ok) {
-            this.auditLogs = data.logs || [];
-            this.auditTotal = data.total || 0;
+            this.auditLogs = Array.isArray(data.logs) ? data.logs : [];
+            this.auditTotal = typeof data.total === 'number' ? data.total : 0;
             if (data.metrics) {
               this.auditMetrics = data.metrics;
             }
@@ -1772,6 +1659,8 @@ export default {
         }
       } catch (e) {
         console.warn('[Audit] Fetch logs error:', e.message);
+      } finally {
+        this.isLoadingAudit = false;
       }
     },
 

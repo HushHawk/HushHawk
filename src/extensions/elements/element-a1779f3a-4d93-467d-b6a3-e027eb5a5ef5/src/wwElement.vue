@@ -2925,11 +2925,14 @@ return{icons,uid,feedMode,isEditing,metrics,query,zip,checked,tasks,imports,filt
   min-width: 0;
   border: 1px solid rgba(212, 175, 55, 0.18);
   border-radius: 10px;
-  overflow: hidden;
+  overflow: hidden !important;
   background: rgba(5, 22, 42, 0.85);
   backdrop-filter: blur(16px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
   transition: border-color 0.2s ease;
+  display: flex !important;
+  flex-direction: column !important;
+  box-sizing: border-box !important;
 }
 
 .panel:hover {
@@ -4167,10 +4170,17 @@ td a { color: #f5cf72 !important; }
 .sources li span { white-space: nowrap; }
 
 /* Deal Snapshot */
+.panel.analyzer {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  overflow: hidden !important;
+}
 .analyzer-body {
   display: flex;
   flex-direction: column;
-  flex: 1;
+  flex: 1 1 auto;
+  min-height: 0;
   padding: 2px 0 4px;
 }
 .analyzer-prop-header {

@@ -174,7 +174,6 @@
     </div>
 
     <!-- Create Task Modal -->
-    <Teleport to="body">
     <div v-if="isAddModalOpen" class="modal-overlay" @click.self="isAddModalOpen = false">
       <div class="modal-content">
         <div class="modal-header">
@@ -234,7 +233,6 @@
         </form>
       </div>
     </div>
-    </Teleport>
   </div>
 </template>
 

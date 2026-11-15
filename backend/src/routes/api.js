@@ -5021,16 +5021,16 @@ apiRouter.post('/calendar', (req, res) => {
 // ============================================================================
 
 // 1. Roles & Section Permissions
-apiRouter.get('/roles', async (req, res) => {
+const handleGetRoles = async (req, res) => {
     try {
         const roles = await RbacService.getRoles();
         res.json({ total: roles.length, roles });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
-});
+};
 
-apiRouter.post('/roles', async (req, res) => {
+const handleCreateRole = async (req, res) => {
     try {
         const { name, description, permissions, actor } = req.body;
         const role = await RbacService.createRole({ name, description, permissions, actor });
@@ -5038,9 +5038,9 @@ apiRouter.post('/roles', async (req, res) => {
     } catch (err) {
         res.status(400).json({ error: err.message });
     }
-});
+};
 
-apiRouter.put('/roles/:id', async (req, res) => {
+const handleUpdateRole = async (req, res) => {
     try {
         const { id } = req.params;
         const { name, description, permissions, actor } = req.body;
@@ -5049,9 +5049,9 @@ apiRouter.put('/roles/:id', async (req, res) => {
     } catch (err) {
         res.status(400).json({ error: err.message });
     }
-});
+};
 
-apiRouter.delete('/roles/:id', async (req, res) => {
+const handleDeleteRole = async (req, res) => {
     try {
         const { id } = req.params;
         const actor = req.body?.actor || 'Main Administrator';
@@ -5060,7 +5060,16 @@ apiRouter.delete('/roles/:id', async (req, res) => {
     } catch (err) {
         res.status(400).json({ error: err.message });
     }
-});
+};
+
+apiRouter.get('/roles', handleGetRoles);
+apiRouter.get('/rbac/roles', handleGetRoles);
+apiRouter.post('/roles', handleCreateRole);
+apiRouter.post('/rbac/roles', handleCreateRole);
+apiRouter.put('/roles/:id', handleUpdateRole);
+apiRouter.put('/rbac/roles/:id', handleUpdateRole);
+apiRouter.delete('/roles/:id', handleDeleteRole);
+apiRouter.delete('/rbac/roles/:id', handleDeleteRole);
 
 apiRouter.get('/rbac/sections', (req, res) => {
     res.json({

@@ -288,13 +288,13 @@
           </div>
         </div>
 
-        <transition v-else name="hushhawk-view-fade" mode="out-in">
+        <div v-else class="hushhawk-view-container">
           <component
             :is="currentViewComponent"
             :key="activeSectionKey"
             :content="content"
           />
-        </transition>
+        </div>
       </div>
 
       <!-- Floating Toast Notification System -->
@@ -695,6 +695,17 @@ export default {
       this.popstateListener = (e) => {
         if (e.state && e.state.section) {
           this.selectedSection = e.state.section;
+        } else if (typeof window !== 'undefined' && window.location) {
+          const path = window.location.pathname.toLowerCase().replace(/\/$/, '').replace(/^\//, '');
+          const validSections = [
+            'properties', 'vault', 'dispositions', 'cash-buyers', 'marketing', 'county-data',
+            'skip-tracing', 'contracts', 'follow-ups', 'analytics',
+            'team', 'settings', 'communications', 'tasks', 'calendar',
+            'contacts', 'automations', 'facebook-leads', 'direct-mail', 'deal-analyzer'
+          ];
+          if (validSections.includes(path)) {
+            this.selectedSection = path;
+          }
         }
       };
       window.addEventListener('popstate', this.popstateListener);
@@ -1855,6 +1866,22 @@ export default {
 .toast-slide-leave-to {
   transform: translateY(20px);
   opacity: 0;
+}
+
+.hushhawk-view-container {
+  width: 100%;
+  animation: hushhawkFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes hushhawkFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .hushhawk-view-fade-enter-active,
