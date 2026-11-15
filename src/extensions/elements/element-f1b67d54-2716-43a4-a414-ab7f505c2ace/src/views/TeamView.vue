@@ -1015,12 +1015,12 @@
             <!-- Permission Matrix Header -->
             <div class="matrix-control-bar">
               <div class="matrix-title">
-                <strong>Workspace Access Matrix ({{ roleForm.permissions.length }} of {{ allSections.length }} Selected)</strong>
+                <strong>Workspace Access Matrix ({{ (roleForm.permissions || []).length }} of {{ allSections.length }} Selected)</strong>
                 <small>Choose exact section permissions given to this role. Users assigned this role can only view these workspaces.</small>
               </div>
               <div class="matrix-actions">
                 <button type="button" class="btn btn-secondary btn-xs" @click="selectAllSections">
-                  Select All (23)
+                  Select All ({{ allSections.length }})
                 </button>
                 <button type="button" class="btn btn-secondary btn-xs" @click="clearAllSections">
                   Clear All
@@ -1034,7 +1034,7 @@
                 <div class="group-header">
                   <span class="group-title">{{ group.category }}</span>
                   <span class="group-count">
-                    {{ countSelectedInGroup(group) }} / {{ group.sections.length }}
+                    {{ countSelectedInGroup(group) }} / {{ group.sections.length }} Selected
                   </span>
                 </div>
 
@@ -1043,12 +1043,13 @@
                     v-for="s in group.sections" 
                     :key="s.path" 
                     class="section-checkbox-card"
-                    :class="{ checked: roleForm.permissions.includes(s.path) }"
+                    :class="{ checked: isSectionSelected(s.path) }"
+                    @click.prevent="toggleSectionPermission(s.path)"
                   >
                     <input 
                       type="checkbox" 
-                      :value="s.path" 
-                      v-model="roleForm.permissions" 
+                      :checked="isSectionSelected(s.path)" 
+                      @click.stop="toggleSectionPermission(s.path)"
                     />
                     <div class="card-icon" v-html="icons[s.icon] || icons.house"></div>
                     <div class="card-info">
@@ -1130,6 +1131,80 @@
 <script>
 import { icons } from '../icons.js';
 
+export const DEFAULT_SECTIONS = [
+  { key: 'dashboard', path: '/home', name: 'Dashboard', category: 'Executive & Core', icon: 'house' },
+  { key: 'properties', path: '/properties', name: 'Properties', category: 'Executive & Core', icon: 'house' },
+  { key: 'vault', path: '/vault', name: 'Media Vault', category: 'Executive & Core', icon: 'file' },
+  { key: 'seller-leads', path: '/seller-leads', name: 'Seller Leads', category: 'Acquisitions & Pipeline', icon: 'users' },
+  { key: 'acquisitions', path: '/acquisitions', name: 'Acquisitions', category: 'Acquisitions & Pipeline', icon: 'handshake' },
+  { key: 'follow-ups', path: '/follow-ups', name: 'Follow Ups', category: 'Acquisitions & Pipeline', icon: 'tasks' },
+  { key: 'contacts', path: '/contacts', name: 'Contacts', category: 'Acquisitions & Pipeline', icon: 'user' },
+  { key: 'tasks', path: '/tasks', name: 'Tasks', category: 'Acquisitions & Pipeline', icon: 'tasks' },
+  { key: 'calendar', path: '/calendar', name: 'Calendar', category: 'Acquisitions & Pipeline', icon: 'calendar' },
+  { key: 'communications', path: '/communications', name: 'Communications', category: 'Acquisitions & Pipeline', icon: 'mail' },
+  { key: 'dispositions', path: '/dispositions', name: 'Dispositions', category: 'Dispositions & Buyers', icon: 'badgeDollar' },
+  { key: 'cash-buyers', path: '/cash-buyers', name: 'Cash Buyers', category: 'Dispositions & Buyers', icon: 'users' },
+  { key: 'deal-analyzer', path: '/deal-analyzer', name: 'Deal Analyzer', category: 'Dispositions & Buyers', icon: 'calculator' },
+  { key: 'county-data', path: '/county-data', name: 'County Data', category: 'Intelligence & Market Data', icon: 'database' },
+  { key: 'skip-tracing', path: '/skip-tracing', name: 'Skip Tracing', category: 'Intelligence & Market Data', icon: 'search' },
+  { key: 'analytics', path: '/analytics', name: 'Analytics', category: 'Intelligence & Market Data', icon: 'chart' },
+  { key: 'marketing', path: '/marketing', name: 'Marketing', category: 'Campaigns & Outreach', icon: 'megaphone' },
+  { key: 'direct-mail', path: '/direct-mail', name: 'Direct Mail', category: 'Campaigns & Outreach', icon: 'mail' },
+  { key: 'facebook-leads', path: '/facebook-leads', name: 'Facebook Leads', category: 'Campaigns & Outreach', icon: 'megaphone' },
+  { key: 'contracts', path: '/contracts', name: 'Contracts', category: 'System Administration', icon: 'file' },
+  { key: 'team', path: '/team', name: 'Team & RBAC', category: 'System Administration', icon: 'users' },
+  { key: 'settings', path: '/settings', name: 'Settings', category: 'System Administration', icon: 'settings' },
+  { key: 'automations', path: '/automations', name: 'Automations', category: 'System Administration', icon: 'zap' }
+];
+
+export const DEFAULT_ROLES = [
+  {
+    role_id: 'super-admin-role',
+    role_key: 'SUPER_ADMIN',
+    name: 'Master Administrator',
+    description: 'Full uninhibited root access to all 23 platform workspaces, system settings, and audit logs.',
+    permissions: DEFAULT_SECTIONS.map(s => s.path),
+    is_system: true,
+    user_count: 3
+  },
+  {
+    role_id: 'acq-rep-role',
+    role_key: 'ACQUISITIONS_REP',
+    name: 'Acquisitions Specialist',
+    description: 'Lead intake, seller negotiations, pipeline follow-ups, and purchase contracts.',
+    permissions: ['/home', '/seller-leads', '/acquisitions', '/follow-ups', '/contacts', '/tasks', '/calendar', '/communications'],
+    is_system: true,
+    user_count: 2
+  },
+  {
+    role_id: 'dispo-rep-role',
+    role_key: 'DISPOSITIONS_REP',
+    name: 'Dispositions & Buyer Desk',
+    description: 'Dispositions inventory, cash buyer matching, and deal underwriting analyzer.',
+    permissions: ['/home', '/dispositions', '/cash-buyers', '/deal-analyzer', '/contacts', '/communications'],
+    is_system: true,
+    user_count: 1
+  },
+  {
+    role_id: 'mkt-lead-role',
+    role_key: 'MARKETING_LEAD',
+    name: 'Campaigns & Marketing Manager',
+    description: 'Direct mail drop batches, Facebook leads, marketing metrics, and county lists.',
+    permissions: ['/home', '/marketing', '/direct-mail', '/facebook-leads', '/county-data'],
+    is_system: true,
+    user_count: 1
+  },
+  {
+    role_id: 'field-ops-role',
+    role_key: 'FIELD_OPS',
+    name: 'Field Inspector & Media',
+    description: 'On-site walkthroughs, inspection media uploads to Media Vault, and property condition.',
+    permissions: ['/home', '/properties', '/vault', '/tasks'],
+    is_system: true,
+    user_count: 1
+  }
+];
+
 export default {
   name: 'TeamView',
   props: {
@@ -1142,8 +1217,8 @@ export default {
 
       // Members Data
       members: [],
-      roles: [],
-      allSections: [],
+      roles: [...DEFAULT_ROLES],
+      allSections: [...DEFAULT_SECTIONS],
       selectedMember: null,
       searchQuery: '',
       roleFilter: '',
@@ -1254,24 +1329,28 @@ export default {
     async loadSections() {
       try {
         const res = await fetch('/api/v1/rbac/sections');
-        const data = await res.json();
-        if (data && data.sections) {
-          this.allSections = data.sections;
+        if (res.ok) {
+          const data = await res.json();
+          if (data && Array.isArray(data.sections) && data.sections.length > 0) {
+            this.allSections = data.sections;
+          }
         }
       } catch (e) {
-        console.warn('[RBAC] Fallback sections:', e.message);
+        console.warn('[RBAC] Fallback default sections active:', e.message);
       }
     },
 
     async loadRoles() {
       try {
         const res = await fetch('/api/v1/roles');
-        const data = await res.json();
-        if (data && data.roles) {
-          this.roles = data.roles;
+        if (res.ok) {
+          const data = await res.json();
+          if (data && Array.isArray(data.roles) && data.roles.length > 0) {
+            this.roles = data.roles;
+          }
         }
       } catch (e) {
-        console.warn('[RBAC] Roles fetch error:', e.message);
+        console.warn('[RBAC] Fallback default roles active:', e.message);
       }
     },
 
@@ -1552,8 +1631,26 @@ export default {
       this.roleForm.permissions = [];
     },
 
+    isSectionSelected(path) {
+      return Array.isArray(this.roleForm.permissions) && this.roleForm.permissions.includes(path);
+    },
+
+    toggleSectionPermission(path) {
+      if (!Array.isArray(this.roleForm.permissions)) {
+        this.roleForm.permissions = [];
+      }
+      const idx = this.roleForm.permissions.indexOf(path);
+      if (idx > -1) {
+        this.roleForm.permissions.splice(idx, 1);
+      } else {
+        this.roleForm.permissions.push(path);
+      }
+    },
+
     countSelectedInGroup(group) {
-      return group.sections.filter(s => this.roleForm.permissions.includes(s.path)).length;
+      if (!group || !Array.isArray(group.sections)) return 0;
+      const perms = Array.isArray(this.roleForm.permissions) ? this.roleForm.permissions : [];
+      return group.sections.filter(s => perms.includes(s.path)).length;
     },
 
     async submitRoleForm() {
@@ -3102,9 +3199,11 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  max-height: 420px;
+  max-height: 480px;
+  min-height: 240px;
   overflow-y: auto;
-  padding-right: 4px;
+  padding-right: 6px;
+  width: 100%;
 }
 
 .matrix-group {
