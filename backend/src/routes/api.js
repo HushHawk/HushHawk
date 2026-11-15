@@ -2096,10 +2096,22 @@ apiRouter.post('/webhooks/podio', async (req, res) => {
             else if (sUpper.includes('FOLLOW')) normalizedStatus = 'FOLLOW_UP';
             else if (sUpper.includes('NO RESPONSE') || sUpper.includes('REALTOR') || sUpper.includes('LOST')) normalizedStatus = 'LOST';
 
-            // Create lead in PostgreSQL
+            // Resolve Person and Property in PostgreSQL
             const personId = crypto.randomUUID();
-            const propertyId = crypto.randomUUID();
             const leadId = crypto.randomUUID();
+            let propertyId = null;
+
+            const address = getF('Property Address')?.formatted || getF('Property Address')?.value || '';
+            if (address) {
+                propertyId = crypto.randomUUID();
+                const parcelRaw = `FL-32204-${Date.now().toString().slice(-4)}`;
+                const countyId = 'c1111111-1111-1111-1111-111111111111';
+                await pool.query(`
+                    INSERT INTO core.properties (property_id, county_id, parcel_raw, parcel_match, address_line1, city, state_code, postal_code, property_type, assessed_value, created_at, updated_at)
+                    VALUES ($1, $2, $3, $3, $4, 'Jacksonville', 'FL', '32204', 'Single Family', 250000, NOW(), NOW())
+                    ON CONFLICT DO NOTHING
+                `, [propertyId, countyId, parcelRaw, address]);
+            }
 
             await pool.query(`
                 INSERT INTO core.people (person_id, full_name, primary_phone, primary_email, created_at, updated_at)
