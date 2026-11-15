@@ -16,6 +16,8 @@ async function runMigrations() {
     const client = await pool.connect();
 
     try {
+        // Serialize migration runs that target the same database.
+        await client.query('SELECT pg_advisory_lock(628192001)');
         // Ensure schema tracking table exists
         await client.query(`
             CREATE SCHEMA IF NOT EXISTS ref;
@@ -75,7 +77,7 @@ async function runMigrations() {
 
         console.log(`\n🎉 [HushHawk Migration Engine] Complete! ${newlyAppliedCount} new migration(s)/seed(s) applied.\n`);
     } finally {
-        client.release();
+        client.release(true);
     }
 }
 

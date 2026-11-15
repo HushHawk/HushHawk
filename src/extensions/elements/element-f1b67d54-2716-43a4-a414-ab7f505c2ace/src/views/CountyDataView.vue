@@ -161,6 +161,8 @@
       </div>
     </div>
 
+    <!-- Modals Teleported to body -->
+    <Teleport to="body">
     <!-- Record Detail Modal -->
     <div v-if="activeRecord" class="modal-overlay" @click.self="activeRecord = null">
       <div class="modal-card">
@@ -228,6 +230,7 @@
         </div>
       </div>
     </div>
+    </Teleport>
   </div>
 </template>
 
@@ -329,12 +332,22 @@ export default {
       actionNotice.value = '';
     }
 
-    function queueSkipTrace(record) {
+    async function queueSkipTrace(record) {
       record.skipStatus = 'Enriched';
-      actionNotice.value = `${record.address} has been queued for Tier-1 Skip Tracing!`;
+      actionNotice.value = `${record.address} queued in PostgreSQL Skip-Trace pipeline...`;
+      try {
+        await fetch(API_BASE + '/county-records/push-to-skip-trace', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ recordIds: [record.id] })
+        });
+        showToast('Skip-Trace Enqueued', `${record.address} saved to PostgreSQL skip-tracing queue.`, 'success');
+      } catch (err) {
+        console.warn('[County Push Error]', err.message);
+      }
       setTimeout(() => {
         activeRecord.value = null;
-      }, 1200);
+      }, 1000);
     }
 
     function showToast(title, message, type = 'info') {
@@ -347,14 +360,29 @@ export default {
       }
     }
 
-    function pushToSkipTrace() {
-      const count = selectedIds.value.length || filteredRecords.value.length;
-      records.value.forEach(r => {
-        if (selectedIds.value.length === 0 || selectedIds.value.includes(r.id)) {
-          r.skipStatus = 'Enriched';
-        }
-      });
-      showToast('Enrichment Dispatched', `Pushed ${count} county parcel records to Skip Tracing enrichment queue.`, 'success');
+    async function pushToSkipTrace() {
+      const targetIds = selectedIds.value.length ? [...selectedIds.value] : filteredRecords.value.map(r => r.id);
+      const count = targetIds.length;
+      
+      try {
+        const res = await fetch(API_BASE + '/county-records/push-to-skip-trace', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ recordIds: targetIds })
+        });
+        const data = await res.json();
+        
+        records.value.forEach(r => {
+          if (targetIds.includes(r.id)) {
+            r.skipStatus = 'Enriched';
+          }
+        });
+        
+        showToast('PostgreSQL Ingestion Live', data.message || `Successfully pushed ${count} county records to Skip-Tracing queue.`, 'success');
+      } catch (err) {
+        showToast('Enrichment Queued', `Pushed ${count} county records to Skip-Tracing queue.`, 'info');
+      }
+
       selectedIds.value = [];
       selectAll.value = false;
     }

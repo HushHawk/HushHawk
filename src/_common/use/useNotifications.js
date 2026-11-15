@@ -72,7 +72,9 @@ async function clearAll() {
 }
 
 function showToast(message, type = 'info', durationMs = 4000) {
-    const id = Date.now() + Math.random().toString(36).substring(2, 7);
+    const id = typeof crypto !== 'undefined' && crypto.randomUUID 
+      ? crypto.randomUUID() 
+      : 'notif-' + Date.now();
     toasts.value.push({ id, message, type });
     setTimeout(() => {
         toasts.value = toasts.value.filter(t => t.id !== id);

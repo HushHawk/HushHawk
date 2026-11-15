@@ -1,6 +1,6 @@
 {
-  "buildCommand": "echo 'Pre-built dist ready'",
-  "installCommand": "echo 'Skipping npm install'",
+  "buildCommand": "npm run build",
+  "installCommand": "npm ci",
   "outputDirectory": "dist",
   "cleanUrls": true,
   "rewrites": [

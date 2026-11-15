@@ -464,18 +464,50 @@ export default {
       propertySearchQuery: '',
       showPropertyDropdown: false,
       allProperties: [],
-      pollTimer: null
+      pollTimer: null,
+      isLoggedIn: false,
+      authCheckInterval: null
     };
   },
   computed: {
     shouldShowMessenger() {
-      if (typeof window === 'undefined') return true;
+      if (typeof window === 'undefined') return false;
       const path = (this.$route?.path || window.location.pathname || '').toLowerCase();
-      // Hide on login, signup, forgot-password screens
-      if (path.includes('/login') || path.includes('/signup') || path.includes('/forgot-password')) {
+      const hash = (window.location.hash || '').toLowerCase();
+
+      // 1. Strict route suppression: never show on login or auth screens
+      const isAuthRoute =
+        path === '/login' ||
+        path.startsWith('/login') ||
+        path === '/signup' ||
+        path.startsWith('/signup') ||
+        path === '/forgot-password' ||
+        path.startsWith('/forgot-password') ||
+        path.includes('/login') ||
+        path.includes('/signup') ||
+        path.includes('/forgot-password') ||
+        hash === '#login' ||
+        hash === '#/login' ||
+        hash === '#signup' ||
+        hash === '#/signup' ||
+        hash === '#forgot-password' ||
+        hash === '#/forgot-password';
+
+      if (isAuthRoute) return false;
+
+      // 2. Strict DOM suppression: if login gateway or forwarding view is rendered, hide immediately
+      if (typeof document !== 'undefined') {
+        const authDomPresent = !!document.querySelector('.hushhawk-auth-wrapper, .auth-card, #login-email, .hushhawk-auth-forwarding');
+        if (authDomPresent) return false;
+      }
+
+      // 3. Strict global authentication flag check
+      if (typeof window.__HUSHHAWK_AUTHENTICATED__ === 'boolean' && !window.__HUSHHAWK_AUTHENTICATED__) {
         return false;
       }
-      return true;
+
+      // 4. Must be logged in with a valid session
+      return !!this.isLoggedIn;
     },
     totalUnread() {
       if (!Array.isArray(this.threads)) return 0;
@@ -507,6 +539,20 @@ export default {
     }
   },
   watch: {
+    '$route'() {
+      this.checkAuthStatus();
+    },
+    isLoggedIn(newVal) {
+      if (newVal) {
+        this.refreshThreads();
+        this.fetchPropertiesForDropdown();
+      } else {
+        if (this.isOpen) this.closeWindow();
+        this.threads = [];
+        this.messages = [];
+        this.currentThread = null;
+      }
+    },
     isOpen() {
       this.syncPartnerChatActiveState();
     },
@@ -521,16 +567,26 @@ export default {
     }
   },
   mounted() {
-    this.refreshThreads();
-    this.fetchPropertiesForDropdown();
+    this.checkAuthStatus();
+    if (this.isLoggedIn) {
+      this.refreshThreads();
+      this.fetchPropertiesForDropdown();
+    }
 
     if (typeof window !== 'undefined') {
       window.addEventListener('open-partner-chat', this.handleExternalChatOpen);
       window.addEventListener('keydown', this.handleGlobalKeydown);
+      window.addEventListener('storage', this.checkAuthStatus);
+      window.addEventListener('popstate', this.checkAuthStatus);
+      window.addEventListener('hashchange', this.checkAuthStatus);
+      window.addEventListener('hushhawk-auth-change', this.checkAuthStatus);
     }
 
-    // Fast realtime polling: every 2.5 seconds when open, every 5s when closed
+    this.authCheckInterval = setInterval(this.checkAuthStatus, 500);
+
+    // Fast realtime polling: only when authenticated
     this.pollTimer = setInterval(() => {
+      if (!this.checkAuthStatus()) return;
       if (this.isOpen && this.currentThread) {
         this.fetchMessagesSilently(this.currentThread.id);
       } else {
@@ -542,14 +598,96 @@ export default {
     if (typeof window !== 'undefined') {
       window.removeEventListener('open-partner-chat', this.handleExternalChatOpen);
       window.removeEventListener('keydown', this.handleGlobalKeydown);
+      window.removeEventListener('storage', this.checkAuthStatus);
+      window.removeEventListener('popstate', this.checkAuthStatus);
+      window.removeEventListener('hashchange', this.checkAuthStatus);
+      window.removeEventListener('hushhawk-auth-change', this.checkAuthStatus);
       if (typeof document !== 'undefined' && document.body) {
         document.body.classList.remove('partner-chat-active');
       }
       window.dispatchEvent(new CustomEvent('hushhawk-partner-chat-state', { detail: { open: false } }));
     }
     if (this.pollTimer) clearInterval(this.pollTimer);
+    if (this.authCheckInterval) clearInterval(this.authCheckInterval);
   },
   methods: {
+    checkAuthStatus() {
+      if (typeof window === 'undefined') {
+        this.isLoggedIn = false;
+        return false;
+      }
+
+      // 1. Strict route suppression: never show on login/auth routes
+      const path = (this.$route?.path || window.location.pathname || '').toLowerCase();
+      const hash = (window.location.hash || '').toLowerCase();
+
+      const isAuthRoute =
+        path === '/login' ||
+        path.startsWith('/login') ||
+        path === '/signup' ||
+        path.startsWith('/signup') ||
+        path === '/forgot-password' ||
+        path.startsWith('/forgot-password') ||
+        path.includes('/login') ||
+        path.includes('/signup') ||
+        path.includes('/forgot-password') ||
+        hash === '#login' ||
+        hash === '#/login' ||
+        hash === '#signup' ||
+        hash === '#/signup' ||
+        hash === '#forgot-password' ||
+        hash === '#/forgot-password';
+
+      if (isAuthRoute) {
+        this.isLoggedIn = false;
+        if (this.isOpen) this.closeWindow();
+        return false;
+      }
+
+      // 2. Strict DOM suppression: if login gateway or auth wrapper is rendered
+      if (typeof document !== 'undefined') {
+        const authDomPresent = !!document.querySelector('.hushhawk-auth-wrapper, .auth-card, #login-email, .hushhawk-auth-forwarding');
+        if (authDomPresent) {
+          this.isLoggedIn = false;
+          if (this.isOpen) this.closeWindow();
+          return false;
+        }
+      }
+
+      // 3. Strict global authentication flag check
+      if (typeof window.__HUSHHAWK_AUTHENTICATED__ === 'boolean' && !window.__HUSHHAWK_AUTHENTICATED__) {
+        this.isLoggedIn = false;
+        if (this.isOpen) this.closeWindow();
+        return false;
+      }
+
+      // 4. Verify valid authenticated session payload in storage
+      let hasSession = false;
+      try {
+        const rawSession =
+          window.sessionStorage.getItem('hushhawk_session') ||
+          window.localStorage.getItem('hushhawk_session');
+
+        if (rawSession) {
+          try {
+            const parsed = JSON.parse(rawSession);
+            if (parsed && (parsed.email || parsed.token || parsed.user || parsed.id || parsed.role)) {
+              hasSession = true;
+            }
+          } catch (e) {
+            hasSession = false;
+          }
+        }
+      } catch (err) {
+        hasSession = false;
+      }
+
+      this.isLoggedIn = hasSession;
+      if (!hasSession && this.isOpen) {
+        this.closeWindow();
+      }
+      return hasSession;
+    },
     syncPartnerChatActiveState() {
       const isActive = this.isOpen && !this.isMinimized;
       if (typeof window !== 'undefined') {

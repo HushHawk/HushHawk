@@ -1,6 +1,6 @@
 <template>
   <!-- 1. AUTHENTICATION GATEWAY (When unauthenticated or on /login) -->
-  <div v-if="showLoginUI" class="hushhawk-auth-wrapper">
+  <div v-if="showLoginUI" class="hushhawk-auth-wrapper hushhawk-gold">
     <!-- Atmospheric Skyline Background & Cinematic Overlays -->
     <div class="auth-bg-image"></div>
     <div class="auth-bg-gradient-overlay"></div>
@@ -365,6 +365,7 @@
 </template>
 
 <script>
+import "@/assets/css/hushhawk-gold.css";
 export default {
   name: 'HushHawkLoginPage',
   props: {

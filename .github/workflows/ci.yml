@@ -11,12 +11,23 @@ jobs:
     name: Core Foundation & Acceptance Checks
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: hushhawk_ci
+          POSTGRES_USER: hushhawk_ci
+          POSTGRES_PASSWORD: hushhawk_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U hushhawk_ci -d hushhawk_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+
     env:
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_REGION: us-east-2
-      AWS_S3_BUCKET: hushhawk-private-property-vault
+      DATABASE_URL: postgresql://hushhawk_ci:hushhawk_ci@127.0.0.1:5432/hushhawk_ci?sslmode=disable
 
     strategy:
       matrix:
@@ -34,6 +45,12 @@ jobs:
 
       - name: Install Dependencies
         run: npm ci
+
+      - name: Migrate and back up a fresh database
+        run: |
+          npm run db:migrate
+          npm run db:migrate
+          npm run db:backup
 
       - name: Verify CrownKey Deterministic Standard
         run: npm run test:crownkey
@@ -53,7 +70,12 @@ jobs:
       - name: Verify Blueprint Subsystems (Mail, Call, SMS, CRM, Tasks, Audit)
         run: npm run test:subsystems
 
-      - name: Verify AWS S3 Private Vault Storage
+      - name: Verify Direct Mail Tracking and Partner Chat
+        run: |
+          npm run test:direct-mail
+          npm run test:partner-chat
+
+      - name: Verify Private Vault Storage in Development Mode
         run: |
           node backend/src/server.js &
           sleep 3

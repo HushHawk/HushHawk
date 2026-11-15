@@ -168,6 +168,7 @@
     </div>
 
     <!-- Add Campaign Modal -->
+    <Teleport to="body">
     <div v-if="showAddModal" class="modal-overlay" @click.self="showAddModal = false">
       <div class="modal-card">
         <div class="modal-header">
@@ -213,6 +214,7 @@
         </div>
       </div>
     </div>
+    </Teleport>
   </div>
 </template>
 

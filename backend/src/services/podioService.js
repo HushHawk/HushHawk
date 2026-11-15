@@ -4,6 +4,7 @@ export class PodioService {
     static CLIENT_ID = process.env.PODIO_CLIENT_ID || '';
     static CLIENT_SECRET = process.env.PODIO_CLIENT_SECRET || '';
     static BASE_URL = 'https://api.podio.com';
+    static _tokenCache = {};
 
     /**
      * Authenticate with Podio using App Authentication
@@ -11,6 +12,16 @@ export class PodioService {
      * @param {string} appToken 
      */
     static async authenticateApp(appId, appToken) {
+        const cacheKey = `${appId}:${appToken}`;
+        const cached = this._tokenCache[cacheKey];
+        if (cached && Date.now() < cached.expiresAt - 60000) {
+            return {
+                access_token: cached.access_token,
+                token_type: 'bearer',
+                expires_in: Math.floor((cached.expiresAt - Date.now()) / 1000)
+            };
+        }
+
         const payload = new URLSearchParams({
             grant_type: 'app',
             app_id: appId,
@@ -30,7 +41,12 @@ export class PodioService {
             throw new Error(`Podio App Auth Failed [HTTP ${res.status}]: ${err}`);
         }
 
-        return await res.json();
+        const data = await res.json();
+        this._tokenCache[cacheKey] = {
+            access_token: data.access_token,
+            expiresAt: Date.now() + (data.expires_in || 28800) * 1000
+        };
+        return data;
     }
 
     /**

@@ -599,6 +599,8 @@
       </table>
     </div>
 
+    <!-- Modals Teleported to body -->
+    <Teleport to="body">
     <!-- MODAL 1: Assign to Property -->
     <div v-if="showAssignModal" class="vault-modal-backdrop" @click="showAssignModal = false">
       <div class="vault-modal-card" @click.stop>
@@ -891,6 +893,7 @@
         </div>
       </div>
     </transition>
+    </Teleport>
 
     <!-- Sleek Floating Toast Notification -->
     <transition name="toast-slide">

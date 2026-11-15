@@ -4,10 +4,40 @@
  * (Alex Richard & Waldo Ellis)
  */
 
+import 'dotenv/config';
 import assert from 'assert';
+import { once } from 'node:events';
 import express from 'express';
-import { apiRouter } from '../backend/src/routes/api.js';
-import { pool } from '../backend/src/store/pgClient.js';
+
+const databaseUrl = new URL(process.env.DATABASE_URL || 'postgresql://missing.invalid');
+assert.ok(['127.0.0.1', 'localhost'].includes(databaseUrl.hostname) || databaseUrl.hostname.includes('rds.amazonaws.com'), 'Use a valid PostgreSQL database');
+
+const { apiRouter } = await import('../backend/src/routes/api.js');
+const { pool } = await import('../backend/src/store/pgClient.js');
+
+async function seedChatFixtures() {
+    await pool.query(`
+        INSERT INTO core.partner_presence (user_name, full_name, role) VALUES
+            ('Alex Richard', 'Alex Richard', 'Acquisitions Lead (Admin)'),
+            ('Waldo Ellis', 'Waldo Ellis', 'Dispositions Lead (Partner)')
+        ON CONFLICT (user_name) DO NOTHING;
+        INSERT INTO core.properties (county_id, parcel_raw, parcel_match, address_line1, city, postal_code)
+        SELECT c.county_id, fixture.parcel, fixture.parcel, fixture.address, 'Jacksonville', '32204'
+        FROM ref.counties c
+        CROSS JOIN (VALUES ('000123001','123 Main St'), ('000881002','881 Main St'),
+                           ('003245003','3245 Main St')) AS fixture(parcel, address)
+        WHERE c.county_code = 'DUV'
+        ON CONFLICT (county_id, parcel_match) DO NOTHING;
+        INSERT INTO core.partner_chat_threads (id, title, thread_type)
+        VALUES ('00000000-0000-0000-0000-000000000001', 'General Partner Channel', 'general')
+        ON CONFLICT (id) DO NOTHING;
+        INSERT INTO core.partner_chat_threads (id, title, thread_type, property_id)
+        SELECT p.property_id, p.address_line1, 'property', p.property_id
+        FROM core.properties p JOIN ref.counties c USING (county_id)
+        WHERE c.county_code = 'DUV' AND p.parcel_match IN ('000123001', '000881002', '003245003')
+        ON CONFLICT (id) DO NOTHING;
+    `);
+}
 
 async function runTestSuite() {
     console.log('\n================================================================');
@@ -18,10 +48,12 @@ async function runTestSuite() {
     app.use(express.json());
     app.use('/api/v1', apiRouter);
 
-    const server = app.listen(4011);
-    const BASE = 'http://localhost:4011/api/v1';
+    const server = app.listen(0, '127.0.0.1');
+    await once(server, 'listening');
+    const BASE = `http://127.0.0.1:${server.address().port}/api/v1`;
 
     try {
+        await seedChatFixtures();
         // [Test 1] Partner Presence (Alex Richard & Waldo Ellis online)
         console.log('[Test 1] Verifying Partner Presence & Online Status Ribbon...');
         const presRes = await fetch(`${BASE}/chat/presence`);
@@ -48,7 +80,7 @@ async function runTestSuite() {
         const has881 = searchData.properties.some(p => p.address_line1.includes('881 Main'));
         const has3245 = searchData.properties.some(p => p.address_line1.includes('3245 Main'));
         assert.ok(has123 && has881 && has3245, 'Dropdown should find 123 Main, 881 Main, and 3245 Main St');
-        console.log(`  ✓ PASS: Quick search resolved all 3 sample properties from PostgreSQL RDS`);
+        console.log(`  ✓ PASS: Quick search resolved all 3 sample properties from PostgreSQL`);
 
         // [Test 3] Multi-Chat Threads Retrieval & Layer Isolation
         console.log('\n[Test 3] Verifying Multi-Chat Threads & Layer Isolation...');
@@ -146,11 +178,11 @@ async function runTestSuite() {
         const delData = await delRes.json();
         assert.ok(delData.ok, 'Delete should be confirmed ok');
         assert.strictEqual(delData.deleted_id, msg2Data.message.id);
-        console.log(`  ✓ PASS: Message deleted successfully from PostgreSQL RDS`);
+        console.log(`  ✓ PASS: Message deleted successfully from PostgreSQL`);
 
         // Clean up msg1Data as well to ensure clean production DB
         await fetch(`${BASE}/chat/messages/${msg1Data.message.id}`, { method: 'DELETE' });
-        console.log(`  ✓ PASS: Cleaned up test messages. Zero mock data retained.`);
+        console.log(`  ✓ PASS: Removed test messages.`);
 
         console.log('\n================================================================');
         console.log('🎉 ALL PARTNER MULTI-CHAT & PROPERTY MESSENGER TESTS PASSED (100%)');

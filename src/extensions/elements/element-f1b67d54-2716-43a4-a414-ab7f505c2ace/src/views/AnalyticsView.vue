@@ -314,8 +314,11 @@ export default {
     },
     exportReport() {
       try {
+        const rev = this.currentMetrics[0]?.value || '$0';
+        const spread = this.currentMetrics[1]?.value || '$0';
+        const closed = this.currentMetrics[2]?.value || '0';
         let csv = `HUSHHAWK WHOLESALE EXECUTIVE REPORT (${this.timeRange.toUpperCase()})\n`;
-        csv += `Gross Assignment Revenue,$286400\nAvg Deal Spread,$28400\nContracts Closed,28\nPipeline Conversion,4.4%\n\n`;
+        csv += `Gross Assignment Revenue,${rev}\nAvg Deal Spread,${spread}\nContracts Closed,${closed}\nPipeline Conversion,${this.funnelConversionRate}%\n\n`;
         csv += `Representative,Role,Deals Closed,Gross Spread,Conversion\n`;
         this.reps.forEach(r => {
           csv += `"${r.name}","${r.role}",${r.dealsClosed},$${r.grossVolume},"${r.conversion}"\n`;

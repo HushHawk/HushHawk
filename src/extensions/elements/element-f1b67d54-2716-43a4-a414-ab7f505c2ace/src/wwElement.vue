@@ -1,11 +1,11 @@
 <template>
-  <section class="hushhawk-command-center" :class="{ 'nav-open': navOpen }">
+  <section class="hushhawk-command-center hushhawk-gold gold-section" :class="{ 'nav-open': navOpen }">
     <!-- Mobile Backdrop -->
     <div v-if="navOpen" class="sidebar-backdrop" @click="navOpen = false"></div>
 
     <!-- Left Navigation Sidebar -->
     <aside class="sidebar">
-      <button class="sidebar-close-btn" @click="navOpen = false" title="Close Menu" aria-label="Close menu">✕</button>
+      <button v-if="navOpen" class="sidebar-close-btn" @click="navOpen = false" title="Close Menu" aria-label="Close menu">✕</button>
       <a href="/home" class="brand">
         <span class="brand-icon" v-html="icons.logo"></span>
         <strong>HUSHHAWK<br>INTELLIGENCE</strong>
@@ -264,6 +264,7 @@
 </template>
 
 <script>
+import "@/assets/css/hushhawk-gold.css";
 import { icons } from './icons.js';
 import { navigation } from './navigation.js';
 
@@ -730,14 +731,11 @@ export default {
   height: 18px;
 }
 
-/* Sidebar Styling - Locked & Fixed on Viewport */
+/* Sidebar Styling - Locked & Fixed on Viewport (Executive Luxury Gold Edition) */
 .sidebar {
-  width: 210px !important;
-  min-width: 210px !important;
-  max-width: 210px !important;
-  background: radial-gradient(circle at 85% 0%, #075199 0%, transparent 25%),
-              linear-gradient(180deg, #08274a, #041a33 80%);
-  border-right: 1px solid #23568a;
+  width: 220px !important;
+  min-width: 220px !important;
+  max-width: 220px !important;
   position: fixed !important;
   top: 0 !important;
   left: 0 !important;
@@ -749,68 +747,100 @@ export default {
   overflow: hidden !important;
   box-sizing: border-box !important;
   z-index: 1000 !important;
+  background: 
+    linear-gradient(40deg, transparent 40%, rgba(212, 175, 55, 0.15) 47%, rgba(253, 230, 138, 0.45) 50%, rgba(212, 175, 55, 0.15) 53%, transparent 60%),
+    linear-gradient(35deg, transparent 65%, rgba(212, 175, 55, 0.1) 72%, rgba(253, 230, 138, 0.35) 75%, rgba(212, 175, 55, 0.1) 78%, transparent 85%),
+    linear-gradient(180deg, #07111e 0%, #030812 60%, #02050b 100%) !important;
+  backdrop-filter: blur(20px);
+  border-right: 1px solid rgba(212, 175, 55, 0.25) !important;
+  border-left: 2px solid rgba(212, 175, 55, 0.45) !important;
+  box-shadow: 6px 0 28px rgba(0, 0, 0, 0.7);
+}
+
+.sidebar::after {
+  content: '';
+  position: absolute;
+  bottom: 55px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 130px;
+  height: 130px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36' fill='none'%3E%3Cpath d='M12 9.5L14 13.5L18 7.5L22 13.5L24 9.5L25 15.5H11L12 9.5Z' fill='%23D4AF37'/%3E%3Cpath d='M6 14.5C10 16 14 19 16.5 22L13 23C9 20 6.5 17 6 14.5Z' fill='%23D4AF37'/%3E%3Cpath d='M30 14.5C26 16 22 19 19.5 22L23 23C27 20 29.5 17 30 14.5Z' fill='%23D4AF37'/%3E%3Cpath d='M18 14L15.5 19.5L18 29L20.5 19.5L18 14Z' fill='%23D4AF37'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  opacity: 0.16;
+  pointer-events: none;
+  filter: drop-shadow(0 0 12px rgba(212, 175, 55, 0.5));
+  z-index: 1;
 }
 
 .brand {
   flex-shrink: 0 !important;
-  height: 182px;
-  min-height: 182px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
+  height: 145px !important;
+  min-height: 145px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-direction: column !important;
   color: white !important;
-  text-decoration: none;
-  border-bottom: 1px solid #1b4a78;
-  padding: 15px 8px 12px;
-  text-align: center;
+  text-decoration: none !important;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.2) !important;
+  padding: 14px 8px 10px !important;
+  text-align: center !important;
+  background: linear-gradient(180deg, rgba(212, 175, 55, 0.12) 0%, rgba(4, 18, 45, 0.4) 100%) !important;
 }
 
 .brand-icon {
   display: block;
-  width: 98px;
-  height: 92px;
-  filter: drop-shadow(0 3px 6px #001528);
+  width: 86px;
+  height: 80px;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.8));
 }
 
 .brand strong {
-  font-size: 15px;
-  font-weight: 850;
-  line-height: 1.04;
-  margin-top: 6px;
-  color: #f8fafc;
-  letter-spacing: 0.05em;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 850 !important;
+  line-height: 1.08 !important;
+  margin-top: 6px !important;
+  color: #fff5e2 !important;
+  letter-spacing: 0.14em !important;
+  text-transform: uppercase !important;
 }
 
 .brand small {
-  font-size: 5.5px;
-  letter-spacing: 1px;
-  margin-top: 7px;
-  color: #94a3b8;
+  font-size: 6.5px !important;
+  letter-spacing: 1.2px !important;
+  margin-top: 5px !important;
+  color: #d4af37 !important;
+  font-weight: 600 !important;
 }
 
 .sidebar nav {
-  padding: 8px 6px;
-  flex: 1 1 0%;
-  min-height: 0;
+  padding: 10px 8px !important;
+  flex: 1 1 0% !important;
+  min-height: 0 !important;
   overflow-y: auto !important;
   overflow-x: hidden !important;
-  overscroll-behavior: contain;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  scrollbar-width: thin;
-  scrollbar-color: #1b4a78 transparent;
+  overscroll-behavior: contain !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0 !important;
+  scrollbar-width: thin !important;
+  scrollbar-color: rgba(212, 175, 55, 0.3) transparent !important;
+  position: relative !important;
+  z-index: 2 !important;
 }
 
 .sidebar nav::-webkit-scrollbar {
-  width: 5px;
+  width: 4px;
 }
 .sidebar nav::-webkit-scrollbar-track {
-  background: rgba(4, 24, 45, 0.4);
+  background: rgba(4, 24, 45, 0.3);
 }
 .sidebar nav::-webkit-scrollbar-thumb {
-  background: #1b4a78;
+  background: rgba(212, 175, 55, 0.35);
   border-radius: 3px;
 }
 .sidebar nav::-webkit-scrollbar-thumb:hover {
@@ -818,66 +848,99 @@ export default {
 }
 
 .sidebar nav a {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 7px 10px;
-  min-height: 34px;
-  font-size: 11.5px;
-  color: #e2e8f0;
-  text-decoration: none;
-  border: 1px solid transparent;
-  border-radius: 6px;
-  transition: all 0.15s ease;
+  display: flex !important;
+  align-items: center !important;
+  gap: 11px !important;
+  padding: 9px 12px !important;
+  min-height: 38px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: #f8fafc !important;
+  text-decoration: none !important;
+  border-radius: 8px !important;
+  border: 1px solid transparent !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  margin: 1px 2px !important;
+  box-sizing: border-box !important;
+}
+
+.sidebar nav a .icon,
+.sidebar nav .icon {
+  width: 17px !important;
+  height: 17px !important;
+  color: #eac16a !important;
+  flex-shrink: 0 !important;
+}
+
+.sidebar nav a .icon svg,
+.sidebar nav .icon svg {
+  width: 17px !important;
+  height: 17px !important;
+  stroke: #eac16a !important;
 }
 
 .sidebar nav a:hover {
-  background-color: rgba(43, 111, 166, 0.25);
-  color: #f8fafc;
+  background: rgba(212, 175, 55, 0.1) !important;
+  color: #ffffff !important;
+  border-color: rgba(212, 175, 55, 0.25) !important;
+  transform: translateX(2px);
+}
+
+.sidebar nav a:hover .icon,
+.sidebar nav a:hover .icon svg {
+  color: #fde68a !important;
+  stroke: #fde68a !important;
 }
 
 .sidebar nav a.active {
-  background: linear-gradient(130deg, rgba(255, 240, 171, 0.15), #d4ac47 55%, #a07d2d);
-  border-color: #edce81;
-  box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.4), 0 0 12px rgba(229, 198, 106, 0.25);
-  color: #fff;
-  font-weight: 700;
+  background: linear-gradient(180deg, #744d1e 0%, #3e260c 100%) !important;
+  border: 1.5px solid #dfa745 !important;
+  border-radius: 11px !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  box-shadow: 
+    0 0 14px rgba(223, 167, 69, 0.45),
+    inset 0 1px 2px rgba(255, 255, 255, 0.4),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.5) !important;
+  padding: 8px 12px !important;
+  margin: 3px 2px !important;
 }
 
-.sidebar nav .icon {
-  width: 17px;
-  height: 17px;
-  color: #cbd5e1;
-}
-
-.sidebar nav a.active .icon {
-  color: #ffffff;
+.sidebar nav a.active .icon,
+.sidebar nav a.active .icon svg {
+  color: #fde68a !important;
+  stroke: #fde68a !important;
+  filter: drop-shadow(0 0 4px rgba(253, 230, 138, 0.7));
 }
 
 .more-workspaces {
-  margin: 6px 0 0 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  padding-top: 6px;
+  margin: 10px 0 0 0 !important;
+  border-top: 1px solid rgba(212, 175, 55, 0.15) !important;
+  padding-top: 8px !important;
 }
 
 .more-workspaces summary {
-  cursor: pointer;
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #edcf7c;
-  padding: 6px 10px;
-  font-weight: 700;
+  cursor: pointer !important;
+  font-size: 10px !important;
+  font-weight: 850 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.1em !important;
+  color: #eac16a !important;
+  padding: 8px 12px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
 }
 
 .sidebar-logout-section {
-  flex-shrink: 0;
-  padding: 8px 10px 10px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  margin-top: auto;
-}
-
-.sidebar-logout-btn {
+  flex-shrink: 0 !important;
+  padding: 12px 10px 14px !important;
+  border-top: 1px solid rgba(212, 175, 55, 0.15) !important;
+  margin-top: auto !important;
+  position: relative !important;
+  z-index: 3 !important;
+  
   display: flex;
   align-items: center;
   justify-content: center;
@@ -887,10 +950,10 @@ export default {
   height: 35px;
   min-height: 35px;
   padding: 0 14px;
-  background: rgba(239, 68, 68, 0.08);
-  border: 1px solid rgba(239, 68, 68, 0.28);
+  background: transparent;
+  border: 1px solid rgba(239, 68, 68, 0.2);
   border-radius: 6px;
-  color: #fca5a5;
+  color: rgba(252, 165, 165, 0.75);
   font-family: inherit;
   font-size: 12px;
   font-weight: 600;
@@ -898,14 +961,14 @@ export default {
   white-space: nowrap;
   box-sizing: border-box;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .sidebar-logout-btn:hover {
-  background: rgba(239, 68, 68, 0.2);
-  border-color: rgba(239, 68, 68, 0.55);
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.45);
   color: #ffffff;
-  box-shadow: 0 2px 10px rgba(239, 68, 68, 0.25);
+  box-shadow: 0 2px 10px rgba(239, 68, 68, 0.2);
 }
 
 .sidebar-logout-btn:active {
@@ -916,8 +979,8 @@ export default {
   width: 15px;
   height: 15px;
   flex-shrink: 0;
-  stroke: #fca5a5;
-  transition: stroke 0.15s ease;
+  stroke: rgba(252, 165, 165, 0.75);
+  transition: stroke 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .sidebar-logout-btn:hover svg {
@@ -927,39 +990,40 @@ export default {
 .brand-bottom {
   flex-shrink: 0;
   text-align: center;
-  padding: 10px;
-  color: #e4d39b;
-  border-top: 1px solid #1b4a78;
+  padding: 8px 10px;
+  color: rgba(228, 211, 155, 0.8);
+  border-top: 1px solid rgba(212, 175, 55, 0.12);
 }
 
 .brand-bottom p {
-  font-size: 8.5px;
+  font-size: 7.5px;
   letter-spacing: 1.5px;
   line-height: 1.6;
-  margin: 0 0 4px;
+  margin: 0 0 3px;
   font-weight: 700;
 }
 
 .brand-bottom span {
-  font-size: 7px;
+  font-size: 6.5px;
   letter-spacing: 1px;
-  color: #cbd5e1;
+  color: #94a3b8;
 }
 
 .brand-bottom small {
   display: block;
-  font-size: 8px;
-  margin-top: 6px;
+  font-size: 7px;
+  margin-top: 5px;
   color: #64748b;
 }
 
 /* Workspace Layout */
 .workspace {
-  margin-left: 210px !important;
-  width: calc(100% - 210px) !important;
+  margin-left: 220px !important;
+  width: calc(100% - 220px) !important;
   min-width: 0 !important;
   min-height: 100vh;
-  background: radial-gradient(ellipse at 55% 0%, #123965, #061c34 65%, #04182d);
+  background: radial-gradient(ellipse at 50% 0%, rgba(10, 79, 142, 0.18) 0%, transparent 60%),
+              linear-gradient(180deg, #030f1e 0%, #040f1d 100%);
   display: flex !important;
   flex-direction: column !important;
   box-sizing: border-box !important;
@@ -970,15 +1034,17 @@ export default {
   position: sticky;
   top: 0;
   z-index: 1000;
-  height: 56px;
+  height: 58px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  border-left: 5px solid #0066cc;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+  border-left: 3px solid #d4af37;
   padding: 0 1.5rem;
-  background: #04182d;
+  background: linear-gradient(90deg, rgba(4, 24, 45, 0.98) 0%, rgba(6, 30, 56, 0.98) 100%);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 1px 20px rgba(0, 0, 0, 0.4);
   box-sizing: border-box;
 }
 
@@ -997,9 +1063,15 @@ export default {
   flex: 1;
   max-width: 520px;
   padding: 6px 12px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.global-search:focus-within {
+  border-color: rgba(212, 175, 55, 0.4);
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.08);
 }
 
 .global-search input {
@@ -1029,10 +1101,10 @@ export default {
   gap: 0.4rem;
   font-size: 0.75rem;
   color: #94a3b8;
-  background: rgba(0, 0, 0, 0.25);
+  background: rgba(212, 175, 55, 0.06);
   padding: 0.3rem 0.65rem;
-  border-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 20px;
+  border: 1px solid rgba(212, 175, 55, 0.15);
 }
 
 .pulse-dot {
@@ -1052,22 +1124,22 @@ export default {
   align-items: center;
   gap: 6px;
   padding: 6px 14px;
-  background: #0a1e35;
-  border: 1px solid #205789;
-  border-radius: 6px;
+  background: rgba(212, 175, 55, 0.07);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: 8px;
   color: #edcf7c;
   font-size: 12px;
   font-weight: 700;
   text-decoration: none;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap;
 }
 .btn-topbar-properties:hover {
-  background: #103862;
-  border-color: #edcf7c;
+  background: rgba(212, 175, 55, 0.14);
+  border-color: rgba(212, 175, 55, 0.5);
   color: #fff;
-  box-shadow: 0 0 10px rgba(237, 207, 124, 0.25);
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.2);
 }
 .btn-topbar-properties .icon {
   width: 14px;
@@ -1080,14 +1152,24 @@ export default {
   align-items: center;
   gap: 6px;
   padding: 6px 12px;
-  background: linear-gradient(135deg, #f8dfa0, #bc9240);
+  background: linear-gradient(135deg, #f8dfa0 0%, #d4af37 50%, #bc9240 100%);
   border: 1px solid #e4c778;
-  border-radius: 6px;
+  border-radius: 8px;
   color: #04182d;
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: inset 0 1px rgba(255, 255, 255, 0.4);
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.4), 0 2px 8px rgba(212, 175, 55, 0.25);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-gold:hover {
+  transform: translateY(-1px);
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.4), 0 6px 20px rgba(212, 175, 55, 0.4);
+}
+
+.btn-gold:active {
+  transform: translateY(0);
 }
 
 .caret-icon {
@@ -1105,14 +1187,15 @@ export default {
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
-  background: #06182c;
-  border: 1px solid rgba(237, 207, 124, 0.45);
-  border-radius: 8px;
+  background: rgba(4, 18, 45, 0.98);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: 12px;
   padding: 0.5rem 0;
   display: flex;
   flex-direction: column;
   min-width: 235px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.95), 0 0 0 1px rgba(237, 207, 124, 0.2);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(212, 175, 55, 0.1);
   z-index: 99999;
 }
 
@@ -1125,13 +1208,13 @@ export default {
   font-size: 0.82rem;
   font-weight: 600;
   text-decoration: none;
-  transition: all 0.15s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap;
 }
 
 .quick-add-menu a:hover {
-  background: rgba(237, 207, 124, 0.16);
-  color: #edcf7c;
+  background: rgba(212, 175, 55, 0.08);
+  color: #f5cf72;
   padding-left: 1.35rem;
 }
 
@@ -1145,11 +1228,19 @@ export default {
 
 .notification-btn {
   position: relative;
-  background: transparent;
-  border: none;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
   color: #cbd5e1;
   cursor: pointer;
-  padding: 4px;
+  padding: 5px 8px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.notification-btn:hover {
+  background: rgba(212, 175, 55, 0.08);
+  border-color: rgba(212, 175, 55, 0.2);
+  color: #f5cf72;
 }
 
 .notif-badge {
@@ -1168,12 +1259,13 @@ export default {
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
-  background: #06182c;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 10px;
+  background: rgba(4, 18, 45, 0.98);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: 12px;
   padding: 0.85rem;
   width: 320px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.95);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(212, 175, 55, 0.1);
   z-index: 99999;
   display: flex;
   flex-direction: column;
@@ -1195,6 +1287,11 @@ export default {
   gap: 0.65rem;
   padding: 0.4rem 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.notif-item:hover {
+  background: rgba(212, 175, 55, 0.04);
 }
 
 .notif-item strong {
@@ -1252,17 +1349,18 @@ export default {
   text-decoration: none;
   color: #f8fafc;
   cursor: pointer;
-  padding: 4px 6px;
-  border-radius: 6px;
-  background: transparent;
-  border: none;
+  padding: 5px 8px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1.5px solid rgba(212, 175, 55, 0.5);
   font-family: inherit;
   text-align: left;
-  transition: background 0.15s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .user-identity:hover {
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(212, 175, 55, 0.06);
+  border-color: rgba(212, 175, 55, 0.7);
 }
 
 .user-menu-dropdown {
@@ -1270,13 +1368,14 @@ export default {
   top: calc(100% + 8px);
   right: 0;
   width: 250px;
-  background: #061e38;
-  border: 1px solid #1b4a78;
-  border-radius: 8px;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.65);
+  background: rgba(4, 18, 45, 0.98);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: 12px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(212, 175, 55, 0.1);
   z-index: 1000;
   padding: 10px;
-  animation: fadeInMenu 0.15s ease-out;
+  animation: fadeInMenu 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @keyframes fadeInMenu {
@@ -1353,11 +1452,11 @@ export default {
   color: #cbd5e1;
   text-decoration: none;
   border-radius: 5px;
-  transition: all 0.15s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .user-menu-item:hover {
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(212, 175, 55, 0.08);
   color: #f5cf72;
 }
 
@@ -1382,7 +1481,7 @@ export default {
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   margin-top: 2px;
 }
 
@@ -1404,9 +1503,11 @@ export default {
   justify-content: center;
   width: 34px;
   height: 34px;
-  border-radius: 6px;
+  border-radius: 8px;
   overflow: hidden;
   flex-shrink: 0;
+  border: 1.5px solid rgba(212, 175, 55, 0.5);
+  background: rgba(212, 175, 55, 0.08);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
 }
 
@@ -1434,7 +1535,7 @@ export default {
 
 /* Hero Header Banner */
 .hero {
-  min-height: 140px;
+  min-height: 130px;
   padding: 1.25rem 2rem;
   display: flex;
   align-items: center;
@@ -1442,7 +1543,7 @@ export default {
   z-index: 1;
   background-size: cover;
   background-position: center 50%;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.12);
   overflow: hidden;
   max-width: 100%;
   box-sizing: border-box;
@@ -1459,7 +1560,7 @@ export default {
   align-items: center;
   gap: 0.4rem;
   font-size: 0.75rem;
-  color: #94a3b8;
+  color: rgba(212, 175, 55, 0.7);
   margin-bottom: 0.25rem;
 }
 
@@ -1468,12 +1569,13 @@ export default {
 }
 
 .hero h1 {
-  font-size: 38px;
+  font-size: 34px;
   line-height: 1.1;
-  font-weight: 800;
+  font-weight: 900;
   letter-spacing: -0.6px;
   margin: 0 0 6px 0;
   color: #ffffff;
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
 }
 
 .hero-copy > p {
@@ -1497,6 +1599,10 @@ export default {
   letter-spacing: 1.2px;
   color: #f1ead6;
   font-weight: 700;
+  background: rgba(212, 175, 55, 0.08);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: 20px;
+  padding: 3px 10px;
 }
 
 .principles .icon {
@@ -1550,14 +1656,15 @@ export default {
   position: fixed;
   bottom: 24px;
   right: 24px;
-  background: #06182c;
-  border: 1px solid #edcf7c;
-  border-radius: 8px;
+  background: rgba(4, 24, 45, 0.98);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: 12px;
   padding: 12px 16px;
   display: flex;
   align-items: center;
   gap: 12px;
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(212, 175, 55, 0.1);
   z-index: 999999;
   max-width: 420px;
 }
@@ -1607,6 +1714,7 @@ export default {
   cursor: pointer;
   padding: 0 4px;
   line-height: 1;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .toast-close-btn:hover {
@@ -1626,7 +1734,7 @@ export default {
 
 .hushhawk-view-fade-enter-active,
 .hushhawk-view-fade-leave-active {
-  transition: opacity 0.15s cubic-bezier(0.4, 0, 0.2, 1), transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1), transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .hushhawk-view-fade-enter-from {
@@ -1641,7 +1749,7 @@ export default {
 
 /* Workspace View Wrapper */
 .workspace-content {
-  padding: 1.5rem;
+  padding: 1.25rem 1.5rem;
   flex: 1;
   min-width: 0;
   max-width: 100%;
@@ -1658,7 +1766,7 @@ export default {
   font-size: 8px;
   color: #64748b;
   padding: 1rem 1.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid rgba(212, 175, 55, 0.1);
   margin-top: auto;
 }
 

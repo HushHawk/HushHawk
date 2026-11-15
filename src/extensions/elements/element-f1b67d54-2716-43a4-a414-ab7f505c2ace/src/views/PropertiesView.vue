@@ -768,6 +768,8 @@
     <input ref="fileUpload" type="file" accept="image/*,application/pdf" multiple style="display:none" @change="onFilesSelected" />
     <input ref="docFileInput" type="file" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" style="display:none" @change="onDocFileSelected" />
 
+    <!-- Modals Teleported to document body -->
+    <Teleport to="body">
     <!-- EDIT PROPERTY MODAL -->
     <div v-if="showEditModal" class="modal-overlay" @click.self="showEditModal=false">
       <div class="modal-card add-prop-modal">
@@ -1691,6 +1693,7 @@
         </div>
       </div>
     </transition>
+    </Teleport>
 </div>
 </template>
 

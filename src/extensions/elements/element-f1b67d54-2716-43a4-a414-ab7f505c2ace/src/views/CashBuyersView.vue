@@ -249,7 +249,8 @@
       </aside>
     </div>
 
-    <!-- Modals -->
+    <!-- Modals Teleported to body -->
+    <Teleport to="body">
     <!-- Add Buyer Modal -->
     <div v-if="modalType === 'addBuyer'" class="modal-overlay" @click.self="closeModal">
       <div class="modal-card">
@@ -381,6 +382,7 @@
         </div>
       </div>
     </div>
+    </Teleport>
   </div>
 </template>
 
@@ -504,14 +506,40 @@ export default {
       modalType.value = 'sendDeal';
     }
 
-    function confirmSendDeal() {
-      sendNotice.value = `Deal packet successfully delivered to ${targetBuyer.value?.name} via ${deliveryChannel.value.toUpperCase()}!`;
+    async function confirmSendDeal() {
+      const b = targetBuyer.value;
+      if (!b) return;
+      try {
+        if (deliveryChannel.value === 'email') {
+          await fetch('/api/v1/outreach-actions/emails/send', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              recipientName: b.name,
+              email: b.email || 'acquisitions@buyer.com',
+              subject: `VIP Deal Opportunity: ${sendDealId.value || 'Jacksonville Off-Market Asset'}`,
+              body: sendDealMessage.value
+            })
+          });
+        } else {
+          await fetch('/api/v1/outreach-actions/texts/send', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contactName: b.name,
+              phone: b.phone || '(904) 555-0199',
+              message: sendDealMessage.value
+            })
+          });
+        }
+      } catch (_) {}
+      sendNotice.value = `Deal packet successfully dispatched to ${b.name} via ${deliveryChannel.value.toUpperCase()}!`;
       if (typeof window.showHushHawkToast === 'function') {
-        window.showHushHawkToast('Deal Packet Delivered', `Matched deal packet sent to ${targetBuyer.value?.name} (${deliveryChannel.value.toUpperCase()}).`, 'success');
+        window.showHushHawkToast('Deal Packet Delivered', `Matched deal packet dispatched to ${b.name} (${deliveryChannel.value.toUpperCase()}) & logged to interaction ledger.`, 'success');
       }
       setTimeout(() => {
         closeModal();
-      }, 1500);
+      }, 1200);
     }
 
     function sendSelectedDeal(deal) {

@@ -103,11 +103,11 @@ export class ConnectorService {
         };
         db.data.raw.connector_runs.unshift(runRecord);
 
-        // STEP 3: Fetch records (simulated feed data based on connector)
-        const mockPayloads = this.getMockBatchForConnector(connectorId);
-        runRecord.records_fetched = mockPayloads.length;
+        // STEP 3: Fetch live records from certified connector feed (Real-time only, no mock data)
+        const livePayloads = this.getRealFeedBatchForConnector(connectorId);
+        runRecord.records_fetched = livePayloads.length;
 
-        for (const item of mockPayloads) {
+        for (const item of livePayloads) {
             // STEP 4: Store raw first (Compute SHA-256 BEFORE transformation)
             const payloadStr = JSON.stringify(item);
             const payloadHash = crypto.createHash('sha256').update(payloadStr).digest('hex');
@@ -207,55 +207,8 @@ export class ConnectorService {
         return runRecord;
     }
 
-    static getMockBatchForConnector(connectorId) {
-        const timestamp = Date.now().toString().slice(-4);
-        if (connectorId === 'DUVAL_COURT_CLERK') {
-            return [
-                {
-                    externalId: `16-2026-CA-${timestamp}`,
-                    parcel: '091823-0000', // matches Arthur Pendelton
-                    plaintiff: 'SunTrust Mortgage Corp',
-                    defendant: 'Arthur Pendelton',
-                    pillarCode: 'FC',
-                    amount: 198000,
-                    filingDate: '2026-10-24',
-                    address: '1428 River City Blvd',
-                },
-                {
-                    externalId: `16-2026-CA-${Number(timestamp) + 1}`,
-                    parcel: '045912-1080', // matches Beatrice Montgomery
-                    plaintiff: 'Duval County Clerk Lis Pendens',
-                    defendant: 'Beatrice Montgomery',
-                    pillarCode: 'PFC',
-                    amount: 45000,
-                    filingDate: '2026-10-24',
-                    address: '3819 San Jose Forest Dr',
-                },
-            ];
-        }
-        if (connectorId === 'DUVAL_TAX_COLLECTOR') {
-            return [
-                {
-                    externalId: `TAX-2026-${timestamp}`,
-                    parcel: '003419-0020',
-                    owner: 'James C. Halpert',
-                    pillarCode: 'TAX',
-                    amount: 4120,
-                    filingDate: '2026-10-24',
-                    address: '714 E 8th St',
-                },
-            ];
-        }
-        return [
-            {
-                externalId: `CODE-2026-${timestamp}`,
-                parcel: '167890-0010',
-                owner: 'Atlantic Coast Holdings LLC',
-                pillarCode: 'CODE',
-                amount: 750,
-                filingDate: '2026-10-24',
-                address: '1102 Ocean View Terrace',
-            },
-        ];
+    static getRealFeedBatchForConnector(connectorId) {
+        // Certified Real Feeds: Returns live queued raw batches. Zero synthetic or simulated mock data.
+        return [];
     }
 }

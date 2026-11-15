@@ -10,10 +10,6 @@
               Omnichannel Comms
             </h3>
             <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-              <button class="simulate-call-btn" @click="simulateInboundCall" title="Simulate Real-Time smrtPhone Inbound Call">
-                <span v-html="icons.phone"></span>
-                <span>Test Live Call Popup</span>
-              </button>
               <button class="sync-crm-btn" @click="syncPodioAndSmrtPhone" :disabled="isSyncing" title="Sync Podio & smrtPhone">
                 <span v-html="icons.refresh" :class="{ 'spin-anim': isSyncing }"></span>
                 <span>{{ isSyncing ? 'Syncing...' : 'Sync Podio' }}</span>
@@ -281,42 +277,6 @@ export default {
     this.loadCommunications();
   },
   methods: {
-    async simulateInboundCall() {
-      try {
-        const res = await fetch('/api/v1/integrations/smrtphone/simulate-call', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contact_name: 'David & Linda Miller',
-            property_address: '3221 Duval Rd, Jacksonville FL',
-            signal: 'FORECLOSURE (DUV-FC-32221)',
-            from: '(904) 555-0144',
-            duration: 185
-          })
-        });
-        const data = await res.json();
-        if (data && data.ok) {
-          this.showToast('smrtPhone Inbound Call', 'Incoming caller ID screen pop triggered live.', 'success');
-          if (typeof window !== 'undefined') {
-            window.dispatchEvent(new CustomEvent('hushhawk-incoming-call', {
-              detail: {
-                call: {
-                  callId: data.result?.eventId || 'call_' + Date.now(),
-                  contactName: 'David & Linda Miller',
-                  fromNumber: '(904) 555-0144',
-                  propertyAddress: '3221 Duval Rd, Jacksonville FL',
-                  signal: 'FORECLOSURE (DUV-FC-32221)',
-                  duration: '3m 5s'
-                }
-              }
-            }));
-          }
-          await this.loadCommunications();
-        }
-      } catch (err) {
-        this.showToast('Call Simulated', 'Testing screen popup.', 'info');
-      }
-    },
     async syncPodioAndSmrtPhone() {
       if (this.isSyncing) return;
       this.isSyncing = true;
@@ -396,17 +356,43 @@ export default {
         }
       }
     },
-    makeCall(th) {
-      this.showToast('Twilio Voice Outbound', `Connecting bridge to ${th.contact} (${th.phone})...`, 'success');
+    async makeCall(th) {
+      if (!th || !th.phone) return;
+      this.showToast('Voice Bridge Connecting', `Connecting to ${th.contact} (${th.phone})...`, 'info');
+      try {
+        const res = await fetch('/api/v1/calls/dispatch', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            recipientPhone: th.phone,
+            propertyId: th.property_id || null,
+            actor: 'Alex Richard (HushHawk)',
+            notes: `Outbound call to ${th.contact} regarding ${th.address || 'property'}`
+          })
+        });
+        const data = await res.json();
+        if (data.carrier && data.carrier.nativeUri) {
+          window.location.href = data.carrier.nativeUri;
+        } else {
+          window.location.href = `tel:${th.phone.replace(/[^\d+]/g, '')}`;
+        }
+        this.showToast('Call Bridge Dispatched', `Connected to ${th.contact}. Logged in PostgreSQL interactions.`, 'success');
+      } catch (e) {
+        window.location.href = `tel:${th.phone.replace(/[^\d+]/g, '')}`;
+      }
     },
     toggleContextDrawer() {
       this.showIntel = !this.showIntel;
     },
     openContract(th) {
-      this.showToast('Contract Vault', `PSA loaded for ${th.address}. Ready for DocuSign dispatch.`, 'info');
+      if (typeof window !== 'undefined') {
+        window.location.href = '/contracts';
+      }
     },
     openAnalyzer(th) {
-      this.showToast('Deal Underwriting', `Deal Analyzer active for ${th.address}. Target MAO $135,000.`, 'info');
+      if (typeof window !== 'undefined') {
+        window.location.href = '/deal-analyzer';
+      }
     }
   }
 };

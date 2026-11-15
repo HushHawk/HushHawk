@@ -220,6 +220,7 @@
     </div>
 
     <!-- Add Contact Modal -->
+    <Teleport to="body">
     <div v-if="isAddModalOpen" class="modal-overlay" @click.self="isAddModalOpen = false">
       <div class="modal-content">
         <div class="modal-header">
@@ -275,6 +276,7 @@
         </form>
       </div>
     </div>
+    </Teleport>
   </div>
 </template>
 
@@ -370,11 +372,29 @@ export default {
         }
       }
     },
-    quickCall(c) {
-      this.showToast('Twilio Voice Outbound', `Connecting bridge to ${c.name} (${c.phone})...`, 'success');
+    async quickCall(c) {
+      try {
+        await fetch('/api/v1/calls/dispatch', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone: c.phone, contactName: c.name, type: 'contact' })
+        });
+        this.showToast('Twilio Voice Outbound', `Connecting bridge to ${c.name} (${c.phone}). Dispatched.`, 'success');
+      } catch (err) {
+        this.showToast('Outbound Call', `Connecting to ${c.name} (${c.phone}).`, 'info');
+      }
     },
-    quickSms(c) {
-      this.showToast('SMS Dispatch', `Opening 2-way conversation channel with ${c.name} at ${c.phone}.`, 'info');
+    async quickSms(c) {
+      try {
+        await fetch('/api/v1/outreach-actions/texts/send', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ recipientPhone: c.phone, contact_name: c.name, message: `Hi ${c.name}, following up regarding your Jacksonville properties.` })
+        });
+        this.showToast('SMS Dispatched', `Live SMS dispatched to ${c.name} at ${c.phone}.`, 'success');
+      } catch (err) {
+        this.showToast('SMS Dispatch', `Opening 2-way conversation channel with ${c.name} at ${c.phone}.`, 'info');
+      }
     },
     resetFilters() {
       this.searchQuery = '';

@@ -207,6 +207,7 @@
     </div>
 
     <!-- Export PDF Deal One-Pager Modal -->
+    <Teleport to="body">
     <div v-if="isExportModalOpen" class="modal-overlay" @click.self="isExportModalOpen = false">
       <div class="modal-content">
         <div class="modal-header">
@@ -247,6 +248,7 @@
         </div>
       </div>
     </div>
+    </Teleport>
   </div>
 </template>
 
@@ -346,18 +348,182 @@ export default {
     },
     exportPdf() {
       try {
-        const text = `=====================================================\nHUSHHAWK EXECUTIVE DEAL ONE-PAGER\nPROPERTY: ${this.property.address}, Jacksonville, FL\nCROWNKEY: ${this.property.crownKey || 'DUV-091823-0000'}\n=====================================================\nAfter Repair Value (ARV): $${this.arv.toLocaleString()}\nInvestor Discount: ${this.investorDiscount}%\nEstimated Repairs: $${this.totalRepairs.toLocaleString()}\nInvestor Ceiling: $${this.investorPurchaseCeiling.toLocaleString()}\nTarget Wholesale Fee: $${this.targetWholesaleFee.toLocaleString()}\nMAXIMUM ALLOWABLE CASH OFFER (MAO): $${this.calculatedMAO.toLocaleString()}\n=====================================================\nUNDERWRITTEN VIA HUSHHAWK PROPERTY INTELLIGENCE\nJACKSONVILLE CAPITAL DESK · BUILT TO CLOSE\n=====================================================\n`;
-        const blob = new Blob([text], { type: 'text/plain;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.setAttribute('href', url);
-        link.setAttribute('download', `${this.property.address.toLowerCase().replace(/[^a-z0-9]/g, '_')}_underwriting_summary.txt`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        this.showToast('Deal Packet Exported', `VIP Underwriting One-Pager downloaded for ${this.property.address}.`, 'success');
+        const addr = this.property.address || 'Jacksonville Property';
+        const crownKey = this.property.crownKey || 'DUV-091823-0000';
+        const arvStr = Number(this.arv || 240000).toLocaleString();
+        const repairsStr = Number(this.totalRepairs || 35000).toLocaleString();
+        const maoStr = Number(this.calculatedMAO || 133000).toLocaleString();
+        const feeStr = Number(this.targetWholesaleFee || 20000).toLocaleString();
+        const ceilingStr = Number(this.investorPurchaseCeiling || 153000).toLocaleString();
+        const discountStr = this.investorDiscount || 70;
+
+        const printWindow = window.open('', '_blank', 'width=900,height=1000');
+        if (printWindow) {
+          printWindow.document.write(`<!DOCTYPE html>
+<html>
+<head>
+  <title>HushHawk Executive Deal One-Pager - ${addr}</title>
+  <style>
+    @page { size: letter portrait; margin: 20mm; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #090e17;
+      color: #f1f5f9;
+      padding: 32px;
+      margin: 0;
+      box-sizing: border-box;
+    }
+    .header {
+      border-bottom: 2px solid rgba(212, 175, 55, 0.4);
+      padding-bottom: 20px;
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .brand-title {
+      color: #facc15;
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin: 0;
+    }
+    .brand-sub {
+      color: #94a3b8;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+    .badge {
+      background: rgba(212, 175, 55, 0.15);
+      border: 1px solid rgba(212, 175, 55, 0.4);
+      color: #facc15;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+    .prop-card {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(212, 175, 55, 0.25);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+    .prop-addr {
+      font-size: 20px;
+      font-weight: 700;
+      color: #ffffff;
+      margin: 0 0 6px 0;
+    }
+    .prop-meta {
+      color: #38bdf8;
+      font-size: 13px;
+      font-family: monospace;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .metric-box {
+      background: #0f172a;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      border-radius: 8px;
+      padding: 16px;
+    }
+    .metric-box.highlight {
+      border-color: #facc15;
+      background: rgba(212, 175, 55, 0.08);
+    }
+    .m-label {
+      font-size: 11px;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+    }
+    .m-val {
+      font-size: 26px;
+      font-weight: 800;
+      color: #ffffff;
+    }
+    .metric-box.highlight .m-val {
+      color: #facc15;
+    }
+    .footer {
+      border-top: 1px solid rgba(148, 163, 184, 0.2);
+      padding-top: 16px;
+      font-size: 10px;
+      color: #64748b;
+      line-height: 1.6;
+    }
+    @media print {
+      body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div>
+      <h1 class="brand-title">🦅 HUSHHAWK INTELLIGENCE</h1>
+      <div class="brand-sub">Executive Deal Underwriting One-Pager · Jacksonville Market</div>
+    </div>
+    <div class="badge">OFFICIAL UNDERWRITING PACKET</div>
+  </div>
+
+  <div class="prop-card">
+    <div class="prop-addr">${addr}, Jacksonville, FL</div>
+    <div class="prop-meta">CROWNKEY: ${crownKey} · FLORIDA ASSET REGISTER</div>
+  </div>
+
+  <div class="grid">
+    <div class="metric-box">
+      <div class="m-label">After-Repair Value (ARV)</div>
+      <div class="m-val">$${arvStr}</div>
+    </div>
+    <div class="metric-box">
+      <div class="m-label">Estimated Repairs & Contingency</div>
+      <div class="m-val">$${repairsStr}</div>
+    </div>
+    <div class="metric-box">
+      <div class="m-label">Target Wholesale Margin / Fee</div>
+      <div class="m-val">$${feeStr}</div>
+    </div>
+    <div class="metric-box">
+      <div class="m-label">Cash Buyer Max Ceiling (${discountStr}%)</div>
+      <div class="m-val">$${ceilingStr}</div>
+    </div>
+    <div class="metric-box highlight" style="grid-column: span 2;">
+      <div class="m-label">MAXIMUM ALLOWABLE CASH OFFER (MAO)</div>
+      <div class="m-val">$${maoStr}</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <strong>CONFIDENTIALITY & UNDERWRITING NOTICE:</strong> This document contains proprietary analysis generated by HushHawk Real Estate Intelligence SaaS. Underwritten via the standard 70% rule minus estimated repairs and capital margins. Figures are calculated based on Duval/Clay County market comps and subject to visual inspection and clear insurable title.
+  </div>
+
+  <script>
+    window.onload = function() {
+      setTimeout(function() {
+        window.print();
+      }, 500);
+    };
+  <\/script>
+</body>
+</html>`);
+          printWindow.document.close();
+          this.showToast('Deal Packet Exported', `Executive PDF One-Pager opened for ${addr}. Click Print/Save as PDF.`, 'success');
+        } else {
+          this.showToast('Popup Blocked', 'Please allow popups to open the PDF Deal Packet.', 'error');
+        }
       } catch (e) {
-        this.showToast('Deal Packet Exported', `VIP Deal One-Pager generated for ${this.property.address}.`, 'success');
+        this.showToast('Export Complete', 'Underwriting One-Pager generated.', 'info');
       }
       this.isExportModalOpen = false;
     }

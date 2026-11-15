@@ -492,6 +492,262 @@ body.partner-chat-active .hawk-copilot-drawer {
     pointer-events: none !important;
 }
 
+/* 14. Guaranteed Complete Suppression of Partner Chat & Inbound Popups on Login / Auth Views */
+body:has(.hushhawk-auth-wrapper) .partner-messenger-container,
+body:has(.hushhawk-auth-forwarding) .partner-messenger-container,
+body:has(.auth-card) .partner-messenger-container,
+body:has(#login-email) .partner-messenger-container,
+.hushhawk-auth-wrapper ~ .partner-messenger-container,
+.hushhawk-auth-forwarding ~ .partner-messenger-container,
+body:has(.hushhawk-auth-wrapper) .smrtphone-popup-container,
+body:has(.hushhawk-auth-forwarding) .smrtphone-popup-container,
+body:has(.auth-card) .smrtphone-popup-container,
+body:has(#login-email) .smrtphone-popup-container,
+.hushhawk-auth-wrapper ~ .smrtphone-popup-container,
+.hushhawk-auth-forwarding ~ .smrtphone-popup-container {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+/* ========================================================
+   GLOBAL EXECUTIVE LUXURY GOLD SIDEBAR THEME
+   Applies to Dashboard and ALL other workspace sections
+   ======================================================== */
+aside.sidebar {
+    width: 220px !important;
+    min-width: 220px !important;
+    max-width: 220px !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    bottom: 0 !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+    z-index: 1000 !important;
+    background: 
+      linear-gradient(40deg, transparent 40%, rgba(212, 175, 55, 0.15) 47%, rgba(253, 230, 138, 0.45) 50%, rgba(212, 175, 55, 0.15) 53%, transparent 60%),
+      linear-gradient(35deg, transparent 65%, rgba(212, 175, 55, 0.1) 72%, rgba(253, 230, 138, 0.35) 75%, rgba(212, 175, 55, 0.1) 78%, transparent 85%),
+      linear-gradient(180deg, #07111e 0%, #030812 60%, #02050b 100%) !important;
+    backdrop-filter: blur(20px) !important;
+    border-right: 1px solid rgba(212, 175, 55, 0.25) !important;
+    border-left: 2px solid rgba(212, 175, 55, 0.45) !important;
+    box-shadow: 6px 0 28px rgba(0, 0, 0, 0.7) !important;
+}
+
+aside.sidebar::after {
+    content: '' !important;
+    position: absolute !important;
+    bottom: 55px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: 130px !important;
+    height: 130px !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36' fill='none'%3E%3Cpath d='M12 9.5L14 13.5L18 7.5L22 13.5L24 9.5L25 15.5H11L12 9.5Z' fill='%23D4AF37'/%3E%3Cpath d='M6 14.5C10 16 14 19 16.5 22L13 23C9 20 6.5 17 6 14.5Z' fill='%23D4AF37'/%3E%3Cpath d='M30 14.5C26 16 22 19 19.5 22L23 23C27 20 29.5 17 30 14.5Z' fill='%23D4AF37'/%3E%3Cpath d='M18 14L15.5 19.5L18 29L20.5 19.5L18 14Z' fill='%23D4AF37'/%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    background-size: contain !important;
+    opacity: 0.16 !important;
+    pointer-events: none !important;
+    filter: drop-shadow(0 0 12px rgba(212, 175, 55, 0.5)) !important;
+    z-index: 1 !important;
+}
+
+aside.sidebar .brand {
+    flex-shrink: 0 !important;
+    height: 145px !important;
+    min-height: 145px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-direction: column !important;
+    color: white !important;
+    text-decoration: none !important;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.2) !important;
+    padding: 14px 8px 10px !important;
+    text-align: center !important;
+    background: linear-gradient(180deg, rgba(212, 175, 55, 0.12) 0%, rgba(4, 18, 45, 0.4) 100%) !important;
+}
+
+aside.sidebar .brand strong {
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif !important;
+    font-size: 13px !important;
+    font-weight: 850 !important;
+    line-height: 1.08 !important;
+    margin-top: 6px !important;
+    color: #fff5e2 !important;
+    letter-spacing: 0.14em !important;
+    text-transform: uppercase !important;
+}
+
+aside.sidebar .brand small {
+    font-size: 6.5px !important;
+    letter-spacing: 1.2px !important;
+    margin-top: 5px !important;
+    color: #d4af37 !important;
+    font-weight: 600 !important;
+}
+
+aside.sidebar nav {
+    padding: 10px 8px !important;
+    flex: 1 1 0% !important;
+    min-height: 0 !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    overscroll-behavior: contain !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0 !important;
+    scrollbar-width: thin !important;
+    scrollbar-color: rgba(212, 175, 55, 0.3) transparent !important;
+    position: relative !important;
+    z-index: 2 !important;
+}
+
+aside.sidebar nav a {
+    display: flex !important;
+    align-items: center !important;
+    gap: 11px !important;
+    padding: 9px 12px !important;
+    min-height: 38px !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    color: #f8fafc !important;
+    text-decoration: none !important;
+    border-radius: 8px !important;
+    border: 1px solid transparent !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    margin: 1px 2px !important;
+    box-sizing: border-box !important;
+}
+
+aside.sidebar nav a .icon,
+aside.sidebar nav .icon {
+    width: 17px !important;
+    height: 17px !important;
+    color: #eac16a !important;
+    flex-shrink: 0 !important;
+}
+
+aside.sidebar nav a .icon svg,
+aside.sidebar nav .icon svg {
+    width: 17px !important;
+    height: 17px !important;
+    stroke: #eac16a !important;
+}
+
+aside.sidebar nav a:hover {
+    background: rgba(212, 175, 55, 0.1) !important;
+    color: #ffffff !important;
+    border-color: rgba(212, 175, 55, 0.25) !important;
+    transform: translateX(2px) !important;
+}
+
+aside.sidebar nav a:hover .icon,
+aside.sidebar nav a:hover .icon svg {
+    color: #fde68a !important;
+    stroke: #fde68a !important;
+}
+
+/* Active Pill Matching Screenshot */
+aside.sidebar nav a.active {
+    background: linear-gradient(180deg, #744d1e 0%, #3e260c 100%) !important;
+    border: 1.5px solid #dfa745 !important;
+    border-radius: 11px !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    box-shadow: 
+      0 0 14px rgba(223, 167, 69, 0.45),
+      inset 0 1px 2px rgba(255, 255, 255, 0.4),
+      inset 0 -1px 2px rgba(0, 0, 0, 0.5) !important;
+    padding: 8px 12px !important;
+    margin: 3px 2px !important;
+}
+
+aside.sidebar nav a.active .icon,
+aside.sidebar nav a.active .icon svg {
+    color: #fde68a !important;
+    stroke: #fde68a !important;
+    filter: drop-shadow(0 0 4px rgba(253, 230, 138, 0.7)) !important;
+}
+
+aside.sidebar .more-workspaces {
+    margin: 10px 0 0 0 !important;
+    border-top: 1px solid rgba(212, 175, 55, 0.15) !important;
+    padding-top: 8px !important;
+}
+
+aside.sidebar .more-workspaces summary {
+    cursor: pointer !important;
+    font-size: 10px !important;
+    font-weight: 850 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.1em !important;
+    color: #eac16a !important;
+    padding: 8px 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+}
+
+aside.sidebar .sidebar-logout-section {
+    flex-shrink: 0 !important;
+    padding: 12px 10px 14px !important;
+    border-top: 1px solid rgba(212, 175, 55, 0.15) !important;
+    margin-top: auto !important;
+    position: relative !important;
+    z-index: 3 !important;
+}
+
+aside.sidebar .sidebar-logout-btn {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    gap: 8px !important;
+    width: 100% !important;
+    height: 38px !important;
+    min-height: 38px !important;
+    padding: 0 14px !important;
+    background: rgba(10, 16, 28, 0.75) !important;
+    border: 1px solid rgba(212, 175, 55, 0.35) !important;
+    border-radius: 9px !important;
+    color: #fca5a5 !important;
+    font-family: inherit !important;
+    font-size: 12.5px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.3px !important;
+    cursor: pointer !important;
+    backdrop-filter: blur(8px) !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+}
+
+aside.sidebar .sidebar-logout-btn svg {
+    width: 15px !important;
+    height: 15px !important;
+    stroke: #fca5a5 !important;
+    transition: stroke 0.2s ease !important;
+}
+
+aside.sidebar .sidebar-logout-btn:hover {
+    background: rgba(239, 68, 68, 0.18) !important;
+    border-color: rgba(239, 68, 68, 0.6) !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 16px rgba(239, 68, 68, 0.35) !important;
+    transform: translateY(-1px) !important;
+}
+
+aside.sidebar .sidebar-logout-btn:hover svg {
+    stroke: #ffffff !important;
+}
+
 @media (max-width: 480px) {
     .global-search {
         display: none !important;

@@ -289,6 +289,8 @@
       </div>
     </div>
 
+    <!-- Modals Teleported to body -->
+    <Teleport to="body">
     <!-- Add Follow-Up Modal -->
     <div v-if="isAddModalOpen" class="modal-overlay" @click.self="isAddModalOpen = false">
       <div class="modal-content">
@@ -393,6 +395,7 @@
         </div>
       </div>
     </div>
+    </Teleport>
   </div>
 </template>
 
@@ -538,6 +541,22 @@ export default {
         this.commModal.item.attemptCount += 1;
         this.commModal.item.notes = `${new Date().toLocaleDateString()}: [${this.commModal.type.toUpperCase()}] ${this.commModal.message} | ` + this.commModal.item.notes;
         try {
+          if (this.commModal.type === 'call') {
+            await fetch('/api/v1/calls/dispatch', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ phone: this.commModal.item.phone, contactName: this.commModal.item.seller, type: 'followup' })
+            });
+            this.showToast('Twilio Voice Outbound', `Outbound voice bridge triggered for ${this.commModal.item.seller}.`, 'success');
+          } else {
+            await fetch('/api/v1/outreach-actions/texts/send', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ recipientPhone: this.commModal.item.phone, contact_name: this.commModal.item.seller, message: this.commModal.message })
+            });
+            this.showToast('SMS Dispatched', `Live text message sent to ${this.commModal.item.seller}.`, 'success');
+          }
+
           await fetch(`/api/v1/follow-ups/${this.commModal.item.id}`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
@@ -546,7 +565,9 @@ export default {
               notes: this.commModal.item.notes
             })
           });
-        } catch (e) {}
+        } catch (e) {
+          this.showToast('Action Recorded', `Recorded ${this.commModal.type.toUpperCase()} for ${this.commModal.item.seller}.`, 'info');
+        }
       }
       this.commModal.open = false;
     },
@@ -594,31 +615,31 @@ export default {
           this.followUps.unshift(saved);
         } else {
           this.followUps.unshift({
-            id: Date.now(),
+            id: 'f-' + Date.now(),
             ...payload,
-            parcelId: 'DUV-' + Math.floor(100000 + Math.random() * 900000) + '-0000',
+            parcelId: 'DUV-091823-0000',
             email: 'seller@lead.com',
             attemptCount: 1,
             dueStatus: 'Today',
             dueText: 'Due today',
             stage: 'Active Follow-up',
-            rep: 'Marcus Vance',
-            repInitials: 'MV',
+            rep: 'Alex Richard',
+            repInitials: 'AR',
             done: false
           });
         }
       } catch (e) {
         this.followUps.unshift({
-          id: Date.now(),
+          id: 'f-' + Date.now(),
           ...payload,
-          parcelId: 'DUV-' + Math.floor(100000 + Math.random() * 900000) + '-0000',
+          parcelId: 'DUV-091823-0000',
           email: 'seller@lead.com',
           attemptCount: 1,
           dueStatus: 'Today',
           dueText: 'Due today',
           stage: 'Active Follow-up',
-          rep: 'Marcus Vance',
-          repInitials: 'MV',
+          rep: 'Alex Richard',
+          repInitials: 'AR',
           done: false
         });
       }

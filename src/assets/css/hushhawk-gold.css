@@ -1,0 +1,344 @@
+/* Shared colors for the command dashboard and section workspaces. */
+.hushhawk-gold {
+  --hh-canvas: #080e17;
+  --hh-text: #fff5e2;
+  --hh-muted: #bec8d8;
+  --hh-gold: #eac16a;
+  --hh-gold-light: #f4d58f;
+  --hh-border: #64606a;
+  --hh-panel: linear-gradient(150deg, #283345 0%, #151e2b 48%, #0b121c 100%);
+  --hh-panel-header: linear-gradient(180deg, #2c3544 0%, #132033 100%);
+  --hh-panel-shadow: inset 0 1px #ffefd244, inset 0 -1px #ca9e6255, 0 5px 16px #0007;
+  --hh-sidebar: linear-gradient(145deg, #252e3c, #0e1723 37%, #0c1521 80%, #233044);
+  --hh-selected: linear-gradient(180deg, #a77335, #513313 49%, #6e4820);
+  --hh-gold-button: linear-gradient(#f0d089, #bb893e);
+}
+
+.hushhawk-gold :is(a, button, input, select, textarea, summary):focus-visible {
+  outline: 2px solid #ffe0a0;
+  outline-offset: 2px;
+}
+
+.hushhawk-gold.gold-section,
+.hushhawk-gold.gold-section .workspace {
+  background: radial-gradient(ellipse at 48% 0, #23354b 0, #101b29 36%, var(--hh-canvas) 85%);
+}
+
+.hushhawk-gold .sidebar,
+.hushhawk-gold.gold-section .sidebar {
+  width: 220px !important;
+  min-width: 220px !important;
+  max-width: 220px !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  bottom: 0 !important;
+  height: 100vh !important;
+  max-height: 100vh !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  z-index: 1000 !important;
+  background: 
+    linear-gradient(40deg, transparent 40%, rgba(212, 175, 55, 0.15) 47%, rgba(253, 230, 138, 0.45) 50%, rgba(212, 175, 55, 0.15) 53%, transparent 60%),
+    linear-gradient(35deg, transparent 65%, rgba(212, 175, 55, 0.1) 72%, rgba(253, 230, 138, 0.35) 75%, rgba(212, 175, 55, 0.1) 78%, transparent 85%),
+    linear-gradient(180deg, #07111e 0%, #030812 60%, #02050b 100%) !important;
+  backdrop-filter: blur(20px);
+  border-right: 1px solid rgba(212, 175, 55, 0.25) !important;
+  border-left: 2px solid rgba(212, 175, 55, 0.45) !important;
+  box-shadow: 6px 0 28px rgba(0, 0, 0, 0.7);
+}
+
+.hushhawk-gold .sidebar::after,
+.hushhawk-gold.gold-section .sidebar::after {
+  content: '';
+  position: absolute;
+  bottom: 55px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 130px;
+  height: 130px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36' fill='none'%3E%3Cpath d='M12 9.5L14 13.5L18 7.5L22 13.5L24 9.5L25 15.5H11L12 9.5Z' fill='%23D4AF37'/%3E%3Cpath d='M6 14.5C10 16 14 19 16.5 22L13 23C9 20 6.5 17 6 14.5Z' fill='%23D4AF37'/%3E%3Cpath d='M30 14.5C26 16 22 19 19.5 22L23 23C27 20 29.5 17 30 14.5Z' fill='%23D4AF37'/%3E%3Cpath d='M18 14L15.5 19.5L18 29L20.5 19.5L18 14Z' fill='%23D4AF37'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  opacity: 0.16;
+  pointer-events: none;
+  filter: drop-shadow(0 0 12px rgba(212, 175, 55, 0.5));
+  z-index: 1;
+}
+
+.hushhawk-gold .sidebar .brand,
+.hushhawk-gold.gold-section .sidebar .brand {
+  flex-shrink: 0 !important;
+  height: 145px !important;
+  min-height: 145px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-direction: column !important;
+  color: white !important;
+  text-decoration: none !important;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.2) !important;
+  padding: 14px 8px 10px !important;
+  text-align: center !important;
+  background: linear-gradient(180deg, rgba(212, 175, 55, 0.12) 0%, rgba(4, 18, 45, 0.4) 100%) !important;
+}
+
+.hushhawk-gold .sidebar .brand strong,
+.hushhawk-gold.gold-section .sidebar .brand strong {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 850 !important;
+  line-height: 1.08 !important;
+  margin-top: 6px !important;
+  color: #fff5e2 !important;
+  letter-spacing: 0.14em !important;
+  text-transform: uppercase !important;
+}
+
+.hushhawk-gold .sidebar .brand small,
+.hushhawk-gold.gold-section .sidebar .brand small {
+  font-size: 6.5px !important;
+  letter-spacing: 1.2px !important;
+  margin-top: 5px !important;
+  color: #d4af37 !important;
+  font-weight: 600 !important;
+}
+
+.hushhawk-gold .sidebar nav,
+.hushhawk-gold.gold-section .sidebar nav {
+  padding: 10px 8px !important;
+  flex: 1 1 0% !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  overscroll-behavior: contain !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0 !important;
+  scrollbar-width: thin !important;
+  scrollbar-color: rgba(212, 175, 55, 0.3) transparent !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+.hushhawk-gold .sidebar nav a,
+.hushhawk-gold.gold-section .sidebar nav a {
+  display: flex !important;
+  align-items: center !important;
+  gap: 11px !important;
+  padding: 9px 12px !important;
+  min-height: 38px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: #f8fafc !important;
+  text-decoration: none !important;
+  border-radius: 8px !important;
+  border: 1px solid transparent !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  margin: 1px 2px !important;
+  box-sizing: border-box !important;
+}
+
+.hushhawk-gold .sidebar nav :is(.icon, summary),
+.hushhawk-gold.gold-section .sidebar nav :is(.icon, summary),
+.hushhawk-gold .sidebar nav a .icon,
+.hushhawk-gold.gold-section .sidebar nav a .icon {
+  width: 17px !important;
+  height: 17px !important;
+  color: #eac16a !important;
+  flex-shrink: 0 !important;
+}
+
+.hushhawk-gold .sidebar nav a .icon svg,
+.hushhawk-gold.gold-section .sidebar nav a .icon svg {
+  width: 17px !important;
+  height: 17px !important;
+  stroke: #eac16a !important;
+}
+
+.hushhawk-gold .sidebar nav a:hover,
+.hushhawk-gold.gold-section .sidebar nav a:hover {
+  background: rgba(212, 175, 55, 0.1) !important;
+  color: #ffffff !important;
+  border-color: rgba(212, 175, 55, 0.25) !important;
+  transform: translateX(2px);
+}
+
+.hushhawk-gold .sidebar nav a:hover .icon,
+.hushhawk-gold.gold-section .sidebar nav a:hover .icon svg {
+  color: #fde68a !important;
+  stroke: #fde68a !important;
+}
+
+.hushhawk-gold .sidebar nav a.active,
+.hushhawk-gold.gold-section .sidebar nav a.active {
+  background: linear-gradient(180deg, #744d1e 0%, #3e260c 100%) !important;
+  border: 1.5px solid #dfa745 !important;
+  border-radius: 11px !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  box-shadow: 
+    0 0 14px rgba(223, 167, 69, 0.45),
+    inset 0 1px 2px rgba(255, 255, 255, 0.4),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.5) !important;
+  padding: 8px 12px !important;
+  margin: 3px 2px !important;
+}
+
+.hushhawk-gold .sidebar nav a.active .icon,
+.hushhawk-gold.gold-section .sidebar nav a.active .icon svg {
+  color: #fde68a !important;
+  stroke: #fde68a !important;
+  filter: drop-shadow(0 0 4px rgba(253, 230, 138, 0.7));
+}
+
+.hushhawk-gold .sidebar .more-workspaces,
+.hushhawk-gold.gold-section .sidebar .more-workspaces {
+  margin: 10px 0 0 0 !important;
+  border-top: 1px solid rgba(212, 175, 55, 0.15) !important;
+  padding-top: 8px !important;
+}
+
+.hushhawk-gold .sidebar .more-workspaces summary,
+.hushhawk-gold.gold-section .sidebar .more-workspaces summary {
+  cursor: pointer !important;
+  font-size: 10px !important;
+  font-weight: 850 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.1em !important;
+  color: #eac16a !important;
+  padding: 8px 12px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+.hushhawk-gold .sidebar .sidebar-logout-section,
+.hushhawk-gold.gold-section .sidebar .sidebar-logout-section {
+  flex-shrink: 0 !important;
+  padding: 12px 10px 14px !important;
+  border-top: 1px solid rgba(212, 175, 55, 0.15) !important;
+  margin-top: auto !important;
+  position: relative !important;
+  z-index: 3 !important;
+}
+
+.hushhawk-gold .sidebar .sidebar-logout-btn,
+.hushhawk-gold.gold-section .sidebar .sidebar-logout-btn {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  gap: 8px !important;
+  width: 100% !important;
+  height: 38px !important;
+  min-height: 38px !important;
+  padding: 0 14px !important;
+  background: rgba(10, 16, 28, 0.75) !important;
+  border: 1px solid rgba(212, 175, 55, 0.35) !important;
+  border-radius: 9px !important;
+  color: #fca5a5 !important;
+  font-family: inherit !important;
+  font-size: 12.5px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.3px !important;
+  cursor: pointer !important;
+  backdrop-filter: blur(8px) !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+}
+
+.hushhawk-gold .sidebar .sidebar-logout-btn svg,
+.hushhawk-gold.gold-section .sidebar .sidebar-logout-btn svg {
+  width: 15px !important;
+  height: 15px !important;
+  stroke: #fca5a5 !important;
+}
+
+.hushhawk-gold .sidebar .sidebar-logout-btn:hover,
+.hushhawk-gold.gold-section .sidebar .sidebar-logout-btn:hover {
+  background: rgba(239, 68, 68, 0.18) !important;
+  border-color: rgba(239, 68, 68, 0.6) !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 16px rgba(239, 68, 68, 0.35) !important;
+  transform: translateY(-1px);
+}
+
+.hushhawk-gold .sidebar .sidebar-logout-btn:hover svg,
+.hushhawk-gold.gold-section .sidebar .sidebar-logout-btn:hover svg {
+  stroke: #ffffff !important;
+}
+.hushhawk-gold.gold-section .topbar {
+  background:
+    linear-gradient(90deg, #071222e8 0%, #0a132599 46%, #081121e0 100%),
+    url('/images/hushhawk-skyline-dusk.jpg') center 67% / cover;
+  border-bottom-color: #b68a50;
+  border-left-color: #bc8c44;
+}
+.hushhawk-gold.gold-section .hero {
+  border-color: #806643;
+  box-shadow: inset 0 -1px #e5bc7540, 0 6px 18px #0005;
+}
+.hushhawk-gold.gold-section .hero h1 { font-family: Georgia, serif; color: var(--hh-text); }
+
+.hushhawk-gold.gold-section :is(
+  .panel, .main-panel, .panel-card, .metric-card, .kpi, .stat-card, .vstat-card, .quick-stat-card,
+  .deal-card, .stage, .tab-content-panel, .panel-section, .pillar-strip-panel, .distress-pillar-card,
+  .vault-upload-panel, .photos-panel, .threads-panel, .chat-panel, .intel-panel, .input-panel,
+  .results-panel, .settings-card, .calendar-workspace, .event-card, .agenda-item,
+  .prop-header, .prop-sidebar, .vault-file-card, .vault-modal-card, .modal-content, .import-lead-modal, .modal
+) {
+  background: var(--hh-panel);
+  border-color: var(--hh-border);
+  box-shadow: var(--hh-panel-shadow);
+}
+.hushhawk-gold.gold-section :is(
+  .panel-title, .panel-header, .panel-heading, .panel-head, .panel-card-header, .modal-header,
+  .calendar-header, .settings-header, .day-header, .prop-sidebar-header
+) {
+  background: var(--hh-panel-header);
+  border-color: #76674975;
+}
+.hushhawk-gold.gold-section :is(.data-table, .all-leads, .records, .vault-table) thead th {
+  background: #1a2738;
+  border-color: #69583d;
+  color: #eed6a7;
+}
+.hushhawk-gold.gold-section :is(.data-table, .all-leads, .records, .vault-table) tbody tr:hover {
+  background-color: #dfb5660e;
+}
+.hushhawk-gold.gold-section :is(
+  .btn-gold, .btn-primary, .btn-primary-gold, .modal-primary, .btn-action-add, .cho-btn-primary
+) {
+  background: var(--hh-gold-button);
+  border-color: #edc57d;
+  color: #241807;
+  box-shadow: inset 0 1px #fff0aa80, 0 2px 8px #0005;
+}
+.hushhawk-gold.gold-section :is(
+  .btn-gold, .btn-primary, .btn-primary-gold, .modal-primary, .btn-action-add, .cho-btn-primary
+):hover:not(:disabled) { filter: brightness(1.12); }
+.hushhawk-gold.gold-section :is(.metric-icon, .kpi-icon, .panel-title-icon, .icon-title) {
+  color: var(--hh-gold);
+}
+.hushhawk-gold.gold-section :is(.thread-card.active, .tabs button[aria-selected="true"], .tab-button.active, .tab-btn.active, .pill-btn.active) {
+  background: linear-gradient(145deg, #6a4a22, #2e2419);
+  border-color: #d8aa54;
+  color: var(--hh-text);
+}
+
+.hushhawk-gold.hushhawk-auth-wrapper .auth-card {
+  background: var(--hh-panel);
+  border-color: #896c3e;
+  box-shadow: var(--hh-panel-shadow);
+}
+.hushhawk-gold.hushhawk-auth-wrapper .auth-card-title { font-family: Georgia, serif; color: var(--hh-text); }
+.hushhawk-gold.hushhawk-auth-wrapper .btn-auth-gold {
+  background: var(--hh-gold-button);
+  border-color: #edc57d;
+  color: #241807;
+}

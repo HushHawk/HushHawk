@@ -461,17 +461,77 @@ export default {
         this.showToast('Error saving settings: ' + err.message, 'error');
       }
     },
-    testIntegrations() {
-      this.showToast('All 8 enterprise integration handshakes (AWS RDS, S3, Podio, Twilio, smrtPhone, CrownKey GIS, SendGrid, AudienceLab QR) verified.', 'success');
+    async testIntegrations() {
+      this.showToast('Running live diagnostics on all enterprise integrations...', 'info');
+      try {
+        const res = await fetch('/api/v1/integrations/test-all', { method: 'POST' });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.integrations && data.integrations.length) {
+            this.integrations = data.integrations;
+          }
+          this.showToast('Live Diagnostics Complete', `All ${data.testedCount} integrations verified live against AWS RDS, S3, and API services.`, 'success');
+        } else {
+          this.showToast('Diagnostics Error', 'Server returned error status.', 'error');
+        }
+      } catch (e) {
+        this.showToast('Diagnostics Error', e.message, 'error');
+      }
     },
-    testSingleIntegration(item) {
-      this.showToast(`Handshake verified: ${item.name} responded live with zero drift.`, 'success');
+    async testSingleIntegration(item) {
+      this.showToast(`Pinging ${item.name}...`, 'info');
+      try {
+        const res = await fetch('/api/v1/integrations/test/' + encodeURIComponent(item.name), { method: 'POST' });
+        const data = await res.json();
+        item.statusText = data.message;
+        item.status = data.ok ? 'active' : 'error';
+        this.showToast(`Handshake Live (${data.latencyMs}ms)`, data.message, data.ok ? 'success' : 'error');
+      } catch (e) {
+        this.showToast('Test Error', e.message, 'error');
+      }
     },
-    inviteMember() {
-      this.showToast('Invite Link Generated', 'Secure onboarding token generated: https://hushhawk.internal/join?t=' + Math.random().toString(36).substring(2, 9), 'success');
+    async inviteMember() {
+      const name = prompt('Enter new team member full name:');
+      if (!name || !name.trim()) return;
+      const email = prompt('Enter team member email address:') || `${name.toLowerCase().replace(/\s+/g, '.')}@hushhawk.com`;
+      const title = prompt('Enter role (e.g. Acquisitions Specialist, Dispo Manager, Title Escrow):') || 'Acquisitions Specialist';
+      
+      try {
+        const res = await fetch('/api/v1/team', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: name.trim(), email: email.trim(), title: title.trim(), department: 'Acquisitions' })
+        });
+        if (res.ok) {
+          const newMem = await res.json();
+          this.users.unshift({ id: newMem.id, name: newMem.name, email: newMem.email, role: newMem.title, status: 'Active' });
+          this.showToast('Member Onboarded', `${newMem.name} added to team roster in database.`, 'success');
+        } else {
+          this.showToast('Save Failed', 'Could not onboard member.', 'error');
+        }
+      } catch (e) {
+        this.showToast('Error', e.message, 'error');
+      }
     },
-    editMember(user) {
-      this.showToast('Role & Permissions', `Access matrix for ${user.name} (${user.role}) loaded for review.`, 'info');
+    async editMember(user) {
+      const newRole = prompt(`Update role for ${user.name}:`, user.role || 'Acquisitions Specialist');
+      if (!newRole || !newRole.trim() || newRole === user.role) return;
+      
+      try {
+        const res = await fetch('/api/v1/team/' + user.id, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title: newRole.trim(), accessLevel: newRole.trim() })
+        });
+        if (res.ok) {
+          user.role = newRole.trim();
+          this.showToast('Permissions Updated', `${user.name} role updated to "${newRole}".`, 'success');
+        } else {
+          this.showToast('Update Failed', 'Could not update user.', 'error');
+        }
+      } catch (e) {
+        this.showToast('Error', e.message, 'error');
+      }
     },
     showToast(title, msg, type = 'info') {
       this.toastMessage = msg || title;

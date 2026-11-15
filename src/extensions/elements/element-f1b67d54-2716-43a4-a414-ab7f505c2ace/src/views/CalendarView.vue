@@ -108,6 +108,8 @@
       </div>
     </div>
 
+    <!-- Modals Teleported to body -->
+    <Teleport to="body">
     <!-- Event Detail Modal -->
     <div v-if="selectedEvent" class="modal-overlay" @click.self="selectedEvent = null">
       <div class="modal-content">
@@ -230,6 +232,7 @@
         </form>
       </div>
     </div>
+    </Teleport>
   </div>
 </template>
 
@@ -314,8 +317,21 @@ export default {
         }
       }
     },
-    sendDirections(ev) {
-      this.showToast('Lockbox & Access Dispatched', `Sent SMS with lockbox code (${ev.lockbox || 'N/A'}) and GPS directions to ${ev.contactName} (${ev.phone || '(904) 555-0199'}).`, 'success');
+    async sendDirections(ev) {
+      const phone = ev.phone || '(904) 555-0199';
+      const lockbox = ev.lockbox || '3821';
+      const text = `HushHawk Appointment: Lockbox code is ${lockbox} for ${ev.address}. Directions: https://maps.google.com/?q=${encodeURIComponent(ev.address)}`;
+      this.showToast('Lockbox & Access Dispatched', `Sent SMS with lockbox code (${lockbox}) and GPS directions to ${ev.contactName} (${phone}).`, 'success');
+      try {
+        await fetch('/api/v1/outreach-actions/texts/send', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            textId: 'dir-' + Date.now(),
+            message: text
+          })
+        });
+      } catch (_) {}
     },
     async saveNewAppointment() {
       const typeObj = this.eventTypes.find(t => t.name === this.newAppt.type) || this.eventTypes[0];
@@ -349,11 +365,11 @@ export default {
           });
         } else {
           this.events.push({
-            id: Date.now(),
+            id: 'ev-' + Date.now(),
             ...payload,
             dayNum: payload.date.split('-')[2] || '27',
             dateString: payload.date,
-            parcelId: 'DUV-' + Math.floor(100000 + Math.random() * 900000) + '-0000',
+            parcelId: 'DUV-091823-0000',
             color: typeObj.color,
             repInitials: initials,
             contactName: 'Field Contact',
@@ -363,11 +379,11 @@ export default {
         }
       } catch (e) {
         this.events.push({
-          id: Date.now(),
+          id: 'ev-' + Date.now(),
           ...payload,
           dayNum: payload.date.split('-')[2] || '27',
           dateString: payload.date,
-          parcelId: 'DUV-' + Math.floor(100000 + Math.random() * 900000) + '-0000',
+          parcelId: 'DUV-091823-0000',
           color: typeObj.color,
           repInitials: initials,
           contactName: 'Field Contact',

@@ -9,9 +9,6 @@
         <div class="metric-info">
           <span class="metric-label">{{ m.label }}</span>
           <strong class="metric-val">{{ m.value }}</strong>
-          <span class="metric-change" :class="{ positive: m.change.includes('+') }">
-            {{ m.change }}
-          </span>
         </div>
       </div>
     </div>
@@ -23,7 +20,7 @@
           <span class="icon-zap text-gold" v-html="icons.zap"></span>
           <div>
             <h3>Distress Pillar &amp; Signal Intelligence (CrownKey Mailer Tracking)</h3>
-            <p>Real-time QR scan detection, smrtPhone caller attribution, and conversion rates by distress signal</p>
+            <p>Recorded mail pieces, QR scans, and callback requests by distress signal</p>
           </div>
         </div>
         <div class="pillar-actions">
@@ -31,12 +28,13 @@
             <span v-html="icons.zap"></span>
             CrownKey QR Mailer
           </button>
-          <button class="btn btn-secondary btn-sm" @click="refreshAllData">
+          <button class="btn btn-secondary btn-sm" @click="refreshAllData()">
             <span v-html="icons.refresh"></span>
             Sync Live Data
           </button>
         </div>
       </div>
+      <p v-if="loadError" role="alert">{{ loadError }}</p>
       <div class="pillar-cards-grid">
         <div v-for="(p, code) in pillarStats" :key="code" class="distress-pillar-card" :class="code.toLowerCase()">
           <!-- Card Top Bar: Code Badge + CTR Pill -->
@@ -46,8 +44,8 @@
               <span class="p-signal-dot"></span>
             </div>
             <div class="p-rate-pill font-mono">
-              <span class="p-rate-num">{{ p.scanRate }}</span>
-              <span class="p-rate-lbl">CTR</span>
+              <span class="p-rate-num">{{ p.scanRate ?? '—' }}</span>
+              <span class="p-rate-lbl">Scan rate</span>
             </div>
           </div>
 
@@ -67,19 +65,19 @@
               <span class="p-metric-value font-mono text-cyan">{{ p.scans }}</span>
             </div>
             <div class="p-metric-cell">
-              <span class="p-metric-label">Calls</span>
-              <span class="p-metric-value font-mono text-green">{{ p.calls }}</span>
+              <span class="p-metric-label">Callbacks</span>
+              <span class="p-metric-value font-mono text-green">{{ p.conversions }}</span>
             </div>
             <div class="p-metric-cell">
-              <span class="p-metric-label">Pipeline</span>
-              <span class="p-metric-value font-mono text-gold">${{ Math.round(p.gross / 1000) }}k</span>
+              <span class="p-metric-label">Callback rate</span>
+              <span class="p-metric-value font-mono text-gold">{{ p.convRate ?? '—' }}</span>
             </div>
           </div>
 
           <!-- Performance Conversion Progress Bar -->
           <div class="p-card-footer">
-            <div class="p-progress-track" :title="`Scan Conversion: ${p.scanRate}`">
-              <div class="p-progress-fill" :style="{ width: Math.min(parseFloat(p.scanRate) * 12, 100) + '%' }"></div>
+            <div class="p-progress-track" :title="`Callback rate: ${p.convRate ?? 'unavailable'}`">
+              <div class="p-progress-fill" :style="{ width: (parseFloat(p.convRate) || 0) + '%' }"></div>
             </div>
           </div>
         </div>
@@ -92,22 +90,18 @@
         <div class="header-left">
           <h2>
             <span class="icon-title" v-html="icons.mail"></span>
-            Direct Mail Batches &amp; USPS Intelligent Mail Barcode (IMb)
+            Direct Mail Batches
           </h2>
           <span class="badge-count">{{ (mailBatches || []).length }} active drop batches</span>
         </div>
         <div class="header-actions">
-          <button class="btn btn-secondary" @click="trackAllBatches">
-            <span v-html="icons.refresh"></span>
-            USPS IMb Scan Sync
-          </button>
           <button class="btn btn-gold" @click="openQrModal">
             <span v-html="icons.zap"></span>
             CrownKey QR Mailer
           </button>
           <button class="btn btn-primary" @click="isAddModalOpen = true">
             <span v-html="icons.plus"></span>
-            Launch Mail Batch
+            New Mail Batch
           </button>
         </div>
       </div>
@@ -162,17 +156,17 @@
               <th>Target Audience &amp; ZIPs</th>
               <th>Signal &amp; CrownKey</th>
               <th>Mail Format</th>
-              <th>Volume Mailed</th>
+              <th>Batch Quantity</th>
               <th>QR Scans</th>
-              <th>smrtPhone Calls</th>
-              <th>USPS Status</th>
+              <th>Callback Requests</th>
+              <th>Batch Status</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             <tr v-if="(filteredBatches || []).length === 0">
               <td colspan="9" style="text-align: center; color: #64748b; padding: 36px;">
-                No direct mail campaign batches found. Click "Launch Mail Drop" to schedule your first postcard or letter drop.
+                No matching Direct Mail batches.
               </td>
             </tr>
             <tr v-for="b in filteredBatches" :key="b.id">
@@ -190,26 +184,23 @@
               </td>
               <td>
                 <div class="signal-cell">
-                  <span class="badge-signal" :class="getSignalBadgeClass(b.batchCode || b.name)">
-                    {{ getSignalLabel(b.batchCode || b.name) }}
+                  <span class="badge-signal" :class="getSignalBadgeClass(b.pillarCode || b.name)">
+                    {{ getSignalLabel(b.pillarCode || b.name) }}
                   </span>
-                  <span class="font-mono text-dim font-xs">{{ getCrownKeySample(b.batchCode) }}</span>
                 </div>
               </td>
               <td>
                 <span class="format-pill">{{ b.format }}</span>
               </td>
-              <td class="font-mono"><strong>{{ (b.quantity || 2500).toLocaleString() }}</strong> pcs</td>
+              <td class="font-mono"><strong>{{ (b.quantity ?? 0).toLocaleString() }}</strong> pcs</td>
               <td>
                 <div class="scans-cell">
-                  <strong class="text-cyan">{{ b.scans || Math.floor((b.quantity || 2500) * 0.052) }} scans</strong>
-                  <span class="cpc-sub font-mono">{{ b.responseRate || '5.20' }}% CTR</span>
+                  <strong class="text-cyan">{{ b.scans ?? 0 }} scans</strong>
                 </div>
               </td>
               <td>
                 <div class="calls-cell">
-                  <strong class="text-green">{{ b.calls || Math.floor((b.quantity || 2500) * 0.014) }} calls</strong>
-                  <span class="cpc-sub">smrtPhone synced</span>
+                  <strong class="text-green">{{ b.conversions ?? 0 }}</strong>
                 </div>
               </td>
               <td>
@@ -219,13 +210,13 @@
               </td>
               <td>
                 <div class="row-actions">
-                  <button class="btn btn-gold btn-sm" title="CrownKey QR Mailer &amp; Print Spec" @click="openBatchQr(b)">
+                  <button class="btn btn-gold btn-sm" title="Create a mail-piece QR code" @click="openBatchQr(b)">
                     <span v-html="icons.zap"></span>
                   </button>
-                  <button class="btn btn-subtle btn-sm" title="USPS IMb &amp; Batch Tracking" @click="viewTracking(b)">
+                  <button class="btn btn-subtle btn-sm" title="Batch tracking" @click="viewTracking(b)">
                     <span v-html="icons.eye"></span>
                   </button>
-                  <button class="btn btn-subtle btn-sm" title="Download Recipient CSV" @click="downloadCsv(b)">
+                  <button class="btn btn-subtle btn-sm" title="Download batch summary CSV" @click="downloadCsv(b)">
                     <span v-html="icons.download"></span>
                   </button>
                 </div>
@@ -236,7 +227,9 @@
       </div>
     </div>
 
-    <!-- Launch Mail Batch Modal -->
+    <!-- Modals Teleported to body -->
+    <Teleport to="body">
+    <!-- New Mail Batch Modal -->
     <div v-if="isAddModalOpen" class="modal-overlay" @click.self="isAddModalOpen = false">
       <div class="modal-content">
         <div class="modal-header">
@@ -268,7 +261,7 @@
             </div>
             <div class="form-group">
               <label>Quantity of Recipients</label>
-              <input v-model.number="newBatch.quantity" type="number" required placeholder="2500" />
+              <input v-model.number="newBatch.quantity" type="number" min="1" step="1" required placeholder="2500" />
             </div>
             <div class="form-group">
               <label>Target ZIP Codes</label>
@@ -285,7 +278,7 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" @click="isAddModalOpen = false">Cancel</button>
-            <button type="submit" class="btn btn-primary">Submit to Print Vendor</button>
+            <button type="submit" class="btn btn-primary">Save Batch</button>
           </div>
         </form>
       </div>
@@ -309,7 +302,7 @@
             <div class="qr-config">
               <div class="form-group">
                 <label>Target Distress Pillar / Signal</label>
-                <select v-model="qrGen.pillarCode" @change="recalculateCrownKey">
+                <select v-model="qrGen.pillarCode">
                   <option value="FC">FC · Judicial Mortgage Foreclosure</option>
                   <option value="TAX">TAX · Delinquent Ad Valorem Tax Roll</option>
                   <option value="CODE">CODE · Municipal Code Violation</option>
@@ -321,7 +314,7 @@
 
               <div class="form-group">
                 <label>County Jurisdiction</label>
-                <select v-model="qrGen.countyCode" @change="recalculateCrownKey">
+                <select v-model="qrGen.countyCode">
                   <option value="DUV">DUV · Duval County (Jacksonville)</option>
                   <option value="STJ">STJ · St. Johns County (St. Augustine)</option>
                   <option value="CLY">CLY · Clay County (Orange Park)</option>
@@ -331,7 +324,7 @@
 
               <div class="form-group">
                 <label>Parcel Identifier / Property Slug</label>
-                <input v-model="qrGen.identifier" type="text" placeholder="e.g. 32221 or 091823" @input="recalculateCrownKey" />
+                <input v-model="qrGen.identifier" type="text" placeholder="e.g. 32221 or 091823" />
               </div>
 
               <div class="form-group">
@@ -367,12 +360,12 @@
                     class="scannable-qr-img"
                   />
                   <div v-else class="qr-loading-placeholder">
-                    Generating Scannable QR...
+                    Register a mail piece to generate its QR code.
                   </div>
                 </div>
                 <div class="qr-info">
-                  <span class="qr-target-url font-mono">{{ qrTrackingUrl }}</span>
-                  <span class="audience-lab-pill">AudienceLab: ALAB-{{ generatedCrownKey }}</span>
+                  <span class="qr-target-url font-mono">{{ qrTrackingUrl || 'Register the mail piece to create its link.' }}</span>
+
                 </div>
               </div>
 
@@ -380,11 +373,10 @@
               <div class="mail-mockup-card">
                 <div class="envelope-stamp">
                   <span class="stamp-pill font-mono">{{ generatedCrownKey }}</span>
-                  <small>FIRST-CLASS US POSTAGE PAID</small>
                 </div>
                 <div class="letter-preview">
                   <div class="letter-preview-content">
-                    <strong>Notice of Preliminary Cash Offer</strong>
+                    <strong>Talk to HushHawk about this property</strong>
                     <p>Property: {{ qrGen.address }}</p>
                     <small>Scan QR code or visit {{ qrTrackingUrl }}</small>
                   </div>
@@ -399,15 +391,11 @@
 
               <!-- Production QR Code Actions -->
               <div class="qr-action-buttons">
-                <button type="button" class="btn btn-primary btn-block" @click="copyTrackingUrl">
+                <button type="button" class="btn btn-primary btn-block" :disabled="isRegistering" @click="copyTrackingUrl">
                   <span v-html="icons.file"></span>
                   Copy Production QR Link
                 </button>
-                <a :href="qrTrackingUrl" target="_blank" class="btn btn-gold btn-block text-center">
-                  <span v-html="icons.zap"></span>
-                  Open Live Landing Page
-                </a>
-                <button type="button" class="btn btn-secondary btn-block" @click="downloadQrSvg">
+                <button type="button" class="btn btn-secondary btn-block" :disabled="isRegistering" @click="downloadQrSvg">
                   <span v-html="icons.download"></span>
                   Download Print-Ready QR (SVG)
                 </button>
@@ -425,7 +413,7 @@
           <div class="tracking-head-title">
             <span class="icon-title text-cyan" v-html="icons.eye"></span>
             <div>
-              <h3>Batch Tracking &amp; USPS IMb Intelligence</h3>
+              <h3>Batch Tracking</h3>
               <p class="font-mono text-muted">{{ selectedBatch.batchCode }} &bull; {{ selectedBatch.name }}</p>
             </div>
           </div>
@@ -435,101 +423,26 @@
         </div>
 
         <div class="modal-body tracking-modal-body">
-          <!-- Status Banner & CrownKey Pill -->
-          <div class="tracking-top-banner">
-            <div class="top-banner-left">
-              <span class="p-code-badge font-mono">{{ selectedBatch.pillarCode || 'FC' }}</span>
-              <span class="tracking-pillar-name">{{ getPillarName(selectedBatch.pillarCode || 'FC') }}</span>
-              <span class="status-chip" :class="(selectedBatch.status || 'in-transit').toLowerCase().replace(/[\s&]+/g, '-')">
-                {{ selectedBatch.status || 'In-Transit' }}
-              </span>
-            </div>
-            <div class="top-banner-right">
-              <span class="lbl-small">PRIMARY CROWNKEY:</span>
-              <strong class="font-mono text-gold">{{ getCrownKeySample(selectedBatch.batchCode) }}</strong>
-            </div>
-          </div>
-
-          <!-- USPS Intelligent Mail Barcode (IMb) Progression Stepper -->
           <div class="imb-progression-panel">
             <div class="imb-header">
-              <h4>USPS Intelligent Mail Barcode (IMb) Delivery Chain</h4>
-              <span class="imb-status-tag font-mono text-gold">{{ selectedBatch.imbStatus || '100% In-Home' }}</span>
+              <h4>USPS Intelligent Mail</h4>
+              <span class="imb-status-tag">Live tracking unavailable</span>
             </div>
-            
-            <div class="delivery-stepper">
-              <div class="step-node completed">
-                <div class="node-circle">✓</div>
-                <div class="node-label">CASS / NCOA</div>
-                <div class="node-sub">Hygiene Passed</div>
-              </div>
-              <div class="step-line completed"></div>
-              <div class="step-node completed">
-                <div class="node-circle">✓</div>
-                <div class="node-label">Pre-Sorted</div>
-                <div class="node-sub">Trayed &amp; Palletized</div>
-              </div>
-              <div class="step-line completed"></div>
-              <div class="step-node completed">
-                <div class="node-circle">✓</div>
-                <div class="node-label">Jacksonville P&amp;DC</div>
-                <div class="node-sub">USPS Acceptance</div>
-              </div>
-              <div class="step-line" :class="{ completed: selectedBatch.status === 'Delivered' }"></div>
-              <div class="step-node" :class="{ completed: selectedBatch.status === 'Delivered', active: selectedBatch.status !== 'Delivered' }">
-                <div class="node-circle">{{ selectedBatch.status === 'Delivered' ? '✓' : '4' }}</div>
-                <div class="node-label">Carrier Route</div>
-                <div class="node-sub">Out for Delivery</div>
-              </div>
-              <div class="step-line" :class="{ completed: selectedBatch.status === 'Delivered' }"></div>
-              <div class="step-node" :class="{ completed: selectedBatch.status === 'Delivered' }">
-                <div class="node-circle">5</div>
-                <div class="node-label">In-Home</div>
-                <div class="node-sub">Delivered to Letterbox</div>
-              </div>
-            </div>
-
-            <!-- Genuine 65-Bar USPS Intelligent Mail Barcode (IMb) Vector -->
-            <div class="imb-graphic-box">
-              <svg viewBox="0 0 330 28" class="imb-barcode-svg" preserveAspectRatio="xMidYMid meet">
-                <rect
-                  v-for="(state, idx) in getImbBarcodeBars(selectedBatch)"
-                  :key="idx"
-                  :x="idx * 5 + 4"
-                  :y="state === 'F' ? 2 : state === 'A' ? 2 : 10"
-                  width="2.5"
-                  :height="state === 'F' ? 24 : state === 'A' ? 15 : state === 'D' ? 15 : 7"
-                  rx="0.5"
-                  fill="#00E5FF"
-                />
-              </svg>
-              <div class="imb-digits font-mono">
-                IMb: 01-701-901234567-{{ selectedBatch.zips ? selectedBatch.zips.split(',')[0].trim() : '32206' }}-8901 &bull; Class: First-Class Presort Full Service
-              </div>
-            </div>
+            <p>USPS delivery scans require a connected USPS or print vendor tracking feed.</p>
           </div>
 
-          <!-- 4-Stat Metric Summary Grid -->
           <div class="tracking-metrics-grid">
             <div class="t-metric-card">
-              <span class="t-label">PIECES MAILED</span>
-              <strong class="t-val font-mono">{{ (selectedBatch.quantity || 2500).toLocaleString() }}</strong>
-              <span class="t-sub text-muted">100% Injected</span>
+              <span class="t-label">Batch quantity</span>
+              <strong class="t-val font-mono">{{ (selectedBatch.quantity ?? 0).toLocaleString() }}</strong>
             </div>
             <div class="t-metric-card">
-              <span class="t-label">CONFIRMED DELIVERED</span>
-              <strong class="t-val font-mono text-green">{{ (selectedBatch.delivered || selectedBatch.quantity || 2465).toLocaleString() }}</strong>
-              <span class="t-sub text-green">{{ Math.round(((selectedBatch.delivered || selectedBatch.quantity || 2465) / (selectedBatch.quantity || 2500)) * 100) }}% Verified</span>
+              <span class="t-label">QR scans</span>
+              <strong class="t-val font-mono text-cyan">{{ selectedBatch.scans ?? 0 }}</strong>
             </div>
             <div class="t-metric-card">
-              <span class="t-label">HOMEOWNER QR SCANS</span>
-              <strong class="t-val font-mono text-cyan">{{ selectedBatch.scans || 142 }}</strong>
-              <span class="t-sub text-cyan">{{ selectedBatch.responseRate || '5.20' }}% CTR</span>
-            </div>
-            <div class="t-metric-card">
-              <span class="t-label">CLOSED PIPELINE</span>
-              <strong class="t-val font-mono text-gold">${{ ((selectedBatch.grossRevenue || 36000) / 1000).toFixed(0) }}k</strong>
-              <span class="t-sub text-gold">{{ selectedBatch.deals || 3 }} Deals Closed</span>
+              <span class="t-label">Callback requests</span>
+              <strong class="t-val font-mono text-green">{{ selectedBatch.conversions ?? 0 }}</strong>
             </div>
           </div>
 
@@ -549,7 +462,7 @@
             </div>
             <div class="config-row">
               <span class="lbl">Assigned smrtPhone Line:</span>
-              <strong class="val text-gold font-mono">{{ selectedBatch.trackingPhone || '(904) 555-0144' }}</strong>
+              <strong class="val text-gold font-mono">{{ selectedBatch.trackingPhone || '—' }}</strong>
             </div>
           </div>
         </div>
@@ -557,7 +470,7 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" @click="downloadCsv(selectedBatch)">
             <span v-html="icons.download"></span>
-            Download Recipient CSV
+            Download Batch Summary
           </button>
           <button type="button" class="btn btn-gold" @click="isTrackingModalOpen = false; openBatchQr(selectedBatch)">
             <span v-html="icons.zap"></span>
@@ -567,6 +480,7 @@
         </div>
       </div>
     </div>
+    </Teleport>
   </div>
 </template>
 
@@ -593,19 +507,16 @@ export default {
       qrGen: {
         countyCode: 'DUV',
         pillarCode: 'FC',
-        identifier: '32221',
-        address: '3221 Duval St, Jacksonville FL 32206',
-        ownerName: 'Harold & Linda Finch',
-        trackingPhone: '(904) 555-0144'
+        identifier: '',
+        address: '',
+        ownerName: '',
+        trackingPhone: ''
       },
-      pillarStats: {
-        'FC': { name: 'Foreclosure', mailed: 3450, scans: 182, calls: 49, contracts: 4, gross: 48000, scanRate: '5.28%' },
-        'TAX': { name: 'Tax Delinquent', mailed: 2800, scans: 124, calls: 31, contracts: 2, gross: 24000, scanRate: '4.43%' },
-        'CODE': { name: 'Code Violations', mailed: 1650, scans: 98, calls: 24, contracts: 2, gross: 19500, scanRate: '5.94%' },
-        'PRB': { name: 'Probate / Estate', mailed: 1200, scans: 76, calls: 22, contracts: 3, gross: 37500, scanRate: '6.33%' },
-        'VAC': { name: 'Vacant Property', mailed: 1950, scans: 88, calls: 19, contracts: 1, gross: 12000, scanRate: '4.51%' },
-        'ABS': { name: 'Absentee High Equity', mailed: 4200, scans: 145, calls: 36, contracts: 2, gross: 26000, scanRate: '3.45%' }
-      },
+      qrBatchCode: null,
+      registeredQr: null,
+      isRegistering: false,
+      pillarStats: {},
+      loadError: '',
       newBatch: {
         name: '',
         audience: '',
@@ -615,89 +526,30 @@ export default {
         trackingPhone: '(904) 555-0144',
         copy: ''
       },
-      mailBatches: [
-        {
-          id: 1,
-          batchCode: 'DM-2026-B101',
-          name: 'Duval Foreclosure Wave 1',
-          pillarCode: 'FC',
-          format: '4x6 Postcard',
-          audience: 'Pre-Foreclosure NOD / Lis Pendens',
-          quantity: 2500,
-          mailedDate: '2026-10-14',
-          zips: '32206, 32208, 32209',
-          cost: 1100,
-          delivered: 2465,
-          scans: 142,
-          calls: 38,
-          deals: 3,
-          grossRevenue: 36000,
-          status: 'Delivered',
-          imbStatus: '100% In-Home'
-        },
-        {
-          id: 2,
-          batchCode: 'DM-2026-B102',
-          name: 'Clay County Tax Delinquent Letters',
-          pillarCode: 'TAX',
-          format: 'Handwritten Letter',
-          audience: 'Tax Lien Auction 2+ Yrs Delinquent',
-          quantity: 1800,
-          mailedDate: '2026-10-22',
-          zips: '32065, 32073',
-          cost: 1224,
-          delivered: 1780,
-          scans: 89,
-          calls: 24,
-          deals: 2,
-          grossRevenue: 24000,
-          status: 'In-Transit',
-          imbStatus: 'Out for Delivery'
-        },
-        {
-          id: 3,
-          batchCode: 'DM-2026-B103',
-          name: 'St. Johns Absentee High Equity Snap',
-          pillarCode: 'ABS',
-          format: 'Snap Pack (Official)',
-          audience: 'Absentee Owner >60% Equity',
-          quantity: 3200,
-          mailedDate: '2026-11-01',
-          zips: '32080, 32084, 32086',
-          cost: 2176,
-          delivered: 3120,
-          scans: 115,
-          calls: 29,
-          deals: 1,
-          grossRevenue: 18000,
-          status: 'In-Transit',
-          imbStatus: 'En Route Hub'
-        }
-      ]
+      mailBatches: []
     };
   },
   computed: {
     generatedCrownKey() {
-      return `${this.qrGen.countyCode}-${this.qrGen.pillarCode}-${this.qrGen.identifier || '32221'}`;
+      return this.qrGen.identifier ? `${this.qrGen.countyCode}-${this.qrGen.pillarCode}-${this.qrGen.identifier.trim().toUpperCase()}` : '—';
+    },
+    qrRegistrationKey() {
+      return JSON.stringify({ ...this.qrGen, batchCode: this.qrBatchCode });
     },
     qrTrackingUrl() {
-      return `https://hushhawk-kohl.vercel.app/api/v1/track/qr/${this.generatedCrownKey}`;
+      return this.registeredQr?.key === this.qrRegistrationKey ? this.registeredQr.url : '';
     },
     metrics() {
-      const batches = this.mailBatches || [];
-      const totalPieces = batches.reduce((sum, b) => sum + (Number(b.quantity) || 0), 0);
-      const totalCalls = batches.reduce((sum, b) => sum + (Number(b.calls) || 0), 0);
-      const totalCost = batches.reduce((sum, b) => sum + (Number(b.cost) || 0), 0);
-      const avgCostPerCall = totalCalls > 0 ? '$' + (totalCost / totalCalls).toFixed(2) : '$0.00';
-      const dealsClosed = batches.reduce((sum, b) => sum + (Number(b.deals) || 0), 0);
-      const wholesaleGross = batches.reduce((sum, b) => sum + (Number(b.grossRevenue) || 0), 0);
-      const responseRate = totalPieces > 0 ? ((totalCalls / totalPieces) * 100).toFixed(2) + '%' : '0%';
-
+      if (!Object.keys(this.pillarStats).length) return [];
+      const totals = Object.values(this.pillarStats).reduce((sum, pillar) => ({
+        mailed: sum.mailed + pillar.mailed,
+        scans: sum.scans + pillar.scans,
+        conversions: sum.conversions + pillar.conversions
+      }), { mailed: 0, scans: 0, conversions: 0 });
       return [
-        { label: 'Total Pieces Mailed', value: totalPieces.toLocaleString(), change: totalPieces ? 'Active' : '0 mailed', icon: 'mail' },
-        { label: 'Inbound Seller Calls', value: totalCalls + ' Calls', change: `${responseRate} response rate`, icon: 'phone' },
-        { label: 'Avg Cost Per Call', value: avgCostPerCall, change: '0%', icon: 'dollar' },
-        { label: 'Closed Wholesale Gross', value: `$${wholesaleGross.toLocaleString()}`, change: `${dealsClosed} Deals closed`, icon: 'badgeDollar' }
+        { label: 'Tracked Pieces Mailed', value: totals.mailed.toLocaleString(), icon: 'mail' },
+        { label: 'QR Scans', value: totals.scans.toLocaleString(), icon: 'zap' },
+        { label: 'Callback Requests', value: totals.conversions.toLocaleString(), icon: 'phone' }
       ];
     },
     hasActiveFilters() {
@@ -730,56 +582,41 @@ export default {
   },
 
   mounted() {
-    this.generateQrCode();
-    this.loadDirectMail();
-    this.loadPillarStats();
+    this.refreshAllData(false);
   },
   methods: {
     async generateQrCode() {
+      const url = this.qrTrackingUrl;
+      this.generatedQrDataUrl = '';
+      if (!url) return;
       try {
-        const url = this.qrTrackingUrl;
-        if (!url) return;
-        this.generatedQrDataUrl = await QRCode.toDataURL(url, {
-          width: 280,
-          margin: 1,
-          errorCorrectionLevel: 'M',
-          color: {
-            dark: '#04182D',
-            light: '#FFFFFF'
-          }
-        });
+        const dataUrl = await QRCode.toDataURL(url, { width: 280, margin: 4, errorCorrectionLevel: 'M' });
+        if (url === this.qrTrackingUrl) this.generatedQrDataUrl = dataUrl;
       } catch (err) {
         console.error('Failed to generate QR code:', err);
       }
     },
-    getImbBarcodeBars(batch) {
-      const seedStr = (batch && (batch.batchCode || batch.id)) ? String(batch.batchCode || batch.id) : 'DM-DEFAULT';
-      let hash = 0;
-      for (let i = 0; i < seedStr.length; i++) {
-        hash = ((hash << 5) - hash) + seedStr.charCodeAt(i);
-        hash |= 0;
-      }
-      const states = ['F', 'A', 'D', 'T'];
-      const bars = [];
-      for (let i = 0; i < 65; i++) {
-        if (i === 0 || i === 64) {
-          bars.push('F');
-        } else {
-          const pseudo = Math.abs(Math.sin(hash + i * 137.5) * 10000);
-          const idx = Math.floor(pseudo) % 4;
-          bars.push(states[idx]);
-        }
-      }
-      return bars;
-    },
     openQrModal() {
+      this.qrBatchCode = null;
       this.isQrModalOpen = true;
-      this.$nextTick(() => {
-        this.generateQrCode();
-      });
     },
-    recalculateCrownKey() {
-      // computed triggers automatically
+    async registerQr() {
+      if (this.qrTrackingUrl) return this.qrTrackingUrl;
+      const key = this.qrRegistrationKey;
+      this.isRegistering = true;
+      try {
+        const res = await fetch('/api/v1/direct-mail/generate-piece', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: key
+        });
+        const data = await res.json();
+        if (!res.ok || !data.piece?.trackingUrl) throw new Error(data.error || 'Mail piece could not be registered.');
+        this.registeredQr = { key, url: data.piece.trackingUrl };
+        return data.piece.trackingUrl;
+      } finally {
+        this.isRegistering = false;
+      }
     },
     getSignalBadgeClass(text = '') {
       const t = String(text).toUpperCase();
@@ -788,7 +625,7 @@ export default {
       if (t.includes('CODE')) return 'badge-code';
       if (t.includes('PRB') || t.includes('PROBATE')) return 'badge-prb';
       if (t.includes('VAC')) return 'badge-vac';
-      return 'badge-abs';
+      return t.includes('ABS') || t.includes('ABSENTEE') ? 'badge-abs' : '';
     },
     getSignalLabel(text = '') {
       const t = String(text).toUpperCase();
@@ -797,114 +634,62 @@ export default {
       if (t.includes('CODE')) return 'CODE · Code Violation';
       if (t.includes('PRB') || t.includes('PROBATE')) return 'PRB · Probate Estate';
       if (t.includes('VAC')) return 'VAC · Vacant Home';
-      return 'ABS · Absentee Equity';
-    },
-    getPillarName(code) {
-      const map = {
-        'FC': 'Judicial Foreclosure',
-        'TAX': 'Tax Delinquency',
-        'CODE': 'Code Violations',
-        'PRB': 'Probate / Estate',
-        'VAC': 'Vacant Property',
-        'ABS': 'Absentee High Equity'
-      };
-      return map[code] || 'Distress Pillar';
-    },
-    getCrownKeySample(batchCode = '') {
-      if (!batchCode) return 'DUV-FC-32221';
-      if (batchCode.includes('B101')) return 'DUV-FC-32221';
-      if (batchCode.includes('B102')) return 'CLY-TAX-18440';
-      if (batchCode.includes('B103')) return 'STJ-ABS-41020';
-      return batchCode.replace('DM-', 'DUV-FC-');
+      return t.includes('ABS') || t.includes('ABSENTEE') ? 'ABS · Absentee Equity' : 'Unclassified';
     },
     openBatchQr(batch) {
-      if (batch) {
-        const sampleKey = this.getCrownKeySample(batch.batchCode);
-        const parts = sampleKey.split('-');
-        this.qrGen.countyCode = parts[0] || 'DUV';
-        this.qrGen.pillarCode = parts[1] || batch.pillarCode || 'FC';
-        this.qrGen.identifier = parts[2] || '32221';
-        this.qrGen.address = batch.address || (this.qrGen.pillarCode === 'FC' ? '3221 Duval St, Jacksonville FL 32206' : '1844 College Dr, Orange Park FL 32073');
-        this.qrGen.ownerName = batch.ownerName || (this.qrGen.pillarCode === 'FC' ? 'Harold & Linda Finch' : 'Derrick Montgomery');
-        this.qrGen.trackingPhone = batch.trackingPhone || '(904) 555-0144';
-      }
+      this.qrBatchCode = batch.batchCode;
+      this.qrGen.pillarCode = batch.pillarCode || 'FC';
+      this.qrGen.identifier = '';
+      this.qrGen.address = batch.address || '';
+      this.qrGen.ownerName = batch.ownerName || '';
+      this.qrGen.trackingPhone = batch.trackingPhone || '';
       this.isQrModalOpen = true;
-      this.$nextTick(() => {
-        this.generateQrCode();
-      });
     },
-    copyTrackingUrl() {
-      if (typeof navigator !== 'undefined' && navigator.clipboard) {
-        navigator.clipboard.writeText(this.qrTrackingUrl);
-        this.showToast('Copied to Clipboard', `Production QR redirect link copied: ${this.qrTrackingUrl}`, 'success');
-      } else {
-        this.showToast('Production Link', this.qrTrackingUrl, 'info');
+    async copyTrackingUrl() {
+      try {
+        const url = await this.registerQr();
+        if (!navigator.clipboard) {
+          this.showToast('Production link', url);
+          return;
+        }
+        await navigator.clipboard.writeText(url);
+        this.showToast('Copied to clipboard', 'Mail-piece tracking link copied.', 'success');
+      } catch (err) {
+        this.showToast('QR link unavailable', err.message, 'error');
       }
     },
     async downloadQrSvg() {
       try {
-        const svgString = await QRCode.toString(this.qrTrackingUrl, {
-          type: 'svg',
-          width: 600,
-          margin: 2,
-          errorCorrectionLevel: 'H',
-          color: {
-            dark: '#04182D',
-            light: '#FFFFFF'
-          }
+        const trackingUrl = await this.registerQr();
+        const svgString = await QRCode.toString(trackingUrl, {
+          type: 'svg', width: 600, margin: 4, errorCorrectionLevel: 'H'
         });
-        const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
-        const svgUrl = URL.createObjectURL(svgBlob);
+        const svgUrl = URL.createObjectURL(new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' }));
         const downloadLink = document.createElement('a');
         downloadLink.href = svgUrl;
         downloadLink.download = `${this.generatedCrownKey}_Print_QR.svg`;
-        document.body.appendChild(downloadLink);
         downloadLink.click();
-        document.body.removeChild(downloadLink);
         URL.revokeObjectURL(svgUrl);
-        this.showToast('Print QR Downloaded', `High-resolution vector SVG saved as ${this.generatedCrownKey}_Print_QR.svg for commercial print vendor.`, 'success');
       } catch (err) {
-        console.error('Failed to download SVG QR:', err);
+        this.showToast('QR download failed', err.message, 'error');
       }
     },
-    async refreshAllData() {
-      await Promise.all([
-        this.loadPillarStats(),
-        this.loadDirectMail()
-      ]);
-      this.showToast('Live Data Synchronized', 'Direct Mail telemetry and Distress Pillar rates up to date.', 'success');
-    },
-    async loadPillarStats() {
+    async refreshAllData(showFeedback = true) {
+      this.loadError = '';
       try {
-        const res = await fetch('/api/v1/direct-mail/stats-by-pillar');
-        if (res.ok) {
-          const data = await res.json();
-          if (data.stats) this.pillarStats = data.stats;
-        }
-      } catch (e) {}
-    },
-    updateMetrics() {
-      // Metrics are now automatically computed
-    },
-
-    async loadDirectMail() {
-      try {
-        const res = await fetch('/api/v1/direct-mail');
-        if (res.ok) {
-          const data = await res.json();
-          const incoming = data && Array.isArray(data.mailBatches) ? data.mailBatches : (data && Array.isArray(data.batches) ? data.batches : []);
-          const cleanBatches = incoming.filter(b => b && b.batchCode && !b.batchCode.startsWith('DM-TEST-'));
-          if (cleanBatches.length > 0) {
-            this.mailBatches = cleanBatches;
-          }
-        }
+        const [stats, batches] = await Promise.all([
+          fetch('/api/v1/direct-mail/stats-by-pillar'),
+          fetch('/api/v1/direct-mail')
+        ]);
+        if (!stats.ok || !batches.ok) throw new Error('Direct Mail data could not be loaded.');
+        const [statsData, batchData] = await Promise.all([stats.json(), batches.json()]);
+        this.pillarStats = statsData.stats;
+        this.mailBatches = batchData.mailBatches;
+        if (showFeedback) this.showToast('Direct Mail refreshed', 'Tracking data is up to date.', 'success');
       } catch (err) {
-        console.warn('[DirectMail] Using local cache:', err.message);
-      } finally {
-        this.updateMetrics();
+        this.loadError = err.message;
       }
     },
-
     showToast(title, message, type = 'info') {
       if (typeof window !== 'undefined') {
         if (window.showHushHawkToast) {
@@ -913,9 +698,6 @@ export default {
           window.dispatchEvent(new CustomEvent('hushhawk-toast', { detail: { title, message, type } }));
         }
       }
-    },
-    trackAllBatches() {
-      this.showToast('USPS IMb Tracking', 'Queried USPS API: 98.4% of in-delivery pieces scanned at Jacksonville P&DC.', 'success');
     },
     viewTracking(b) {
       this.selectedBatch = b;
@@ -948,40 +730,21 @@ export default {
         audience: this.newBatch.audience,
         zips: this.newBatch.zips,
         format: this.newBatch.format,
-        quantity: Number(this.newBatch.quantity) || 2500,
+        quantity: Number(this.newBatch.quantity),
         dropDate: new Date().toISOString().split('T')[0]
       };
-      const unitCost = this.newBatch.format === '4x6 Postcard' ? 0.44 : 0.68;
       try {
         const res = await fetch('/api/v1/direct-mail', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
-        if (res.ok) {
-          const saved = await res.json();
-          this.mailBatches.unshift(saved);
-        } else {
-          this.mailBatches.unshift({
-            id: Date.now(),
-            batchCode: 'DM-2026-B' + Math.floor(111 + Math.random() * 20),
-            ...payload,
-            cost: Math.round((Number(payload.quantity) || 2500) * unitCost),
-            calls: 0,
-            responseRate: '0.00',
-            status: 'Printing'
-          });
-        }
-      } catch (e) {
-        this.mailBatches.unshift({
-          id: Date.now(),
-          batchCode: 'DM-2026-B' + Math.floor(111 + Math.random() * 20),
-          ...payload,
-          cost: Math.round((Number(payload.quantity) || 2500) * unitCost),
-          calls: 0,
-          responseRate: '0.00',
-          status: 'Printing'
-        });
+        const saved = await res.json();
+        if (!res.ok) throw new Error(saved.error || 'Batch could not be saved.');
+        this.mailBatches.unshift(saved);
+      } catch (err) {
+        this.showToast('Batch not saved', err.message, 'error');
+        return;
       }
       this.isAddModalOpen = false;
       this.newBatch = {
@@ -993,7 +756,7 @@ export default {
         trackingPhone: '(904) 555-0144',
         copy: ''
       };
-      this.showToast('Direct Mail Scheduled', `Campaign batch "${payload.name}" dispatched to mail queue.`, 'success');
+      this.showToast('Batch saved', `Campaign batch "${payload.name}" saved.`, 'success');
     }
   }
 };

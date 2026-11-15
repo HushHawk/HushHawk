@@ -176,6 +176,7 @@
     </div>
 
     <!-- Create Task Modal -->
+    <Teleport to="body">
     <div v-if="isAddModalOpen" class="modal-overlay" @click.self="isAddModalOpen = false">
       <div class="modal-content">
         <div class="modal-header">
@@ -239,6 +240,7 @@
         </form>
       </div>
     </div>
+    </Teleport>
   </div>
 </template>
 
@@ -381,9 +383,9 @@ export default {
         } else {
           const initials = assignedRep.split(' ').map(n => n[0]).join('');
           this.tasks.unshift({
-            id: Date.now(),
+            id: 'tsk-' + Date.now(),
             ...payload,
-            parcel: 'DUV-' + Math.floor(100000 + Math.random() * 900000) + '-0000',
+            parcel: 'DUV-091823-0000',
             dueStatus: 'today',
             repInitials: initials,
             done: false
@@ -392,9 +394,9 @@ export default {
       } catch (e) {
         const initials = assignedRep.split(' ').map(n => n[0]).join('');
         this.tasks.unshift({
-          id: Date.now(),
+          id: 'tsk-' + Date.now(),
           ...payload,
-          parcel: 'DUV-' + Math.floor(100000 + Math.random() * 900000) + '-0000',
+          parcel: 'DUV-091823-0000',
           dueStatus: 'today',
           repInitials: initials,
           done: false

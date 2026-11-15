@@ -262,6 +262,8 @@
       </aside>
     </div>
 
+    <!-- Modals Teleported to body -->
+    <Teleport to="body">
     <!-- Invite Team Member Modal -->
     <div v-if="activeModal === 'invite'" class="modal-backdrop" @click.self="closeModal">
       <div class="modal-dialog">
@@ -424,6 +426,7 @@
         </form>
       </div>
     </div>
+    </Teleport>
   </div>
 </template>
 
@@ -499,12 +502,6 @@ export default {
         });
     }
   },
-  mounted() {
-    if (this.members.length > 0) {
-      this.selectedMember = this.members[0];
-    }
-  },
-
   mounted() {
     this.loadTeamMembers();
   },
