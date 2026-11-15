@@ -308,6 +308,8 @@ async function runBlueprintSubsystemTests() {
             await pool.query('DELETE FROM core.leads WHERE lead_id = ANY($1)', [createdIds.leadIds]);
         }
         if (createdIds.propertyIds.length) {
+            await pool.query('DELETE FROM core.pillar_events WHERE property_id = ANY($1)', [createdIds.propertyIds]);
+            await pool.query('DELETE FROM ops.event_counters WHERE property_id = ANY($1)', [createdIds.propertyIds]);
             await pool.query('DELETE FROM core.properties WHERE property_id = ANY($1)', [createdIds.propertyIds]);
         }
         if (createdIds.personIds.length) {
@@ -339,7 +341,11 @@ async function runBlueprintSubsystemTests() {
         // Emergency cleanup
         try {
             if (createdIds.leadIds.length) await pool.query('DELETE FROM core.leads WHERE lead_id = ANY($1)', [createdIds.leadIds]);
-            if (createdIds.propertyIds.length) await pool.query('DELETE FROM core.properties WHERE property_id = ANY($1)', [createdIds.propertyIds]);
+            if (createdIds.propertyIds.length) {
+                await pool.query('DELETE FROM core.pillar_events WHERE property_id = ANY($1)', [createdIds.propertyIds]);
+                await pool.query('DELETE FROM ops.event_counters WHERE property_id = ANY($1)', [createdIds.propertyIds]);
+                await pool.query('DELETE FROM core.properties WHERE property_id = ANY($1)', [createdIds.propertyIds]);
+            }
             if (createdIds.personIds.length) await pool.query('DELETE FROM core.people WHERE person_id = ANY($1)', [createdIds.personIds]);
             if (createdIds.interactionIds.length) await pool.query('DELETE FROM core.interactions WHERE interaction_id = ANY($1)', [createdIds.interactionIds]);
             if (createdIds.taskIds.length) await pool.query('DELETE FROM core.tasks WHERE task_id = ANY($1)', [createdIds.taskIds]);
