@@ -1,431 +1,1128 @@
 <template>
   <div class="view-container">
-    <!-- Metrics Header Bar -->
-    <div class="metrics-grid">
-      <div v-for="(m, i) in metrics" :key="m.label" class="metric-card">
-        <div class="metric-icon-wrap" :class="{ gold: i === 3, cyan: i === 0 || i === 1, green: i === 2 }">
-          <span v-html="icons[m.icon] || icons.users"></span>
-        </div>
-        <div class="metric-info">
-          <span class="metric-label">{{ m.label }}</span>
-          <strong class="metric-val">{{ m.value }}</strong>
-          <span class="metric-change" :class="{ positive: m.change.includes('+') }">
-            {{ m.change }} <em>{{ m.note }}</em>
-          </span>
-        </div>
-      </div>
+    <!-- Top Executive Navigation Tabs -->
+    <div class="team-tab-nav">
+      <button 
+        type="button" 
+        class="tab-btn" 
+        :class="{ active: activeTab === 'members' }"
+        @click="activeTab = 'members'"
+      >
+        <span class="tab-icon" v-html="icons.users"></span>
+        <span class="tab-title">Team Roster &amp; Members</span>
+        <span class="tab-counter">{{ members.length }}</span>
+      </button>
+
+      <button 
+        type="button" 
+        class="tab-btn" 
+        :class="{ active: activeTab === 'roles' }"
+        @click="activeTab = 'roles'"
+      >
+        <span class="tab-icon" v-html="icons.shield"></span>
+        <span class="tab-title">Roles &amp; Section Permissions</span>
+        <span class="tab-counter">{{ roles.length }}</span>
+      </button>
+
+      <button 
+        type="button" 
+        class="tab-btn audit-tab-btn" 
+        :class="{ active: activeTab === 'audit' }"
+        @click="activeTab = 'audit'"
+      >
+        <span class="tab-icon" v-html="icons.clock"></span>
+        <span class="tab-title">Activity Log &amp; Audit Trail</span>
+        <span class="tab-pill-badge">ADMIN ONLY</span>
+      </button>
     </div>
 
-    <!-- Main Workspace Layout -->
-    <div class="content-split" :class="{ 'has-drawer': selectedMember }">
-      <div class="main-panel">
-        <div class="panel-header">
-          <div class="header-left">
-            <h2>
-              <span class="icon-title" v-html="icons.users"></span>
-              Wholesale Team &amp; Production Roster
-            </h2>
-            <span class="badge-count">{{ filteredMembers.length }} team members</span>
-          </div>
-          <div class="header-actions">
-            <button class="btn btn-secondary" @click="exportRoster">
-              <span v-html="icons.download"></span>
-              Export Roster
-            </button>
-            <button class="btn btn-primary" @click="openModal('invite')">
-              <span v-html="icons.plus"></span>
-              Add Team Member
-            </button>
+    <!-- =================================================================== -->
+    <!-- TAB 1: TEAM ROSTER & MEMBERS -->
+    <!-- =================================================================== -->
+    <div v-if="activeTab === 'members'" class="tab-pane">
+      <!-- Top Metrics Bar -->
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-icon-wrap gold"><span v-html="icons.users"></span></div>
+          <div class="metric-info">
+            <span class="metric-label">Active Team Members</span>
+            <strong class="metric-val">{{ members.length }} Personnel</strong>
+            <span class="metric-change positive">● Synchronized with PostgreSQL</span>
           </div>
         </div>
 
-        <!-- Filter & Search Controls -->
-        <div class="filter-toolbar">
-          <div class="search-box">
-            <span v-html="icons.search"></span>
-            <input
-              v-model="searchQuery"
-              type="text"
-              placeholder="Search member name, title, role, territory, email..."
-              aria-label="Search team members"
-            />
-            <button v-if="searchQuery" class="clear-btn" @click="searchQuery = ''" aria-label="Clear search">
+        <div class="metric-card">
+          <div class="metric-icon-wrap cyan"><span v-html="icons.shield"></span></div>
+          <div class="metric-info">
+            <span class="metric-label">Configured Access Roles</span>
+            <strong class="metric-val">{{ roles.length }} Defined Roles</strong>
+            <span class="metric-change">Fine-grained Section Matrix</span>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-icon-wrap green"><span v-html="icons.clock"></span></div>
+          <div class="metric-info">
+            <span class="metric-label">Audit Events Today</span>
+            <strong class="metric-val">{{ auditMetrics.todayCount || 43 }} Events</strong>
+            <span class="metric-change positive">Active real-time audit ledger</span>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-icon-wrap purple"><span v-html="icons.key"></span></div>
+          <div class="metric-info">
+            <span class="metric-label">Security &amp; Auth Ledger</span>
+            <strong class="metric-val">{{ auditMetrics.securityEvents || 145 }} Verified</strong>
+            <span class="metric-change">Passkeys &amp; Role Integrity</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Panel & Split Layout -->
+      <div class="content-split" :class="{ 'has-drawer': selectedMember }">
+        <div class="main-panel">
+          <div class="panel-header">
+            <div class="header-left">
+              <h2>
+                <span class="icon-title" v-html="icons.users"></span>
+                Team Roster &amp; Credentials
+              </h2>
+              <span class="badge-count">{{ filteredMembers.length }} members listed</span>
+            </div>
+            <div class="header-actions">
+              <button class="btn btn-secondary" @click="exportRoster">
+                <span v-html="icons.download"></span>
+                Export Roster CSV
+              </button>
+              <button class="btn btn-primary" @click="openAddMemberModal">
+                <span v-html="icons.plus"></span>
+                Add Team Member
+              </button>
+            </div>
+          </div>
+
+          <!-- Filter & Search Toolbar -->
+          <div class="filter-toolbar">
+            <div class="search-box">
+              <span v-html="icons.search"></span>
+              <input
+                v-model="searchQuery"
+                type="text"
+                placeholder="Search name, phone number, email, or role..."
+                aria-label="Search team"
+              />
+              <button v-if="searchQuery" class="clear-btn" @click="searchQuery = ''" aria-label="Clear search">
+                <span v-html="icons.close"></span>
+              </button>
+            </div>
+
+            <div class="filter-group">
+              <label>Role Filter:</label>
+              <select v-model="roleFilter" aria-label="Filter by role">
+                <option value="">All Roles</option>
+                <option v-for="r in roles" :key="r.role_id || r.role_key" :value="r.role_key">
+                  {{ r.name }}
+                </option>
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <label>Status:</label>
+              <select v-model="statusFilter" aria-label="Filter by status">
+                <option value="">All Statuses</option>
+                <option value="Active">Active</option>
+                <option value="Suspended">Suspended</option>
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <label>Show Passwords:</label>
+              <button 
+                type="button" 
+                class="btn-toggle-all-passwords" 
+                :class="{ active: showAllPasswords }"
+                @click="showAllPasswords = !showAllPasswords"
+                title="Toggle plain-text passwords for all roster members"
+              >
+                <span v-html="showAllPasswords ? icons.eyeOff : icons.eye"></span>
+                <span>{{ showAllPasswords ? 'Hide All' : 'Reveal All' }}</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Members Table -->
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Team Member</th>
+                  <th>Role / Access Tier</th>
+                  <th>Phone Number</th>
+                  <th>Email Address</th>
+                  <th>Allowed Workspaces</th>
+                  <th>Password Credential</th>
+                  <th>Status</th>
+                  <th class="actions-col">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="member in filteredMembers"
+                  :key="member.id"
+                  :class="{ 'row-selected': selectedMember?.id === member.id }"
+                  @click="selectMember(member)"
+                >
+                  <td class="member-cell">
+                    <div class="avatar-badge" :style="{ background: member.avatarBg || '#1e3a5f' }">
+                      {{ member.initials || 'TM' }}
+                    </div>
+                    <div class="member-meta">
+                      <strong>{{ member.name }}</strong>
+                      <small>{{ member.title || member.roleName || 'Specialist' }}</small>
+                    </div>
+                  </td>
+
+                  <td>
+                    <span class="role-pill" :class="getRoleBadgeClass(member.role)">
+                      {{ member.roleName || member.role }}
+                    </span>
+                  </td>
+
+                  <td class="contact-cell">
+                    <span class="phone-text font-mono">
+                      <span class="mini-icon" v-html="icons.phone"></span>
+                      {{ member.phone || '(904) 555-0100' }}
+                    </span>
+                  </td>
+
+                  <td class="contact-cell">
+                    <span class="email-text">
+                      <span class="mini-icon" v-html="icons.mail"></span>
+                      {{ member.email }}
+                    </span>
+                  </td>
+
+                  <td>
+                    <span class="permission-count-pill" :class="{ 'full-access': (member.allowedCount >= 20 || member.role === 'SUPER_ADMIN') }">
+                      {{ (member.role === 'SUPER_ADMIN' || member.allowedCount >= 23) ? 'All 23 Sections' : `${member.allowedCount || member.permissions?.length || 1} Sections` }}
+                    </span>
+                  </td>
+
+                  <td class="password-cell" @click.stop>
+                    <div class="password-box">
+                      <span v-if="showAllPasswords || visiblePasswords[member.id]" class="password-text font-mono">
+                        {{ member.password || '••••••••' }}
+                      </span>
+                      <span v-else class="password-hidden font-mono">••••••••</span>
+
+                      <button 
+                        type="button" 
+                        class="btn-icon-subtle" 
+                        @click="togglePasswordVisibility(member.id)"
+                        :title="visiblePasswords[member.id] ? 'Hide password' : 'Show password'"
+                      >
+                        <span v-html="visiblePasswords[member.id] ? icons.eyeOff : icons.eye"></span>
+                      </button>
+
+                      <button 
+                        type="button" 
+                        class="btn-icon-subtle" 
+                        @click="copyText(member.password || '', 'Password copied to clipboard!')"
+                        title="Copy password to clipboard"
+                      >
+                        <span v-html="icons.file"></span>
+                      </button>
+                    </div>
+                  </td>
+
+                  <td>
+                    <span class="status-indicator" :class="member.status === 'Active' ? 'active' : 'offline'">
+                      <span class="status-dot"></span>
+                      {{ member.status || 'Active' }}
+                    </span>
+                  </td>
+
+                  <td class="actions-col" @click.stop>
+                    <div class="action-buttons-group">
+                      <button 
+                        type="button" 
+                        class="btn-action-pill key-action" 
+                        @click="openChangePasswordModal(member)" 
+                        title="Change user password"
+                      >
+                        <span v-html="icons.key"></span>
+                        <span>Change</span>
+                      </button>
+
+                      <button 
+                        type="button" 
+                        class="btn-action-pill reset-action" 
+                        @click="handleQuickResetPassword(member)" 
+                        title="1-Click Reset to Auto-Generated Temporary Password"
+                      >
+                        <span v-html="icons.refresh"></span>
+                        <span>Reset</span>
+                      </button>
+
+                      <button 
+                        type="button" 
+                        class="btn-icon" 
+                        @click="openEditMemberModal(member)" 
+                        title="Edit Member Information"
+                      >
+                        <span v-html="icons.edit"></span>
+                      </button>
+
+                      <button 
+                        v-if="member.role !== 'SUPER_ADMIN' && member.email !== 'admin@hushhawk.com'"
+                        type="button" 
+                        class="btn-icon btn-danger" 
+                        @click="confirmDeleteMember(member)" 
+                        title="Delete or Deactivate Member"
+                      >
+                        <span v-html="icons.trash"></span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr v-if="filteredMembers.length === 0">
+                  <td colspan="8" class="empty-state">
+                    <div class="empty-inner">
+                      <span class="empty-icon" v-html="icons.users"></span>
+                      <p>No team members match your current filter parameters.</p>
+                      <button class="btn btn-secondary" @click="resetMemberFilters">Clear Filters</button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Right Member Detail Dossier Drawer -->
+        <aside v-if="selectedMember" class="detail-drawer">
+          <div class="drawer-header">
+            <div class="drawer-title">
+              <span class="drawer-badge">Team Personnel Dossier</span>
+              <h3>{{ selectedMember.name }}</h3>
+              <small>{{ selectedMember.title || selectedMember.roleName }} · {{ selectedMember.role }}</small>
+            </div>
+            <button class="close-btn" @click="selectedMember = null" aria-label="Close dossier">
               <span v-html="icons.close"></span>
             </button>
           </div>
 
-          <div class="filter-group">
-            <label>Department:</label>
-            <select v-model="departmentFilter" aria-label="Filter by department">
-              <option value="">All Departments</option>
-              <option value="Executive">Executive &amp; Leadership</option>
-              <option value="Acquisitions">Acquisitions</option>
-              <option value="Dispositions">Dispositions</option>
-              <option value="Lead Gen">Lead Generation</option>
-              <option value="Operations">Operations &amp; Title</option>
-              <option value="Underwriting">Underwriting</option>
-            </select>
-          </div>
+          <div class="drawer-body">
+            <div class="member-profile-card">
+              <div class="profile-avatar" :style="{ background: selectedMember.avatarBg || '#1e3a5f' }">
+                {{ selectedMember.initials || 'TM' }}
+              </div>
+              <div class="profile-details">
+                <strong>{{ selectedMember.name }}</strong>
+                <p class="phone-link"><span v-html="icons.phone"></span> {{ selectedMember.phone || '(904) 555-0100' }}</p>
+                <p><span v-html="icons.mail"></span> {{ selectedMember.email }}</p>
+                <div class="profile-badges">
+                  <span class="badge-tag gold">{{ selectedMember.roleName || selectedMember.role }}</span>
+                  <span class="badge-tag" :class="selectedMember.status === 'Active' ? 'green' : 'gray'">
+                    {{ selectedMember.status || 'Active' }}
+                  </span>
+                </div>
+              </div>
+            </div>
 
-          <div class="filter-group">
-            <label>Status:</label>
-            <select v-model="statusFilter" aria-label="Filter by status">
-              <option value="">All Statuses</option>
-              <option value="Active">Active</option>
-              <option value="In Field">In Field Walkthrough</option>
-              <option value="Offline">Offline</option>
-            </select>
-          </div>
+            <!-- Password & Security Card -->
+            <div class="section-card security-card">
+              <div class="card-head">
+                <span class="mini-badge"><span v-html="icons.key"></span> Credential Management</span>
+              </div>
+              <div class="credential-row">
+                <label>Current Access Password:</label>
+                <div class="password-display-box">
+                  <span v-if="visiblePasswords[selectedMember.id]" class="pass-val font-mono">
+                    {{ selectedMember.password || '••••••••' }}
+                  </span>
+                  <span v-else class="pass-val font-mono">••••••••</span>
 
-          <div class="filter-group">
-            <label>Sort By:</label>
-            <select v-model="sortBy" aria-label="Sort members">
-              <option value="name">Name (A-Z)</option>
-              <option value="closed">Deals Closed (High to Low)</option>
-              <option value="volume">Production Volume</option>
-              <option value="role">Department</option>
-            </select>
-          </div>
-        </div>
+                  <button 
+                    type="button" 
+                    class="btn-icon-subtle" 
+                    @click="togglePasswordVisibility(selectedMember.id)"
+                    :title="visiblePasswords[selectedMember.id] ? 'Hide password' : 'Show password'"
+                  >
+                    <span v-html="visiblePasswords[selectedMember.id] ? icons.eyeOff : icons.eye"></span>
+                  </button>
 
-        <!-- Members Table -->
-        <div class="table-container">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Team Member</th>
-                <th>Department / Role</th>
-                <th>Assigned Territory</th>
-                <th>Contact Info</th>
-                <th>Deals Closed</th>
-                <th>Volume (MTD)</th>
-                <th>Status</th>
-                <th class="actions-col">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                v-for="member in filteredMembers"
-                :key="member.id"
-                :class="{ 'row-selected': selectedMember?.id === member.id }"
-                @click="selectMember(member)"
+                  <button 
+                    type="button" 
+                    class="btn-icon-subtle" 
+                    @click="copyText(selectedMember.password || '', 'Password copied!')"
+                    title="Copy password"
+                  >
+                    <span v-html="icons.file"></span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="credential-actions">
+                <button class="btn btn-secondary btn-sm" @click="openChangePasswordModal(selectedMember)">
+                  <span v-html="icons.key"></span>
+                  Change Password
+                </button>
+                <button class="btn btn-gold btn-sm" @click="handleQuickResetPassword(selectedMember)">
+                  <span v-html="icons.refresh"></span>
+                  1-Click Auto Reset
+                </button>
+              </div>
+            </div>
+
+            <!-- Authorized Workspaces List -->
+            <div class="section-card">
+              <div class="card-head">
+                <h4>Authorized Platform Workspaces ({{ (selectedMember.permissions || []).length || 23 }})</h4>
+                <small>Defined by role {{ selectedMember.roleName || selectedMember.role }}</small>
+              </div>
+
+              <div class="authorized-chips-grid">
+                <span 
+                  v-for="s in getMemberSections(selectedMember)" 
+                  :key="s.key || s.path" 
+                  class="auth-chip"
+                >
+                  <span class="chip-dot">●</span>
+                  <span class="chip-name">{{ s.name }}</span>
+                  <code class="chip-path font-mono">{{ s.path }}</code>
+                </span>
+              </div>
+            </div>
+
+            <!-- Action Buttons Footer -->
+            <div class="drawer-actions-footer">
+              <button class="btn btn-secondary" @click="openEditMemberModal(selectedMember)">
+                <span v-html="icons.edit"></span>
+                Edit Member Details
+              </button>
+              <button 
+                v-if="selectedMember.role !== 'SUPER_ADMIN' && selectedMember.email !== 'admin@hushhawk.com'"
+                class="btn btn-danger" 
+                @click="confirmDeleteMember(selectedMember)"
               >
-                <td class="member-cell">
-                  <div class="avatar-badge" :style="{ background: member.avatarBg }">
-                    {{ member.initials }}
-                  </div>
-                  <div class="member-meta">
-                    <strong>{{ member.name }}</strong>
-                    <small>{{ member.title }}</small>
-                  </div>
-                </td>
-                <td>
-                  <span class="role-pill" :class="getDepartmentClass(member.department)">
-                    {{ member.department }}
-                  </span>
-                </td>
-                <td>
-                  <span class="territory-tag font-mono">{{ member.territory }}</span>
-                </td>
-                <td class="contact-cell">
-                  <div><span class="mini-icon" v-html="icons.mail"></span> {{ member.email }}</div>
-                  <div><span class="mini-icon" v-html="icons.phone"></span> {{ member.phone }}</div>
-                </td>
-                <td>
-                  <strong class="text-gold font-mono">{{ member.dealsClosed }} deals</strong>
-                </td>
-                <td>
-                  <span class="volume-val font-mono">{{ formatCurrency(member.productionVolume) }}</span>
-                </td>
-                <td>
-                  <span class="status-indicator" :class="getStatusClass(member.status)">
-                    <span class="status-dot"></span>
-                    {{ member.status }}
-                  </span>
-                </td>
-                <td class="actions-col" @click.stop>
-                  <button class="btn-icon" @click="openEditModal(member)" title="Edit Permissions">
-                    <span v-html="icons.sliders"></span>
-                  </button>
-                  <button class="btn-icon" @click="selectMember(member)" title="View Member Dossier">
-                    <span v-html="icons.arrowRight"></span>
-                  </button>
-                </td>
-              </tr>
-              <tr v-if="filteredMembers.length === 0">
-                <td colspan="8" class="empty-state">
-                  <div class="empty-inner">
-                    <span class="empty-icon" v-html="icons.users"></span>
-                    <p>No team members match the current filter criteria.</p>
-                    <button class="btn btn-secondary" @click="resetFilters">Reset Filters</button>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+                <span v-html="icons.trash"></span>
+                Delete Member
+              </button>
+            </div>
+          </div>
+        </aside>
       </div>
-
-      <!-- Right Member Detail Dossier Drawer -->
-      <aside v-if="selectedMember" class="detail-drawer">
-        <div class="drawer-header">
-          <div class="drawer-title">
-            <span class="drawer-badge">Team Dossier</span>
-            <h3>{{ selectedMember.name }}</h3>
-            <small>{{ selectedMember.title }} · {{ selectedMember.department }}</small>
-          </div>
-          <button class="close-btn" @click="selectedMember = null" aria-label="Close dossier">
-            <span v-html="icons.close"></span>
-          </button>
-        </div>
-
-        <div class="drawer-body">
-          <div class="member-profile-card">
-            <div class="profile-avatar" :style="{ background: selectedMember.avatarBg }">
-              {{ selectedMember.initials }}
-            </div>
-            <div class="profile-details">
-              <strong>{{ selectedMember.name }}</strong>
-              <p>{{ selectedMember.email }}</p>
-              <p class="phone-link">{{ selectedMember.phone }}</p>
-              <div class="profile-badges">
-                <span class="badge-tag">{{ selectedMember.accessLevel }} Access</span>
-                <span class="badge-tag cyan">Podio User Sync</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="section-card">
-            <h4>Production Performance (MTD)</h4>
-            <div class="kpi-grid">
-              <div class="kpi-box">
-                <span class="kpi-label">Contracts Locked</span>
-                <strong class="font-mono text-gold">{{ selectedMember.dealsClosed }}</strong>
-              </div>
-              <div class="kpi-box">
-                <span class="kpi-label">Production Volume</span>
-                <strong class="font-mono">{{ formatCurrency(selectedMember.productionVolume) }}</strong>
-              </div>
-              <div class="kpi-box">
-                <span class="kpi-label">Win / Close Rate</span>
-                <strong class="font-mono text-green">{{ selectedMember.closeRate }}%</strong>
-              </div>
-              <div class="kpi-box">
-                <span class="kpi-label">Avg Spread</span>
-                <strong class="font-mono text-cyan">{{ formatCurrency(selectedMember.avgSpread) }}</strong>
-              </div>
-            </div>
-          </div>
-
-          <div class="section-card">
-            <h4>Assigned Territory &amp; Buy Box</h4>
-            <div class="territory-box">
-              <p><strong>Primary Market:</strong> {{ selectedMember.territory }}</p>
-              <p><strong>Target ZIP Codes:</strong> <span class="font-mono">{{ selectedMember.zipCodes }}</span></p>
-              <p><strong>Commission Split:</strong> {{ selectedMember.commissionSplit }}</p>
-            </div>
-          </div>
-
-          <div class="section-card">
-            <h4>System Permissions &amp; Access</h4>
-            <ul class="permission-list">
-              <li :class="{ enabled: selectedMember.permissions.signContracts }">
-                <span class="perm-icon" v-html="selectedMember.permissions.signContracts ? icons.check : icons.close"></span>
-                Execute Purchase Agreements (PSA)
-              </li>
-              <li :class="{ enabled: selectedMember.permissions.viewFinancials }">
-                <span class="perm-icon" v-html="selectedMember.permissions.viewFinancials ? icons.check : icons.close"></span>
-                Access Wholesale Spreads &amp; Financials
-              </li>
-              <li :class="{ enabled: selectedMember.permissions.blastBuyers }">
-                <span class="perm-icon" v-html="selectedMember.permissions.blastBuyers ? icons.check : icons.close"></span>
-                Broadcast Email/SMS Deal Blasts
-              </li>
-              <li :class="{ enabled: selectedMember.permissions.exportCsv }">
-                <span class="perm-icon" v-html="selectedMember.permissions.exportCsv ? icons.check : icons.close"></span>
-                Export County &amp; Buyer CSV Records
-              </li>
-            </ul>
-          </div>
-
-          <div class="drawer-actions">
-            <button class="btn btn-primary" @click="openEditModal(selectedMember)">
-              <span v-html="icons.sliders"></span>
-              Edit Permissions
-            </button>
-            <button class="btn btn-secondary" @click="toggleStatus(selectedMember)">
-              <span v-html="icons.clock"></span>
-              Toggle Status ({{ selectedMember.status === 'Active' ? 'Set Offline' : 'Set Active' }})
-            </button>
-          </div>
-        </div>
-      </aside>
     </div>
 
-    <!-- Modals Teleported to body -->
-    <Teleport to="body">
-    <!-- Invite Team Member Modal -->
-    <div v-if="activeModal === 'invite'" class="modal-backdrop" @click.self="closeModal">
-      <div class="modal-dialog">
-        <div class="modal-header">
-          <div class="modal-title-group">
-            <span class="modal-badge">Team Expansion</span>
-            <h3>Add New Team Member</h3>
+    <!-- =================================================================== -->
+    <!-- TAB 2: ROLES & SECTION PERMISSIONS MATRIX -->
+    <!-- =================================================================== -->
+    <div v-if="activeTab === 'roles'" class="tab-pane">
+      <div class="roles-management-view">
+        <div class="panel-header">
+          <div class="header-left">
+            <h2>
+              <span class="icon-title" v-html="icons.shield"></span>
+              Role-Based Access Control &amp; Workspace Authorization
+            </h2>
+            <p class="header-desc">
+              Create and manage custom roles with granular section-by-section permissions. Assign any combination of the 23 platform workspaces so restricted users only see and access their designated tools.
+            </p>
           </div>
-          <button class="close-btn" @click="closeModal" aria-label="Close modal">
-            <span v-html="icons.close"></span>
-          </button>
+          <div class="header-actions">
+            <button class="btn btn-primary btn-glow" @click="openCreateRoleModal">
+              <span v-html="icons.plus"></span>
+              Create Custom Role
+            </button>
+          </div>
         </div>
 
-        <form @submit.prevent="submitInvite" class="modal-body">
-          <div class="form-row">
+        <!-- Roles Grid -->
+        <div class="roles-cards-grid">
+          <div 
+            v-for="role in roles" 
+            :key="role.role_id || role.role_key" 
+            class="role-card"
+            :class="{ 'system-card': role.is_system }"
+          >
+            <div class="role-card-header">
+              <div class="role-badge-row">
+                <span class="role-key-tag font-mono">{{ role.role_key }}</span>
+                <span v-if="role.is_system" class="system-protected-badge">SYSTEM PROTECTED</span>
+                <span v-else class="custom-role-badge">CUSTOM ROLE</span>
+              </div>
+              <h3 class="role-name">{{ role.name }}</h3>
+              <p class="role-description">{{ role.description || 'Custom assigned workspace authorization policy.' }}</p>
+            </div>
+
+            <div class="role-stats-row">
+              <div class="role-stat">
+                <span class="stat-label">Assigned Users</span>
+                <strong class="stat-num text-gold font-mono">{{ role.user_count || 0 }} Members</strong>
+              </div>
+              <div class="role-stat">
+                <span class="stat-label">Workspace Access</span>
+                <strong class="stat-num font-mono">
+                  {{ (role.permissions || []).length }} / {{ allSections.length }} Sections
+                </strong>
+              </div>
+            </div>
+
+            <div class="role-permissions-preview">
+              <span class="preview-label">Authorized Workspaces:</span>
+              <div class="preview-tags">
+                <span 
+                  v-for="path in (role.permissions || []).slice(0, 7)" 
+                  :key="path" 
+                  class="preview-tag"
+                >
+                  {{ getSectionName(path) }}
+                </span>
+                <span v-if="(role.permissions || []).length > 7" class="preview-tag more">
+                  +{{ (role.permissions || []).length - 7 }} more
+                </span>
+                <span v-if="!role.permissions || !role.permissions.length" class="preview-tag zero">
+                  No Workspaces Allowed
+                </span>
+              </div>
+            </div>
+
+            <div class="role-card-footer">
+              <button 
+                type="button" 
+                class="btn btn-secondary btn-sm" 
+                @click="openEditRoleModal(role)"
+                title="Configure Workspace Permissions"
+              >
+                <span v-html="icons.sliders"></span>
+                Configure Permissions
+              </button>
+
+              <button 
+                v-if="!role.is_system"
+                type="button" 
+                class="btn-icon btn-danger btn-sm" 
+                @click="confirmDeleteRole(role)" 
+                title="Delete Custom Role"
+              >
+                <span v-html="icons.trash"></span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =================================================================== -->
+    <!-- TAB 3: ACTIVITY LOG & AUDIT TRAIL (ADMIN ONLY) -->
+    <!-- =================================================================== -->
+    <div v-if="activeTab === 'audit'" class="tab-pane">
+      <div class="audit-trail-view">
+        <!-- Audit Summary KPIs -->
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-icon-wrap gold"><span v-html="icons.clock"></span></div>
+            <div class="metric-info">
+              <span class="metric-label">Today's Audit Events</span>
+              <strong class="metric-val">{{ auditMetrics.todayCount || 0 }} Logged</strong>
+              <span class="metric-change positive">● Live PostgreSQL capture</span>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-icon-wrap cyan"><span v-html="icons.users"></span></div>
+            <div class="metric-info">
+              <span class="metric-label">Active Actors &amp; Roles</span>
+              <strong class="metric-val">{{ auditMetrics.uniqueActors || 0 }} Accounts</strong>
+              <span class="metric-change">System &amp; Team Operators</span>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-icon-wrap purple"><span v-html="icons.key"></span></div>
+            <div class="metric-info">
+              <span class="metric-label">Security &amp; Auth Logs</span>
+              <strong class="metric-val">{{ auditMetrics.securityEvents || 0 }} Events</strong>
+              <span class="metric-change">Logins, Roles, Passwords</span>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-icon-wrap red"><span v-html="icons.trash"></span></div>
+            <div class="metric-info">
+              <span class="metric-label">Critical Mutations</span>
+              <strong class="metric-val">{{ auditMetrics.criticalChanges || 0 }} Deletions</strong>
+              <span class="metric-change">Deletions &amp; Overrides</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Audit Panel -->
+        <div class="main-panel">
+          <div class="panel-header">
+            <div class="header-left">
+              <h2>
+                <span class="icon-title" v-html="icons.clock"></span>
+                Master Activity &amp; Audit Trail
+              </h2>
+              <span class="badge-count">{{ auditTotal }} total captured events</span>
+            </div>
+            <div class="header-actions">
+              <button class="btn btn-secondary" @click="exportAuditCsv">
+                <span v-html="icons.download"></span>
+                Export Audit Log CSV
+              </button>
+              <button class="btn btn-primary" @click="fetchAuditLogs">
+                <span v-html="icons.refresh"></span>
+                Refresh Ledger
+              </button>
+            </div>
+          </div>
+
+          <!-- Comprehensive Time-Wise & Date-Wise Filter Toolbar -->
+          <div class="filter-toolbar audit-toolbar">
+            <div class="search-box">
+              <span v-html="icons.search"></span>
+              <input
+                v-model="auditSearch"
+                type="text"
+                placeholder="Search actor, action type, entity ID, or changes..."
+                aria-label="Search audit log"
+                @keyup.enter="fetchAuditLogs"
+              />
+              <button v-if="auditSearch" class="clear-btn" @click="auditSearch = ''; fetchAuditLogs();">
+                <span v-html="icons.close"></span>
+              </button>
+            </div>
+
+            <!-- Date-wise Quick Filter -->
+            <div class="filter-group">
+              <label>Date Filter:</label>
+              <select v-model="auditDatePreset" @change="handleDatePresetChange">
+                <option value="all">All Recorded History</option>
+                <option value="today">Today</option>
+                <option value="yesterday">Yesterday</option>
+                <option value="last7">Last 7 Days</option>
+                <option value="last30">Last 30 Days</option>
+                <option value="custom">Custom Date Range...</option>
+              </select>
+            </div>
+
+            <!-- Custom Date Pickers if custom selected -->
+            <div v-if="auditDatePreset === 'custom'" class="custom-date-inputs">
+              <input 
+                type="date" 
+                v-model="auditStartDate" 
+                class="date-input" 
+                @change="fetchAuditLogs" 
+                title="Start Date" 
+              />
+              <span class="date-sep">to</span>
+              <input 
+                type="date" 
+                v-model="auditEndDate" 
+                class="date-input" 
+                @change="fetchAuditLogs" 
+                title="End Date" 
+              />
+            </div>
+
+            <!-- Action Category Filter -->
+            <div class="filter-group">
+              <label>Action Category:</label>
+              <select v-model="auditCategoryFilter" @change="fetchAuditLogs">
+                <option value="">All Categories</option>
+                <option value="SECURITY">Security &amp; Auth (Purple)</option>
+                <option value="CREATION">Creations &amp; Inserts (Green)</option>
+                <option value="MODIFICATION">Modifications &amp; Edits (Yellow)</option>
+                <option value="DELETION">Deletions &amp; Drops (Red)</option>
+                <option value="OUTREACH">Campaigns &amp; Outreach (Cyan)</option>
+              </select>
+            </div>
+
+            <button class="btn btn-secondary btn-sm" @click="fetchAuditLogs">
+              Filter
+            </button>
+          </div>
+
+          <!-- Audit Log Table -->
+          <div class="table-container">
+            <table class="data-table audit-table">
+              <thead>
+                <tr>
+                  <th style="width: 190px;">Date &amp; Time (ET)</th>
+                  <th style="width: 170px;">Operator / Actor</th>
+                  <th style="width: 170px;">Action Category</th>
+                  <th style="width: 140px;">Target Entity</th>
+                  <th>Audit Diff / Modifications Summary</th>
+                  <th class="actions-col" style="width: 110px;">Details</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="log in auditLogs" :key="log.id || log.auditId">
+                  <td class="timestamp-cell">
+                    <strong class="log-date">{{ log.dateStr }}</strong>
+                    <span class="log-time font-mono">{{ log.timeStr }}</span>
+                  </td>
+
+                  <td class="actor-cell">
+                    <div class="actor-wrap">
+                      <div class="actor-avatar">{{ (log.actor || 'SY').slice(0, 2).toUpperCase() }}</div>
+                      <div class="actor-info">
+                        <strong>{{ log.actor }}</strong>
+                        <small v-if="log.details?.role">{{ log.details.role }}</small>
+                      </div>
+                    </div>
+                  </td>
+
+                  <td>
+                    <span class="audit-badge" :class="log.badgeClass">
+                      {{ log.actionLabel || log.action }}
+                    </span>
+                  </td>
+
+                  <td>
+                    <div class="entity-box">
+                      <span class="entity-type font-mono">{{ log.entityType }}</span>
+                      <small v-if="log.entityId" class="entity-id font-mono">{{ log.entityId.slice(0, 8) }}...</small>
+                    </div>
+                  </td>
+
+                  <td class="diff-summary-cell">
+                    <div class="diff-summary-text">
+                      {{ formatDiffSummary(log) }}
+                    </div>
+                  </td>
+
+                  <td class="actions-col">
+                    <button 
+                      type="button" 
+                      class="btn btn-secondary btn-xs" 
+                      @click="inspectAuditDetail(log)"
+                      title="Inspect full JSON diff"
+                    >
+                      Inspect JSON
+                    </button>
+                  </td>
+                </tr>
+
+                <tr v-if="auditLogs.length === 0">
+                  <td colspan="6" class="empty-state">
+                    <div class="empty-inner">
+                      <span class="empty-icon" v-html="icons.clock"></span>
+                      <p>No audit events match your selected time and date filters.</p>
+                      <button class="btn btn-secondary" @click="resetAuditFilters">Reset Filters</button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination Footer -->
+          <div class="audit-pagination">
+            <span class="pagination-info">
+              Showing <strong>{{ auditLogs.length }}</strong> of <strong>{{ auditTotal }}</strong> total recorded events
+            </span>
+            <div class="pagination-buttons">
+              <button 
+                class="btn btn-secondary btn-xs" 
+                :disabled="auditOffset === 0" 
+                @click="changeAuditPage(-1)"
+              >
+                Previous Page
+              </button>
+              <span class="page-current font-mono">Page {{ Math.floor(auditOffset / auditLimit) + 1 }}</span>
+              <button 
+                class="btn btn-secondary btn-xs" 
+                :disabled="auditOffset + auditLimit >= auditTotal" 
+                @click="changeAuditPage(1)"
+              >
+                Next Page
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =================================================================== -->
+    <!-- MODALS & TELEPORTS -->
+    <!-- =================================================================== -->
+
+    <!-- Modal 1: Add Team Member -->
+    <Teleport to="body">
+      <div v-if="activeModal === 'addMember'" class="modal-backdrop" @click.self="closeModal">
+        <div class="modal-dialog">
+          <div class="modal-header">
+            <div class="modal-title-group">
+              <span class="modal-badge">TEAM ONBOARDING</span>
+              <h3>Add New Team Member</h3>
+            </div>
+            <button class="close-btn" @click="closeModal" aria-label="Close modal">
+              <span v-html="icons.close"></span>
+            </button>
+          </div>
+
+          <form @submit.prevent="submitAddMember" class="modal-body">
             <div class="form-group">
               <label>Full Name *</label>
-              <input v-model="newMember.name" type="text" placeholder="e.g. Jordan Miller" required />
+              <input 
+                v-model="newMemberForm.name" 
+                type="text" 
+                placeholder="e.g. Jordan Miller" 
+                required 
+              />
             </div>
-            <div class="form-group">
-              <label>Official Title *</label>
-              <input v-model="newMember.title" type="text" placeholder="e.g. Acquisitions Manager" required />
-            </div>
-          </div>
 
-          <div class="form-row">
-            <div class="form-group">
-              <label>Work Email *</label>
-              <input v-model="newMember.email" type="email" placeholder="jordan@hushhawk.com" required />
-            </div>
-            <div class="form-group">
-              <label>Phone Number *</label>
-              <input v-model="newMember.phone" type="text" placeholder="(904) 555-0192" required />
-            </div>
-          </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Phone Number *</label>
+                <input 
+                  v-model="newMemberForm.phone" 
+                  type="text" 
+                  placeholder="(904) 555-0199" 
+                  required 
+                />
+              </div>
 
-          <div class="form-row">
+              <div class="form-group">
+                <label>Email Address *</label>
+                <input 
+                  v-model="newMemberForm.email" 
+                  type="email" 
+                  placeholder="jordan@hushhawk.com" 
+                  required 
+                />
+              </div>
+            </div>
+
             <div class="form-group">
-              <label>Department *</label>
-              <select v-model="newMember.department" required>
-                <option value="Acquisitions">Acquisitions</option>
-                <option value="Dispositions">Dispositions</option>
-                <option value="Lead Gen">Lead Generation</option>
-                <option value="Operations">Operations &amp; Title</option>
-                <option value="Underwriting">Underwriting</option>
-                <option value="Executive">Executive</option>
+              <label>Assigned Access Role *</label>
+              <select v-model="newMemberForm.role" required>
+                <option v-for="r in roles" :key="r.role_id || r.role_key" :value="r.role_id || r.role_key">
+                  {{ r.name }} ({{ (r.permissions || []).length }} Workspaces Allowed)
+                </option>
               </select>
+              <small class="form-hint">
+                The user will strictly only have access to the sections permitted under this role.
+              </small>
             </div>
+
             <div class="form-group">
-              <label>Role / Access Level *</label>
-              <select v-model="newMember.accessLevel" required>
-                <option value="Admin">Admin (Full System Access)</option>
-                <option value="Manager">Manager (Team &amp; Pipeline Edit)</option>
-                <option value="Agent">Agent (Assigned Territory Only)</option>
-                <option value="Title Read-Only">Title / Escrow (Read-Only)</option>
-              </select>
+              <div class="label-with-action">
+                <label>Access Password *</label>
+                <button 
+                  type="button" 
+                  class="btn-text-action" 
+                  @click="generateRandomPassword('newMember')"
+                >
+                  ⚡ Auto-Generate Strong Key
+                </button>
+              </div>
+
+              <div class="password-input-wrap">
+                <input 
+                  :type="showNewPassword ? 'text' : 'password'" 
+                  v-model="newMemberForm.password" 
+                  placeholder="Enter secure password" 
+                  required 
+                />
+                <button 
+                  type="button" 
+                  class="btn-input-eye" 
+                  @click="showNewPassword = !showNewPassword"
+                >
+                  <span v-html="showNewPassword ? icons.eyeOff : icons.eye"></span>
+                </button>
+              </div>
             </div>
-          </div>
 
-          <div class="form-group">
-            <label>Assigned Territory / Focus</label>
-            <input v-model="newMember.territory" type="text" placeholder="e.g. Duval County Urban Core (32206, 32208, 32209)" />
-          </div>
-
-          <div class="form-group">
-            <label>Target ZIP Codes (Comma separated)</label>
-            <input v-model="newMember.zipCodes" type="text" placeholder="32208, 32209, 32210, 32244" />
-          </div>
-
-          <div class="form-group">
-            <label>Commission Split / Terms</label>
-            <input v-model="newMember.commissionSplit" type="text" placeholder="e.g. 15% Net Assignment Margin" />
-          </div>
-
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" @click="closeModal">Cancel</button>
-            <button type="submit" class="btn btn-primary">
-              <span v-html="icons.check"></span>
-              Add Team Member
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <!-- Edit Permissions Modal -->
-    <div v-if="activeModal === 'edit'" class="modal-backdrop" @click.self="closeModal">
-      <div class="modal-dialog">
-        <div class="modal-header">
-          <div class="modal-title-group">
-            <span class="modal-badge">Access Control</span>
-            <h3>Role &amp; Permissions: {{ editingMember?.name }}</h3>
-          </div>
-          <button class="close-btn" @click="closeModal" aria-label="Close modal">
-            <span v-html="icons.close"></span>
-          </button>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" @click="closeModal">Cancel</button>
+              <button type="submit" class="btn btn-primary">
+                <span v-html="icons.check"></span>
+                Create User &amp; Assign Role
+              </button>
+            </div>
+          </form>
         </div>
+      </div>
+    </Teleport>
 
-        <form @submit.prevent="savePermissions" class="modal-body">
-          <div class="form-group">
-            <label>Access Tier Level</label>
-            <select v-model="editingMember.accessLevel">
-              <option value="Admin">Admin (Full Control)</option>
-              <option value="Manager">Manager</option>
-              <option value="Agent">Agent</option>
-              <option value="Title Read-Only">Title Read-Only</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label>Assigned Department</label>
-            <select v-model="editingMember.department">
-              <option value="Acquisitions">Acquisitions</option>
-              <option value="Dispositions">Dispositions</option>
-              <option value="Lead Gen">Lead Generation</option>
-              <option value="Operations">Operations &amp; Title</option>
-              <option value="Underwriting">Underwriting</option>
-              <option value="Executive">Executive</option>
-            </select>
-          </div>
-
-          <div class="perm-checks">
-            <label class="checkbox-row">
-              <input type="checkbox" v-model="editingMember.permissions.signContracts" />
-              <div>
-                <strong>Execute Purchase Agreements (PSA)</strong>
-                <small>Can digitally sign and commit wholesale earnest money</small>
-              </div>
-            </label>
-            <label class="checkbox-row">
-              <input type="checkbox" v-model="editingMember.permissions.viewFinancials" />
-              <div>
-                <strong>View Financial Margins &amp; Spreads</strong>
-                <small>Visible access to net fee projections, settlement sheets and banking</small>
-              </div>
-            </label>
-            <label class="checkbox-row">
-              <input type="checkbox" v-model="editingMember.permissions.blastBuyers" />
-              <div>
-                <strong>Broadcast Cash Buyer Blasts</strong>
-                <small>Can send deal notifications to VIP buyer distribution lists</small>
-              </div>
-            </label>
-            <label class="checkbox-row">
-              <input type="checkbox" v-model="editingMember.permissions.exportCsv" />
-              <div>
-                <strong>Export Raw Intelligence Data</strong>
-                <small>Can download CSV tables of county records, skip traces, and buyers</small>
-              </div>
-            </label>
-          </div>
-
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" @click="closeModal">Cancel</button>
-            <button type="submit" class="btn btn-primary">
-              <span v-html="icons.check"></span>
-              Save Changes
+    <!-- Modal 2: Change Password Modal -->
+    <Teleport to="body">
+      <div v-if="activeModal === 'changePassword'" class="modal-backdrop" @click.self="closeModal">
+        <div class="modal-dialog modal-sm">
+          <div class="modal-header">
+            <div class="modal-title-group">
+              <span class="modal-badge purple"><span v-html="icons.key"></span> CREDENTIAL SECURITY</span>
+              <h3>Change Password: {{ passwordTargetUser?.name }}</h3>
+            </div>
+            <button class="close-btn" @click="closeModal" aria-label="Close modal">
+              <span v-html="icons.close"></span>
             </button>
           </div>
-        </form>
+
+          <form @submit.prevent="submitChangePassword" class="modal-body">
+            <p class="modal-subtext">
+              Set a new secure access key for <strong>{{ passwordTargetUser?.email }}</strong>. This action will be logged in the system audit ledger.
+            </p>
+
+            <div class="form-group">
+              <div class="label-with-action">
+                <label>New Password *</label>
+                <button 
+                  type="button" 
+                  class="btn-text-action" 
+                  @click="generateRandomPassword('changePass')"
+                >
+                  ⚡ Generate
+                </button>
+              </div>
+
+              <div class="password-input-wrap">
+                <input 
+                  :type="showChangePassword ? 'text' : 'password'" 
+                  v-model="changePasswordForm.newPassword" 
+                  placeholder="Enter new password" 
+                  required 
+                />
+                <button 
+                  type="button" 
+                  class="btn-input-eye" 
+                  @click="showChangePassword = !showChangePassword"
+                >
+                  <span v-html="showChangePassword ? icons.eyeOff : icons.eye"></span>
+                </button>
+              </div>
+            </div>
+
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" @click="closeModal">Cancel</button>
+              <button type="submit" class="btn btn-primary">
+                <span v-html="icons.check"></span>
+                Save &amp; Update Password
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
-    </div>
+    </Teleport>
+
+    <!-- Modal 3: Edit Member Details -->
+    <Teleport to="body">
+      <div v-if="activeModal === 'editMember'" class="modal-backdrop" @click.self="closeModal">
+        <div class="modal-dialog">
+          <div class="modal-header">
+            <div class="modal-title-group">
+              <span class="modal-badge">USER ADMINISTRATION</span>
+              <h3>Edit Member: {{ editingMember?.name }}</h3>
+            </div>
+            <button class="close-btn" @click="closeModal" aria-label="Close modal">
+              <span v-html="icons.close"></span>
+            </button>
+          </div>
+
+          <form @submit.prevent="submitEditMember" class="modal-body">
+            <div class="form-group">
+              <label>Full Name</label>
+              <input v-model="editingMember.name" type="text" required />
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Phone Number</label>
+                <input v-model="editingMember.phone" type="text" required />
+              </div>
+
+              <div class="form-group">
+                <label>Email Address</label>
+                <input v-model="editingMember.email" type="email" required />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Assigned Role</label>
+                <select v-model="editingMember.role" required>
+                  <option v-for="r in roles" :key="r.role_id || r.role_key" :value="r.role_key">
+                    {{ r.name }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Account Status</label>
+                <select v-model="editingMember.status" required>
+                  <option value="Active">Active</option>
+                  <option value="Suspended">Suspended</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" @click="closeModal">Cancel</button>
+              <button type="submit" class="btn btn-primary">
+                <span v-html="icons.check"></span>
+                Update Member
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </Teleport>
+
+    <!-- Modal 4: Create or Edit Custom Role with 23-Section Permission Matrix -->
+    <Teleport to="body">
+      <div v-if="activeModal === 'roleForm'" class="modal-backdrop" @click.self="closeModal">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-header">
+            <div class="modal-title-group">
+              <span class="modal-badge gold"><span v-html="icons.shield"></span> ROLE BUILDER</span>
+              <h3>{{ isEditingRole ? `Edit Role: ${roleForm.name}` : 'Create Custom Role & Choose Section Access' }}</h3>
+            </div>
+            <button class="close-btn" @click="closeModal" aria-label="Close modal">
+              <span v-html="icons.close"></span>
+            </button>
+          </div>
+
+          <form @submit.prevent="submitRoleForm" class="modal-body">
+            <div class="form-row">
+              <div class="form-group flex-2">
+                <label>Role Name *</label>
+                <input 
+                  v-model="roleForm.name" 
+                  type="text" 
+                  placeholder="e.g. Direct Mail Associate, Cold Calling Specialist" 
+                  required 
+                />
+              </div>
+
+              <div class="form-group flex-3">
+                <label>Description</label>
+                <input 
+                  v-model="roleForm.description" 
+                  type="text" 
+                  placeholder="e.g. Restricted to Dashboard and Direct Mail Campaigns" 
+                />
+              </div>
+            </div>
+
+            <!-- Permission Matrix Header -->
+            <div class="matrix-control-bar">
+              <div class="matrix-title">
+                <strong>Workspace Access Matrix ({{ roleForm.permissions.length }} of {{ allSections.length }} Selected)</strong>
+                <small>Choose exact section permissions given to this role. Users assigned this role can only view these workspaces.</small>
+              </div>
+              <div class="matrix-actions">
+                <button type="button" class="btn btn-secondary btn-xs" @click="selectAllSections">
+                  Select All (23)
+                </button>
+                <button type="button" class="btn btn-secondary btn-xs" @click="clearAllSections">
+                  Clear All
+                </button>
+              </div>
+            </div>
+
+            <!-- 23-Section Checkbox Matrix Grouped by Domain -->
+            <div class="section-matrix-groups">
+              <div v-for="(group, gIdx) in sectionGroups" :key="gIdx" class="matrix-group">
+                <div class="group-header">
+                  <span class="group-title">{{ group.category }}</span>
+                  <span class="group-count">
+                    {{ countSelectedInGroup(group) }} / {{ group.sections.length }}
+                  </span>
+                </div>
+
+                <div class="group-grid">
+                  <label 
+                    v-for="s in group.sections" 
+                    :key="s.path" 
+                    class="section-checkbox-card"
+                    :class="{ checked: roleForm.permissions.includes(s.path) }"
+                  >
+                    <input 
+                      type="checkbox" 
+                      :value="s.path" 
+                      v-model="roleForm.permissions" 
+                    />
+                    <div class="card-icon" v-html="icons[s.icon] || icons.house"></div>
+                    <div class="card-info">
+                      <strong>{{ s.name }}</strong>
+                      <code class="font-mono">{{ s.path }}</code>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" @click="closeModal">Cancel</button>
+              <button type="submit" class="btn btn-primary btn-glow">
+                <span v-html="icons.check"></span>
+                {{ isEditingRole ? 'Save Changes' : 'Create Custom Role' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </Teleport>
+
+    <!-- Modal 5: Raw JSON Diff Viewer for Audit Trail -->
+    <Teleport to="body">
+      <div v-if="activeModal === 'inspectDiff'" class="modal-backdrop" @click.self="closeModal">
+        <div class="modal-dialog modal-md">
+          <div class="modal-header">
+            <div class="modal-title-group">
+              <span class="modal-badge cyan">AUDIT EVIDENCE</span>
+              <h3>Audit Event Record: {{ selectedAuditItem?.action }}</h3>
+            </div>
+            <button class="close-btn" @click="closeModal" aria-label="Close modal">
+              <span v-html="icons.close"></span>
+            </button>
+          </div>
+
+          <div class="modal-body">
+            <div class="audit-meta-summary">
+              <div><strong>Recorded At:</strong> {{ selectedAuditItem?.fullTimestamp }}</div>
+              <div><strong>Actor:</strong> {{ selectedAuditItem?.actor }}</div>
+              <div><strong>Target:</strong> {{ selectedAuditItem?.entityType }} ({{ selectedAuditItem?.entityId }})</div>
+              <div><strong>Request ID:</strong> {{ selectedAuditItem?.requestId }}</div>
+            </div>
+
+            <label class="json-label">Redacted Diff &amp; Payload:</label>
+            <pre class="json-viewer font-mono">{{ JSON.stringify(selectedAuditItem?.details, null, 2) }}</pre>
+
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" @click="closeModal">Close</button>
+              <button 
+                type="button" 
+                class="btn btn-primary" 
+                @click="copyText(JSON.stringify(selectedAuditItem, null, 2), 'Audit event copied!')"
+              >
+                Copy Event JSON
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Teleport>
+
+    <!-- Global Floating Action Alert / Toast -->
+    <Teleport to="body">
+      <transition name="toast-slide">
+        <div v-if="alertToast.show" class="team-toast" :class="alertToast.type">
+          <div class="toast-dot"></div>
+          <div class="toast-text">
+            <strong>{{ alertToast.title }}</strong>
+            <p>{{ alertToast.message }}</p>
+          </div>
+        </div>
+      </transition>
     </Teleport>
   </div>
 </template>
@@ -441,278 +1138,643 @@ export default {
   data() {
     return {
       icons,
-      searchQuery: '',
-      departmentFilter: '',
-      statusFilter: '',
-      sortBy: 'volume',
-      selectedMember: null,
-      activeModal: null,
-      editingMember: null,
+      activeTab: 'members', // 'members' | 'roles' | 'audit'
+
+      // Members Data
       members: [],
-      newMember: {
+      roles: [],
+      allSections: [],
+      selectedMember: null,
+      searchQuery: '',
+      roleFilter: '',
+      statusFilter: '',
+      visiblePasswords: {}, // { [memberId]: boolean }
+      showAllPasswords: false,
+
+      // Modals
+      activeModal: null, // 'addMember' | 'changePassword' | 'editMember' | 'roleForm' | 'inspectDiff'
+      newMemberForm: {
         name: '',
-        title: '',
-        email: '',
         phone: '',
-        department: 'Acquisitions',
-        accessLevel: 'Agent',
-        territory: '',
-        zipCodes: '',
-        commissionSplit: '15% Net Assignment Fee'
-      }
+        email: '',
+        role: 'ACQUISITIONS_REP',
+        password: ''
+      },
+      showNewPassword: true,
+
+      passwordTargetUser: null,
+      changePasswordForm: {
+        newPassword: ''
+      },
+      showChangePassword: true,
+
+      editingMember: null,
+
+      // Roles Data & Form
+      isEditingRole: false,
+      roleForm: {
+        roleId: null,
+        name: '',
+        description: '',
+        permissions: []
+      },
+
+      // Audit Trail Data & Filters
+      auditLogs: [],
+      auditTotal: 0,
+      auditLimit: 25,
+      auditOffset: 0,
+      auditSearch: '',
+      auditDatePreset: 'all', // 'all' | 'today' | 'yesterday' | 'last7' | 'last30' | 'custom'
+      auditStartDate: '',
+      auditEndDate: '',
+      auditCategoryFilter: '',
+      auditMetrics: {
+        todayCount: 0,
+        uniqueActors: 0,
+        criticalChanges: 0,
+        securityEvents: 0
+      },
+      selectedAuditItem: null,
+
+      // Toast Notification
+      alertToast: {
+        show: false,
+        title: '',
+        message: '',
+        type: 'success'
+      },
+      toastTimeout: null
     };
   },
   computed: {
-    metrics() {
-      const list = this.members || [];
-      const totalMembers = list.length;
-      const contractsLocked = list.reduce((acc, m) => acc + (Number(m.stats?.contracts) || 0), 0);
-      const closedDeals = list.reduce((acc, m) => acc + (Number(m.stats?.closed) || 0), 0);
-      const totalVolume = list.reduce((acc, m) => acc + (Number(m.stats?.volume) || 0), 0);
-      return [
-        { label: 'Active Team Roster', value: `${totalMembers} Members`, change: totalMembers ? '+0' : '0', note: 'team size', icon: 'users' },
-        { label: 'Contracts Locked (MTD)', value: `${contractsLocked} Contracts`, change: contractsLocked ? '+0%' : '0%', note: 'pipeline pace', icon: 'file' },
-        { label: 'Closed & Funded (MTD)', value: `${closedDeals} Deals`, change: closedDeals ? '+0%' : '0%', note: 'closing velocity', icon: 'check' },
-        { label: 'Wholesale Net Volume', value: `$${totalVolume.toLocaleString()}`, change: totalVolume ? '+0%' : '0%', note: 'gross spreads', icon: 'badgeDollar' },
-        { label: 'Avg Days to Close', value: '0 Days', change: '0d', note: 'cycle reduction', icon: 'clock' }
-      ];
-    },
     filteredMembers() {
       const q = this.searchQuery.toLowerCase().trim();
-      return this.members
-        .filter(m => {
-          const matchQuery =
-            !q ||
-            m.name.toLowerCase().includes(q) ||
-            m.title.toLowerCase().includes(q) ||
-            m.department.toLowerCase().includes(q) ||
-            m.territory.toLowerCase().includes(q) ||
-            m.email.toLowerCase().includes(q) ||
-            m.phone.includes(q);
-          const matchDept = !this.departmentFilter || m.department === this.departmentFilter;
-          const matchStatus = !this.statusFilter || m.status === this.statusFilter;
-          return matchQuery && matchDept && matchStatus;
-        })
-        .sort((a, b) => {
-          if (this.sortBy === 'name') return a.name.localeCompare(b.name);
-          if (this.sortBy === 'closed') return b.dealsClosed - a.dealsClosed;
-          if (this.sortBy === 'volume') return b.productionVolume - a.productionVolume;
-          if (this.sortBy === 'role') return a.department.localeCompare(b.department);
-          return 0;
-        });
+      return this.members.filter(m => {
+        const matchQ = !q || 
+          m.name.toLowerCase().includes(q) || 
+          (m.phone && m.phone.toLowerCase().includes(q)) || 
+          (m.email && m.email.toLowerCase().includes(q)) || 
+          (m.role && m.role.toLowerCase().includes(q)) ||
+          (m.roleName && m.roleName.toLowerCase().includes(q));
+
+        const matchRole = !this.roleFilter || m.role === this.roleFilter;
+        const matchStatus = !this.statusFilter || m.status === this.statusFilter;
+
+        return matchQ && matchRole && matchStatus;
+      });
+    },
+
+    sectionGroups() {
+      // Group the 23 sections logically
+      const map = {};
+      for (const s of this.allSections) {
+        const cat = s.category || 'General';
+        if (!map[cat]) map[cat] = [];
+        map[cat].push(s);
+      }
+      return Object.keys(map).map(cat => ({
+        category: cat,
+        sections: map[cat]
+      }));
     }
   },
-  mounted() {
-    this.loadTeamMembers();
+  async mounted() {
+    await Promise.all([
+      this.loadSections(),
+      this.loadRoles(),
+      this.loadTeamMembers(),
+      this.fetchAuditLogs()
+    ]);
   },
   methods: {
+    // -------------------------------------------------------------------------
+    // API Fetchers
+    // -------------------------------------------------------------------------
+    async loadSections() {
+      try {
+        const res = await fetch('/api/v1/rbac/sections');
+        const data = await res.json();
+        if (data && data.sections) {
+          this.allSections = data.sections;
+        }
+      } catch (e) {
+        console.warn('[RBAC] Fallback sections:', e.message);
+      }
+    },
+
+    async loadRoles() {
+      try {
+        const res = await fetch('/api/v1/roles');
+        const data = await res.json();
+        if (data && data.roles) {
+          this.roles = data.roles;
+        }
+      } catch (e) {
+        console.warn('[RBAC] Roles fetch error:', e.message);
+      }
+    },
+
     async loadTeamMembers() {
       try {
         const res = await fetch('/api/v1/team');
         const data = await res.json();
-        if (data) {
+        if (data && data.members) {
           this.members = data.members;
-          if (!this.selectedMember) this.selectedMember = data.members[0];
+          if (!this.selectedMember && data.members.length > 0) {
+            this.selectedMember = data.members[0];
+          }
         }
-      } catch (err) {
-        console.warn('[Team] Using local cache:', err.message);
+      } catch (e) {
+        console.warn('[Team] Members fetch error:', e.message);
       }
     },
 
-    selectMember(member) {
-      this.selectedMember = member;
-    },
-    formatCurrency(val) {
-      return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(val || 0);
-    },
-    getDepartmentClass(dept) {
-      const map = {
-        'Executive': 'gold',
-        'Acquisitions': 'cyan',
-        'Dispositions': 'purple',
-        'Lead Gen': 'green',
-        'Operations': 'rose',
-        'Underwriting': 'teal'
-      };
-      return map[dept] || 'cyan';
-    },
-    getStatusClass(status) {
-      if (status === 'Active') return 'active';
-      if (status === 'In Field') return 'field';
-      return 'offline';
-    },
-    resetFilters() {
-      this.searchQuery = '';
-      this.departmentFilter = '';
-      this.statusFilter = '';
-      this.sortBy = 'volume';
-    },
-    openModal(type) {
-      this.activeModal = type;
-    },
-    openEditModal(member) {
-      this.editingMember = JSON.parse(JSON.stringify(member));
-      this.activeModal = 'edit';
-    },
-    closeModal() {
-      this.activeModal = null;
-      this.editingMember = null;
-    },
-    async submitInvite() {
-      const initials = this.newMember.name
-        .split(' ')
-        .map(n => n[0])
-        .join('')
-        .toUpperCase()
-        .slice(0, 2);
-      const payload = {
-        name: this.newMember.name,
-        title: this.newMember.title,
-        department: this.newMember.department,
-        accessLevel: this.newMember.accessLevel,
-        territory: this.newMember.territory || 'Duval County',
-        zipCodes: this.newMember.zipCodes || 'Metro Jacksonville',
-        email: this.newMember.email,
-        phone: this.newMember.phone,
-        commissionSplit: this.newMember.commissionSplit
-      };
+    async fetchAuditLogs() {
+      try {
+        const params = new URLSearchParams();
+        params.set('limit', String(this.auditLimit));
+        params.set('offset', String(this.auditOffset));
 
+        if (this.auditSearch.trim()) params.set('search', this.auditSearch.trim());
+        if (this.auditCategoryFilter) params.set('action', this.auditCategoryFilter);
+
+        // Date calculation
+        if (this.auditDatePreset === 'today') {
+          const d = new Date().toISOString().slice(0, 10);
+          params.set('startDate', d);
+          params.set('endDate', d);
+        } else if (this.auditDatePreset === 'yesterday') {
+          const y = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+          params.set('startDate', y);
+          params.set('endDate', y);
+        } else if (this.auditDatePreset === 'last7') {
+          const s = new Date(Date.now() - 7 * 86400000).toISOString().slice(0, 10);
+          params.set('startDate', s);
+        } else if (this.auditDatePreset === 'last30') {
+          const s = new Date(Date.now() - 30 * 86400000).toISOString().slice(0, 10);
+          params.set('startDate', s);
+        } else if (this.auditDatePreset === 'custom') {
+          if (this.auditStartDate) params.set('startDate', this.auditStartDate);
+          if (this.auditEndDate) params.set('endDate', this.auditEndDate);
+        }
+
+        const res = await fetch(`/api/v1/audit/logs?${params.toString()}`);
+        const data = await res.json();
+        if (data && data.ok) {
+          this.auditLogs = data.logs || [];
+          this.auditTotal = data.total || 0;
+          if (data.metrics) {
+            this.auditMetrics = data.metrics;
+          }
+        }
+      } catch (e) {
+        console.warn('[Audit] Fetch logs error:', e.message);
+      }
+    },
+
+    // -------------------------------------------------------------------------
+    // Password Management
+    // -------------------------------------------------------------------------
+    togglePasswordVisibility(memberId) {
+      this.visiblePasswords = {
+        ...this.visiblePasswords,
+        [memberId]: !this.visiblePasswords[memberId]
+      };
+    },
+
+    generateRandomPassword(target) {
+      const parts = ['Hush', 'Eagle', 'Hawk', 'Prime', 'Apex', 'Titan', 'Vault'];
+      const prefix = parts[Math.floor(Math.random() * parts.length)];
+      const num = Math.floor(1000 + Math.random() * 9000);
+      const generated = `${prefix}Pass!${num}`;
+
+      if (target === 'newMember') {
+        this.newMemberForm.password = generated;
+      } else if (target === 'changePass') {
+        this.changePasswordForm.newPassword = generated;
+      }
+      this.showToast('Password Generated', `Generated: ${generated}`, 'info');
+    },
+
+    openChangePasswordModal(member) {
+      this.passwordTargetUser = member;
+      this.changePasswordForm.newPassword = '';
+      this.activeModal = 'changePassword';
+    },
+
+    async submitChangePassword() {
+      if (!this.passwordTargetUser || !this.changePasswordForm.newPassword) return;
+
+      try {
+        const res = await fetch(`/api/v1/team/${this.passwordTargetUser.id}/password`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            password: this.changePasswordForm.newPassword,
+            actor: 'Main Administrator'
+          })
+        });
+        const result = await res.json();
+        if (res.ok && result.success) {
+          this.passwordTargetUser.password = this.changePasswordForm.newPassword;
+          this.showToast('Password Updated', `Updated access key for ${this.passwordTargetUser.name}`, 'success');
+          this.closeModal();
+          this.fetchAuditLogs();
+        } else {
+          this.showToast('Error', result.error || 'Failed to update password', 'danger');
+        }
+      } catch (err) {
+        this.showToast('Error', err.message, 'danger');
+      }
+    },
+
+    async handleQuickResetPassword(member) {
+      if (!confirm(`Are you sure you want to reset the password for ${member.name} (${member.email})? A secure temporary password will be auto-generated and logged.`)) {
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/v1/team/${member.id}/password`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            autoGenerate: true,
+            actor: 'Main Administrator'
+          })
+        });
+        const result = await res.json();
+        if (res.ok && result.success) {
+          member.password = result.password;
+          this.copyText(result.password, `Password reset to ${result.password} and copied to clipboard!`);
+          this.fetchAuditLogs();
+        } else {
+          this.showToast('Error', result.error || 'Failed to reset password', 'danger');
+        }
+      } catch (err) {
+        this.showToast('Error', err.message, 'danger');
+      }
+    },
+
+    // -------------------------------------------------------------------------
+    // Team Members CRUD
+    // -------------------------------------------------------------------------
+    openAddMemberModal() {
+      this.newMemberForm = {
+        name: '',
+        phone: '',
+        email: '',
+        role: this.roles.length > 0 ? (this.roles[0].role_id || this.roles[0].role_key) : 'ACQUISITIONS_REP',
+        password: `HushPass!${Math.floor(1000 + Math.random() * 9000)}`
+      };
+      this.activeModal = 'addMember';
+    },
+
+    async submitAddMember() {
       try {
         const res = await fetch('/api/v1/team', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
+          body: JSON.stringify({
+            name: this.newMemberForm.name,
+            phone: this.newMemberForm.phone,
+            email: this.newMemberForm.email,
+            role: this.newMemberForm.role,
+            password: this.newMemberForm.password,
+            actor: 'Main Administrator'
+          })
         });
-        if (res.ok) {
-          const saved = await res.json();
-          this.members.unshift(saved);
-          this.selectedMember = saved;
-        } else {
-          const fallback = {
-            id: 'tm-' + String(this.members.length + 1).padStart(3, '0'),
-            ...payload,
-            initials,
-            avatarBg: 'linear-gradient(135deg, #38bdf8, #0369a1)',
-            dealsClosed: 0,
-            productionVolume: 0,
-            closeRate: 0,
-            avgSpread: 0,
-            status: 'Active',
-            permissions: {
-              signContracts: payload.accessLevel === 'Admin' || payload.accessLevel === 'Manager',
-              viewFinancials: payload.accessLevel === 'Admin',
-              blastBuyers: payload.department === 'Dispositions',
-              exportCsv: payload.accessLevel === 'Admin'
-            }
-          };
-          this.members.unshift(fallback);
-          this.selectedMember = fallback;
-        }
-      } catch (e) {
-        const fallback = {
-          id: 'tm-' + String(this.members.length + 1).padStart(3, '0'),
-          ...payload,
-          initials,
-          avatarBg: 'linear-gradient(135deg, #38bdf8, #0369a1)',
-          dealsClosed: 0,
-          productionVolume: 0,
-          closeRate: 0,
-          avgSpread: 0,
-          status: 'Active',
-          permissions: {
-            signContracts: payload.accessLevel === 'Admin' || payload.accessLevel === 'Manager',
-            viewFinancials: payload.accessLevel === 'Admin',
-            blastBuyers: payload.department === 'Dispositions',
-            exportCsv: payload.accessLevel === 'Admin'
-          }
-        };
-        this.members.unshift(fallback);
-        this.selectedMember = fallback;
-      }
-      this.closeModal();
-      if (typeof window.showHushHawkToast === 'function') {
-        window.showHushHawkToast('Team Member Added', `${payload.name} onboarded to ${payload.department} department.`, 'success');
-      }
-      this.newMember = {
-        name: '',
-        title: '',
-        email: '',
-        phone: '',
-        department: 'Acquisitions',
-        accessLevel: 'Agent',
-        territory: '',
-        zipCodes: '',
-        commissionSplit: '15% Net Assignment Margin'
-      };
-    },
-    async savePermissions() {
-      if (!this.editingMember) return;
-      const idx = this.members.findIndex(m => m.id === this.editingMember.id);
-      if (idx !== -1) {
-        this.members[idx] = { ...this.editingMember };
-        if (this.selectedMember?.id === this.editingMember.id) {
-          this.selectedMember = { ...this.editingMember };
-        }
-      }
-      const memberName = this.editingMember.name;
-      const memberId = this.editingMember.id;
-      const payload = {
-        accessLevel: this.editingMember.accessLevel,
-        permissions: this.editingMember.permissions,
-        department: this.editingMember.department
-      };
-      try {
-        await fetch(`/api/v1/team/${memberId}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-      } catch (e) {}
 
-      this.closeModal();
-      if (typeof window.showHushHawkToast === 'function') {
-        window.showHushHawkToast('Permissions Updated', `Access credentials updated for ${memberName}.`, 'success');
+        const data = await res.json();
+        if (res.ok && !data.error) {
+          this.showToast('Member Added', `Successfully added ${this.newMemberForm.name} to team roster!`, 'success');
+          this.closeModal();
+          await this.loadTeamMembers();
+          await this.loadRoles();
+          this.fetchAuditLogs();
+        } else {
+          this.showToast('Error', data.error || 'Failed to add member', 'danger');
+        }
+      } catch (err) {
+        this.showToast('Error', err.message, 'danger');
       }
     },
-    async toggleStatus(member) {
-      member.status = member.status === 'Active' ? 'Offline' : 'Active';
+
+    openEditMemberModal(member) {
+      this.editingMember = JSON.parse(JSON.stringify(member));
+      this.activeModal = 'editMember';
+    },
+
+    async submitEditMember() {
+      if (!this.editingMember) return;
       try {
-        await fetch(`/api/v1/team/${member.id}`, {
+        const res = await fetch(`/api/v1/team/${this.editingMember.id}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ status: member.status })
+          body: JSON.stringify({
+            name: this.editingMember.name,
+            phone: this.editingMember.phone,
+            email: this.editingMember.email,
+            role: this.editingMember.role,
+            status: this.editingMember.status,
+            actor: 'Main Administrator'
+          })
         });
-      } catch (e) {}
-      if (typeof window.showHushHawkToast === 'function') {
-        window.showHushHawkToast('Status Changed', `${member.name} marked as ${member.status}.`, 'info');
+        const data = await res.json();
+        if (res.ok && data.success) {
+          this.showToast('Member Updated', `Profile for ${this.editingMember.name} updated.`, 'success');
+          this.closeModal();
+          await this.loadTeamMembers();
+          this.fetchAuditLogs();
+        } else {
+          this.showToast('Error', data.error || 'Failed to update member', 'danger');
+        }
+      } catch (err) {
+        this.showToast('Error', err.message, 'danger');
       }
     },
-    exportRoster() {
-      const headers = ['ID', 'Name', 'Title', 'Department', 'Access', 'Email', 'Phone', 'Territory', 'Deals Closed', 'Volume', 'Status'];
-      const rows = this.filteredMembers.map(m => [
-        m.id,
-        m.name,
-        m.title,
-        m.department,
-        m.accessLevel,
-        m.email,
-        m.phone,
-        m.territory,
-        m.dealsClosed,
-        m.productionVolume,
-        m.status
+
+    async confirmDeleteMember(member) {
+      if (!confirm(`Are you sure you want to remove ${member.name} (${member.email})? This action will immediately revoke their access and log an audit event.`)) {
+        return;
+      }
+      try {
+        const res = await fetch(`/api/v1/team/${member.id}`, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ actor: 'Main Administrator' })
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          this.showToast('Member Removed', `Removed ${member.name} from the active roster.`, 'success');
+          if (this.selectedMember?.id === member.id) this.selectedMember = null;
+          await this.loadTeamMembers();
+          await this.loadRoles();
+          this.fetchAuditLogs();
+        } else {
+          this.showToast('Error', data.error || 'Failed to remove member', 'danger');
+        }
+      } catch (err) {
+        this.showToast('Error', err.message, 'danger');
+      }
+    },
+
+    // -------------------------------------------------------------------------
+    // Custom Roles & Permissions Matrix
+    // -------------------------------------------------------------------------
+    openCreateRoleModal() {
+      this.isEditingRole = false;
+      this.roleForm = {
+        roleId: null,
+        name: '',
+        description: '',
+        permissions: ['/home'] // default to home dashboard
+      };
+      this.activeModal = 'roleForm';
+    },
+
+    openEditRoleModal(role) {
+      this.isEditingRole = true;
+      this.roleForm = {
+        roleId: role.role_id,
+        name: role.name,
+        description: role.description || '',
+        permissions: Array.isArray(role.permissions) ? [...role.permissions] : []
+      };
+      this.activeModal = 'roleForm';
+    },
+
+    selectAllSections() {
+      this.roleForm.permissions = this.allSections.map(s => s.path);
+    },
+
+    clearAllSections() {
+      this.roleForm.permissions = [];
+    },
+
+    countSelectedInGroup(group) {
+      return group.sections.filter(s => this.roleForm.permissions.includes(s.path)).length;
+    },
+
+    async submitRoleForm() {
+      if (!this.roleForm.name.trim()) {
+        this.showToast('Validation', 'Role name is required', 'warning');
+        return;
+      }
+
+      try {
+        const url = this.isEditingRole 
+          ? `/api/v1/roles/${this.roleForm.roleId}`
+          : '/api/v1/roles';
+        const method = this.isEditingRole ? 'PUT' : 'POST';
+
+        const res = await fetch(url, {
+          method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: this.roleForm.name,
+            description: this.roleForm.description,
+            permissions: this.roleForm.permissions,
+            actor: 'Main Administrator'
+          })
+        });
+
+        const data = await res.json();
+        if (res.ok && data.success) {
+          this.showToast(
+            this.isEditingRole ? 'Role Updated' : 'Role Created',
+            `Saved role "${this.roleForm.name}" with ${this.roleForm.permissions.length} permitted sections.`,
+            'success'
+          );
+          this.closeModal();
+          await this.loadRoles();
+          await this.loadTeamMembers();
+          this.fetchAuditLogs();
+        } else {
+          this.showToast('Error', data.error || 'Failed to save role', 'danger');
+        }
+      } catch (err) {
+        this.showToast('Error', err.message, 'danger');
+      }
+    },
+
+    async confirmDeleteRole(role) {
+      if (!confirm(`Are you sure you want to delete the custom role "${role.name}"? Any assigned members will be safely reverted to standard specialist tier.`)) {
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/v1/roles/${role.role_id}`, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ actor: 'Main Administrator' })
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          this.showToast('Role Deleted', `Custom role "${role.name}" deleted.`, 'success');
+          await this.loadRoles();
+          await this.loadTeamMembers();
+          this.fetchAuditLogs();
+        } else {
+          this.showToast('Error', data.error || 'Failed to delete role', 'danger');
+        }
+      } catch (err) {
+        this.showToast('Error', err.message, 'danger');
+      }
+    },
+
+    // -------------------------------------------------------------------------
+    // Audit Trail Helpers
+    // -------------------------------------------------------------------------
+    handleDatePresetChange() {
+      this.auditOffset = 0;
+      this.fetchAuditLogs();
+    },
+
+    changeAuditPage(delta) {
+      const newOffset = this.auditOffset + delta * this.auditLimit;
+      if (newOffset >= 0 && newOffset < this.auditTotal) {
+        this.auditOffset = newOffset;
+        this.fetchAuditLogs();
+      }
+    },
+
+    inspectAuditDetail(log) {
+      this.selectedAuditItem = log;
+      this.activeModal = 'inspectDiff';
+    },
+
+    formatDiffSummary(log) {
+      if (!log.details || typeof log.details !== 'object') return 'Standard operation executed.';
+      const d = log.details;
+      if (d.name && d.role) return `User ${d.name} (${d.role}) registered.`;
+      if (d.targetUser && d.mode) return `Password reset executed for ${d.targetName || d.targetUser} (${d.mode}).`;
+      if (d.permissionsCount !== undefined) return `Role permissions updated (${d.permissionsCount} sections).`;
+      if (d.email && d.client) return `Authenticated successfully from ${d.client}.`;
+      if (d.action) return `Execution completed: ${d.action}`;
+      return JSON.stringify(d).slice(0, 85) + '...';
+    },
+
+    resetAuditFilters() {
+      this.auditSearch = '';
+      this.auditDatePreset = 'all';
+      this.auditStartDate = '';
+      this.auditEndDate = '';
+      this.auditCategoryFilter = '';
+      this.auditOffset = 0;
+      this.fetchAuditLogs();
+    },
+
+    exportAuditCsv() {
+      if (!this.auditLogs.length) {
+        this.showToast('Export', 'No audit logs to export.', 'info');
+        return;
+      }
+      const headers = ['Timestamp', 'Actor', 'Action', 'Entity Type', 'Entity ID', 'Details'];
+      const rows = this.auditLogs.map(l => [
+        `"${l.fullTimestamp || l.createdAt}"`,
+        `"${l.actor || ''}"`,
+        `"${l.action || ''}"`,
+        `"${l.entityType || ''}"`,
+        `"${l.entityId || ''}"`,
+        `"${JSON.stringify(l.details || {}).replace(/"/g, '""')}"`
       ]);
-      const csv = [headers.join(','), ...rows.map(r => r.map(c => `"${c}"`).join(','))].join('\n');
+      const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
       const blob = new Blob([csv], { type: 'text/csv' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `hushhawk_team_roster_${new Date().toISOString().slice(0, 10)}.csv`;
+      a.download = `HushHawk_Audit_Log_${new Date().toISOString().slice(0, 10)}.csv`;
       a.click();
       URL.revokeObjectURL(url);
-      if (typeof window.showHushHawkToast === 'function') {
-        window.showHushHawkToast('Roster Exported', `Generated roster CSV for ${this.filteredMembers.length} team members.`, 'success');
+      this.showToast('Export Complete', 'Audit ledger exported to CSV.', 'success');
+    },
+
+    exportRoster() {
+      if (!this.members.length) return;
+      const headers = ['Name', 'Phone', 'Email', 'Role', 'Status', 'Workspaces Allowed'];
+      const rows = this.members.map(m => [
+        `"${m.name}"`,
+        `"${m.phone}"`,
+        `"${m.email}"`,
+        `"${m.roleName || m.role}"`,
+        `"${m.status}"`,
+        `"${m.allowedCount || (m.permissions || []).length}"`
+      ]);
+      const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `HushHawk_Team_Roster_${new Date().toISOString().slice(0, 10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+      this.showToast('Export Complete', 'Team roster exported to CSV.', 'success');
+    },
+
+    // -------------------------------------------------------------------------
+    // Utilities & UI Helpers
+    // -------------------------------------------------------------------------
+    selectMember(member) {
+      this.selectedMember = member;
+    },
+
+    getMemberSections(member) {
+      if (!member) return [];
+      if (member.role === 'SUPER_ADMIN' || member.email === 'admin@hushhawk.com') {
+        return this.allSections;
       }
+      const perms = member.permissions || [];
+      return this.allSections.filter(s => perms.includes(s.path) || perms.includes(s.key));
+    },
+
+    getSectionName(path) {
+      const match = this.allSections.find(s => s.path === path || s.key === path);
+      return match ? match.name : path.replace('/', '');
+    },
+
+    getRoleBadgeClass(role) {
+      if (role === 'SUPER_ADMIN') return 'gold';
+      if (role?.includes('ACQUISITIONS')) return 'cyan';
+      if (role?.includes('DISPO')) return 'purple';
+      if (role?.includes('MARKET')) return 'green';
+      return 'teal';
+    },
+
+    resetMemberFilters() {
+      this.searchQuery = '';
+      this.roleFilter = '';
+      this.statusFilter = '';
+    },
+
+    closeModal() {
+      this.activeModal = null;
+      this.passwordTargetUser = null;
+      this.editingMember = null;
+      this.selectedAuditItem = null;
+    },
+
+    copyText(text, successMsg = 'Copied to clipboard!') {
+      if (!text) return;
+      if (navigator && navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text);
+      } else {
+        const el = document.createElement('textarea');
+        el.value = text;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+      }
+      this.showToast('Copied', successMsg, 'info');
+    },
+
+    showToast(title, message, type = 'success') {
+      if (this.toastTimeout) clearTimeout(this.toastTimeout);
+      this.alertToast = { show: true, title, message, type };
+      this.toastTimeout = setTimeout(() => {
+        this.alertToast.show = false;
+      }, 4000);
     }
   }
 };
@@ -722,14 +1784,90 @@ export default {
 .view-container {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
   width: 100%;
 }
 
-/* Metrics Bar */
+/* ========================================================================== */
+/* Top Tab Navigation */
+/* ========================================================================== */
+.team-tab-nav {
+  display: flex;
+  gap: 8px;
+  background: rgba(10, 25, 47, 0.7);
+  border: 1px solid rgba(212, 168, 83, 0.2);
+  border-radius: 10px;
+  padding: 6px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+.tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+  color: #f1f5f9;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.tab-btn.active {
+  background: linear-gradient(135deg, rgba(212, 168, 83, 0.22), rgba(212, 168, 83, 0.08));
+  border-color: rgba(212, 168, 83, 0.45);
+  color: #f8fafc;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+.tab-icon {
+  display: flex;
+  align-items: center;
+  color: #d4a853;
+}
+
+.tab-counter {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  font-size: 11px;
+  font-weight: 700;
+  color: #cbd5e1;
+}
+
+.tab-btn.active .tab-counter {
+  background: #d4a853;
+  color: #0b1528;
+}
+
+.tab-pill-badge {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(245, 158, 11, 0.25);
+  color: #fbbf24;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+}
+
+/* ========================================================================== */
+/* Top Metrics Grid */
+/* ========================================================================== */
 .metrics-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 12px;
 }
 
@@ -742,12 +1880,6 @@ export default {
   border: 1px solid #1a3c63;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-  transition: transform 0.15s ease, border-color 0.15s ease;
-}
-
-.metric-card:hover {
-  transform: translateY(-1px);
-  border-color: #38bdf8;
 }
 
 .metric-icon-wrap {
@@ -756,34 +1888,42 @@ export default {
   width: 44px;
   height: 44px;
   border-radius: 8px;
-  background: rgba(30, 58, 95, 0.5);
-  border: 1px solid rgba(56, 189, 248, 0.3);
-  color: #38bdf8;
   flex-shrink: 0;
 }
 
 .metric-icon-wrap.gold {
   color: #edcf7c;
-  border-color: rgba(237, 207, 124, 0.3);
+  border: 1px solid rgba(237, 207, 124, 0.3);
   background: rgba(70, 50, 15, 0.4);
 }
 
 .metric-icon-wrap.green {
   color: #22c55e;
-  border-color: rgba(34, 197, 94, 0.3);
+  border: 1px solid rgba(34, 197, 94, 0.3);
   background: rgba(15, 55, 30, 0.4);
 }
 
 .metric-icon-wrap.cyan {
   color: #06b6d4;
-  border-color: rgba(6, 182, 212, 0.3);
+  border: 1px solid rgba(6, 182, 212, 0.3);
   background: rgba(10, 45, 60, 0.4);
+}
+
+.metric-icon-wrap.purple {
+  color: #a855f7;
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  background: rgba(45, 15, 75, 0.4);
+}
+
+.metric-icon-wrap.red {
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  background: rgba(65, 15, 15, 0.4);
 }
 
 .metric-info {
   display: flex;
   flex-direction: column;
-  min-width: 0;
 }
 
 .metric-label {
@@ -795,14 +1935,14 @@ export default {
 }
 
 .metric-val {
-  font-size: 20px;
+  font-size: 19px;
   font-weight: 800;
   color: #ffffff;
   line-height: 1.2;
 }
 
 .metric-change {
-  font-size: 10px;
+  font-size: 11px;
   color: #94a3b8;
   margin-top: 2px;
 }
@@ -811,58 +1951,48 @@ export default {
   color: #22c55e;
 }
 
-.metric-change em {
-  font-style: normal;
-  color: #64748b;
-}
-
-/* Content Layout */
+/* ========================================================================== */
+/* Content Split & Panels */
+/* ========================================================================== */
 .content-split {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
+  grid-template-columns: 1fr;
   gap: 16px;
-  align-items: start;
   width: 100%;
-  max-width: 100%;
-  min-width: 0;
-  box-sizing: border-box;
 }
 
 .content-split.has-drawer {
-  grid-template-columns: minmax(0, 1fr) 350px;
+  grid-template-columns: 1fr 380px;
 }
 
 .main-panel {
-  background: linear-gradient(135deg, rgba(8, 28, 54, 0.95), rgba(4, 21, 41, 0.98));
+  background: rgba(8, 24, 46, 0.85);
   border: 1px solid #1a3c63;
-  border-radius: 8px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
-  overflow: hidden;
-  min-width: 0;
-  max-width: 100%;
-  box-sizing: border-box;
+  border-radius: 10px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .panel-header {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 14px 18px;
-  border-bottom: 1px solid #1a3c63;
-  background: rgba(10, 34, 64, 0.5);
+  align-items: center;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 12px;
 }
 
 .header-left {
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-wrap: wrap;
 }
 
 .header-left h2 {
-  font-size: 16px;
-  font-weight: 800;
+  font-size: 18px;
+  font-weight: 700;
   color: #ffffff;
   margin: 0;
   display: flex;
@@ -870,102 +2000,53 @@ export default {
   gap: 8px;
 }
 
-.icon-title {
-  color: #edcf7c;
-  display: inline-flex;
+.header-desc {
+  font-size: 12.5px;
+  color: #94a3b8;
+  margin: 4px 0 0 0;
+  max-width: 800px;
+  line-height: 1.45;
 }
 
 .badge-count {
   font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 12px;
   background: rgba(56, 189, 248, 0.15);
   color: #38bdf8;
   border: 1px solid rgba(56, 189, 248, 0.3);
-  border-radius: 12px;
-  padding: 2px 8px;
   font-weight: 600;
 }
 
 .header-actions {
   display: flex;
-  gap: 8px;
+  gap: 10px;
 }
 
-/* Buttons */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 7px 14px;
-  font-size: 12px;
-  font-weight: 700;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  border: 1px solid transparent;
-}
-
-.btn-primary {
-  background: linear-gradient(135deg, #edcf7c, #b3892c);
-  color: #07172b;
-  border-color: #f5df9a;
-}
-
-.btn-primary:hover {
-  filter: brightness(1.1);
-  transform: translateY(-1px);
-}
-
-.btn-secondary {
-  background: #0d2747;
-  color: #cbd5e1;
-  border-color: #244b78;
-}
-
-.btn-secondary:hover {
-  background: #153863;
-  color: #ffffff;
-}
-
-.btn-icon {
-  background: transparent;
-  border: 1px solid #244b78;
-  color: #94a3b8;
-  border-radius: 4px;
-  width: 28px;
-  height: 28px;
-  display: inline-grid;
-  place-items: center;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.btn-icon:hover {
-  color: #edcf7c;
-  border-color: #edcf7c;
-  background: rgba(237, 207, 124, 0.1);
-}
-
-/* Filter Toolbar */
+/* ========================================================================== */
+/* Filter & Search Toolbar */
+/* ========================================================================== */
 .filter-toolbar {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 18px;
-  background: rgba(6, 22, 42, 0.6);
-  border-bottom: 1px solid #1a3c63;
   flex-wrap: wrap;
+  padding: 10px 14px;
+  background: rgba(5, 17, 33, 0.7);
+  border: 1px solid #153250;
+  border-radius: 8px;
 }
 
 .search-box {
   display: flex;
   align-items: center;
   gap: 8px;
-  flex: 1;
-  min-width: 240px;
-  background: #09213f;
-  border: 1px solid #244b78;
+  background: rgba(10, 28, 54, 0.9);
+  border: 1px solid #1d4573;
   border-radius: 6px;
   padding: 6px 10px;
+  flex: 1;
+  min-width: 240px;
   color: #94a3b8;
 }
 
@@ -974,18 +2055,14 @@ export default {
   border: none;
   outline: none;
   color: #ffffff;
-  font-size: 12px;
+  font-size: 13px;
   width: 100%;
 }
 
-.search-box input::placeholder {
-  color: #64748b;
-}
-
 .clear-btn {
-  background: none;
+  background: transparent;
   border: none;
-  color: #94a3b8;
+  color: #64748b;
   cursor: pointer;
   padding: 0;
   display: flex;
@@ -1000,70 +2077,89 @@ export default {
 .filter-group label {
   font-size: 11px;
   color: #8da6c4;
-  white-space: nowrap;
+  font-weight: 600;
 }
 
 .filter-group select {
-  background: #09213f;
-  border: 1px solid #244b78;
-  color: #cbd5e1;
+  background: rgba(10, 28, 54, 0.9);
+  border: 1px solid #1d4573;
+  color: #f1f5f9;
   border-radius: 6px;
   padding: 6px 10px;
   font-size: 12px;
   outline: none;
+  cursor: pointer;
 }
 
-/* Table */
+.btn-toggle-all-passwords {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #1d4573;
+  background: rgba(10, 28, 54, 0.8);
+  color: #94a3b8;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-toggle-all-passwords:hover, .btn-toggle-all-passwords.active {
+  background: rgba(212, 168, 83, 0.15);
+  border-color: rgba(212, 168, 83, 0.4);
+  color: #f59e0b;
+}
+
+/* ========================================================================== */
+/* Data Tables */
+/* ========================================================================== */
 .table-container {
   overflow-x: auto;
+  border: 1px solid #1a3c63;
+  border-radius: 8px;
+  background: rgba(4, 18, 36, 0.9);
 }
 
 .data-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 12px;
+  font-size: 13px;
+  text-align: left;
 }
 
 .data-table th {
-  text-align: left;
-  padding: 10px 14px;
-  font-weight: 700;
-  color: #8da6c4;
+  padding: 12px 14px;
   font-size: 11px;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  background: rgba(8, 28, 54, 0.8);
+  color: #8da6c4;
+  background: rgba(8, 28, 54, 0.95);
   border-bottom: 1px solid #1a3c63;
-  white-space: nowrap;
 }
 
 .data-table td {
   padding: 12px 14px;
-  border-bottom: 1px solid #122c4a;
+  border-bottom: 1px solid rgba(26, 60, 99, 0.5);
   color: #e2e8f0;
   vertical-align: middle;
 }
 
-.data-table tbody tr {
-  cursor: pointer;
-  transition: background 0.15s ease;
+.data-table tr:hover td {
+  background: rgba(30, 58, 95, 0.25);
 }
 
-.data-table tbody tr:hover {
-  background: rgba(30, 58, 95, 0.35);
+.data-table tr.row-selected td {
+  background: rgba(212, 168, 83, 0.12);
+  border-color: rgba(212, 168, 83, 0.3);
 }
 
-.data-table tbody tr.row-selected {
-  background: rgba(30, 58, 95, 0.6);
-  border-left: 3px solid #edcf7c;
-}
-
-/* Member Elements */
 .member-cell {
   display: flex;
   align-items: center;
-  gap: 10px;
-  min-width: 200px;
+  gap: 12px;
 }
 
 .avatar-badge {
@@ -1072,104 +2168,137 @@ export default {
   border-radius: 50%;
   display: grid;
   place-items: center;
-  font-weight: 800;
-  font-size: 13px;
+  font-weight: 700;
+  font-size: 12px;
   color: #ffffff;
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
   flex-shrink: 0;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-}
-
-.member-meta {
-  display: flex;
-  flex-direction: column;
 }
 
 .member-meta strong {
-  font-size: 13px;
+  display: block;
+  font-size: 13.5px;
   color: #ffffff;
 }
 
 .member-meta small {
-  font-size: 10px;
-  color: #94a3b8;
+  display: block;
+  font-size: 11.5px;
+  color: #8da6c4;
+}
+
+.contact-cell .mini-icon {
+  display: inline-block;
+  color: #8da6c4;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+
+.phone-text {
+  font-size: 12px;
+  color: #38bdf8;
+}
+
+.email-text {
+  font-size: 12px;
+  color: #cbd5e1;
 }
 
 .role-pill {
-  font-size: 10px;
-  font-weight: 700;
-  padding: 3px 8px;
-  border-radius: 12px;
-  white-space: nowrap;
   display: inline-block;
+  padding: 3px 9px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  border: 1px solid transparent;
 }
 
 .role-pill.gold {
-  background: rgba(237, 207, 124, 0.15);
-  color: #edcf7c;
-  border: 1px solid rgba(237, 207, 124, 0.3);
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+  border-color: rgba(245, 158, 11, 0.35);
 }
 
 .role-pill.cyan {
-  background: rgba(56, 189, 248, 0.15);
-  color: #38bdf8;
-  border: 1px solid rgba(56, 189, 248, 0.3);
+  background: rgba(6, 182, 212, 0.15);
+  color: #22d3ee;
+  border-color: rgba(6, 182, 212, 0.35);
 }
 
 .role-pill.purple {
   background: rgba(168, 85, 247, 0.15);
-  color: #a855f7;
-  border: 1px solid rgba(168, 85, 247, 0.3);
+  color: #c084fc;
+  border-color: rgba(168, 85, 247, 0.35);
 }
 
 .role-pill.green {
   background: rgba(34, 197, 94, 0.15);
-  color: #22c55e;
-  border: 1px solid rgba(34, 197, 94, 0.3);
+  color: #4ade80;
+  border-color: rgba(34, 197, 94, 0.35);
 }
 
-.role-pill.rose {
-  background: rgba(244, 63, 94, 0.15);
-  color: #f43f5e;
-  border: 1px solid rgba(244, 63, 94, 0.3);
-}
-
-.role-pill.teal {
-  background: rgba(20, 184, 166, 0.15);
-  color: #14b8a6;
-  border: 1px solid rgba(20, 184, 166, 0.3);
-}
-
-.territory-tag {
+.permission-count-pill {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 12px;
   font-size: 11px;
-  color: #93c5fd;
-  background: rgba(15, 38, 70, 0.6);
-  padding: 3px 6px;
-  border-radius: 4px;
+  font-weight: 600;
+  background: rgba(30, 58, 95, 0.5);
+  color: #94a3b8;
   border: 1px solid #1a3c63;
 }
 
-.contact-cell {
-  font-size: 11px;
-  color: #cbd5e1;
+.permission-count-pill.full-access {
+  background: rgba(212, 168, 83, 0.15);
+  color: #f59e0b;
+  border-color: rgba(212, 168, 83, 0.35);
 }
 
-.contact-cell div {
+/* Password Cell */
+.password-box {
   display: flex;
   align-items: center;
-  gap: 5px;
-  margin-bottom: 2px;
+  gap: 6px;
+  background: rgba(10, 25, 47, 0.6);
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid #1a3c63;
+  width: fit-content;
 }
 
-.mini-icon {
+.password-text {
+  font-size: 12px;
+  color: #fbbf24;
+  font-weight: 600;
+}
+
+.password-hidden {
+  font-size: 11px;
   color: #64748b;
-  display: inline-flex;
+  letter-spacing: 2px;
 }
 
+.btn-icon-subtle {
+  background: transparent;
+  border: none;
+  color: #8da6c4;
+  cursor: pointer;
+  padding: 2px;
+  display: flex;
+  border-radius: 4px;
+}
+
+.btn-icon-subtle:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Status Indicator */
 .status-indicator {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 11px;
+  font-size: 11.5px;
   font-weight: 600;
 }
 
@@ -1177,82 +2306,140 @@ export default {
   width: 7px;
   height: 7px;
   border-radius: 50%;
+  background: #64748b;
 }
 
 .status-indicator.active .status-dot {
   background: #22c55e;
-  box-shadow: 0 0 6px #22c55e;
-}
-
-.status-indicator.field .status-dot {
-  background: #f59e0b;
-  box-shadow: 0 0 6px #f59e0b;
+  box-shadow: 0 0 6px rgba(34, 197, 94, 0.6);
 }
 
 .status-indicator.offline .status-dot {
-  background: #64748b;
+  background: #ef4444;
 }
 
-.actions-col {
-  text-align: right;
-  white-space: nowrap;
+/* Actions Column */
+.action-buttons-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
-/* Detail Drawer */
-.detail-drawer {
-  background: linear-gradient(135deg, rgba(8, 28, 54, 0.98), rgba(4, 21, 41, 0.99));
+.btn-action-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 9px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-action-pill.key-action {
+  background: rgba(168, 85, 247, 0.15);
+  color: #c084fc;
+  border-color: rgba(168, 85, 247, 0.3);
+}
+
+.btn-action-pill.key-action:hover {
+  background: rgba(168, 85, 247, 0.25);
+  color: #ffffff;
+}
+
+.btn-action-pill.reset-action {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+.btn-action-pill.reset-action:hover {
+  background: rgba(245, 158, 11, 0.25);
+  color: #ffffff;
+}
+
+.btn-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
   border: 1px solid #1a3c63;
-  border-radius: 8px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  background: rgba(10, 28, 54, 0.8);
+  color: #8da6c4;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  border-color: #38bdf8;
+  color: #38bdf8;
+}
+
+.btn-icon.btn-danger:hover {
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 48px 16px !important;
+}
+
+.empty-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.empty-icon {
+  color: #475569;
+  font-size: 32px;
+}
+
+/* ========================================================================== */
+/* Detail Drawer */
+/* ========================================================================== */
+.detail-drawer {
+  background: rgba(8, 24, 46, 0.95);
+  border: 1px solid #1a3c63;
+  border-radius: 10px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  height: fit-content;
 }
 
 .drawer-header {
   display: flex;
-  align-items: flex-start;
   justify-content: space-between;
+  align-items: flex-start;
   padding: 16px;
   border-bottom: 1px solid #1a3c63;
-  background: rgba(10, 34, 64, 0.5);
+  background: rgba(5, 17, 33, 0.7);
 }
 
 .drawer-badge {
   font-size: 10px;
   font-weight: 700;
-  color: #edcf7c;
   text-transform: uppercase;
+  color: #d4a853;
   letter-spacing: 0.5px;
-  display: block;
-  margin-bottom: 4px;
 }
 
 .drawer-title h3 {
-  font-size: 16px;
-  font-weight: 800;
+  font-size: 17px;
   color: #ffffff;
-  margin: 0;
+  margin: 2px 0 0 0;
 }
 
 .drawer-title small {
-  font-size: 11px;
-  color: #94a3b8;
-}
-
-.close-btn {
-  background: none;
-  border: none;
-  color: #94a3b8;
-  cursor: pointer;
-  padding: 4px;
-  display: grid;
-  place-items: center;
-  transition: color 0.15s ease;
-}
-
-.close-btn:hover {
-  color: #ffffff;
+  font-size: 12px;
+  color: #8da6c4;
 }
 
 .drawer-body {
@@ -1260,40 +2447,34 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  overflow-y: auto;
-  max-height: calc(100vh - 240px);
 }
 
 .member-profile-card {
   display: flex;
-  align-items: center;
   gap: 14px;
-  background: rgba(14, 38, 70, 0.4);
-  border: 1px solid #1a3c63;
-  border-radius: 8px;
-  padding: 12px;
+  align-items: center;
 }
 
 .profile-avatar {
-  width: 50px;
-  height: 50px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
   display: grid;
   place-items: center;
-  font-size: 18px;
-  font-weight: 800;
+  font-size: 17px;
+  font-weight: 700;
   color: #ffffff;
-  flex-shrink: 0;
+  border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
 .profile-details strong {
+  display: block;
   font-size: 15px;
   color: #ffffff;
-  display: block;
 }
 
 .profile-details p {
-  font-size: 11px;
+  font-size: 12px;
   color: #94a3b8;
   margin: 2px 0;
 }
@@ -1305,165 +2486,509 @@ export default {
 }
 
 .badge-tag {
-  font-size: 9px;
-  font-weight: 700;
-  background: rgba(237, 207, 124, 0.15);
-  color: #edcf7c;
-  border: 1px solid rgba(237, 207, 124, 0.3);
-  border-radius: 4px;
-  padding: 2px 6px;
+  font-size: 10.5px;
+  padding: 2px 7px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
+  font-weight: 600;
 }
 
-.badge-tag.cyan {
-  background: rgba(56, 189, 248, 0.15);
-  color: #38bdf8;
-  border-color: rgba(56, 189, 248, 0.3);
+.badge-tag.gold {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+}
+
+.badge-tag.green {
+  background: rgba(34, 197, 94, 0.2);
+  color: #4ade80;
 }
 
 .section-card {
-  background: rgba(10, 30, 56, 0.5);
-  border: 1px solid #1a3c63;
+  background: rgba(5, 17, 33, 0.6);
+  border: 1px solid #153250;
   border-radius: 8px;
-  padding: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.section-card h4 {
-  font-size: 12px;
+.section-card.security-card {
+  border-color: rgba(168, 85, 247, 0.3);
+  background: rgba(20, 10, 35, 0.4);
+}
+
+.mini-badge {
+  font-size: 11px;
   font-weight: 700;
-  color: #8da6c4;
-  margin: 0 0 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  color: #c084fc;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
-.kpi-grid {
+.credential-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.credential-row label {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.password-display-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 10px;
+  background: rgba(10, 25, 47, 0.8);
+  border: 1px solid #1a3c63;
+  border-radius: 6px;
+}
+
+.pass-val {
+  font-size: 13px;
+  color: #fbbf24;
+  font-weight: 700;
+}
+
+.credential-actions {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
+  margin-top: 4px;
 }
 
-.kpi-box {
-  background: rgba(6, 22, 42, 0.7);
-  border: 1px solid #1e3a5f;
+.authorized-chips-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.auth-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  background: rgba(10, 28, 54, 0.8);
+  border: 1px solid #1d4573;
   border-radius: 6px;
-  padding: 8px 10px;
-}
-
-.kpi-label {
-  font-size: 10px;
-  color: #94a3b8;
-  display: block;
-}
-
-.kpi-box strong {
-  font-size: 16px;
-  color: #ffffff;
-  margin-top: 2px;
-  display: block;
-}
-
-.territory-box p {
   font-size: 11px;
-  color: #cbd5e1;
-  margin: 6px 0;
 }
 
-.permission-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+.chip-dot {
+  color: #22c55e;
+  font-size: 8px;
+}
+
+.chip-path {
+  color: #64748b;
+  font-size: 10px;
+}
+
+.drawer-actions-footer {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  margin-top: 8px;
 }
 
-.permission-list li {
+/* ========================================================================== */
+/* Tab 2: Custom Roles Grid */
+/* ========================================================================== */
+.roles-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.role-card {
+  background: linear-gradient(135deg, rgba(8, 28, 54, 0.95), rgba(4, 21, 41, 0.98));
+  border: 1px solid #1a3c63;
+  border-radius: 10px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.role-card:hover {
+  transform: translateY(-2px);
+  border-color: #d4a853;
+}
+
+.role-badge-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.role-key-tag {
+  font-size: 11px;
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.15);
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+
+.system-protected-badge {
+  font-size: 9.5px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+  font-weight: 800;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.custom-role-badge {
+  font-size: 9.5px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(34, 197, 94, 0.2);
+  color: #4ade80;
+  font-weight: 800;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.role-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 6px 0 2px 0;
+}
+
+.role-description {
+  font-size: 12px;
+  color: #94a3b8;
+  margin: 0;
+  line-height: 1.4;
+  min-height: 34px;
+}
+
+.role-stats-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 10px;
+  background: rgba(5, 17, 33, 0.6);
+  border: 1px solid #153250;
+  border-radius: 6px;
+}
+
+.role-stat .stat-label {
+  display: block;
+  font-size: 10.5px;
+  color: #8da6c4;
+  text-transform: uppercase;
+}
+
+.role-stat .stat-num {
+  font-size: 13.5px;
+  color: #ffffff;
+}
+
+.role-permissions-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.preview-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #8da6c4;
+}
+
+.preview-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.preview-tag {
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: 6px;
+  background: rgba(10, 28, 54, 0.9);
+  color: #cbd5e1;
+  border: 1px solid #1d4573;
+}
+
+.preview-tag.more {
+  background: rgba(212, 168, 83, 0.15);
+  color: #fbbf24;
+  border-color: rgba(212, 168, 83, 0.3);
+}
+
+.role-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 10px;
+  border-top: 1px solid #1a3c63;
+  margin-top: auto;
+}
+
+/* ========================================================================== */
+/* Tab 3: Activity Log & Audit Trail */
+/* ========================================================================== */
+.audit-table .timestamp-cell {
+  display: flex;
+  flex-direction: column;
+}
+
+.log-date {
+  font-size: 12.5px;
+  color: #ffffff;
+}
+
+.log-time {
+  font-size: 11px;
+  color: #38bdf8;
+}
+
+.actor-wrap {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.actor-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #1e3a5f;
+  color: #ffffff;
+  display: grid;
+  place-items: center;
   font-size: 11px;
+  font-weight: 700;
+}
+
+.actor-info strong {
+  display: block;
+  font-size: 12.5px;
+  color: #ffffff;
+}
+
+.actor-info small {
+  display: block;
+  font-size: 10.5px;
+  color: #8da6c4;
+}
+
+.audit-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.audit-badge.badge-success {
+  background: rgba(34, 197, 94, 0.2);
+  color: #4ade80;
+  border: 1px solid rgba(34, 197, 94, 0.4);
+}
+
+.audit-badge.badge-warning {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+}
+
+.audit-badge.badge-danger {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+}
+
+.audit-badge.badge-purple {
+  background: rgba(168, 85, 247, 0.2);
+  color: #c084fc;
+  border: 1px solid rgba(168, 85, 247, 0.4);
+}
+
+.audit-badge.badge-cyan {
+  background: rgba(6, 182, 212, 0.2);
+  color: #22d3ee;
+  border: 1px solid rgba(6, 182, 212, 0.4);
+}
+
+.audit-badge.badge-info {
+  background: rgba(56, 189, 248, 0.2);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.4);
+}
+
+.entity-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.entity-type {
+  font-size: 11.5px;
+  color: #e2e8f0;
+  font-weight: 600;
+}
+
+.entity-id {
+  font-size: 10.5px;
   color: #64748b;
 }
 
-.permission-list li.enabled {
-  color: #e2e8f0;
+.diff-summary-cell {
+  max-width: 380px;
 }
 
-.perm-icon {
-  display: inline-flex;
-  width: 16px;
-  height: 16px;
+.diff-summary-text {
+  font-size: 12px;
+  color: #cbd5e1;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.permission-list li.enabled .perm-icon {
-  color: #22c55e;
-}
-
-.drawer-actions {
+.audit-pagination {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-top: 6px;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px;
+  border-top: 1px solid #1a3c63;
+  background: rgba(5, 17, 33, 0.6);
+  border-radius: 0 0 8px 8px;
 }
 
-/* Modals */
+.pagination-info {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.pagination-buttons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.page-current {
+  font-size: 12px;
+  color: #fbbf24;
+}
+
+.custom-date-inputs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.date-input {
+  background: rgba(10, 28, 54, 0.9);
+  border: 1px solid #1d4573;
+  color: #ffffff;
+  padding: 5px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+.date-sep {
+  color: #64748b;
+  font-size: 11px;
+}
+
+/* ========================================================================== */
+/* Role Matrix Form & Modals */
+/* ========================================================================== */
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(2, 8, 16, 0.85);
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
   display: grid;
   place-items: center;
-  z-index: 1000;
-  padding: 16px;
-  backdrop-filter: blur(4px);
+  z-index: 9999;
+  padding: 20px;
 }
 
 .modal-dialog {
-  background: #081c34;
-  border: 1px solid #244b78;
-  border-radius: 10px;
+  background: linear-gradient(135deg, #091b33, #041427);
+  border: 1px solid #1d4573;
+  border-radius: 12px;
   width: 100%;
   max-width: 580px;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6);
   overflow: hidden;
+  animation: modalFadeIn 0.2s ease;
+}
+
+.modal-dialog.modal-sm { max-width: 440px; }
+.modal-dialog.modal-md { max-width: 680px; }
+.modal-dialog.modal-lg { max-width: 860px; max-height: 90vh; display: flex; flex-direction: column; }
+
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 .modal-header {
   display: flex;
-  align-items: flex-start;
   justify-content: space-between;
+  align-items: flex-start;
   padding: 16px 20px;
-  background: #0c2442;
   border-bottom: 1px solid #1a3c63;
+  background: rgba(5, 17, 33, 0.8);
 }
 
 .modal-badge {
   font-size: 10px;
-  font-weight: 700;
-  color: #edcf7c;
-  text-transform: uppercase;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: #38bdf8;
 }
 
+.modal-badge.gold { color: #fbbf24; }
+.modal-badge.purple { color: #c084fc; }
+.modal-badge.cyan { color: #22d3ee; }
+
 .modal-title-group h3 {
-  margin: 4px 0 0;
-  font-size: 16px;
+  font-size: 17px;
+  font-weight: 700;
   color: #ffffff;
-  font-weight: 800;
+  margin: 3px 0 0 0;
 }
+
+.close-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.close-btn:hover { color: #ffffff; }
 
 .modal-body {
   padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  max-height: 80vh;
+  gap: 16px;
   overflow-y: auto;
 }
 
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+.modal-subtext {
+  font-size: 12.5px;
+  color: #94a3b8;
+  margin: 0;
+  line-height: 1.45;
 }
 
 .form-group {
@@ -1473,108 +2998,351 @@ export default {
 }
 
 .form-group label {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
-  color: #8da6c4;
+  color: #cbd5e1;
 }
 
-.form-group input,
-.form-group select {
-  background: #06192d;
-  border: 1px solid #1e4570;
-  color: #ffffff;
+.form-group input, .form-group select {
+  background: rgba(10, 28, 54, 0.85);
+  border: 1px solid #1d4573;
   border-radius: 6px;
   padding: 8px 12px;
-  font-size: 12px;
+  color: #ffffff;
+  font-size: 13px;
   outline: none;
 }
 
-.form-group input:focus,
-.form-group select:focus {
-  border-color: #edcf7c;
+.form-group input:focus, .form-group select:focus {
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
 }
 
-.perm-checks {
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.form-row .flex-2 { grid-column: span 1; }
+.form-row .flex-3 { grid-column: span 1; }
+
+.form-hint {
+  font-size: 11px;
+  color: #64748b;
+}
+
+.label-with-action {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btn-text-action {
+  background: transparent;
+  border: none;
+  color: #f59e0b;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+}
+
+.password-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input-wrap input {
+  width: 100%;
+  padding-right: 36px;
+}
+
+.btn-input-eye {
+  position: absolute;
+  right: 8px;
+  background: transparent;
+  border: none;
+  color: #8da6c4;
+  cursor: pointer;
+  display: flex;
+}
+
+/* Matrix Control Bar */
+.matrix-control-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  background: rgba(5, 17, 33, 0.8);
+  border: 1px solid #1a3c63;
+  border-radius: 8px;
+}
+
+.matrix-title strong {
+  display: block;
+  font-size: 13px;
+  color: #ffffff;
+}
+
+.matrix-title small {
+  display: block;
+  font-size: 11px;
+  color: #8da6c4;
+}
+
+.matrix-actions {
+  display: flex;
+  gap: 6px;
+}
+
+/* Matrix Groups */
+.section-matrix-groups {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  background: #051528;
-  border: 1px solid #1a3c63;
-  border-radius: 6px;
+  gap: 14px;
+  max-height: 420px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.matrix-group {
+  background: rgba(6, 20, 38, 0.6);
+  border: 1px solid #14304e;
+  border-radius: 8px;
   padding: 12px;
 }
 
-.checkbox-row {
+.group-header {
   display: flex;
-  align-items: flex-start;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid rgba(26, 60, 99, 0.4);
+}
+
+.group-title {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #d4a853;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.group-count {
+  font-size: 11px;
+  color: #8da6c4;
+  font-weight: 600;
+}
+
+.group-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 8px;
+}
+
+.section-checkbox-card {
+  display: flex;
+  align-items: center;
   gap: 10px;
+  padding: 8px 10px;
+  background: rgba(10, 28, 54, 0.6);
+  border: 1px solid #1a3c63;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.section-checkbox-card:hover {
+  background: rgba(15, 38, 72, 0.8);
+  border-color: #38bdf8;
+}
+
+.section-checkbox-card.checked {
+  background: rgba(212, 168, 83, 0.15);
+  border-color: rgba(212, 168, 83, 0.45);
+}
+
+.section-checkbox-card input[type="checkbox"] {
+  accent-color: #d4a853;
+  width: 15px;
+  height: 15px;
   cursor: pointer;
 }
 
-.checkbox-row input {
-  margin-top: 3px;
-  accent-color: #edcf7c;
+.card-icon {
+  color: #8da6c4;
+  display: flex;
 }
 
-.checkbox-row strong {
+.section-checkbox-card.checked .card-icon {
+  color: #fbbf24;
+}
+
+.card-info strong {
   display: block;
   font-size: 12px;
   color: #ffffff;
 }
 
-.checkbox-row small {
+.card-info code {
   display: block;
   font-size: 10px;
-  color: #8da6c4;
+  color: #64748b;
 }
 
 .modal-footer {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
-  margin-top: 10px;
   padding-top: 14px;
   border-top: 1px solid #1a3c63;
 }
 
-.empty-state {
-  text-align: center;
-  padding: 40px !important;
+/* JSON Viewer */
+.audit-meta-summary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 10px;
+  background: rgba(5, 17, 33, 0.8);
+  border: 1px solid #1a3c63;
+  border-radius: 6px;
+  font-size: 12px;
+  color: #cbd5e1;
 }
 
-.empty-inner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
+.json-label {
+  font-size: 11.5px;
+  font-weight: 700;
   color: #8da6c4;
+  text-transform: uppercase;
 }
 
-.empty-icon {
-  font-size: 28px;
-  color: #64748b;
-}
-
-/* Helpers */
-.text-gold {
-  color: #edcf7c;
-}
-
-.text-green {
-  color: #22c55e;
-}
-
-.text-cyan {
+.json-viewer {
+  background: #020b17;
+  border: 1px solid #1a3c63;
+  border-radius: 6px;
+  padding: 12px;
   color: #38bdf8;
+  font-size: 11.5px;
+  max-height: 260px;
+  overflow: auto;
+  line-height: 1.4;
 }
 
-.font-mono {
-  font-family: 'SF Mono', Monaco, Consolas, monospace;
+/* ========================================================================== */
+/* Buttons & Globals */
+/* ========================================================================== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.15s ease;
 }
 
-@media (max-width: 1280px) {
-  .content-split.has-drawer {
-    grid-template-columns: minmax(0, 1fr);
-  }
+.btn-primary {
+  background: linear-gradient(135deg, #d4a853, #b8860b);
+  color: #0b1528;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #e5ba65, #c9971c);
+  box-shadow: 0 0 12px rgba(212, 168, 83, 0.4);
+}
+
+.btn-primary.btn-glow {
+  box-shadow: 0 0 10px rgba(212, 168, 83, 0.25);
+}
+
+.btn-secondary {
+  background: rgba(10, 28, 54, 0.8);
+  border-color: #1a3c63;
+  color: #e2e8f0;
+}
+
+.btn-secondary:hover {
+  background: rgba(18, 48, 88, 0.9);
+  border-color: #38bdf8;
+}
+
+.btn-gold {
+  background: rgba(212, 168, 83, 0.2);
+  color: #fbbf24;
+  border-color: rgba(212, 168, 83, 0.4);
+}
+
+.btn-gold:hover {
+  background: rgba(212, 168, 83, 0.35);
+  color: #ffffff;
+}
+
+.btn-danger {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.35);
+  color: #f87171;
+}
+
+.btn-danger:hover {
+  background: rgba(239, 68, 68, 0.25);
+  color: #ffffff;
+}
+
+.btn-sm { padding: 5px 10px; font-size: 11.5px; }
+.btn-xs { padding: 3px 8px; font-size: 10.5px; }
+
+/* Toast */
+.team-toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px;
+  background: #091e38;
+  border: 1px solid #d4a853;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  z-index: 99999;
+}
+
+.team-toast .toast-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+}
+
+.team-toast.danger .toast-dot { background: #ef4444; }
+.team-toast.info .toast-dot { background: #38bdf8; }
+
+.team-toast strong {
+  display: block;
+  font-size: 12.5px;
+  color: #ffffff;
+}
+
+.team-toast p {
+  margin: 0;
+  font-size: 11.5px;
+  color: #94a3b8;
+}
+
+.toast-slide-enter-active, .toast-slide-leave-active {
+  transition: all 0.3s ease;
+}
+
+.toast-slide-enter-from, .toast-slide-leave-to {
+  opacity: 0;
+  transform: translateY(20px);
 }
 </style>

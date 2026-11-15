@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { apiRouter } from './routes/api.js';
 import { wwRouter } from './routes/wewebAdapter.js';
+import { RbacService } from './services/rbacService.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -34,6 +35,17 @@ app.get('/', (req, res) => {
 // Mount /api/v1
 app.use('/api/v1', apiRouter);
 
+// Auth login endpoint
+app.post('/api/auth/login', async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        const result = await RbacService.authenticate({ email, password });
+        res.json({ ok: true, ...result });
+    } catch (err) {
+        res.status(401).json({ ok: false, error: err.message });
+    }
+});
+
 // Auth session endpoint for frontend WeWeb auth checks
 const systemAuthPayload = {
     session: {
@@ -46,9 +58,9 @@ const systemAuthPayload = {
     },
     user: {
         id: 'u-admin-1',
-        name: 'HushHawk Acquisitions Admin',
+        name: 'Main Administrator',
         email: 'admin@hushhawk.com',
-        role: 'admin',
+        role: 'SUPER_ADMIN',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
     },

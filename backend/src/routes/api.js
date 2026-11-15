@@ -21,6 +21,7 @@ import { OutreachActionsService } from '../services/outreachActionsService.js';
 import { PodioSyncService } from '../services/podioSyncService.js';
 import { CarrierDispatchService } from '../services/carrierDispatchService.js';
 import { renderCrownKey, validateCrownKeyFormat, normalizeParcelMatch } from '../../../packages/crownkey/index.js';
+import { RbacService, ALL_SECTIONS } from '../services/rbacService.js';
 
 export const apiRouter = Router();
 
@@ -5015,43 +5016,63 @@ apiRouter.post('/calendar', (req, res) => {
     }
 });
 
-// --- Team Members (PostgreSQL core.users) ---
+// ============================================================================
+// Team Management, Role-Based Access Control (RBAC) & Audit Trails
+// ============================================================================
+
+// 1. Roles & Section Permissions
+apiRouter.get('/roles', async (req, res) => {
+    try {
+        const roles = await RbacService.getRoles();
+        res.json({ total: roles.length, roles });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+apiRouter.post('/roles', async (req, res) => {
+    try {
+        const { name, description, permissions, actor } = req.body;
+        const role = await RbacService.createRole({ name, description, permissions, actor });
+        res.status(201).json({ success: true, role });
+    } catch (err) {
+        res.status(400).json({ error: err.message });
+    }
+});
+
+apiRouter.put('/roles/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { name, description, permissions, actor } = req.body;
+        const role = await RbacService.updateRole(id, { name, description, permissions, actor });
+        res.json({ success: true, role });
+    } catch (err) {
+        res.status(400).json({ error: err.message });
+    }
+});
+
+apiRouter.delete('/roles/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const actor = req.body?.actor || 'Main Administrator';
+        const result = await RbacService.deleteRole(id, actor);
+        res.json(result);
+    } catch (err) {
+        res.status(400).json({ error: err.message });
+    }
+});
+
+apiRouter.get('/rbac/sections', (req, res) => {
+    res.json({
+        total: ALL_SECTIONS.length,
+        sections: ALL_SECTIONS
+    });
+});
+
+// 2. Team Members Management
 apiRouter.get('/team', async (req, res) => {
     try {
-        let members = [];
-        try {
-            const { rows } = await pool.query(`SELECT * FROM core.users ORDER BY created_at ASC`);
-            if (rows && rows.length > 0) {
-                members = rows.map((u, idx) => {
-                    const name = u.full_name || 'Team Member';
-                    const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-                    const title = u.role === 'SUPER_ADMIN' ? 'Chief Executive Officer / Admin' : (u.role === 'MANAGER' ? 'Acquisitions Director' : 'Acquisitions Specialist');
-                    return {
-                        id: u.user_id || ('tm-' + idx),
-                        name,
-                        initials,
-                        avatarBg: 'linear-gradient(135deg, #38bdf8, #0284c7)',
-                        title,
-                        department: u.role === 'SUPER_ADMIN' ? 'Executive Leadership' : 'Acquisitions',
-                        accessLevel: u.role,
-                        tier: 'Tier 1 Specialist',
-                        email: u.email || 'member@hushhawk.com',
-                        phone: '(904) 555-01' + String(idx).padStart(2, '0'),
-                        status: u.status === 'ACTIVE' ? 'Active' : 'Standby',
-                        statusClass: 'status-active',
-                        dealsAssigned: 3,
-                        volumeMTD: '$240,000',
-                        conversionRate: '88%',
-                        created_at: u.created_at
-                    };
-                });
-            }
-        } catch (dbErr) {
-            console.warn('[Team PG Warn]', dbErr.message);
-        }
-        if (!members.length) {
-            members = db.data.crm.team_members || [];
-        }
+        const members = await RbacService.getTeamMembers();
         res.json({ total: members.length, members });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -5060,78 +5081,90 @@ apiRouter.get('/team', async (req, res) => {
 
 apiRouter.post('/team', async (req, res) => {
     try {
-        const { name, title, department, email, phone, accessLevel } = req.body;
-        if (!name) return res.status(400).json({ error: 'Member name is required' });
-
-        const memberId = crypto.randomUUID();
-        const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-
-        const newMember = {
-            id: memberId,
+        const { name, email, phone, role, password, permissions, actor } = req.body;
+        const newMember = await RbacService.createTeamMember({
             name,
-            initials,
-            avatarBg: 'linear-gradient(135deg, #38bdf8, #0284c7)',
-            title: title || 'Acquisitions Specialist',
-            department: department || 'Acquisitions',
-            accessLevel: accessLevel || 'Standard User',
-            tier: 'Tier 1 Specialist',
-            email: email || 'member@hushhawk.com',
-            phone: phone || '(904) 555-0100',
-            status: 'Active',
-            statusClass: 'status-active',
-            dealsAssigned: 0,
-            volumeMTD: '$0',
-            conversionRate: '0%',
-            created_at: new Date().toISOString()
-        };
-
-        // Insert into PostgreSQL core.users
-        try {
-            await pool.query(
-                `INSERT INTO core.users (user_id, email, full_name, role, status, created_at)
-                 VALUES ($1, $2, $3, $4, 'ACTIVE', NOW())
-                 ON CONFLICT (email) DO UPDATE SET full_name = EXCLUDED.full_name, role = EXCLUDED.role`,
-                [memberId, email || `${name.toLowerCase().replace(/\s+/g, '.')}@hushhawk.com`, name, accessLevel || 'MANAGER']
-            );
-        } catch (pgErr) {
-            console.warn('[User PG Warn]', pgErr.message);
-        }
-
-        if (!db.data.crm.team_members) db.data.crm.team_members = [];
-        db.data.crm.team_members.unshift(newMember);
-        db.persist();
-
+            email,
+            phone,
+            role,
+            password,
+            permissions,
+            actor
+        });
         res.status(201).json(newMember);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        res.status(400).json({ error: err.message });
     }
 });
 
 apiRouter.patch('/team/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const updates = req.body || {};
+        const updated = await RbacService.updateTeamMember(id, req.body);
+        res.json({ success: true, member: updated });
+    } catch (err) {
+        res.status(400).json({ error: err.message });
+    }
+});
 
-        try {
-            await pool.query(
-                `UPDATE core.users 
-                 SET role = COALESCE($1, role),
-                     status = COALESCE($2, status)
-                 WHERE user_id = $3 OR email = $3`,
-                [updates.accessLevel || updates.role, updates.status ? updates.status.toUpperCase() : null, id]
-            );
-        } catch (pgErr) {
-            console.warn('[Team Update PG Warn]', pgErr.message);
-        }
+apiRouter.put('/team/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updated = await RbacService.updateTeamMember(id, req.body);
+        res.json({ success: true, member: updated });
+    } catch (err) {
+        res.status(400).json({ error: err.message });
+    }
+});
 
-        const members = db.data.crm.team_members || [];
-        const member = members.find(m => m.id === id);
-        if (member) {
-            Object.assign(member, updates);
-            db.persist();
-            return res.json(member);
-        }
-        res.json({ success: true, id, ...updates });
+// Password Change & Reset Endpoints
+apiRouter.post('/team/:id/password', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { password, autoGenerate, actor } = req.body;
+        const result = await RbacService.updatePassword(id, { password, autoGenerate, actor });
+        res.json(result);
+    } catch (err) {
+        res.status(400).json({ error: err.message });
+    }
+});
+
+apiRouter.delete('/team/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const actor = req.body?.actor || 'Main Administrator';
+        const result = await RbacService.deleteTeamMember(id, actor);
+        res.json(result);
+    } catch (err) {
+        res.status(400).json({ error: err.message });
+    }
+});
+
+// 3. Authentication Endpoint
+apiRouter.post('/auth/login', async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        const result = await RbacService.authenticate({ email, password });
+        res.json({ ok: true, ...result });
+    } catch (err) {
+        res.status(401).json({ ok: false, error: err.message });
+    }
+});
+
+// 4. Activity Logs & Audit Trail (Admin Only)
+apiRouter.get('/audit/logs', async (req, res) => {
+    try {
+        const result = await RbacService.getActivityLogs(req.query);
+        res.json({ ok: true, ...result });
+    } catch (err) {
+        res.status(500).json({ ok: false, error: err.message });
+    }
+});
+
+apiRouter.post('/audit/log', async (req, res) => {
+    try {
+        await RbacService.logAudit(req.body);
+        res.json({ success: true, loggedAt: new Date().toISOString() });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

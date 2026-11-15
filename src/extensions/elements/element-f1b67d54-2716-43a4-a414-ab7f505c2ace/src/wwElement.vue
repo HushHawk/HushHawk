@@ -25,8 +25,8 @@
           {{ item.name }}
         </a>
 
-        <details class="more-workspaces" open>
-          <summary>More Workspaces</summary>
+        <details v-if="secondaryNavigation.length > 0" class="more-workspaces" open>
+          <summary>More Workspaces ({{ secondaryNavigation.length }})</summary>
           <a
             v-for="item in secondaryNavigation"
             :key="item.path"
@@ -161,20 +161,46 @@
               <span class="identity-logo" v-html="icons.logo"></span>
               <div class="identity-text">
                 <strong>{{ activeUserName }}</strong>
-                <small>{{ activeUserRole }}</small>
+                <small>{{ activeUserRoleName }}</small>
               </div>
               <span class="identity-caret">⌄</span>
             </button>
 
-            <!-- User Dropdown Menu with One-Click Logout -->
+            <!-- User Dropdown Menu with One-Click Logout & Role Switcher -->
             <div v-if="isUserMenuOpen" class="user-menu-dropdown" @click.stop>
               <div class="user-menu-header">
-                <span class="user-menu-badge">MAIN ADMIN</span>
+                <span class="user-menu-badge" :class="{ 'restricted-mode': !activeUserIsAdmin }">
+                  {{ activeUserIsAdmin ? 'SUPER ADMIN' : 'ROLE RESTRICTED' }}
+                </span>
                 <strong class="user-menu-name">{{ activeUserName }}</strong>
                 <span class="user-menu-email">{{ activeUserEmail }}</span>
                 <span class="user-menu-status">
-                  <span class="status-indicator">●</span> SESSION ACTIVE
+                  <span class="status-indicator">●</span> {{ activeUserRoleName }} ({{ authorizedNavigation.length }} Workspaces)
                 </span>
+              </div>
+
+              <!-- Quick Switch Role / Account Tester -->
+              <div v-if="demoTeamAccounts && demoTeamAccounts.length > 0" class="user-switcher-section">
+                <span class="switcher-title">SWITCH / TEST ACTIVE ROLE ACCESS</span>
+                <div class="switcher-list">
+                  <button 
+                    v-for="u in demoTeamAccounts.slice(0, 5)" 
+                    :key="u.email" 
+                    type="button" 
+                    class="switcher-item-btn" 
+                    :class="{ active: activeUserEmail === u.email }"
+                    @click="switchActiveAccount(u)"
+                    :title="`Switch session to ${u.name} (${u.roleName || u.role})`"
+                  >
+                    <span class="switch-avatar" :style="{ background: u.avatarBg || '#1e3a5f' }">
+                      {{ u.initials || 'TM' }}
+                    </span>
+                    <div class="switch-info">
+                      <strong>{{ u.name }}</strong>
+                      <small>{{ u.roleName || u.role }} · {{ (u.allowedCount || u.permissions?.length || 23) }} sections</small>
+                    </div>
+                  </button>
+                </div>
               </div>
 
               <div class="user-menu-divider"></div>
@@ -233,7 +259,36 @@
 
       <!-- Active Section View Component with Smooth Transitions -->
       <div class="workspace-content">
-        <transition name="hushhawk-view-fade" mode="out-in">
+        <!-- Restricted Section Alert if user lacks clearance -->
+        <div v-if="!isCurrentSectionAuthorized" class="access-restricted-card">
+          <div class="restricted-shield" v-html="icons.shield"></div>
+          <h2>Workspace Access Restricted</h2>
+          <span class="restricted-badge">ROLE AUTHORIZATION REQUIRED</span>
+          <p class="restricted-message">
+            Your current assigned role <strong>{{ activeUserRoleName }}</strong> does not have clearance to view or execute operations inside the <strong>{{ currentSectionMeta.title }}</strong> workspace.
+          </p>
+          <div class="restricted-meta-box">
+            <div class="meta-item">
+              <span class="meta-label">Active User</span>
+              <strong>{{ activeUserName }} ({{ activeUserEmail }})</strong>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Assigned Role</span>
+              <strong class="text-gold">{{ activeUserRoleName }}</strong>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Permitted Workspaces</span>
+              <strong>{{ authorizedNavigation.length }} of {{ navigation.length }} Workspaces</strong>
+            </div>
+          </div>
+          <div class="restricted-actions">
+            <button class="btn-gold" @click="handleNav(firstAuthorizedPath, $event)">
+              ← Return to Authorized Workspace ({{ firstAuthorizedName }})
+            </button>
+          </div>
+        </div>
+
+        <transition v-else name="hushhawk-view-fade" mode="out-in">
           <component
             :is="currentViewComponent"
             :key="activeSectionKey"
@@ -333,6 +388,7 @@ export default {
       isNotifOpen: false,
       isUserMenuOpen: false,
       activeUser: null,
+      demoTeamAccounts: [],
       currentTime: '09:42 AM',
       timeInterval: null,
       selectedSection: null,
@@ -351,16 +407,61 @@ export default {
       return this.activeUser?.name || 'Main Administrator';
     },
     activeUserRole() {
-      return this.activeUser?.role || 'Superadmin & Managing Partner';
+      return this.activeUser?.role || 'SUPER_ADMIN';
+    },
+    activeUserRoleName() {
+      if (this.activeUser?.roleName) return this.activeUser.roleName;
+      if (this.activeUser?.role === 'SUPER_ADMIN' || !this.activeUser) return 'Superadmin & Managing Partner';
+      return this.activeUser?.role || 'Specialist';
     },
     activeUserEmail() {
       return this.activeUser?.email || 'admin@hushhawk.com';
     },
+    activeUserIsAdmin() {
+      if (!this.activeUser) return true;
+      if (this.activeUser.isAdmin === true) return true;
+      if (this.activeUser.role === 'SUPER_ADMIN' || this.activeUser.email === 'admin@hushhawk.com') return true;
+      return false;
+    },
+    authorizedNavigation() {
+      // Super Admin has clearance for all 23 workspaces
+      if (this.activeUserIsAdmin) {
+        return this.navigation;
+      }
+      const perms = Array.isArray(this.activeUser?.permissions) ? this.activeUser.permissions : [];
+      if (!perms.length) {
+        return this.navigation;
+      }
+      return this.navigation.filter(item => {
+        const key = item.path.replace('/', '');
+        return perms.includes(item.path) || perms.includes(key);
+      });
+    },
     primaryNavigation() {
-      return this.navigation.slice(0, 11);
+      const auth = this.authorizedNavigation;
+      if (auth.length <= 11) return auth;
+      return auth.slice(0, 10);
     },
     secondaryNavigation() {
-      return this.navigation.slice(11);
+      const auth = this.authorizedNavigation;
+      if (auth.length <= 11) return [];
+      return auth.slice(10);
+    },
+    isCurrentSectionAuthorized() {
+      if (this.activeUserIsAdmin) return true;
+      const perms = this.activeUser?.permissions;
+      if (!Array.isArray(perms) || !perms.length) return true;
+      const path = this.activePath;
+      const key = this.activeSectionKey;
+      return perms.includes(path) || perms.includes('/' + key) || perms.includes(key);
+    },
+    firstAuthorizedPath() {
+      const auth = this.authorizedNavigation;
+      return (auth && auth.length > 0) ? auth[0].path : '/home';
+    },
+    firstAuthorizedName() {
+      const auth = this.authorizedNavigation;
+      return (auth && auth.length > 0) ? auth[0].name : 'Dashboard';
     },
     activeSectionKey() {
       // 0. Explicit in-app user navigation state
@@ -556,6 +657,7 @@ export default {
     notifStore.initNotificationPolling();
     this.updateClock();
     this.timeInterval = setInterval(this.updateClock, 30000);
+    this.loadDemoAccounts();
     this.clickOutsideHandler = (e) => {
       if (!e.target.closest('.quick-add-wrap')) {
         this.isQuickAddOpen = false;
@@ -618,6 +720,31 @@ export default {
         minute: '2-digit',
         hour12: true
       });
+    },
+    async loadDemoAccounts() {
+      try {
+        const res = await fetch('/api/v1/team');
+        const data = await res.json();
+        if (data && data.members) {
+          this.demoTeamAccounts = data.members;
+        }
+      } catch (e) {
+        console.warn('Failed to load team accounts:', e.message);
+      }
+    },
+    switchActiveAccount(account) {
+      this.activeUser = account;
+      if (typeof window !== 'undefined') {
+        try {
+          window.sessionStorage.setItem('hushhawk_session', JSON.stringify(account));
+          window.localStorage.setItem('hushhawk_session', JSON.stringify(account));
+        } catch (e) {}
+      }
+      this.isUserMenuOpen = false;
+      this.showToast('Role Switched', `Active session switched to ${account.name} (${account.roleName || account.role})`, 'success');
+      if (!this.isCurrentSectionAuthorized) {
+        this.handleNav(this.firstAuthorizedPath);
+      }
     },
     handleNav(path, e) {
       this.isQuickAddOpen = false;
@@ -1964,5 +2091,183 @@ export default {
   .btn-gold .caret-icon {
     display: none !important;
   }
+}
+
+/* ========================================================================== */
+/* Access Restricted Institutional Card */
+/* ========================================================================== */
+.access-restricted-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 60px 24px;
+  max-width: 680px;
+  margin: 40px auto;
+  background: linear-gradient(135deg, rgba(14, 30, 54, 0.95), rgba(7, 20, 38, 0.98));
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  border-radius: 12px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 24px rgba(245, 158, 11, 0.15);
+}
+
+.restricted-shield {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: rgba(245, 158, 11, 0.15);
+  border: 2px solid rgba(245, 158, 11, 0.4);
+  color: #fbbf24;
+  margin-bottom: 18px;
+}
+
+.access-restricted-card h2 {
+  font-size: 24px;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.5px;
+}
+
+.restricted-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  margin-bottom: 14px;
+}
+
+.restricted-message {
+  font-size: 14px;
+  color: #cbd5e1;
+  max-width: 520px;
+  line-height: 1.5;
+  margin: 0 0 20px 0;
+}
+
+.restricted-meta-box {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  width: 100%;
+  max-width: 480px;
+  padding: 14px;
+  background: rgba(5, 17, 33, 0.8);
+  border: 1px solid #1a3c63;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  text-align: left;
+}
+
+.restricted-meta-box .meta-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12.5px;
+}
+
+.restricted-meta-box .meta-label {
+  color: #8da6c4;
+}
+
+.restricted-actions {
+  display: flex;
+  gap: 12px;
+}
+
+/* User Switcher Dropdown Styling */
+.user-menu-badge.restricted-mode {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.35);
+}
+
+.user-switcher-section {
+  padding: 10px 14px;
+  background: rgba(5, 17, 33, 0.6);
+  border-top: 1px solid #1a3c63;
+  border-bottom: 1px solid #1a3c63;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.switcher-title {
+  font-size: 9.5px;
+  font-weight: 800;
+  color: #8da6c4;
+  letter-spacing: 0.5px;
+}
+
+.switcher-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.switcher-item-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: rgba(10, 28, 54, 0.5);
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s ease;
+  width: 100%;
+}
+
+.switcher-item-btn:hover {
+  background: rgba(30, 58, 95, 0.6);
+  border-color: #38bdf8;
+}
+
+.switcher-item-btn.active {
+  background: rgba(212, 168, 83, 0.18);
+  border-color: rgba(212, 168, 83, 0.4);
+}
+
+.switch-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  font-size: 10px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.switch-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.switch-info strong {
+  font-size: 12px;
+  color: #f1f5f9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.switch-info small {
+  font-size: 10px;
+  color: #94a3b8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>
