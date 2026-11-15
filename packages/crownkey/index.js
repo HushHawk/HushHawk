@@ -116,14 +116,14 @@ export function validateCrownKeyFormat(key) {
     const mainPart = parts[0];
     const sourcePart = parts[1] || null;
 
-    // Must start with 3-character county code followed by hyphen
-    const countyMatch = mainPart.match(/^([A-Z]{3})-(.+)$/);
+    // Must start with 3 to 6-character county code (e.g. DUV-, CLAY-, FLAG-, STJ-) followed by hyphen
+    const countyMatch = mainPart.match(/^([A-Z]{3,6})-(.+)$/);
     if (!countyMatch) {
-        return { valid: false, caseType: 0, error: 'Must begin with 3-letter county code, e.g. DUV-' };
+        return { valid: false, caseType: 0, error: 'Must begin with registered county code, e.g. DUV-, CLAY-' };
     }
 
     // Check if ends with -PILLAR-NNN
-    const eventMatch = mainPart.match(/^([A-Z]{3})-(.+)-([A-Z]{2,8})-(\d{3})$/);
+    const eventMatch = mainPart.match(/^([A-Z]{3,6})-(.+)-([A-Z]{2,8})-(\d{3})$/);
 
     if (eventMatch && sourcePart) {
         return { valid: true, caseType: 3 };

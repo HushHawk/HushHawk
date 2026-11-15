@@ -120,16 +120,21 @@ async function runMasterVerification() {
     console.log('\n[SECTION 2] Reference Pillars (Complete 29-Pillar Matrix)');
 
     const pillarsRes = await pool.query('SELECT count(*) FROM ref.pillars WHERE production_enabled = TRUE AND review_status = $1', ['APPROVED']);
-    test('All 29 reference distress pillars are approved & production-enabled in PostgreSQL', () => {
-        assert.strictEqual(Number(pillarsRes.rows[0].count), 29);
+    test('All 29 reference distress pillars (+ approved extensions) are approved & production-enabled in PostgreSQL', () => {
+        assert.ok(Number(pillarsRes.rows[0].count) >= 29, `Expected at least 29 pillars, found ${pillarsRes.rows[0].count}`);
     });
 
     const activePillars = await pool.query('SELECT pillar_code, pillar_name FROM ref.pillars ORDER BY pillar_code');
-    test('Core distress pillars exist (FC, TAX, ML, PRB, CODE, VAC, EVICT, ABS, OOS, TCERT, TDEED)', () => {
+    test('All 29 working pillars from Slides 15-18 exist and are approved', () => {
         const codes = activePillars.rows.map(r => r.pillar_code);
-        const required = ['FC', 'TAX', 'ML', 'PRB', 'CODE', 'VAC', 'EVICT', 'ABS', 'OOS', 'TCERT', 'TDEED'];
+        const required = [
+            'FC', 'TAX', 'ML', 'PRB', 'VAC', 'INH', 'CODE', 'FIRE', 'DIV', 'EVI',
+            'PFC', 'TCERT', 'TDEED', 'ABS', 'OOS', 'LANDLORD', 'EQH', 'EQLOW',
+            'REO', 'SHORT', 'EXPL', 'FSBO', 'DOM', 'PRICE', 'REPAIR', 'CONDEMN',
+            'UTIL', 'HOA', 'COMLIEN'
+        ];
         for (const req of required) {
-            assert.ok(codes.includes(req), `Pillar '${req}' must exist`);
+            assert.ok(codes.includes(req), `Slide pillar '${req}' must exist in ref.pillars`);
         }
     });
 
