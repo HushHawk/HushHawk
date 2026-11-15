@@ -125,6 +125,10 @@ export class PodioService {
             throw new Error(`Podio Webhook Validation Failed [HTTP ${res.status}]: ${err}`);
         }
 
+        if (res.status === 204) {
+            return { ok: true, status: 'validated' };
+        }
+
         return await res.json();
     }
 

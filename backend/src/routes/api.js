@@ -2044,7 +2044,40 @@ apiRouter.post('/webhooks/podio', async (req, res) => {
                 });
             }
 
-            // B. If Item is in LEADS App (30087410) -> Ingest Lead into PostgreSQL
+            // B. If Item is in CASH BUYERS App (30087423) -> Ingest Cash Buyer
+            if (itemAppId === '30087423' || liveItem?.app?.url_label === 'cash-buyers') {
+                const entityName = getF('Company / Entity Name')?.value || liveItem?.title || 'Cash Buyer';
+                const phone = getF('Phone #(s)')?.value || '+13866273499';
+                const email = getF('Email ID(s)')?.value || 'buyer@elitehomes1.com';
+                const criteria = getF('Criteria')?.value || '';
+                const propType = getF('Type Of Property Buyer is Looking For?')?.value?.text || 'Single Family';
+
+                await pool.query(`
+                    INSERT INTO crm.cash_buyers (id, full_name, company, phone, email, buy_box, status, created_at, updated_at)
+                    VALUES ($1, $2, $3, $4, $5, $6, 'ACTIVE', NOW(), NOW())
+                    ON CONFLICT (id) DO UPDATE SET full_name = EXCLUDED.full_name, phone = EXCLUDED.phone, email = EXCLUDED.email
+                `, ['b-' + externalItemId, entityName, entityName, phone, email, `${propType} · ${criteria}`]);
+
+                return res.status(200).json({ ok: true, type: 'BUYER', item_id: externalItemId, status: 'INGESTED' });
+            }
+
+            // C. If Item is in CONTACTS App (30087414) -> Ingest Contact
+            if (itemAppId === '30087414' || liveItem?.app?.url_label === 'contacts') {
+                const contactName = liveItem?.title || 'Contact';
+                const phone = getF('Phone #(s)')?.value || '+13866273499';
+                const email = getF('Email ID(s)')?.value || 'contact@elitehomes1.com';
+                const company = getF('Company')?.value || '';
+
+                await pool.query(`
+                    INSERT INTO crm.seller_contacts (contact_id, name, phone, email, company, notes, status, created_at, updated_at)
+                    VALUES ($1, $2, $3, $4, $5, 'Ingested via Podio Webhook', 'Active', NOW(), NOW())
+                    ON CONFLICT (contact_id) DO UPDATE SET name = EXCLUDED.name, phone = EXCLUDED.phone, email = EXCLUDED.email
+                `, ['c-' + externalItemId, contactName, phone, email, company]);
+
+                return res.status(200).json({ ok: true, type: 'CONTACT', item_id: externalItemId, status: 'INGESTED' });
+            }
+
+            // D. If Item is in LEADS App (30087410) -> Ingest Lead into PostgreSQL
             const fName = getF('First Name')?.value || (liveItem?.title ? liveItem.title.split(' ')[0] : 'Lead');
             const lName = getF('Last / Sur Name')?.value || (liveItem?.title ? liveItem.title.split(' ').slice(1).join(' ') : 'Contact');
             const sellerName = getF('Full Name')?.value || liveItem?.title || `${fName} ${lName}`;
