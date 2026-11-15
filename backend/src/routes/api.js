@@ -2085,7 +2085,16 @@ apiRouter.post('/webhooks/podio', async (req, res) => {
             const email = getF('Email ID(s)')?.value || 'team@elitehomes1.com';
             const notes = getF('Notes')?.value || `Ingested via Podio Webhook (Item #${externalItemId})`;
             const statusObj = getF('Status')?.value;
-            const statusText = (typeof statusObj === 'object' ? statusObj?.text : statusObj) || 'New Untouched';
+            const rawStatus = (typeof statusObj === 'object' ? statusObj?.text : statusObj) || 'New Untouched';
+            let normalizedStatus = 'NEW';
+            const sUpper = String(rawStatus).toUpperCase();
+            if (sUpper.includes('CONTACT') || sUpper.includes('LEFT MESSAGE')) normalizedStatus = 'CONTACTED';
+            else if (sUpper.includes('APPOINTMENT') || sUpper.includes('QUALIF')) normalizedStatus = 'QUALIFIED';
+            else if (sUpper.includes('OFFER') || sUpper.includes('CONTRACT/OFFER')) normalizedStatus = 'OFFER';
+            else if (sUpper.includes('CONTRACT SIGNED') || sUpper.includes('WHITEBOARD')) normalizedStatus = 'CONTRACT';
+            else if (sUpper.includes('CLOSED') || sUpper.includes('DEPOSIT')) normalizedStatus = 'CLOSED';
+            else if (sUpper.includes('FOLLOW')) normalizedStatus = 'FOLLOW_UP';
+            else if (sUpper.includes('NO RESPONSE') || sUpper.includes('REALTOR') || sUpper.includes('LOST')) normalizedStatus = 'LOST';
 
             // Create lead in PostgreSQL
             const personId = crypto.randomUUID();
@@ -2102,7 +2111,7 @@ apiRouter.post('/webhooks/podio', async (req, res) => {
                 INSERT INTO core.leads (lead_id, first_source_code, source_detail, property_id, person_id, status, priority_score, created_at, updated_at)
                 VALUES ($1, 'PODIO', $2, $3, $4, $5, 80, NOW(), NOW())
                 ON CONFLICT DO NOTHING
-            `, [leadId, `Podio Webhook Ingest (Item #${externalItemId})`, propertyId, personId, statusText]);
+            `, [leadId, `Podio Webhook Ingest (Item #${externalItemId})`, propertyId, personId, normalizedStatus]);
 
             return res.status(201).json({
                 ok: true,
