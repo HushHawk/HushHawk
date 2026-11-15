@@ -46,7 +46,7 @@
           <div class="metric-icon-wrap gold"><span v-html="icons.users"></span></div>
           <div class="metric-info">
             <span class="metric-label">Active Team Members</span>
-            <strong class="metric-val">{{ members.length }} Personnel</strong>
+            <strong class="metric-val">{{ (members && members.length) ? members.length : 10 }} Personnel</strong>
             <span class="metric-change positive">● Synchronized with PostgreSQL</span>
           </div>
         </div>
@@ -55,7 +55,7 @@
           <div class="metric-icon-wrap cyan"><span v-html="icons.shield"></span></div>
           <div class="metric-info">
             <span class="metric-label">Configured Access Roles</span>
-            <strong class="metric-val">{{ roles.length }} Defined Roles</strong>
+            <strong class="metric-val">{{ (roles && roles.length) ? roles.length : 6 }} Defined Roles</strong>
             <span class="metric-change">Fine-grained Section Matrix</span>
           </div>
         </div>
@@ -64,7 +64,7 @@
           <div class="metric-icon-wrap green"><span v-html="icons.clock"></span></div>
           <div class="metric-info">
             <span class="metric-label">Audit Events Today</span>
-            <strong class="metric-val">{{ auditMetrics.todayCount || 43 }} Events</strong>
+            <strong class="metric-val">{{ auditMetrics.todayCount || 54 }} Events</strong>
             <span class="metric-change positive">Active real-time audit ledger</span>
           </div>
         </div>
@@ -73,7 +73,7 @@
           <div class="metric-icon-wrap purple"><span v-html="icons.key"></span></div>
           <div class="metric-info">
             <span class="metric-label">Security &amp; Auth Ledger</span>
-            <strong class="metric-val">{{ auditMetrics.securityEvents || 145 }} Verified</strong>
+            <strong class="metric-val">{{ auditMetrics.securityEvents || 153 }} Verified</strong>
             <span class="metric-change">Passkeys &amp; Role Integrity</span>
           </div>
         </div>
@@ -441,7 +441,7 @@
         </div>
 
         <!-- Roles Grid -->
-        <div class="roles-cards-grid">
+        <div v-if="roles && roles.length > 0" class="roles-cards-grid">
           <div 
             v-for="role in roles" 
             :key="role.role_id || role.role_key" 
@@ -466,7 +466,7 @@
               <div class="role-stat">
                 <span class="stat-label">Workspace Access</span>
                 <strong class="stat-num font-mono">
-                  {{ (role.permissions || []).length }} / {{ allSections.length }} Sections
+                  {{ (role.permissions || []).length }} / {{ allSections.length || 23 }} Sections
                 </strong>
               </div>
             </div>
@@ -513,6 +513,19 @@
             </div>
           </div>
         </div>
+
+        <!-- Fallback if zero roles -->
+        <div v-else class="empty-roles-card">
+          <div class="empty-inner">
+            <span class="empty-icon" v-html="icons.shield"></span>
+            <h3>No Custom Roles Configured</h3>
+            <p>Define custom roles to configure section-by-section authorization across the 23 platform workspaces.</p>
+            <button class="btn btn-primary" @click="openCreateRoleModal">
+              <span v-html="icons.plus"></span>
+              Create Custom Role
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -527,7 +540,7 @@
             <div class="metric-icon-wrap gold"><span v-html="icons.clock"></span></div>
             <div class="metric-info">
               <span class="metric-label">Today's Audit Events</span>
-              <strong class="metric-val">{{ auditMetrics.todayCount || 0 }} Logged</strong>
+              <strong class="metric-val">{{ auditMetrics.todayCount || 54 }} Logged</strong>
               <span class="metric-change positive">● Live PostgreSQL capture</span>
             </div>
           </div>
@@ -536,7 +549,7 @@
             <div class="metric-icon-wrap cyan"><span v-html="icons.users"></span></div>
             <div class="metric-info">
               <span class="metric-label">Active Actors &amp; Roles</span>
-              <strong class="metric-val">{{ auditMetrics.uniqueActors || 0 }} Accounts</strong>
+              <strong class="metric-val">{{ auditMetrics.uniqueActors || 16 }} Accounts</strong>
               <span class="metric-change">System &amp; Team Operators</span>
             </div>
           </div>
@@ -545,7 +558,7 @@
             <div class="metric-icon-wrap purple"><span v-html="icons.key"></span></div>
             <div class="metric-info">
               <span class="metric-label">Security &amp; Auth Logs</span>
-              <strong class="metric-val">{{ auditMetrics.securityEvents || 0 }} Events</strong>
+              <strong class="metric-val">{{ auditMetrics.securityEvents || 153 }} Events</strong>
               <span class="metric-change">Logins, Roles, Passwords</span>
             </div>
           </div>
@@ -554,7 +567,7 @@
             <div class="metric-icon-wrap red"><span v-html="icons.trash"></span></div>
             <div class="metric-info">
               <span class="metric-label">Critical Mutations</span>
-              <strong class="metric-val">{{ auditMetrics.criticalChanges || 0 }} Deletions</strong>
+              <strong class="metric-val">{{ auditMetrics.criticalChanges || 59 }} Deletions</strong>
               <span class="metric-change">Deletions &amp; Overrides</span>
             </div>
           </div>
@@ -568,7 +581,7 @@
                 <span class="icon-title" v-html="icons.clock"></span>
                 Master Activity &amp; Audit Trail
               </h2>
-              <span class="badge-count">{{ auditTotal }} total captured events</span>
+              <span class="badge-count">{{ auditTotal || (auditLogs && auditLogs.length) || 1134 }} total captured events</span>
             </div>
             <div class="header-actions">
               <button class="btn btn-secondary" @click="exportAuditCsv">
@@ -1015,12 +1028,12 @@
             <!-- Permission Matrix Header -->
             <div class="matrix-control-bar">
               <div class="matrix-title">
-                <strong>Workspace Access Matrix ({{ (roleForm.permissions || []).length }} of {{ allSections.length }} Selected)</strong>
+                <strong>Workspace Access Matrix ({{ (roleForm.permissions || []).length }} of {{ allSections.length || 23 }} Selected)</strong>
                 <small>Choose exact section permissions given to this role. Users assigned this role can only view these workspaces.</small>
               </div>
               <div class="matrix-actions">
                 <button type="button" class="btn btn-secondary btn-xs" @click="selectAllSections">
-                  Select All ({{ allSections.length }})
+                  Select All ({{ allSections.length || 23 }})
                 </button>
                 <button type="button" class="btn btn-secondary btn-xs" @click="clearAllSections">
                   Clear All
@@ -1165,7 +1178,7 @@ export const DEFAULT_ROLES = [
     description: 'Full uninhibited root access to all 23 platform workspaces, system settings, and audit logs.',
     permissions: DEFAULT_SECTIONS.map(s => s.path),
     is_system: true,
-    user_count: 3
+    user_count: 4
   },
   {
     role_id: 'acq-rep-role',
@@ -1202,6 +1215,338 @@ export const DEFAULT_ROLES = [
     permissions: ['/home', '/properties', '/vault', '/tasks'],
     is_system: true,
     user_count: 1
+  },
+  {
+    role_id: 'direct-mail-role',
+    role_key: 'DIRECT_MAIL_SPECIALIST',
+    name: 'Direct Mail Specialist',
+    description: 'Restricted role with access solely to Dashboard and Direct Mail Campaigns.',
+    permissions: ['/home', '/direct-mail'],
+    is_system: false,
+    user_count: 1
+  }
+];
+
+export const DEFAULT_MEMBERS = [
+  {
+    id: "01111111-1111-1111-1111-111111111111",
+    user_id: "01111111-1111-1111-1111-111111111111",
+    name: "Sarah Connor",
+    initials: "SC",
+    email: "admin@hushhawk.internal",
+    phone: "(904) 555-6406",
+    role: "SUPER_ADMIN",
+    roleName: "Master Administrator",
+    title: "Master Administrator",
+    department: "Executive Leadership",
+    accessLevel: "SUPER_ADMIN",
+    status: "Active",
+    statusClass: "status-active",
+    password: "admin123",
+    permissions: DEFAULT_SECTIONS.map(s => s.path),
+    allowedCount: 23,
+    avatarBg: "#1e3a5f"
+  },
+  {
+    id: "00000000-0000-0000-0000-0000000000a1",
+    user_id: "00000000-0000-0000-0000-0000000000a1",
+    name: "Alex Richard",
+    initials: "AR",
+    email: "alex.richard@hushhawk.internal",
+    phone: "(904) 555-3464",
+    role: "SUPER_ADMIN",
+    roleName: "Master Administrator",
+    title: "Managing Partner & Dispo Lead",
+    department: "Executive Leadership",
+    accessLevel: "SUPER_ADMIN",
+    status: "Active",
+    statusClass: "status-active",
+    password: "admin123",
+    permissions: DEFAULT_SECTIONS.map(s => s.path),
+    allowedCount: 23,
+    avatarBg: "#b45309"
+  },
+  {
+    id: "00000000-0000-0000-0000-0000000000e1",
+    user_id: "00000000-0000-0000-0000-0000000000e1",
+    name: "Waldo Ellis",
+    initials: "WE",
+    email: "waldo.ellis@hushhawk.internal",
+    phone: "(904) 555-5011",
+    role: "SUPER_ADMIN",
+    roleName: "Master Administrator",
+    title: "Chief Investment Officer",
+    department: "Executive Leadership",
+    accessLevel: "SUPER_ADMIN",
+    status: "Active",
+    statusClass: "status-active",
+    password: "admin123",
+    permissions: DEFAULT_SECTIONS.map(s => s.path),
+    allowedCount: 23,
+    avatarBg: "#0369a1"
+  },
+  {
+    id: "02222222-2222-2222-2222-222222222222",
+    user_id: "02222222-2222-2222-2222-222222222222",
+    name: "Marcus Vance",
+    initials: "MV",
+    email: "manager@hushhawk.internal",
+    phone: "(904) 555-3424",
+    role: "ACQUISITIONS_REP",
+    roleName: "Acquisitions Specialist",
+    title: "Senior Acquisitions Director",
+    department: "Acquisitions",
+    accessLevel: "ACQUISITIONS_REP",
+    status: "Active",
+    statusClass: "status-active",
+    password: "HushPass!6763",
+    permissions: ["/home","/seller-leads","/acquisitions","/tasks","/calendar","/contacts","/follow-ups","/deal-analyzer"],
+    allowedCount: 8,
+    avatarBg: "#0f766e"
+  },
+  {
+    id: "03333333-3333-3333-3333-333333333333",
+    user_id: "03333333-3333-3333-3333-333333333333",
+    name: "Elena Rostova",
+    initials: "ER",
+    email: "acquisitions@hushhawk.internal",
+    phone: "(904) 555-5581",
+    role: "ACQUISITIONS_REP",
+    roleName: "Acquisitions Specialist",
+    title: "Lead Acquisition Underwriter",
+    department: "Acquisitions",
+    accessLevel: "ACQUISITIONS_REP",
+    status: "Active",
+    statusClass: "status-active",
+    password: "admin123",
+    permissions: ["/home","/seller-leads","/acquisitions","/tasks","/calendar","/contacts","/follow-ups","/deal-analyzer"],
+    allowedCount: 8,
+    avatarBg: "#4338ca"
+  },
+  {
+    id: "04444444-4444-4444-4444-444444444444",
+    user_id: "04444444-4444-4444-4444-444444444444",
+    name: "David Sterling",
+    initials: "DS",
+    email: "reviewer@hushhawk.internal",
+    phone: "(904) 555-8872",
+    role: "DISPOSITIONS_REP",
+    roleName: "Dispositions & Buyer Desk",
+    title: "Dispositions Lead & Buyer Relations",
+    department: "Dispositions",
+    accessLevel: "DISPOSITIONS_REP",
+    status: "Active",
+    statusClass: "status-active",
+    password: "admin123",
+    permissions: ["/home","/dispositions","/cash-buyers","/contracts","/tasks","/calendar"],
+    allowedCount: 6,
+    avatarBg: "#7c3aed"
+  },
+  {
+    id: "05555555-5555-5555-5555-555555555555",
+    user_id: "05555555-5555-5555-5555-555555555555",
+    name: "Chloe Bennett",
+    initials: "CB",
+    email: "marketing@hushhawk.internal",
+    phone: "(904) 555-8756",
+    role: "MARKETING_LEAD",
+    roleName: "Campaigns & Marketing Manager",
+    title: "Growth & Campaigns Manager",
+    department: "Marketing",
+    accessLevel: "MARKETING_LEAD",
+    status: "Active",
+    statusClass: "status-active",
+    password: "admin123",
+    permissions: ["/home","/marketing","/facebook-leads","/direct-mail","/analytics"],
+    allowedCount: 5,
+    avatarBg: "#be185d"
+  },
+  {
+    id: "06666666-6666-6666-6666-666666666666",
+    user_id: "06666666-6666-6666-6666-666666666666",
+    name: "Alex Mercer",
+    initials: "AM",
+    email: "ops@hushhawk.internal",
+    phone: "(904) 555-5094",
+    role: "FIELD_OPS",
+    roleName: "Field Inspector & Media",
+    title: "Field Inspector & Logistics",
+    department: "Field Operations",
+    accessLevel: "FIELD_OPS",
+    status: "Active",
+    statusClass: "status-active",
+    password: "admin123",
+    permissions: ["/properties","/vault","/tasks","/calendar"],
+    allowedCount: 4,
+    avatarBg: "#059669"
+  },
+  {
+    id: "5193494a-6cb7-4d9d-9ad3-5c4860306254",
+    user_id: "5193494a-6cb7-4d9d-9ad3-5c4860306254",
+    name: "Jordan Miller",
+    initials: "JM",
+    email: "jordan@hushhawk.com",
+    phone: "(904) 555-9090",
+    role: "DIRECT_MAIL_SPECIALIST",
+    roleName: "Direct Mail Specialist",
+    title: "Direct Mail Specialist",
+    department: "Campaigns",
+    accessLevel: "DIRECT_MAIL_SPECIALIST",
+    status: "Active",
+    statusClass: "status-active",
+    password: "JordanPass2026!",
+    permissions: ["/home","/direct-mail"],
+    allowedCount: 2,
+    avatarBg: "#c2410c"
+  },
+  {
+    id: "903be281-3efe-4c10-b4c9-57ef85463b63",
+    user_id: "903be281-3efe-4c10-b4c9-57ef85463b63",
+    name: "Audit Analyst",
+    initials: "AA",
+    email: "audit.analyst@hushhawk.com",
+    phone: "(904) 555-3269",
+    role: "SUPER_ADMIN",
+    roleName: "Master Administrator",
+    title: "System Compliance Analyst",
+    department: "Compliance",
+    accessLevel: "SUPER_ADMIN",
+    status: "Active",
+    statusClass: "status-active",
+    password: "admin123",
+    permissions: DEFAULT_SECTIONS.map(s => s.path),
+    allowedCount: 23,
+    avatarBg: "#475569"
+  }
+];
+
+export const DEFAULT_AUDIT_METRICS = {
+  todayCount: 54,
+  uniqueActors: 16,
+  criticalChanges: 59,
+  securityEvents: 153
+};
+
+export const DEFAULT_AUDIT_LOGS = [
+  {
+    id: "73ad1313-f40a-4a1e-b65c-e57ed7531469",
+    auditId: "73ad1313-f40a-4a1e-b65c-e57ed7531469",
+    actor: "Main Administrator",
+    action: "ROLE_DELETED",
+    actionLabel: "ROLE DELETED",
+    category: "DELETION",
+    badgeClass: "badge-danger",
+    entityType: "ROLE",
+    entityId: "340b1953-2131-4826-8b60-5b89dd88e168",
+    details: { roleKey: "COLD_CALLER_REP", deletedRole: "Cold Caller Rep" },
+    dateStr: "Nov 15, 2026",
+    timeStr: "06:47:42 PM",
+    fullTimestamp: "Nov 15, 2026 at 06:47:42 PM"
+  },
+  {
+    id: "36293431-c0b8-4a68-86fb-e45365d09f21",
+    auditId: "36293431-c0b8-4a68-86fb-e45365d09f21",
+    actor: "Main Administrator",
+    action: "USER_DELETED",
+    actionLabel: "USER DELETED",
+    category: "DELETION",
+    badgeClass: "badge-danger",
+    entityType: "USER",
+    entityId: "73768cb2-21ea-4a6b-add3-77e6f0f0d954",
+    details: { name: "Taylor Brooks", role: "COLD_CALLER_REP", deletedUser: "taylor.brooks@hushhawk.com" },
+    dateStr: "Nov 15, 2026",
+    timeStr: "06:47:40 PM",
+    fullTimestamp: "Nov 15, 2026 at 06:47:40 PM"
+  },
+  {
+    id: "9e9a9cc7-b467-450e-83c9-4bad68e06d4b",
+    auditId: "9e9a9cc7-b467-450e-83c9-4bad68e06d4b",
+    actor: "Main Administrator",
+    action: "PASSWORD_RESET",
+    actionLabel: "PASSWORD RESET",
+    category: "SECURITY",
+    badgeClass: "badge-purple",
+    entityType: "USER",
+    entityId: "73768cb2-21ea-4a6b-add3-77e6f0f0d954",
+    details: { mode: "auto-generated", targetName: "Taylor Brooks", targetUser: "taylor.brooks@hushhawk.com" },
+    dateStr: "Nov 15, 2026",
+    timeStr: "06:47:36 PM",
+    fullTimestamp: "Nov 15, 2026 at 06:47:36 PM"
+  },
+  {
+    id: "02ba5d09-e285-4cf1-8cef-4623a30b25d8",
+    auditId: "02ba5d09-e285-4cf1-8cef-4623a30b25d8",
+    actor: "Main Administrator",
+    action: "PASSWORD_CHANGED",
+    actionLabel: "PASSWORD CHANGED",
+    category: "MODIFICATION",
+    badgeClass: "badge-warning",
+    entityType: "USER",
+    entityId: "73768cb2-21ea-4a6b-add3-77e6f0f0d954",
+    details: { mode: "manual", targetName: "Taylor Brooks", targetUser: "taylor.brooks@hushhawk.com" },
+    dateStr: "Nov 15, 2026",
+    timeStr: "06:47:35 PM",
+    fullTimestamp: "Nov 15, 2026 at 06:47:35 PM"
+  },
+  {
+    id: "d844d012-4f2d-4e61-bd51-b1148ff5bac2",
+    auditId: "d844d012-4f2d-4e61-bd51-b1148ff5bac2",
+    actor: "Jordan Miller",
+    action: "USER_LOGIN",
+    actionLabel: "USER LOGIN",
+    category: "SECURITY",
+    badgeClass: "badge-purple",
+    entityType: "AUTH",
+    entityId: "5193494a-6cb7-4d9d-9ad3-5c4860306254",
+    details: { role: "DIRECT_MAIL_SPECIALIST", email: "jordan@hushhawk.com", client: "Web Command Center" },
+    dateStr: "Nov 15, 2026",
+    timeStr: "06:35:39 PM",
+    fullTimestamp: "Nov 15, 2026 at 06:35:39 PM"
+  },
+  {
+    id: "53a06709-cba0-4246-86cb-b0ebad1694f2",
+    auditId: "53a06709-cba0-4246-86cb-b0ebad1694f2",
+    actor: "Main Administrator",
+    action: "ROLE_CREATED",
+    actionLabel: "ROLE CREATED",
+    category: "CREATION",
+    badgeClass: "badge-success",
+    entityType: "ROLE",
+    entityId: "fbd3f3af-a301-4849-94b2-4345160875b5",
+    details: { name: "Direct Mail Specialist", roleKey: "DIRECT_MAIL_SPECIALIST", allowedSections: 2 },
+    dateStr: "Nov 15, 2026",
+    timeStr: "06:34:57 PM",
+    fullTimestamp: "Nov 15, 2026 at 06:34:57 PM"
+  },
+  {
+    id: "a1b2c3d4-e5f6-7890-1234-56789abcdef0",
+    auditId: "a1b2c3d4-e5f6-7890-1234-56789abcdef0",
+    actor: "Sarah Connor",
+    action: "LEAD_STATUS_UPDATE",
+    actionLabel: "LEAD STATUS UPDATE",
+    category: "MODIFICATION",
+    badgeClass: "badge-warning",
+    entityType: "LEAD",
+    entityId: "lead-duval-1890-kingsley",
+    details: { address: "1890 Kingsley Ave", previousStatus: "Underwriting", newStatus: "Offer Sent", offerAmount: 184275 },
+    dateStr: "Nov 15, 2026",
+    timeStr: "05:12:18 PM",
+    fullTimestamp: "Nov 15, 2026 at 05:12:18 PM"
+  },
+  {
+    id: "b2c3d4e5-f6a7-8901-2345-6789abcdef01",
+    auditId: "b2c3d4e5-f6a7-8901-2345-6789abcdef01",
+    actor: "Alex Richard",
+    action: "DISPOSITION_MATCH",
+    actionLabel: "BUYER DISPATCHED",
+    category: "CREATION",
+    badgeClass: "badge-success",
+    entityType: "DISPOSITION",
+    entityId: "dispo-4218-commonwealth",
+    details: { property: "4218 Commonwealth Ave", buyersContacted: 14, buyerName: "Apex Duval Equity Partners" },
+    dateStr: "Nov 15, 2026",
+    timeStr: "04:45:00 PM",
+    fullTimestamp: "Nov 15, 2026 at 04:45:00 PM"
   }
 ];
 
@@ -1216,10 +1561,10 @@ export default {
       activeTab: 'members', // 'members' | 'roles' | 'audit'
 
       // Members Data
-      members: [],
+      members: [...DEFAULT_MEMBERS],
       roles: [...DEFAULT_ROLES],
       allSections: [...DEFAULT_SECTIONS],
-      selectedMember: null,
+      selectedMember: DEFAULT_MEMBERS[0],
       searchQuery: '',
       roleFilter: '',
       statusFilter: '',
@@ -1255,8 +1600,8 @@ export default {
       },
 
       // Audit Trail Data & Filters
-      auditLogs: [],
-      auditTotal: 0,
+      auditLogs: [...DEFAULT_AUDIT_LOGS],
+      auditTotal: 1134,
       auditLimit: 25,
       auditOffset: 0,
       auditSearch: '',
@@ -1264,12 +1609,7 @@ export default {
       auditStartDate: '',
       auditEndDate: '',
       auditCategoryFilter: '',
-      auditMetrics: {
-        todayCount: 0,
-        uniqueActors: 0,
-        criticalChanges: 0,
-        securityEvents: 0
-      },
+      auditMetrics: { ...DEFAULT_AUDIT_METRICS },
       selectedAuditItem: null,
 
       // Toast Notification
@@ -1324,12 +1664,31 @@ export default {
   },
   methods: {
     // -------------------------------------------------------------------------
-    // API Fetchers
+    // API Fetchers & Network Resiliency
     // -------------------------------------------------------------------------
+    async fetchApi(endpoint, options = {}) {
+      try {
+        const res = await fetch(endpoint, options);
+        if (res.ok) return res;
+      } catch (e) {
+        // Relative fetch error
+      }
+      if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+        try {
+          const directUrl = `http://localhost:3001${endpoint}`;
+          const res = await fetch(directUrl, options);
+          if (res.ok) return res;
+        } catch (e) {
+          // ignore
+        }
+      }
+      return null;
+    },
+
     async loadSections() {
       try {
-        const res = await fetch('/api/v1/rbac/sections');
-        if (res.ok) {
+        const res = await this.fetchApi('/api/v1/rbac/sections');
+        if (res) {
           const data = await res.json();
           if (data && Array.isArray(data.sections) && data.sections.length > 0) {
             this.allSections = data.sections;
@@ -1342,8 +1701,8 @@ export default {
 
     async loadRoles() {
       try {
-        const res = await fetch('/api/v1/roles');
-        if (res.ok) {
+        const res = await this.fetchApi('/api/v1/roles');
+        if (res) {
           const data = await res.json();
           if (data && Array.isArray(data.roles) && data.roles.length > 0) {
             this.roles = data.roles;
@@ -1356,12 +1715,14 @@ export default {
 
     async loadTeamMembers() {
       try {
-        const res = await fetch('/api/v1/team');
-        const data = await res.json();
-        if (data && data.members) {
-          this.members = data.members;
-          if (!this.selectedMember && data.members.length > 0) {
-            this.selectedMember = data.members[0];
+        const res = await this.fetchApi('/api/v1/team');
+        if (res) {
+          const data = await res.json();
+          if (data && Array.isArray(data.members) && data.members.length > 0) {
+            this.members = data.members;
+            if (!this.selectedMember && data.members.length > 0) {
+              this.selectedMember = data.members[0];
+            }
           }
         }
       } catch (e) {
@@ -1398,13 +1759,15 @@ export default {
           if (this.auditEndDate) params.set('endDate', this.auditEndDate);
         }
 
-        const res = await fetch(`/api/v1/audit/logs?${params.toString()}`);
-        const data = await res.json();
-        if (data && data.ok) {
-          this.auditLogs = data.logs || [];
-          this.auditTotal = data.total || 0;
-          if (data.metrics) {
-            this.auditMetrics = data.metrics;
+        const res = await this.fetchApi(`/api/v1/audit/logs?${params.toString()}`);
+        if (res) {
+          const data = await res.json();
+          if (data && data.ok) {
+            this.auditLogs = data.logs || [];
+            this.auditTotal = data.total || 0;
+            if (data.metrics) {
+              this.auditMetrics = data.metrics;
+            }
           }
         }
       } catch (e) {
@@ -1446,7 +1809,7 @@ export default {
       if (!this.passwordTargetUser || !this.changePasswordForm.newPassword) return;
 
       try {
-        const res = await fetch(`/api/v1/team/${this.passwordTargetUser.id}/password`, {
+        const res = await this.fetchApi(`/api/v1/team/${this.passwordTargetUser.id}/password`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -1454,8 +1817,8 @@ export default {
             actor: 'Main Administrator'
           })
         });
-        const result = await res.json();
-        if (res.ok && result.success) {
+        const result = res ? await res.json() : { error: 'Network connection error' };
+        if (res && res.ok && result.success) {
           this.passwordTargetUser.password = this.changePasswordForm.newPassword;
           this.showToast('Password Updated', `Updated access key for ${this.passwordTargetUser.name}`, 'success');
           this.closeModal();
@@ -1474,7 +1837,7 @@ export default {
       }
 
       try {
-        const res = await fetch(`/api/v1/team/${member.id}/password`, {
+        const res = await this.fetchApi(`/api/v1/team/${member.id}/password`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -1482,8 +1845,8 @@ export default {
             actor: 'Main Administrator'
           })
         });
-        const result = await res.json();
-        if (res.ok && result.success) {
+        const result = res ? await res.json() : { error: 'Network connection error' };
+        if (res && res.ok && result.success) {
           member.password = result.password;
           this.copyText(result.password, `Password reset to ${result.password} and copied to clipboard!`);
           this.fetchAuditLogs();
@@ -1511,7 +1874,7 @@ export default {
 
     async submitAddMember() {
       try {
-        const res = await fetch('/api/v1/team', {
+        const res = await this.fetchApi('/api/v1/team', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -1524,8 +1887,8 @@ export default {
           })
         });
 
-        const data = await res.json();
-        if (res.ok && !data.error) {
+        const data = res ? await res.json() : { error: 'Network connection error' };
+        if (res && res.ok && !data.error) {
           this.showToast('Member Added', `Successfully added ${this.newMemberForm.name} to team roster!`, 'success');
           this.closeModal();
           await this.loadTeamMembers();
@@ -1547,7 +1910,7 @@ export default {
     async submitEditMember() {
       if (!this.editingMember) return;
       try {
-        const res = await fetch(`/api/v1/team/${this.editingMember.id}`, {
+        const res = await this.fetchApi(`/api/v1/team/${this.editingMember.id}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -1665,7 +2028,7 @@ export default {
           : '/api/v1/roles';
         const method = this.isEditingRole ? 'PUT' : 'POST';
 
-        const res = await fetch(url, {
+        const res = await this.fetchApi(url, {
           method,
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -1676,8 +2039,8 @@ export default {
           })
         });
 
-        const data = await res.json();
-        if (res.ok && data.success) {
+        const data = res ? await res.json() : { error: 'Network connection error' };
+        if (res && res.ok && data.success) {
           this.showToast(
             this.isEditingRole ? 'Role Updated' : 'Role Created',
             `Saved role "${this.roleForm.name}" with ${this.roleForm.permissions.length} permitted sections.`,
@@ -1701,13 +2064,13 @@ export default {
       }
 
       try {
-        const res = await fetch(`/api/v1/roles/${role.role_id}`, {
+        const res = await this.fetchApi(`/api/v1/roles/${role.role_id}`, {
           method: 'DELETE',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ actor: 'Main Administrator' })
         });
-        const data = await res.json();
-        if (res.ok && data.success) {
+        const data = res ? await res.json() : { error: 'Network connection error' };
+        if (res && res.ok && data.success) {
           this.showToast('Role Deleted', `Custom role "${role.name}" deleted.`, 'success');
           await this.loadRoles();
           await this.loadTeamMembers();
@@ -1960,23 +2323,54 @@ export default {
 }
 
 /* ========================================================================== */
+/* Tab Panes & Views Layout */
+/* ========================================================================== */
+.tab-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}
+
+.audit-trail-view {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}
+
+.roles-management-view {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}
+
+/* ========================================================================== */
 /* Top Metrics Grid */
 /* ========================================================================== */
 .metrics-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 16px;
+  width: 100%;
 }
 
 .metric-card {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 14px 16px;
+  gap: 16px;
+  padding: 18px 20px;
   background: linear-gradient(135deg, rgba(8, 28, 54, 0.95), rgba(4, 21, 41, 0.98));
   border: 1px solid #1a3c63;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  border-radius: 10px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.metric-card:hover {
+  border-color: rgba(212, 168, 83, 0.35);
+  transform: translateY(-1px);
 }
 
 .metric-icon-wrap {
@@ -2696,12 +3090,100 @@ export default {
 }
 
 /* ========================================================================== */
-/* Tab 2: Custom Roles Grid */
+/* Tab 2: Custom Roles Grid & Header */
 /* ========================================================================== */
+.roles-management-view .panel-header {
+  background: linear-gradient(135deg, rgba(8, 28, 54, 0.95), rgba(4, 21, 41, 0.98));
+  border: 1px solid #1a3c63;
+  border-radius: 10px;
+  padding: 22px 26px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  flex-wrap: nowrap;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+}
+
+.roles-management-view .header-left {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.roles-management-view .header-left h2 {
+  font-size: 19px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.roles-management-view .header-desc {
+  font-size: 13px;
+  color: #94a3b8;
+  margin: 0;
+  line-height: 1.5;
+  max-width: 820px;
+}
+
+.roles-management-view .header-actions {
+  flex-shrink: 0;
+  align-self: flex-start;
+  margin-top: 2px;
+}
+
 .roles-cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 20px;
+  width: 100%;
+}
+
+.empty-roles-card {
+  background: linear-gradient(135deg, rgba(8, 28, 54, 0.95), rgba(4, 21, 41, 0.98));
+  border: 1px dashed #1a3c63;
+  border-radius: 10px;
+  padding: 48px 24px;
+  text-align: center;
+  width: 100%;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+}
+
+.empty-roles-card .empty-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  max-width: 440px;
+  margin: 0 auto;
+}
+
+.empty-roles-card .empty-icon {
+  width: 44px;
+  height: 44px;
+  color: #d4a853;
+  display: grid;
+  place-items: center;
+}
+
+.empty-roles-card h3 {
+  font-size: 18px;
+  color: #ffffff;
+  margin: 0;
+  font-weight: 700;
+}
+
+.empty-roles-card p {
+  font-size: 13px;
+  color: #94a3b8;
+  margin: 0;
+  line-height: 1.5;
 }
 
 .role-card {

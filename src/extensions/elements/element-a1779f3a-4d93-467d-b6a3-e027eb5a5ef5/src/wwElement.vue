@@ -4234,22 +4234,26 @@ td a { color: #f5cf72 !important; }
   font-weight: 850;
 }
 .analyzer-footer {
-  padding: 6px 12px;
-  background: rgba(4, 18, 35, 0.65);
-  font-size: 7.5px;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 7px 12px;
+  background: rgba(4, 18, 35, 0.75);
+  font-size: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
   border-bottom-left-radius: 9px !important;
   border-bottom-right-radius: 9px !important;
   margin-top: auto;
-  box-sizing: border-box;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
 }
 .profit-sub, .analyzer-footer small {
-  font-size: 7.5px !important;
-  color: #64748b !important;
+  font-size: 8px !important;
+  color: #94a3b8 !important;
   display: block !important;
   padding: 0 !important;
   margin: 0 !important;
   line-height: 1.35 !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Pulse & Capital Desk */

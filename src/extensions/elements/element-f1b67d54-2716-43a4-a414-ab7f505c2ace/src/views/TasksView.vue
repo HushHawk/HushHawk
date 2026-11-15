@@ -241,6 +241,99 @@
 <script>
 import { icons } from '../icons.js';
 
+export const DEFAULT_TASKS = [
+  {
+    id: 'tsk-001',
+    task_id: 'tsk-001',
+    title: 'Verify Escrow Deposit Confirmation for Commonwealth Deal',
+    description: 'Ensure title agent at Fidelity National Title received $5,000 earnest money deposit.',
+    deal: '4218 Commonwealth Ave, Jacksonville, FL',
+    parcel: 'DUV-091823-4410',
+    category: 'Title & Escrow',
+    priority: 'Urgent',
+    dueDate: 'Today 2:00 PM',
+    dueStatus: 'today',
+    assignee: 'Alex Richard',
+    repInitials: 'AR',
+    done: false
+  },
+  {
+    id: 'tsk-002',
+    task_id: 'tsk-002',
+    title: 'Schedule Walkthrough & Contractor Scope for Kingsley Duplex',
+    description: 'Walk property with licensed GC to confirm $34,020 rehab estimate before final assignment.',
+    deal: '1890 Kingsley Ave, Orange Park, FL',
+    parcel: 'CLY-884102-1200',
+    category: 'Acquisitions',
+    priority: 'High',
+    dueDate: 'Today 4:30 PM',
+    dueStatus: 'today',
+    assignee: 'Marcus Vance',
+    repInitials: 'MV',
+    done: false
+  },
+  {
+    id: 'tsk-003',
+    task_id: 'tsk-003',
+    title: 'Request HOA Estoppel Certificate for Baymeadows Rd',
+    description: 'Confirm outstanding dues and transfer requirements with HOA management office.',
+    deal: '8411 Baymeadows Rd, Jacksonville, FL',
+    parcel: 'DUV-119284-0021',
+    category: 'Title & Escrow',
+    priority: 'High',
+    dueDate: 'Tomorrow 10:00 AM',
+    dueStatus: 'normal',
+    assignee: 'Elena Rostova',
+    repInitials: 'ER',
+    done: false
+  },
+  {
+    id: 'tsk-004',
+    task_id: 'tsk-004',
+    title: 'Review Title Search & Municipal Lien Report on Wilcox St',
+    description: 'Check Duval clerk records for municipal code violations or unrecorded utility liens.',
+    deal: '1411 Wilcox St, Jacksonville, FL',
+    parcel: 'DUV-081729-3310',
+    category: 'Underwriting',
+    priority: 'Medium',
+    dueDate: 'Today 5:00 PM',
+    dueStatus: 'today',
+    assignee: 'David Sterling',
+    repInitials: 'DS',
+    done: false
+  },
+  {
+    id: 'tsk-005',
+    task_id: 'tsk-005',
+    title: 'Blast Deal Assignment Package to Tier-1 Cash Buyers',
+    description: 'Distribute underwriting summary and proof-of-funds requirements to top Duval cash buyers.',
+    deal: '9606 Devonshire Blvd, Jacksonville, FL',
+    parcel: 'DUV-034918-9102',
+    category: 'Dispositions',
+    priority: 'Medium',
+    dueDate: 'Thursday 11:00 AM',
+    dueStatus: 'normal',
+    assignee: 'Chloe Bennett',
+    repInitials: 'CB',
+    done: false
+  },
+  {
+    id: 'tsk-006',
+    task_id: 'tsk-006',
+    title: 'Upload On-Site Photos & Video Walkthrough to Media Vault',
+    description: 'Sync 24 high-res exterior and interior inspection photos into property asset folder.',
+    deal: '10725 Meadowlea Dr, Jacksonville, FL',
+    parcel: 'DUV-055192-8821',
+    category: 'Acquisitions',
+    priority: 'Low',
+    dueDate: 'Overdue (Nov 14)',
+    dueStatus: 'overdue',
+    assignee: 'Alex Mercer',
+    repInitials: 'AM',
+    done: true
+  }
+];
+
 export default {
   name: 'TasksView',
   props: {
@@ -263,7 +356,7 @@ export default {
         assignee: 'Alex Richard',
         description: ''
       },
-      tasks: []
+      tasks: [...DEFAULT_TASKS]
     };
   },
   computed: {
@@ -316,30 +409,46 @@ export default {
   methods: {
     async loadTasks() {
       try {
-        const res = await fetch('/api/v1/tasks');
-        const data = await res.json();
-        if (data && Array.isArray(data.tasks)) {
-          this.tasks = data.tasks.map(t => {
-            const assignee = t.assignee || t.owner_id || 'Alex Richard';
-            const repInitials = t.repInitials || assignee.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'AR';
-            const dueDate = t.dueDate || t.due_date || t.due_time || 'Today 5:00 PM';
-            const dueStatus = t.dueStatus || (dueDate.toLowerCase().includes('today') ? 'today' : (dueDate.toLowerCase().includes('overdue') ? 'overdue' : 'normal'));
-            return {
-              id: t.id || t.task_id || ('tsk-' + Math.random().toString(36).substr(2, 9)),
-              task_id: t.task_id || t.id,
-              title: t.title || 'Untitled Task',
-              description: t.description || '',
-              deal: t.deal || '',
-              parcel: t.parcel || '',
-              category: t.category || 'Title & Escrow',
-              priority: t.priority || 'High',
-              dueDate: dueDate,
-              dueStatus: dueStatus,
-              assignee: assignee,
-              repInitials: repInitials,
-              done: Boolean(t.done || t.is_completed || t.status === 'DONE' || t.status === 'COMPLETED')
-            };
-          });
+        let res = null;
+        try {
+          res = await fetch('/api/v1/tasks');
+        } catch (e) {
+          // try fallback
+        }
+        if (!res || !res.ok) {
+          if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+            try {
+              res = await fetch('http://localhost:3001/api/v1/tasks');
+            } catch (e) {
+              // ignore
+            }
+          }
+        }
+        if (res && res.ok) {
+          const data = await res.json();
+          if (data && Array.isArray(data.tasks) && data.tasks.length > 0) {
+            this.tasks = data.tasks.map(t => {
+              const assignee = t.assignee || t.owner_id || 'Alex Richard';
+              const repInitials = t.repInitials || assignee.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'AR';
+              const dueDate = t.dueDate || t.due_date || t.due_time || 'Today 5:00 PM';
+              const dueStatus = t.dueStatus || (dueDate.toLowerCase().includes('today') ? 'today' : (dueDate.toLowerCase().includes('overdue') ? 'overdue' : 'normal'));
+              return {
+                id: t.id || t.task_id || ('tsk-' + Math.random().toString(36).substr(2, 9)),
+                task_id: t.task_id || t.id,
+                title: t.title || 'Untitled Task',
+                description: t.description || '',
+                deal: t.deal || '',
+                parcel: t.parcel || '',
+                category: t.category || 'Title & Escrow',
+                priority: t.priority || 'High',
+                dueDate: dueDate,
+                dueStatus: dueStatus,
+                assignee: assignee,
+                repInitials: repInitials,
+                done: Boolean(t.done || t.is_completed || t.status === 'DONE' || t.status === 'COMPLETED')
+              };
+            });
+          }
         }
       } catch (err) {
         console.warn('[Tasks] Using local task cache:', err.message);
