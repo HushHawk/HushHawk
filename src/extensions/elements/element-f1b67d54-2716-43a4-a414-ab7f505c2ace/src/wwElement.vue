@@ -624,7 +624,7 @@ export default {
       this.navOpen = false;
       const section = path.replace(/^\//, '');
       const validSections = [
-        'properties', 'dispositions', 'cash-buyers', 'marketing', 'county-data',
+        'properties', 'vault', 'dispositions', 'cash-buyers', 'marketing', 'county-data',
         'skip-tracing', 'contracts', 'follow-ups', 'analytics',
         'team', 'settings', 'communications', 'tasks', 'calendar',
         'contacts', 'automations', 'facebook-leads', 'direct-mail', 'deal-analyzer'
@@ -637,9 +637,7 @@ export default {
         }
       } else {
         if (e) e.preventDefault();
-        if (typeof window !== 'undefined' && window.wwLib?.wwApp?.goTo) {
-          window.wwLib.wwApp.goTo(path);
-        } else if (typeof window !== 'undefined') {
+        if (typeof window !== 'undefined') {
           window.location.href = path;
         }
       }

@@ -2266,23 +2266,37 @@ apiRouter.get('/tasks', async (req, res) => {
     try {
         try {
             const { rows } = await pool.query(`
-                SELECT task_id, title, due_date, status, owner_id, category, priority, is_completed, due_time, created_at
+                SELECT task_id, title, due_date, status, owner_id, category, priority, is_completed, due_time, linked_entity_type, created_at
                 FROM core.tasks
                 ORDER BY is_completed ASC, created_at DESC
             `);
             if (rows && rows.length > 0) {
-                const formatted = rows.map(r => ({
-                    id: r.task_id,
-                    task_id: r.task_id,
-                    title: r.title,
-                    status: r.status,
-                    is_completed: Boolean(r.is_completed || r.status === 'COMPLETED' || r.status === 'Done'),
-                    done: Boolean(r.is_completed || r.status === 'COMPLETED' || r.status === 'Done'),
-                    category: r.category || 'Operations',
-                    priority: r.priority || 'Medium',
-                    dueDate: r.due_time || (r.due_date ? new Date(r.due_date).toLocaleDateString() : 'Today'),
-                    created_at: r.created_at
-                }));
+                const formatted = rows.map(r => {
+                    const dueDateStr = r.due_time || (r.due_date ? new Date(r.due_date).toLocaleDateString() : 'Today 5:00 PM');
+                    const dueStatus = dueDateStr.toLowerCase().includes('today')
+                        ? 'today'
+                        : (dueDateStr.toLowerCase().includes('overdue') ? 'overdue' : 'normal');
+                    const assignee = r.owner_id || 'Marcus Vance';
+                    const initials = assignee.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'MV';
+                    return {
+                        id: r.task_id,
+                        task_id: r.task_id,
+                        title: r.title || 'Untitled Task',
+                        description: r.linked_entity_type ? `${r.linked_entity_type} Task` : '',
+                        status: r.status || 'PENDING',
+                        is_completed: Boolean(r.is_completed || r.status === 'COMPLETED' || r.status === 'Done'),
+                        done: Boolean(r.is_completed || r.status === 'COMPLETED' || r.status === 'Done'),
+                        category: r.category || 'Title & Escrow',
+                        priority: r.priority || 'High',
+                        dueDate: dueDateStr,
+                        dueStatus: dueStatus,
+                        deal: '4155 County Rd 218',
+                        parcel: 'DUV-091823-0000',
+                        assignee: assignee,
+                        repInitials: initials,
+                        created_at: r.created_at
+                    };
+                });
                 return res.json({ total: formatted.length, tasks: formatted });
             }
         } catch (dbErr) {
@@ -2304,23 +2318,35 @@ apiRouter.post('/tasks', async (req, res) => {
 
         try {
             const insertRes = await pool.query(`
-                INSERT INTO core.tasks (task_id, title, status, category, priority, is_completed, due_time, created_at)
-                VALUES ($1, $2, 'PENDING', $3, $4, false, $5, NOW())
+                INSERT INTO core.tasks (task_id, title, status, category, priority, is_completed, due_time, owner_id, created_at)
+                VALUES ($1, $2, 'PENDING', $3, $4, false, $5, $6, NOW())
                 RETURNING *
-            `, [taskId, title, category || 'Operations', priority || 'High', dueDate || 'Today']);
+            `, [taskId, title, category || 'Title & Escrow', priority || 'High', dueDate || 'Today 5:00 PM', assignee || 'Marcus Vance']);
 
             if (insertRes.rows.length) {
                 const row = insertRes.rows[0];
+                const dueDateStr = row.due_time || 'Today 5:00 PM';
+                const dueStatus = dueDateStr.toLowerCase().includes('today')
+                    ? 'today'
+                    : (dueDateStr.toLowerCase().includes('overdue') ? 'overdue' : 'normal');
+                const rep = row.owner_id || assignee || 'Marcus Vance';
+                const initials = rep.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'MV';
                 return res.status(201).json({
                     id: row.task_id,
                     task_id: row.task_id,
                     title: row.title,
+                    description: description || '',
+                    deal: deal || '4155 County Rd 218',
+                    parcel: 'DUV-091823-0000',
                     status: row.status,
                     done: false,
                     is_completed: false,
                     category: row.category,
                     priority: row.priority,
-                    dueDate: row.due_time,
+                    dueDate: dueDateStr,
+                    dueStatus: dueStatus,
+                    assignee: rep,
+                    repInitials: initials,
                     created_at: row.created_at
                 });
             }
@@ -2333,9 +2359,14 @@ apiRouter.post('/tasks', async (req, res) => {
             id: Date.now(),
             title,
             description: description || '',
+            deal: deal || '',
+            parcel: 'DUV-091823-0000',
             category: category || 'Title & Escrow',
             dueDate: dueDate || 'Today 5:00 PM',
+            dueStatus: 'today',
             priority: priority || 'High',
+            assignee: assignee || 'Marcus Vance',
+            repInitials: (assignee || 'Marcus Vance').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'MV',
             done: false,
             status: 'PENDING',
             created_at: new Date().toISOString()

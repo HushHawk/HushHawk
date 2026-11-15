@@ -118,8 +118,8 @@
               </td>
               <td>
                 <div class="task-title-cell">
-                  <span class="task-title" :class="{ strike: task.done }">{{ task.title }}</span>
-                  <span class="task-desc">{{ task.description }}</span>
+                  <span class="task-title" :class="{ strike: task.done }">{{ task.title || 'Untitled Task' }}</span>
+                  <span v-if="task.description" class="task-desc">{{ task.description }}</span>
                 </div>
               </td>
               <td>
@@ -128,29 +128,29 @@
                     <span v-html="icons.pin" class="tiny-icon"></span>
                     {{ task.deal }}
                   </span>
-                  <span class="deal-parcel font-mono">{{ task.parcel }}</span>
+                  <span class="deal-parcel font-mono">{{ task.parcel || 'DUV-091823-0000' }}</span>
                 </div>
                 <span v-else class="text-muted">General Operation</span>
               </td>
               <td>
-                <span class="category-chip" :class="task.category.toLowerCase().replace(/[\s&]+/g, '-')">
-                  {{ task.category }}
+                <span class="category-chip" :class="(task.category || 'general').toLowerCase().replace(/[\s&]+/g, '-')">
+                  {{ task.category || 'General' }}
                 </span>
               </td>
               <td>
-                <span class="due-pill" :class="task.dueStatus.toLowerCase()">
-                  {{ task.dueDate }}
+                <span class="due-pill" :class="(task.dueStatus || 'today').toLowerCase()">
+                  {{ task.dueDate || 'Today' }}
                 </span>
               </td>
               <td>
-                <span class="priority-badge" :class="task.priority.toLowerCase()">
-                  {{ task.priority }}
+                <span class="priority-badge" :class="(task.priority || 'medium').toLowerCase()">
+                  {{ task.priority || 'Medium' }}
                 </span>
               </td>
               <td>
                 <div class="rep-chip">
-                  <span class="rep-avatar">{{ task.repInitials }}</span>
-                  <span>{{ task.assignee }}</span>
+                  <span class="rep-avatar">{{ task.repInitials || 'MV' }}</span>
+                  <span>{{ task.assignee || 'Marcus Vance' }}</span>
                 </div>
               </td>
               <td>
@@ -275,10 +275,10 @@ export default {
   computed: {
     metrics() {
       const list = this.tasks || [];
-      const open = list.filter(t => !t.done).length;
-      const dueToday = list.filter(t => (t.dueDate || '').toLowerCase().includes('today')).length;
-      const overdue = list.filter(t => (t.dueDate || '').toLowerCase().includes('overdue')).length;
-      const completed = list.filter(t => t.done).length;
+      const open = list.filter(t => t && !t.done).length;
+      const dueToday = list.filter(t => t && (t.dueDate || '').toLowerCase().includes('today')).length;
+      const overdue = list.filter(t => t && (t.dueDate || '').toLowerCase().includes('overdue')).length;
+      const completed = list.filter(t => t && t.done).length;
       return [
         { label: 'Open Tasks', value: String(open), change: open ? 'Active' : '0 on track', icon: 'tasks' },
         { label: 'Due Today', value: String(dueToday), change: dueToday ? 'Action needed' : 'Clear', icon: 'clock' },
@@ -290,17 +290,18 @@ export default {
       return Boolean(this.searchQuery || this.categoryFilter || this.priorityFilter || this.assigneeFilter);
     },
     filteredTasks() {
-      return this.tasks.filter(t => {
+      return (this.tasks || []).filter(t => {
+        if (!t) return false;
         if (this.categoryFilter && t.category !== this.categoryFilter) return false;
         if (this.priorityFilter && t.priority !== this.priorityFilter) return false;
         if (this.assigneeFilter && t.assignee !== this.assigneeFilter) return false;
         if (this.searchQuery) {
           const q = this.searchQuery.toLowerCase();
           return (
-            t.title.toLowerCase().includes(q) ||
-            t.description.toLowerCase().includes(q) ||
+            (t.title || '').toLowerCase().includes(q) ||
+            (t.description || '').toLowerCase().includes(q) ||
             (t.deal && t.deal.toLowerCase().includes(q)) ||
-            t.assignee.toLowerCase().includes(q)
+            (t.assignee && t.assignee.toLowerCase().includes(q))
           );
         }
         return true;
@@ -316,8 +317,28 @@ export default {
       try {
         const res = await fetch('/api/v1/tasks');
         const data = await res.json();
-        if (data) {
-          this.tasks = data.tasks;
+        if (data && Array.isArray(data.tasks)) {
+          this.tasks = data.tasks.map(t => {
+            const assignee = t.assignee || t.owner_id || 'Marcus Vance';
+            const repInitials = t.repInitials || assignee.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'MV';
+            const dueDate = t.dueDate || t.due_date || t.due_time || 'Today 5:00 PM';
+            const dueStatus = t.dueStatus || (dueDate.toLowerCase().includes('today') ? 'today' : (dueDate.toLowerCase().includes('overdue') ? 'overdue' : 'normal'));
+            return {
+              id: t.id || t.task_id || ('tsk-' + Math.random().toString(36).substr(2, 9)),
+              task_id: t.task_id || t.id,
+              title: t.title || 'Untitled Task',
+              description: t.description || '',
+              deal: t.deal || '',
+              parcel: t.parcel || '',
+              category: t.category || 'Title & Escrow',
+              priority: t.priority || 'High',
+              dueDate: dueDate,
+              dueStatus: dueStatus,
+              assignee: assignee,
+              repInitials: repInitials,
+              done: Boolean(t.done || t.is_completed || t.status === 'DONE' || t.status === 'COMPLETED')
+            };
+          });
         }
       } catch (err) {
         console.warn('[Tasks] Using local task cache:', err.message);
