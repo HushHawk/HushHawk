@@ -315,20 +315,34 @@
   display: grid;
   grid-template-columns: 1.5fr 1.05fr 1.25fr;
   gap: 10px;
-  align-items: start;
+  align-items: stretch;
   margin-top: 10px;
 }
 .dashboard-gold.hushhawk-command-center .dashboard-secondary .panel {
   display: flex;
   flex-direction: column;
-  height: auto !important;
+  height: 100% !important;
   min-height: auto !important;
   max-height: none !important;
-  overflow: visible !important;
+  border-radius: 10px !important;
+  overflow: hidden !important;
+  background: var(--dashboard-panel);
+  border: 1px solid var(--dashboard-border);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 239, 210, 0.1) !important;
+  box-sizing: border-box;
+  position: relative;
+}
+.dashboard-gold.hushhawk-command-center .dashboard-secondary .panel .panel-title {
+  border-top-left-radius: 9px !important;
+  border-top-right-radius: 9px !important;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.15) !important;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 .dashboard-gold.hushhawk-command-center .dashboard-secondary .panel.leads .leads-table-container {
   overflow-y: auto;
   max-height: 195px;
+  flex: 1;
 }
 .dashboard-gold.hushhawk-command-center .dashboard-secondary .panel.leads .leads-footer {
   padding: 6px 10px;
@@ -336,6 +350,10 @@
   font-size: 8.5px;
   text-align: right;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom-left-radius: 9px !important;
+  border-bottom-right-radius: 9px !important;
+  margin-top: auto;
+  box-sizing: border-box;
 }
 .dashboard-gold.hushhawk-command-center .dashboard-secondary .panel.leads .leads-footer a {
   color: #edcf7c;
@@ -352,6 +370,7 @@
   justify-content: flex-start;
   gap: 14px;
   padding: 10px 12px;
+  flex: 1;
 }
 .dashboard-gold.hushhawk-command-center .dashboard-secondary .panel.sources .sources-footer,
 .dashboard-gold.hushhawk-command-center .right-stack .panel.imports .imports-footer,
@@ -363,7 +382,11 @@
   justify-content: space-between;
   align-items: center;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom-left-radius: 9px !important;
+  border-bottom-right-radius: 9px !important;
   color: #94a3b8;
+  margin-top: auto;
+  box-sizing: border-box;
 }
 .dashboard-gold.hushhawk-command-center .dashboard-secondary .panel.sources .sources-footer a,
 .dashboard-gold.hushhawk-command-center .right-stack .panel.imports .imports-footer a,
@@ -377,18 +400,80 @@
   flex-direction: column;
   justify-content: flex-start;
 }
+.dashboard-gold.hushhawk-command-center .dashboard-secondary .panel.analyzer .analyzer-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 2px 0 6px;
+}
+.dashboard-gold.hushhawk-command-center .dashboard-secondary .panel.analyzer .analyzer-prop-header {
+  padding: 8px 12px 4px;
+}
+.dashboard-gold.hushhawk-command-center .dashboard-secondary .panel.analyzer .analyzer-prop-header .property {
+  font-size: 11.5px !important;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+  padding: 0;
+  display: block;
+}
+.dashboard-gold.hushhawk-command-center .dashboard-secondary .panel.analyzer .analyzer-prop-header p {
+  font-size: 9.5px !important;
+  font-weight: 500;
+  color: #94a3b8;
+  margin: 2px 0 0 0;
+  line-height: 1.35;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dashboard-gold.hushhawk-command-center .dashboard-secondary .panel.analyzer .profit {
+  margin: 6px 10px 4px;
+  padding: 6px 9px;
+  font-size: 8.5px;
+}
+.dashboard-gold.hushhawk-command-center .dashboard-secondary .panel.analyzer .profit span {
+  font-size: 8.5px;
+  color: #4ade80;
+  font-weight: 600;
+}
+.dashboard-gold.hushhawk-command-center .dashboard-secondary .panel.analyzer .profit strong {
+  font-size: 13.5px !important;
+  color: #ffffff;
+  font-weight: 850;
+}
+.dashboard-gold.hushhawk-command-center .dashboard-secondary .panel.analyzer .profit-sub {
+  font-size: 7.5px !important;
+  color: #64748b;
+  display: block;
+  padding: 3px 12px 6px;
+  margin: 0;
+  line-height: 1.35;
+}
 .dashboard-gold.hushhawk-command-center .right-stack {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
-  align-items: start;
+  align-items: stretch;
   margin-top: 10px;
 }
 .dashboard-gold.hushhawk-command-center .right-stack .panel {
   display: flex;
   flex-direction: column;
-  height: auto !important;
+  height: 100% !important;
   min-height: auto !important;
+  border-radius: 10px !important;
+  overflow: hidden !important;
+  box-sizing: border-box;
+  background: var(--dashboard-panel);
+  border: 1px solid var(--dashboard-border);
+}
+.dashboard-gold.hushhawk-command-center .right-stack .panel .panel-title {
+  border-top-left-radius: 9px !important;
+  border-top-right-radius: 9px !important;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.15) !important;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 .dashboard-gold.hushhawk-command-center .right-stack .tasks-container,
 .dashboard-gold.hushhawk-command-center .right-stack .imports-container {

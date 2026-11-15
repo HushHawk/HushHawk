@@ -4165,26 +4165,78 @@ td a { color: #f5cf72 !important; }
 .sources li span { white-space: nowrap; }
 
 /* Deal Snapshot */
-.property { font-size: 11px; display: block; padding: 8px 10px 0; color: #ffffff; font-weight: 700; }
-.analyzer > p { font-size: 8.5px; color: #94a3b8; margin: 3px 10px; }
-.analyzer dl { margin: 6px 10px; font-size: 8.5px; }
-.analyzer dl div { display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255, 255, 255, 0.06); padding: 4px 0; }
-.analyzer dt { color: #94a3b8; }
-.analyzer dd { margin: 0; color: #ffffff; font-weight: 600; }
+.analyzer-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 2px 0 6px;
+}
+.analyzer-prop-header {
+  padding: 8px 12px 4px;
+}
+.analyzer-prop-header .property {
+  font-size: 11.5px;
+  display: block;
+  padding: 0;
+  margin: 0;
+  color: #ffffff;
+  font-weight: 700;
+  letter-spacing: 0.15px;
+}
+.analyzer-prop-header p {
+  font-size: 9.5px;
+  color: #94a3b8;
+  margin: 2px 0 0;
+  line-height: 1.35;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.analyzer dl, .analyzer-dl {
+  margin: 6px 12px;
+  font-size: 8.5px;
+  padding: 0;
+}
+.analyzer dl div, .analyzer-dl div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 4px 0;
+}
+.analyzer dt, .analyzer-dl dt { color: #94a3b8; margin: 0; font-size: 8.5px; }
+.analyzer dd, .analyzer-dl dd { margin: 0; color: #ffffff; font-weight: 600; font-size: 9px; }
 .profit {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 6px 8px;
-  padding: 6px 8px;
+  margin: 6px 10px 4px;
+  padding: 6px 9px;
   border: 1px solid rgba(34, 197, 94, 0.3);
   border-radius: 6px;
   background: rgba(34, 197, 94, 0.08);
   color: #4ade80;
   font-size: 8.5px;
 }
-.profit strong { font-size: 15px; color: #ffffff; font-weight: 850; }
-.analyzer > small { font-size: 7px; color: #64748b; display: block; padding: 0 10px 6px; }
+.profit span {
+  font-size: 8.5px;
+  color: #4ade80;
+  font-weight: 600;
+}
+.profit strong {
+  font-size: 13.5px;
+  color: #ffffff;
+  font-weight: 850;
+}
+.profit-sub, .analyzer > small {
+  font-size: 7.5px;
+  color: #64748b;
+  display: block;
+  padding: 3px 12px 6px;
+  margin: 0;
+  line-height: 1.35;
+}
 
 /* Pulse & Capital Desk */
 .pulse {
