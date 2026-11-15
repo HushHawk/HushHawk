@@ -105,6 +105,30 @@ export class PodioService {
     }
 
     /**
+     * Complete Podio Webhook Verification handshake
+     * @param {string} accessToken
+     * @param {string|number} hookId
+     * @param {string} code
+     */
+    static async validateWebhook(accessToken, hookId, code) {
+        const res = await fetch(`${this.BASE_URL}/hook/${hookId}/verify/validate`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `OAuth2 ${accessToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ code })
+        });
+
+        if (!res.ok) {
+            const err = await res.text();
+            throw new Error(`Podio Webhook Validation Failed [HTTP ${res.status}]: ${err}`);
+        }
+
+        return await res.json();
+    }
+
+    /**
      * Fetch recent items from a Podio App
      * @param {string} accessToken 
      * @param {string} appId 
