@@ -11,6 +11,7 @@ import crypto from 'crypto';
 import { pool } from '../store/pgClient.js';
 import { db } from '../store/database.js';
 import { CarrierDispatchService } from './carrierDispatchService.js';
+import { PodioSyncService } from './podioSyncService.js';
 
 export class OutreachActionsService {
     /**
@@ -352,6 +353,19 @@ export class OutreachActionsService {
             )
         `, [call.property_id, result, `Call to ${call.contact_name}: ${notes}`]);
 
+        // Also dispatch to Podio Feeds
+        try {
+            await PodioSyncService.sendOutboundCommunication({
+                type: 'CALL',
+                to: call.phone,
+                body: `${result}: ${notes || 'Call logged'}${nextStep ? ` (Next Step: ${nextStep})` : ''}`,
+                propertyAddress: call.property_address,
+                leadName: call.contact_name
+            });
+        } catch (pErr) {
+            console.warn('[OutreachActions] Podio call sync note:', pErr.message);
+        }
+
         return call;
     }
 
@@ -420,6 +434,19 @@ export class OutreachActionsService {
                 gen_random_uuid(), $1, 'TEXT', 'OUTBOUND', 'Alex Richard', 'SENT', $2, now()
             )
         `, [textRecord.property_id, `SMS to ${textRecord.contact_name} (${textRecord.phone}): "${message}" ${carrierNote}`]);
+
+        // Also dispatch live into Podio Feeds
+        try {
+            await PodioSyncService.sendOutboundCommunication({
+                type: 'TEXT',
+                to: textRecord.phone,
+                body: message,
+                propertyAddress: textRecord.property_address,
+                leadName: textRecord.contact_name
+            });
+        } catch (pErr) {
+            console.warn('[OutreachActions] Podio text sync note:', pErr.message);
+        }
 
         return {
             ...textRecord,
@@ -494,6 +521,20 @@ export class OutreachActionsService {
                 gen_random_uuid(), $1, 'EMAIL', 'OUTBOUND', 'Alex Richard', 'SENT', $2, now()
             )
         `, [emailRecord.property_id, `Email to ${emailRecord.recipient_name} (${emailRecord.email}) - Subject: ${emailRecord.subject} ${carrierNote}`]);
+
+        // Also dispatch live into Podio Feeds
+        try {
+            await PodioSyncService.sendOutboundCommunication({
+                type: 'EMAIL',
+                to: emailRecord.email,
+                subject: emailRecord.subject,
+                body: body || emailRecord.body_snippet,
+                propertyAddress: emailRecord.property_address,
+                leadName: emailRecord.recipient_name
+            });
+        } catch (pErr) {
+            console.warn('[OutreachActions] Podio email sync note:', pErr.message);
+        }
 
         return {
             ...emailRecord,

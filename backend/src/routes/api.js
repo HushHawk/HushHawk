@@ -4537,6 +4537,20 @@ apiRouter.post('/communications/messages', async (req, res) => {
             ? `[Live ${carrierResult.provider.toUpperCase()} SID: ${carrierResult.messageSid || carrierResult.messageId || 'OK'}]` 
             : `[Status: ${carrierResult?.status || 'SAVED_TO_DB'}]`;
 
+        // 3b. Podio Feeds live dispatch
+        try {
+            await PodioSyncService.sendOutboundCommunication({
+                type: method,
+                to: isEmail ? threadRow.contact_email : threadRow.contact_phone,
+                body: trimmed,
+                subject: `Update regarding property - ${threadRow.property_address || 'Jacksonville'}`,
+                propertyAddress: threadRow.property_address,
+                leadName: threadRow.contact_name
+            });
+        } catch (podioErr) {
+            console.warn('[Communications] Podio Feeds outbound dispatch notice:', podioErr.message);
+        }
+
         // 4. Log real-time outbound touch to core.interactions audit ledger
         const interactionId = crypto.randomUUID();
         await pool.query(

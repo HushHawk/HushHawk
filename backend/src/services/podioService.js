@@ -124,4 +124,72 @@ export class PodioService {
 
         return await res.json();
     }
+
+    /**
+     * Fetch a single item from Podio
+     * @param {string} accessToken
+     * @param {string|number} itemId
+     */
+    static async getItem(accessToken, itemId) {
+        const res = await fetch(`${this.BASE_URL}/item/${itemId}`, {
+            headers: {
+                'Authorization': `OAuth2 ${accessToken}`
+            }
+        });
+
+        if (!res.ok) {
+            const err = await res.text();
+            throw new Error(`Podio Get Item Failed [HTTP ${res.status}]: ${err}`);
+        }
+
+        return await res.json();
+    }
+
+    /**
+     * Create a new item in a Podio App
+     * @param {string} accessToken
+     * @param {string|number} appId
+     * @param {object} fields
+     */
+    static async createItem(accessToken, appId, fields) {
+        const res = await fetch(`${this.BASE_URL}/item/app/${appId}/`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `OAuth2 ${accessToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ fields })
+        });
+
+        if (!res.ok) {
+            const err = await res.text();
+            throw new Error(`Podio Create Item Failed [HTTP ${res.status}]: ${err}`);
+        }
+
+        return await res.json();
+    }
+
+    /**
+     * Add a comment to a Podio item
+     * @param {string} accessToken
+     * @param {string|number} itemId
+     * @param {string} value
+     */
+    static async commentOnItem(accessToken, itemId, value) {
+        const res = await fetch(`${this.BASE_URL}/comment/item/${itemId}`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `OAuth2 ${accessToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ value })
+        });
+
+        if (!res.ok) {
+            const err = await res.text();
+            throw new Error(`Podio Comment Failed [HTTP ${res.status}]: ${err}`);
+        }
+
+        return await res.json();
+    }
 }
