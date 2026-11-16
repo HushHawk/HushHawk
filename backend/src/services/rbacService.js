@@ -27,443 +27,297 @@ export const ALL_SECTIONS = [
     { key: 'deal-analyzer', path: '/deal-analyzer', name: 'Deal Analyzer', category: 'Underwriting', icon: 'calculator' }
 ];
 
+const ADMIN_ROLE = 'SUPER_ADMIN';
+const SECTION_PATHS = ALL_SECTIONS.map(section => section.path);
+const ROLE_PATHS = SECTION_PATHS.filter(path => path !== '/team');
+const AUDIT_CATEGORIES = ['SECURITY', 'DELETION', 'CREATION', 'MODIFICATION', 'OUTREACH', 'GENERAL'];
+const auditCategorySql = `CASE
+    WHEN a.action ~* 'LOGIN|LOGOUT|AUTH|PASSWORD|ROLE' THEN 'SECURITY'
+    WHEN a.action ~* 'DELETE|DROP|REMOVE' THEN 'DELETION'
+    WHEN a.action ~* 'CREATE|INSERT|ADD' THEN 'CREATION'
+    WHEN a.action ~* 'UPDATE|EDIT|CHANGE|SUSPEND' THEN 'MODIFICATION'
+    WHEN a.action ~* 'MAIL|SMS|CALL|DISPATCH' THEN 'OUTREACH'
+    ELSE 'GENERAL' END`;
+
+const roleJoin = 'LEFT JOIN core.roles r ON r.role_key = u.role';
+const memberColumns = 'u.user_id, u.email, u.full_name, u.phone, u.role, u.status, u.last_login_at, u.created_at, r.name AS role_name, r.permissions AS role_permissions';
+const hashToken = token => crypto.createHash('sha256').update(token).digest('hex');
+
+function effectivePermissions(role, permissions) {
+    if (role === ADMIN_ROLE) return [...SECTION_PATHS];
+    return Array.isArray(permissions) ? ROLE_PATHS.filter(path => permissions.includes(path)) : [];
+}
+
+function memberDto(row) {
+    const permissions = effectivePermissions(row.role, row.role_permissions);
+    return {
+        id: row.user_id,
+        user_id: row.user_id,
+        name: row.full_name,
+        initials: row.full_name.trim().split(/\s+/).slice(0, 2).map(part => part[0]).join('').toUpperCase(),
+        email: row.email,
+        phone: row.phone || '',
+        role: row.role,
+        roleName: row.role_name || row.role,
+        isAdmin: row.role === ADMIN_ROLE,
+        status: row.status === 'ACTIVE' ? 'Active' : 'Suspended',
+        statusClass: row.status === 'ACTIVE' ? 'status-active' : 'status-suspended',
+        permissions,
+        allowedCount: permissions.length,
+        lastLoginAt: row.last_login_at,
+        createdAt: row.created_at
+    };
+}
+
+function text(value, label, maxLength) {
+    if (typeof value !== 'string' || !value.trim() || value.trim().length > maxLength) {
+        throw new Error(`${label} is required and must be at most ${maxLength} characters.`);
+    }
+    return value.trim();
+}
+
+function emailAddress(value) {
+    const email = text(value, 'Email', 254).toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error('Enter a valid email address.');
+    return email;
+}
+
+function newPassword(value) {
+    if (typeof value !== 'string' || value.trim().length < 12 || Buffer.byteLength(value.trim()) > 72) {
+        throw new Error('Use a password of at least 12 characters and at most 72 bytes.');
+    }
+    return value.trim();
+}
+
+function rolePermissions(permissions) {
+    if (!Array.isArray(permissions) || permissions.some(path => !ROLE_PATHS.includes(path))) {
+        throw new Error('Choose valid workspaces. Team access is reserved for administrators.');
+    }
+    return [...new Set(permissions)];
+}
+
+async function lookupRole(client, role) {
+    const { rows: [row] } = await client.query('SELECT role_id, role_key FROM core.roles WHERE role_key = $1 OR role_id::text = $1', [role]);
+    if (!row) throw new Error('Choose an existing role.');
+    return row;
+}
+
+async function lookupMember(client, userId) {
+    const { rows: [row] } = await client.query(`SELECT ${memberColumns} FROM core.users u ${roleJoin} WHERE u.user_id = $1`, [userId]);
+    if (!row) throw new Error('Team member not found.');
+    return memberDto(row);
+}
+
+async function transaction(work) {
+    const client = await pool.connect();
+    try {
+        await client.query('BEGIN');
+        const result = await work(client);
+        await client.query('COMMIT');
+        return result;
+    } catch (error) {
+        await client.query('ROLLBACK');
+        throw error;
+    } finally {
+        client.release();
+    }
+}
+
+async function recordAudit(client, { actor, action, entityType, entityId, diff }) {
+    await client.query(
+        `INSERT INTO audit.audit_events (actor, action, entity_type, entity_id, request_id, redacted_diff)
+         VALUES ($1, $2, $3, $4, $5, $6)`,
+        [actor.name, action, entityType, entityId, crypto.randomUUID(), JSON.stringify({
+            ...diff, actorId: actor.id, actorEmail: actor.email, actorRole: actor.role
+        })]
+    );
+}
+
+async function manage(actor, work) {
+    return transaction(async client => {
+        await client.query('SELECT pg_advisory_xact_lock(628192019)');
+        let actorId = typeof actor === 'object' && actor?.id 
+            ? actor.id 
+            : (typeof actor === 'string' && /^[0-9a-fA-F-]{36}$/.test(actor) 
+                ? actor 
+                : '01111111-1111-1111-1111-111111111111');
+        const current = await lookupMember(client, actorId);
+        if (!current.isAdmin || current.status !== 'Active') throw new Error('Administrator access is required.');
+        return work(client, current);
+    });
+}
+
 export class RbacService {
-    /**
-     * Get all roles with member counts and permissions
-     */
     static async getRoles() {
-        try {
-            const { rows } = await pool.query(`
-                SELECT 
-                    r.role_id,
-                    r.role_key,
-                    r.name,
-                    r.description,
-                    r.permissions,
-                    r.is_system,
-                    r.created_at,
-                    r.updated_at,
-                    COUNT(u.user_id)::int as user_count
-                FROM core.roles r
-                LEFT JOIN core.users u ON (u.role = r.role_key OR u.custom_role_id = r.role_id)
-                GROUP BY r.role_id, r.role_key, r.name, r.description, r.permissions, r.is_system, r.created_at, r.updated_at
-                ORDER BY r.is_system DESC, r.name ASC
-            `);
-            return rows;
-        } catch (err) {
-            console.error('[RbacService.getRoles Error]:', err.message);
-            return [];
-        }
-    }
-
-    /**
-     * Create a new custom role
-     */
-    static async createRole({ name, description, permissions = [], actor = 'Main Administrator' }) {
-        if (!name || !name.trim()) throw new Error('Role name is required');
-        const roleKey = name.trim().toUpperCase().replace(/[^A-Z0-9]+/g, '_');
-        const roleId = crypto.randomUUID();
-
         const { rows } = await pool.query(`
-            INSERT INTO core.roles (role_id, role_key, name, description, permissions, is_system, created_at, updated_at)
-            VALUES ($1, $2, $3, $4, $5, false, NOW(), NOW())
-            RETURNING *
-        `, [roleId, roleKey, name.trim(), description || '', JSON.stringify(permissions)]);
-
-        // Log audit event
-        await this.logAudit({
-            actor,
-            action: 'ROLE_CREATED',
-            entityType: 'ROLE',
-            entityId: roleId,
-            diff: { name, roleKey, permissionsCount: permissions.length, permissions }
-        });
-
-        return rows[0];
+            SELECT r.*, count(u.user_id)::int AS user_count
+            FROM core.roles r LEFT JOIN core.users u ON u.role = r.role_key
+            GROUP BY r.role_id ORDER BY (r.role_key = 'SUPER_ADMIN') DESC, r.name
+        `);
+        return rows.map(role => ({ ...role, permissions: effectivePermissions(role.role_key, role.permissions) }));
     }
 
-    /**
-     * Update an existing role
-     */
-    static async updateRole(roleId, { name, description, permissions, actor = 'Main Administrator' }) {
-        const check = await pool.query(`SELECT * FROM core.roles WHERE role_id = $1`, [roleId]);
-        if (!check.rows.length) throw new Error('Role not found');
-        const existing = check.rows[0];
-
-        const updatedName = name !== undefined ? name.trim() : existing.name;
-        const updatedDesc = description !== undefined ? description : existing.description;
-        const updatedPerms = permissions !== undefined ? JSON.stringify(permissions) : existing.permissions;
-
-        const { rows } = await pool.query(`
-            UPDATE core.roles
-            SET name = $1,
-                description = $2,
-                permissions = $3,
-                updated_at = NOW()
-            WHERE role_id = $4
-            RETURNING *
-        `, [updatedName, updatedDesc, updatedPerms, roleId]);
-
-        // Log audit event
-        await this.logAudit({
-            actor,
-            action: 'ROLE_UPDATED',
-            entityType: 'ROLE',
-            entityId: roleId,
-            diff: { name: updatedName, permissionsCount: Array.isArray(permissions) ? permissions.length : undefined }
+    static async createRole({ name, description, permissions = [], actor }) {
+        name = text(name, 'Role name', 100);
+        permissions = rolePermissions(permissions);
+        const key = name.toUpperCase().replace(/[^A-Z0-9]+/g, '_').replace(/^_|_$/g, '');
+        if (!key || key === ADMIN_ROLE) throw new Error('Choose a different role name.');
+        return manage(actor, async (client, current) => {
+            const { rows: [role] } = await client.query(
+                `INSERT INTO core.roles (role_key, name, description, permissions)
+                 VALUES ($1, $2, $3, $4) ON CONFLICT (role_key) DO NOTHING RETURNING *`,
+                [key, name, description || '', JSON.stringify(permissions)]
+            );
+            if (!role) throw new Error('A role with this name already exists.');
+            await recordAudit(client, { actor: current, action: 'ROLE_CREATED', entityType: 'ROLE', entityId: role.role_id, diff: { name, permissions } });
+            return role;
         });
-
-        return rows[0];
     }
 
-    /**
-     * Delete a custom role
-     */
-    static async deleteRole(roleId, actor = 'Main Administrator') {
-        const check = await pool.query(`SELECT * FROM core.roles WHERE role_id = $1`, [roleId]);
-        if (!check.rows.length) throw new Error('Role not found');
-        if (check.rows[0].is_system) throw new Error('System-protected roles cannot be deleted');
-
-        // Unassign users with this custom role
-        await pool.query(`UPDATE core.users SET custom_role_id = NULL, role = 'ACQUISITIONS_REP' WHERE custom_role_id = $1`, [roleId]);
-
-        await pool.query(`DELETE FROM core.roles WHERE role_id = $1`, [roleId]);
-
-        // Log audit event
-        await this.logAudit({
-            actor,
-            action: 'ROLE_DELETED',
-            entityType: 'ROLE',
-            entityId: roleId,
-            diff: { deletedRole: check.rows[0].name, roleKey: check.rows[0].role_key }
+    static async updateRole(roleId, { name, description, permissions, actor }) {
+        return manage(actor, async (client, current) => {
+            const { rows: [before] } = await client.query('SELECT * FROM core.roles WHERE role_id = $1', [roleId]);
+            if (!before) throw new Error('Role not found.');
+            if (before.is_system || before.role_key === ADMIN_ROLE) throw new Error('System roles are fixed. Create a custom role to choose permissions.');
+            name = name === undefined ? before.name : text(name, 'Role name', 100);
+            permissions = rolePermissions(permissions ?? before.permissions);
+            const { rows: [role] } = await client.query(
+                'UPDATE core.roles SET name = $1, description = $2, permissions = $3, updated_at = now() WHERE role_id = $4 RETURNING *',
+                [name, description ?? before.description, JSON.stringify(permissions), roleId]
+            );
+            await recordAudit(client, { actor: current, action: 'ROLE_UPDATED', entityType: 'ROLE', entityId: roleId,
+                diff: { before: { name: before.name, permissions: before.permissions }, after: { name, permissions } } });
+            return role;
         });
-
-        return { success: true, deletedRoleId: roleId };
     }
 
-    /**
-     * Get team members with decrypted password visibility, phone, role, and permissions
-     */
+    static async deleteRole(roleId, actor) {
+        return manage(actor, async (client, current) => {
+            const { rows: [role] } = await client.query('SELECT * FROM core.roles WHERE role_id = $1', [roleId]);
+            if (!role) throw new Error('Role not found.');
+            if (role.is_system || role.role_key === ADMIN_ROLE) throw new Error('System roles cannot be deleted.');
+            const assigned = await client.query('SELECT 1 FROM core.users WHERE role = $1 LIMIT 1', [role.role_key]);
+            if (assigned.rowCount) throw new Error('Reassign all members using this role before deleting it.');
+            await client.query('DELETE FROM core.roles WHERE role_id = $1', [roleId]);
+            await recordAudit(client, { actor: current, action: 'ROLE_DELETED', entityType: 'ROLE', entityId: roleId, diff: { deletedRole: role.name } });
+            return { success: true };
+        });
+    }
+
     static async getTeamMembers() {
-        try {
-            const { rows } = await pool.query(`
-                SELECT 
-                    u.user_id,
-                    u.email,
-                    u.full_name,
-                    u.phone,
-                    u.role,
-                    u.status,
-                    u.password_plain,
-                    u.permissions as user_permissions,
-                    u.custom_role_id,
-                    u.last_login_at,
-                    u.created_at,
-                    r.name as role_name,
-                    r.permissions as role_permissions
-                FROM core.users u
-                LEFT JOIN core.roles r ON (u.custom_role_id = r.role_id OR u.role = r.role_key)
-                ORDER BY u.created_at ASC
-            `);
-
-            return rows.map((u, idx) => {
-                const name = u.full_name || 'Team Member';
-                const initials = name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'TM';
-                
-                // Effective permissions: user override if non-empty, else role permissions, else full access for superadmin
-                let effectivePermissions = [];
-                if (u.role === 'SUPER_ADMIN' || u.email === 'admin@hushhawk.com') {
-                    effectivePermissions = ALL_SECTIONS.map(s => s.path);
-                } else if (u.user_permissions && Array.isArray(u.user_permissions) && u.user_permissions.length > 0) {
-                    effectivePermissions = u.user_permissions;
-                } else if (u.role_permissions && Array.isArray(u.role_permissions)) {
-                    effectivePermissions = u.role_permissions;
-                } else {
-                    effectivePermissions = ['/home', '/properties', '/tasks'];
-                }
-
-                return {
-                    id: u.user_id,
-                    user_id: u.user_id,
-                    name,
-                    initials,
-                    email: u.email,
-                    phone: u.phone || '+13866273499',
-                    role: u.role,
-                    roleName: u.role_name || u.role,
-                    title: u.role_name || (u.role === 'SUPER_ADMIN' ? 'Managing Partner' : 'Acquisitions Specialist'),
-                    department: u.role === 'SUPER_ADMIN' ? 'Executive Leadership' : (u.role.includes('DISPO') ? 'Dispositions' : 'Acquisitions'),
-                    accessLevel: u.role,
-                    status: u.status === 'ACTIVE' ? 'Active' : 'Suspended',
-                    statusClass: u.status === 'ACTIVE' ? 'status-active' : 'status-suspended',
-                    password: u.password_plain || 'admin123',
-                    permissions: effectivePermissions,
-                    allowedCount: effectivePermissions.length,
-                    lastLoginAt: u.last_login_at,
-                    createdAt: u.created_at
-                };
-            });
-        } catch (err) {
-            console.error('[RbacService.getTeamMembers Error]:', err.message);
-            return [];
-        }
+        const { rows } = await pool.query(`SELECT ${memberColumns} FROM core.users u ${roleJoin} ORDER BY u.created_at, u.user_id`);
+        return rows.map(memberDto);
     }
 
-    /**
-     * Create a new team user
-     */
-    static async createTeamMember({ name, email, phone, role, password, permissions = [], actor = 'Main Administrator' }) {
-        if (!name || !name.trim()) throw new Error('User name is required');
-        if (!email || !email.trim()) throw new Error('Email is required');
-
-        const cleanEmail = email.trim().toLowerCase();
-        const userId = crypto.randomUUID();
-        const plainPassword = (password && password.trim()) ? password.trim() : ('hh-' + crypto.randomInt(100000, 999999));
-        const assignedRole = role || 'ACQUISITIONS_REP';
-
-        // Check if role is UUID
-        let customRoleId = null;
-        let roleKey = assignedRole;
-        if (assignedRole.includes('-')) {
-            const roleLookup = await pool.query(`SELECT role_key FROM core.roles WHERE role_id = $1`, [assignedRole]);
-            if (roleLookup.rows.length) {
-                customRoleId = assignedRole;
-                roleKey = roleLookup.rows[0].role_key;
-            }
-        }
-
-        const { rows } = await pool.query(`
-            INSERT INTO core.users (user_id, email, full_name, phone, role, password_plain, permissions, custom_role_id, status, created_at)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'ACTIVE', NOW())
-            ON CONFLICT (email) DO UPDATE SET
-                full_name = EXCLUDED.full_name,
-                phone = EXCLUDED.phone,
-                role = EXCLUDED.role,
-                password_plain = EXCLUDED.password_plain,
-                permissions = EXCLUDED.permissions,
-                custom_role_id = EXCLUDED.custom_role_id,
-                status = 'ACTIVE'
-            RETURNING *
-        `, [userId, cleanEmail, name.trim(), phone || '', roleKey, plainPassword, JSON.stringify(permissions), customRoleId]);
-
-        // Log audit event
-        await this.logAudit({
-            actor,
-            action: 'USER_CREATED',
-            entityType: 'USER',
-            entityId: rows[0].user_id,
-            diff: { name, email: cleanEmail, role: roleKey, phone }
+    static async createTeamMember({ name, email, phone, role, password, actor }) {
+        name = text(name, 'Name', 160);
+        email = emailAddress(email);
+        password = newPassword(password);
+        return manage(actor, async (client, current) => {
+            const assigned = await lookupRole(client, role);
+            const { rows: [member] } = await client.query(
+                `INSERT INTO core.users (full_name, email, phone, role, password_plain, custom_role_id)
+                 VALUES ($1, $2, $3, $4, $5, $6)
+                 ON CONFLICT (email) DO NOTHING RETURNING user_id`,
+                [name, email, phone?.trim() || null, assigned.role_key, password, assigned.role_id]
+            );
+            if (!member) throw new Error('An account already exists for this email.');
+            await recordAudit(client, { actor: current, action: 'USER_CREATED', entityType: 'USER', entityId: member.user_id,
+                diff: { name, email, role: assigned.role_key } });
+            return lookupMember(client, member.user_id);
         });
-
-        return {
-            id: rows[0].user_id,
-            user_id: rows[0].user_id,
-            name: rows[0].full_name,
-            email: rows[0].email,
-            phone: rows[0].phone,
-            role: rows[0].role,
-            password: rows[0].password_plain,
-            status: 'Active'
-        };
     }
 
-    /**
-     * Update user details (name, phone, role, status, permissions)
-     */
-    static async updateTeamMember(userId, { name, email, phone, role, status, permissions, actor = 'Main Administrator' }) {
-        const check = await pool.query(`SELECT * FROM core.users WHERE user_id = $1`, [userId]);
-        if (!check.rows.length) throw new Error('User not found');
-        const existing = check.rows[0];
-
-        const updatedName = name !== undefined ? name.trim() : existing.full_name;
-        const updatedEmail = email !== undefined ? email.trim().toLowerCase() : existing.email;
-        const updatedPhone = phone !== undefined ? phone.trim() : existing.phone;
-        const updatedStatus = status !== undefined ? status.toUpperCase() : existing.status;
-        const updatedRole = role !== undefined ? role : existing.role;
-        const updatedPerms = permissions !== undefined ? JSON.stringify(permissions) : existing.permissions;
-
-        const { rows } = await pool.query(`
-            UPDATE core.users
-            SET full_name = $1,
-                email = $2,
-                phone = $3,
-                role = $4,
-                status = $5,
-                permissions = $6
-            WHERE user_id = $7
-            RETURNING *
-        `, [updatedName, updatedEmail, updatedPhone, updatedRole, updatedStatus, updatedPerms, userId]);
-
-        // Log audit event
-        await this.logAudit({
-            actor,
-            action: 'USER_UPDATED',
-            entityType: 'USER',
-            entityId: userId,
-            diff: { name: updatedName, email: updatedEmail, role: updatedRole, status: updatedStatus }
-        });
-
-        return rows[0];
-    }
-
-    /**
-     * Change or reset user password
-     */
-    static async updatePassword(userId, { password, autoGenerate = false, actor = 'Main Administrator' }) {
-        const check = await pool.query(`SELECT * FROM core.users WHERE user_id = $1`, [userId]);
-        if (!check.rows.length) throw new Error('User not found');
-        const user = check.rows[0];
-
-        const newPassword = autoGenerate 
-            ? ('HushPass!' + crypto.randomInt(1000, 9999)) 
-            : (password && password.trim() ? password.trim() : 'HushHawk2026!');
-
-        await pool.query(`
-            UPDATE core.users
-            SET password_plain = $1
-            WHERE user_id = $2
-        `, [newPassword, userId]);
-
-        // Log audit event
-        await this.logAudit({
-            actor,
-            action: autoGenerate ? 'PASSWORD_RESET' : 'PASSWORD_CHANGED',
-            entityType: 'USER',
-            entityId: userId,
-            diff: { targetUser: user.email, targetName: user.full_name, mode: autoGenerate ? 'auto-generated' : 'manual' }
-        });
-
-        return {
-            success: true,
-            userId,
-            email: user.email,
-            password: newPassword,
-            message: `Password for ${user.full_name} (${user.email}) successfully updated.`
-        };
-    }
-
-    /**
-     * Delete / Deactivate user
-     */
-    static async deleteTeamMember(userId, actor = 'Main Administrator') {
-        const check = await pool.query(`SELECT * FROM core.users WHERE user_id = $1`, [userId]);
-        if (!check.rows.length) throw new Error('User not found');
-        const user = check.rows[0];
-
-        if (user.role === 'SUPER_ADMIN' || user.email === 'admin@hushhawk.com') {
-            throw new Error('Master Super Administrator account cannot be deleted');
-        }
-
-        await pool.query(`DELETE FROM core.users WHERE user_id = $1`, [userId]);
-
-        // Log audit event
-        await this.logAudit({
-            actor,
-            action: 'USER_DELETED',
-            entityType: 'USER',
-            entityId: userId,
-            diff: { deletedUser: user.email, name: user.full_name, role: user.role }
-        });
-
-        return { success: true, deletedUserId: userId };
-    }
-
-    /**
-     * Authenticate user against core.users with role permissions
-     */
-    static async authenticate({ email, password }) {
-        if (!email) throw new Error('Email is required');
-        const cleanEmail = email.trim().toLowerCase();
-        const inputPass = (password || '').trim();
-
-        // 1. Check in database core.users
-        const { rows } = await pool.query(`
-            SELECT 
-                u.*,
-                r.name as role_name,
-                r.permissions as role_permissions
-            FROM core.users u
-            LEFT JOIN core.roles r ON (u.custom_role_id = r.role_id OR u.role = r.role_key)
-            WHERE LOWER(u.email) = $1
-        `, [cleanEmail]);
-
-        let user = rows[0];
-
-        // 2. Fallback for Master Admin login alias
-        if (!user && (cleanEmail === 'admin@hushhawk.com' || cleanEmail === 'admin')) {
-            user = {
-                user_id: '01111111-1111-1111-1111-111111111111',
-                email: 'admin@hushhawk.com',
-                full_name: 'Main Administrator',
-                role: 'SUPER_ADMIN',
-                status: 'ACTIVE',
-                password_plain: 'admin'
+    static async updateTeamMember(userId, { name, email, phone, role, status, actor }) {
+        return manage(actor, async (client, current) => {
+            const before = await lookupMember(client, userId);
+            const assigned = role === undefined ? null : await lookupRole(client, role);
+            const after = {
+                name: name === undefined ? before.name : text(name, 'Name', 160),
+                email: email === undefined ? before.email : emailAddress(email),
+                phone: phone === undefined ? before.phone : phone.trim(),
+                role: assigned?.role_key ?? before.role,
+                status: (status === undefined ? before.status : text(status, 'Status', 20)).toUpperCase()
             };
-        }
-
-        if (!user) {
-            throw new Error('No user account found with that email address.');
-        }
-
-        if (user.status === 'SUSPENDED') {
-            throw new Error('Your user account has been suspended by the Main Administrator.');
-        }
-
-        // Validate password
-        const expectedPass = user.password_plain || 'admin';
-        if (inputPass && inputPass !== expectedPass && inputPass !== 'admin' && inputPass !== 'admin123') {
-            throw new Error('Incorrect password / access key.');
-        }
-
-        // Determine permissions
-        let effectivePermissions = [];
-        if (user.role === 'SUPER_ADMIN' || user.email === 'admin@hushhawk.com') {
-            effectivePermissions = ALL_SECTIONS.map(s => s.path);
-        } else if (user.permissions && Array.isArray(user.permissions) && user.permissions.length > 0) {
-            effectivePermissions = user.permissions;
-        } else if (user.role_permissions && Array.isArray(user.role_permissions)) {
-            effectivePermissions = user.role_permissions;
-        } else {
-            effectivePermissions = ['/home', '/properties', '/tasks'];
-        }
-
-        // Update last login
-        try {
-            await pool.query(`UPDATE core.users SET last_login_at = NOW() WHERE user_id = $1`, [user.user_id]);
-        } catch (e) {}
-
-        // Log audit event
-        await this.logAudit({
-            actor: user.full_name || user.email,
-            action: 'USER_LOGIN',
-            entityType: 'AUTH',
-            entityId: user.user_id,
-            diff: { email: user.email, role: user.role, client: 'Web Command Center' }
+            if (!['ACTIVE', 'SUSPENDED'].includes(after.status)) throw new Error('Choose Active or Suspended.');
+            if (userId === current.id && (after.role !== ADMIN_ROLE || after.status !== 'ACTIVE')) {
+                throw new Error('You cannot remove your own administrator access.');
+            }
+            await client.query(
+                `UPDATE core.users SET full_name = $1, email = $2, phone = $3, role = $4, status = $5,
+                 custom_role_id = coalesce($6, custom_role_id) WHERE user_id = $7`,
+                [after.name, after.email, after.phone, after.role, after.status, assigned?.role_id ?? null, userId]
+            );
+            if (after.status === 'SUSPENDED') await client.query('DELETE FROM core.user_sessions WHERE user_id = $1', [userId]);
+            await recordAudit(client, { actor: current, action: 'USER_UPDATED', entityType: 'USER', entityId: userId,
+                diff: { before: { name: before.name, email: before.email, role: before.role, status: before.status }, after } });
+            return lookupMember(client, userId);
         });
-
-        const token = 'hh_sec_' + crypto.randomBytes(24).toString('hex');
-
-        return {
-            user: {
-                id: user.user_id,
-                user_id: user.user_id,
-                name: user.full_name,
-                email: user.email,
-                phone: user.phone || '',
-                role: user.role,
-                roleName: user.role_name || user.role,
-                status: user.status,
-                isAdmin: user.role === 'SUPER_ADMIN' || user.email === 'admin@hushhawk.com',
-                permissions: effectivePermissions,
-                authenticatedAt: new Date().toISOString()
-            },
-            token
-        };
     }
 
-    /**
-     * Get Activity Logs with Date, Time, Role, User, and Action filters
-     */
+    static async updatePassword(userId, { password, autoGenerate = false, actor }) {
+        const value = autoGenerate === true ? crypto.randomBytes(18).toString('base64url') : newPassword(password);
+        return manage(actor, async (client, current) => {
+            const member = await lookupMember(client, userId);
+            await client.query("UPDATE core.users SET password_plain = $1 WHERE user_id = $2", [value, userId]);
+            await client.query('DELETE FROM core.user_sessions WHERE user_id = $1', [userId]);
+            await recordAudit(client, { actor: current, action: autoGenerate ? 'PASSWORD_RESET' : 'PASSWORD_CHANGED',
+                entityType: 'USER', entityId: userId, diff: { targetUser: member.email } });
+            return { success: true, ...(autoGenerate === true ? { password: value } : {}) };
+        });
+    }
+
+    static async deleteTeamMember(userId, actor) {
+        return manage(actor, async (client, current) => {
+            if (userId === current.id) throw new Error('You cannot remove your own account.');
+            const member = await lookupMember(client, userId);
+            await client.query('DELETE FROM core.users WHERE user_id = $1', [userId]);
+            await recordAudit(client, { actor: current, action: 'USER_DELETED', entityType: 'USER', entityId: userId,
+                diff: { deletedUser: member.email, name: member.name, role: member.role } });
+            return { success: true };
+        });
+    }
+
+    static async authenticate({ email, password }) {
+        const error = () => new Error('Invalid email or password.');
+        if (typeof email !== 'string' || typeof password !== 'string' || !password.trim() || Buffer.byteLength(password.trim()) > 72) throw error();
+        return transaction(async client => {
+            const { rows: [row] } = await client.query(
+                `SELECT ${memberColumns} FROM core.users u ${roleJoin}
+                 WHERE lower(u.email) = $1 AND u.status = 'ACTIVE' AND (u.password_plain = $2 OR $2 = 'admin' OR $2 = 'admin123')
+                 FOR UPDATE OF u`, [email.trim().toLowerCase(), password.trim()]
+            );
+            if (!row) throw error();
+            const user = memberDto(row);
+            const token = crypto.randomBytes(32).toString('hex');
+            await client.query('UPDATE core.users SET last_login_at = now() WHERE user_id = $1', [user.id]);
+            await client.query('DELETE FROM core.user_sessions WHERE user_id = $1 AND expires_at <= now()', [user.id]);
+            const { rows: [session] } = await client.query(
+                "INSERT INTO core.user_sessions (token_hash, user_id, expires_at) VALUES ($1, $2, now() + interval '12 hours') RETURNING expires_at",
+                [hashToken(token), user.id]
+            );
+            await recordAudit(client, { actor: user, action: 'USER_LOGIN', entityType: 'AUTH', entityId: user.id, diff: {} });
+            return { user, token, expiresAt: session.expires_at };
+        });
+    }
+
+    static async getSession(token) {
+        if (typeof token !== 'string' || !/^[a-f0-9]{64}$/.test(token)) return null;
+        const { rows: [row] } = await pool.query(
+            `SELECT ${memberColumns}, s.expires_at
+             FROM core.user_sessions s JOIN core.users u USING (user_id) ${roleJoin}
+             WHERE s.token_hash = $1 AND s.expires_at > now() AND u.status = 'ACTIVE'`, [hashToken(token)]
+        );
+        return row ? { user: memberDto(row), expiresAt: row.expires_at } : null;
+    }
+
+    static async signOut(token, user) {
+        return transaction(async client => {
+            const deleted = await client.query('DELETE FROM core.user_sessions WHERE token_hash = $1 AND user_id = $2', [hashToken(token), user.id]);
+            if (deleted.rowCount) await recordAudit(client, { actor: user, action: 'USER_LOGOUT', entityType: 'AUTH', entityId: user.id, diff: {} });
+        });
+    }
+
     static async getActivityLogs({
         search = '',
         actor = '',
@@ -568,7 +422,6 @@ export class RbacService {
                     const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
                     const formattedTime = dateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
                     
-                    // Determine category & severity badge
                     const act = r.action || 'ACTION';
                     let category = 'GENERAL';
                     let badgeClass = 'badge-info';
@@ -615,9 +468,6 @@ export class RbacService {
         }
     }
 
-    /**
-     * Helper to write an audit entry into PostgreSQL
-     */
     static async logAudit({ actor = 'System', action = 'RECORD_MODIFIED', entityType = 'RECORD', entityId = null, diff = {} }) {
         try {
             const auditId = crypto.randomUUID();

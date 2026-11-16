@@ -180,6 +180,9 @@
                     <button class="action-btn snooze" title="Snooze 3 Days" @click="snoozeFollowUp(item, 3)">
                       <span v-html="icons.clock"></span>
                     </button>
+                    <button class="action-btn delete" title="Dismiss / Delete Follow-Up" @click="confirmDeleteFollowUp(item)">
+                      <span v-html="icons.trash"></span>
+                    </button>
                   </div>
                 </td>
               </tr>
@@ -284,6 +287,13 @@
             <p class="script-quote">
               "Hi {{ selectedFollowUp.seller.split(' ')[0] }}, this is {{ selectedFollowUp.rep }} with HushHawk Capital. Just checking back on {{ selectedFollowUp.address.split(',')[0] }}—we finalized our cash allocation for Duval County this week and wanted to see if our ${{ selectedFollowUp.lastOffer ? selectedFollowUp.lastOffer.toLocaleString() : 'cash' }} offer can still work with your timeline?"
             </p>
+          </div>
+
+          <div style="margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.08);">
+            <button class="btn btn-danger-outline" @click="confirmDeleteFollowUp(selectedFollowUp)">
+              <span v-html="icons.trash"></span>
+              Delete &amp; Dismiss Follow-Up
+            </button>
           </div>
         </div>
       </div>
@@ -519,6 +529,20 @@ export default {
           body: JSON.stringify({ dueStatus: 'Upcoming', dueText: item.dueText })
         });
       } catch (e) {}
+    },
+    async confirmDeleteFollowUp(item) {
+      if (!item) return;
+      if (!confirm(`Are you sure you want to dismiss and delete this follow-up for "${item.seller}"?`)) {
+        return;
+      }
+      try {
+        await fetch(`/api/v1/follow-ups/${item.id}`, { method: 'DELETE' });
+      } catch (e) {}
+      this.followUps = this.followUps.filter(f => f.id !== item.id);
+      if (this.selectedFollowUp && this.selectedFollowUp.id === item.id) {
+        this.selectedFollowUp = null;
+      }
+      this.showToast('Follow-Up Dismissed', `Follow-up for ${item.seller} was removed.`, 'info');
     },
     quickCall(item) {
       this.commModal = {
@@ -1121,6 +1145,39 @@ export default {
   background: rgba(237, 207, 124, 0.15);
   border-color: #edcf7c;
   color: #edcf7c;
+}
+
+.action-btn.delete {
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #f87171;
+  background: rgba(239, 68, 68, 0.08);
+}
+.action-btn.delete:hover {
+  background: #ef4444;
+  border-color: #ef4444;
+  color: #ffffff;
+}
+
+.btn-danger-outline {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #f87171;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 13px;
+  width: 100%;
+  transition: all 0.15s ease;
+}
+.btn-danger-outline:hover {
+  background: #ef4444;
+  border-color: #ef4444;
+  color: #ffffff;
 }
 
 /* Detail Drawer */

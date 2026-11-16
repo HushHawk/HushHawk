@@ -140,6 +140,9 @@
                     <button class="action-btn sms" title="SMS" @click="quickSms(c)">
                       <span v-html="icons.text"></span>
                     </button>
+                    <button class="action-btn delete" title="Delete Contact" @click="confirmDeleteContact(c)">
+                      <span v-html="icons.trash"></span>
+                    </button>
                   </div>
                 </td>
               </tr>
@@ -181,6 +184,10 @@
             <button class="btn btn-secondary" @click="quickSms(selectedContact)">
               <span v-html="icons.text"></span>
               SMS
+            </button>
+            <button class="btn btn-danger-outline" @click="confirmDeleteContact(selectedContact)" title="Delete Contact">
+              <span v-html="icons.trash"></span>
+              Delete
             </button>
           </div>
 
@@ -362,6 +369,23 @@ export default {
 
     selectContact(c) {
       this.selectedContact = c;
+    },
+    async confirmDeleteContact(c) {
+      if (!c) return;
+      if (!confirm(`Are you sure you want to delete contact "${c.name}" (${c.phone})?`)) return;
+      try {
+        await fetch(`/api/v1/contacts/${c.id}`, { method: 'DELETE' });
+      } catch (e) {
+        console.warn('API delete error:', e);
+      }
+      const idx = this.contacts.findIndex(item => item.id === c.id);
+      if (idx !== -1) {
+        this.contacts.splice(idx, 1);
+      }
+      if (this.selectedContact?.id === c.id) {
+        this.selectedContact = null;
+      }
+      this.showToast('Contact Deleted', `Removed "${c.name}" from contacts directory.`, 'success');
     },
     showToast(title, message, type = 'info') {
       if (typeof window !== 'undefined') {
@@ -840,9 +864,37 @@ export default {
   cursor: pointer;
 }
 
-.action-btn:hover {
-  background: rgba(237, 207, 124, 0.15);
-  color: #edcf7c;
+.action-btn.delete {
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #f87171;
+  background: rgba(239, 68, 68, 0.08);
+}
+
+.action-btn.delete:hover {
+  background: #ef4444;
+  border-color: #ef4444;
+  color: #ffffff;
+}
+
+.btn-danger-outline {
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  background: rgba(239, 68, 68, 0.08);
+  color: #f87171;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 600;
+  transition: all 0.15s ease;
+}
+
+.btn-danger-outline:hover {
+  background: #ef4444;
+  border-color: #ef4444;
+  color: #ffffff;
 }
 
 /* Detail Drawer */

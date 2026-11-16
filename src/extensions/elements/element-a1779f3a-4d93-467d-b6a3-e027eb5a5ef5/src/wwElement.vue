@@ -87,6 +87,7 @@
       </div>
 
       <!-- User Identity Menu & Logout Option -->
+      <HushHawkThemeToggle />
       <div class="user-identity-wrap">
         <button
           type="button"
@@ -616,21 +617,19 @@
             <div class="ec-title-left">
               <h3><span class="panel-title-icon" v-html="icons.mail"></span> Email Center</h3>
             </div>
-            <div class="ec-supported-badge">
-              <span class="live-dot-green"></span>
-              <span>3-5 Contacted Inboxes Supported</span>
-            </div>
+            <span v-if="totalUnreadEmails" class="ec-supported-badge">{{ totalUnreadEmails }} unread</span>
           </div>
-          <div class="ec-tabs-bar">
+          <div class="ec-tabs-bar" role="group" aria-label="Email category">
             <button
               v-for="cat in emailCategories"
               :key="cat.name"
               type="button"
               class="ec-tab-btn"
               :class="{ active: selectedEmailCategory === cat.name }"
+              :aria-pressed="selectedEmailCategory === cat.name"
               @click="selectedEmailCategory = cat.name"
             >
-              {{ cat.count }}. {{ cat.name }}
+              {{ cat.name }} <span class="ec-tab-count">{{ cat.count }}</span>
             </button>
           </div>
           <div class="ec-inbox-list">
@@ -651,13 +650,14 @@
                 {{ inbox.unreadCount ? 'Unread: ' + inbox.unreadCount : inbox.status || 'Ready to Send' }}
               </span>
             </div>
+            <p v-if="!filteredEmailList.length" class="hh-panel-empty">No emails in this category.</p>
           </div>
           <div class="ec-actions-bar">
-            <button type="button" class="btn-ec-compose" @click="openComposeEmail">
+            <button type="button" class="btn-ec-compose hh-action" @click="openComposeEmail">
               <span class="tiny-svg" v-html="icons.edit"></span> Compose
             </button>
-            <a href="/communications" @click="guard" class="btn-ec-view-inbox">
-              View Inbox ({{ totalUnreadEmails }}) →
+            <a href="/communications" @click="guard" class="btn-ec-view-inbox hh-action hh-action-highlight">
+              View inbox <span aria-hidden="true">→</span>
             </a>
           </div>
 
@@ -723,17 +723,17 @@
             <div class="tm-title-left">
               <h3><span class="panel-title-icon" v-html="icons.text"></span> Messages</h3>
               <span class="tm-unread-badge" v-if="teamUnreadCount">{{ teamUnreadCount }} Unread</span>
-              <button type="button" class="btn-tm-open" @click="openPartnerChat()" title="Open Partner Chat Window">
-                Open Chat ↗
-              </button>
             </div>
             <div class="tm-channel-selector">
-              <select v-model="selectedChatChannel" @change="onChatChannelChange">
+              <select v-model="selectedChatChannel" aria-label="Message channel" @change="onChatChannelChange">
                 <option value="team">Team Chat</option>
                 <option value="acquisitions">Acquisitions</option>
                 <option value="disposition">Disposition</option>
                 <option value="direct">Direct Leads</option>
               </select>
+              <button type="button" class="btn-tm-open hh-action" @click="openPartnerChat()">
+                Open chat <span aria-hidden="true">↗</span>
+              </button>
             </div>
           </div>
           <div class="tm-messages-list">
@@ -753,13 +753,11 @@
                 <p class="tm-text">{{ msg.text }}</p>
               </div>
             </div>
-            <div v-if="!teamMessages.length" style="padding: 14px; text-align: center; color: #64748b; font-size: 11px;">
-              No messages yet. Send a note to Alex &amp; Waldo below.
-            </div>
+            <p v-if="!teamMessages.length" class="hh-panel-empty">No messages yet. Start the conversation below.</p>
           </div>
           <form @submit.prevent="sendTeamMessage" class="tm-quick-reply-form">
-            <input v-model="teamReplyDraft" placeholder="Write a team update or message…" />
-            <button type="submit" :disabled="!teamReplyDraft.trim()">Send</button>
+            <input v-model="teamReplyDraft" aria-label="Team message" placeholder="Write a message…" />
+            <button type="submit" class="hh-action hh-action-primary" :disabled="!teamReplyDraft.trim()">Send</button>
           </form>
         </article>
       </aside>
@@ -810,6 +808,7 @@
 </section>
 </template>
 <script>
+import HushHawkThemeToggle from '@/_front/components/HushHawkThemeToggle.vue';
 import {computed,ref,onMounted,onBeforeUnmount} from 'vue';
 import CountyMap from './components/CountyMap.vue';
 import LeadConversationDesk from './components/LeadConversationDesk.vue';
@@ -820,7 +819,7 @@ import HushHawkNotificationDropdown from '@/_front/components/HushHawkNotificati
 import { useNotifications } from '@/_common/use/useNotifications.js';
 import { icons } from '../../element-f1b67d54-2716-43a4-a414-ab7f505c2ace/src/icons.js';
 import { navigation } from '../../element-f1b67d54-2716-43a4-a414-ab7f505c2ace/src/navigation.js';
-export default {components:{CountyMap,LeadConversationDesk,ExecutiveOutreachActions,HushHawkNotificationDropdown},props:{uid:{type:String,required:true},content:{type:Object,required:true},},setup(props){
+export default {components:{HushHawkThemeToggle,CountyMap,LeadConversationDesk,ExecutiveOutreachActions,HushHawkNotificationDropdown},props:{uid:{type:String,required:true},content:{type:Object,required:true},},setup(props){
 const uid=computed(()=>props.uid||'dashboard');
 const isEditing=computed(()=>{return false;});
 const navOpen=ref(false);
@@ -1870,10 +1869,9 @@ return{icons,uid,feedMode,isEditing,metrics,query,zip,checked,tasks,imports,filt
   flex-direction: column !important;
   overflow: hidden !important;
   box-sizing: border-box !important;
-  background: 
-    linear-gradient(40deg, transparent 40%, rgba(212, 175, 55, 0.15) 47%, rgba(253, 230, 138, 0.45) 50%, rgba(212, 175, 55, 0.15) 53%, transparent 60%),
+  background: var(--hh-sidebar, linear-gradient(40deg, transparent 40%, rgba(212, 175, 55, 0.15) 47%, rgba(253, 230, 138, 0.45) 50%, rgba(212, 175, 55, 0.15) 53%, transparent 60%),
     linear-gradient(35deg, transparent 65%, rgba(212, 175, 55, 0.1) 72%, rgba(253, 230, 138, 0.35) 75%, rgba(212, 175, 55, 0.1) 78%, transparent 85%),
-    linear-gradient(180deg, #07111e 0%, #030812 60%, #02050b 100%) !important;
+    linear-gradient(180deg, #07111e 0%, #030812 60%, #02050b 100%)) !important;
   backdrop-filter: blur(20px);
   border-right: 1px solid rgba(212, 175, 55, 0.25) !important;
   border-left: 2px solid rgba(212, 175, 55, 0.45) !important;
@@ -1900,8 +1898,8 @@ return{icons,uid,feedMode,isEditing,metrics,query,zip,checked,tasks,imports,filt
 
 .brand {
   flex-shrink: 0 !important;
-  height: 145px !important;
-  min-height: 145px !important;
+  height: var(--hh-brand-height, 145px) !important;
+  min-height: var(--hh-brand-height, 145px) !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -1909,7 +1907,7 @@ return{icons,uid,feedMode,isEditing,metrics,query,zip,checked,tasks,imports,filt
   color: white !important;
   text-decoration: none !important;
   border-bottom: 1px solid rgba(212, 175, 55, 0.2) !important;
-  padding: 14px 8px 10px !important;
+  padding: var(--hh-brand-padding, 14px 8px 10px) !important;
   text-align: center !important;
   background: linear-gradient(180deg, rgba(212, 175, 55, 0.12) 0%, rgba(4, 18, 45, 0.4) 100%) !important;
 }
@@ -1923,12 +1921,12 @@ return{icons,uid,feedMode,isEditing,metrics,query,zip,checked,tasks,imports,filt
 
 .brand strong {
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif !important;
-  font-size: 13px !important;
-  font-weight: 850 !important;
+  font-size: var(--hh-brand-name, 13px) !important;
+  font-weight: var(--hh-brand-weight, 850) !important;
   line-height: 1.08 !important;
   margin-top: 6px !important;
-  color: #fff5e2 !important;
-  letter-spacing: 0.14em !important;
+  color: var(--hh-nav-text, #fff5e2) !important;
+  letter-spacing: var(--hh-brand-tracking, 0.14em) !important;
   text-transform: uppercase !important;
 }
 
@@ -1978,7 +1976,7 @@ return{icons,uid,feedMode,isEditing,metrics,query,zip,checked,tasks,imports,filt
   min-height: 38px !important;
   font-size: 13px !important;
   font-weight: 500 !important;
-  color: #f8fafc !important;
+  color: var(--hh-nav-text, #f8fafc) !important;
   text-decoration: none !important;
   border-radius: 8px !important;
   border: 1px solid transparent !important;
@@ -2647,7 +2645,7 @@ return{icons,uid,feedMode,isEditing,metrics,query,zip,checked,tasks,imports,filt
 
 .command * { box-sizing: border-box; }
 .command a { text-decoration: none; color: #65c9ff; }
-.command button, .command input { font: inherit; }
+.command :is(button, input, select, textarea) { font-family: inherit; }
 .command button, .command a { cursor: pointer; }
 .command button:focus-visible, .command a:focus-visible, .command input:focus-visible { outline: 2px solid #f5cf72; outline-offset: 2px; }
 .command button:disabled { cursor: default; opacity: .5; }

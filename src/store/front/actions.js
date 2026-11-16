@@ -5,8 +5,11 @@ export default {
     setTheme({ commit }, theme) {
         commit('setTheme', theme);
 
-        let themeItemName = 'ww-app-theme';
-         if (window.localStorage) window.localStorage.setItem(themeItemName, theme);
+        try {
+            window.localStorage.setItem('ww-app-theme', theme);
+        } catch {
+            // The selected theme still applies to the current page.
+        }
     },
     /*=============================================m_ÔÔ_m=============================================\
         LANG

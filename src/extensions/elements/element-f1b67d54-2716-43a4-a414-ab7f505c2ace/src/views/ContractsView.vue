@@ -101,6 +101,7 @@
                 <th>Title Escrow Agency</th>
                 <th>Closing Date</th>
                 <th>Status</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
@@ -141,6 +142,11 @@
                 </td>
                 <td>
                   <span class="status-chip" :class="c.statusClass">{{ c.status }}</span>
+                </td>
+                <td @click.stop>
+                  <button class="btn-icon-danger" @click="confirmDeleteContract(c)" title="Delete / Void Contract">
+                    <span v-html="icons.trash"></span>
+                  </button>
                 </td>
               </tr>
             </tbody>
@@ -212,6 +218,9 @@
           <button class="btn btn-primary btn-block" @click="openModal('upload')">
             <span v-html="icons.download"></span>
             Upload Title Commitment
+          </button>
+          <button class="btn btn-danger-outline btn-block" style="margin-top: 8px;" @click="confirmDeleteContract(selectedContract)" title="Delete Contract">
+            <span v-html="icons.trash"></span> Delete / Void Contract
           </button>
         </div>
       </aside>
@@ -666,6 +675,32 @@ export default {
       return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(val || 0);
     }
 
+    async function confirmDeleteContract(c) {
+      if (!c) return;
+      if (!confirm(`Are you sure you want to void and delete contract ${c.code || c.id} for "${c.address}"? This action cannot be undone.`)) {
+        return;
+      }
+      try {
+        const res = await fetch(`${API_BASE}/contracts/${c.id}`, { method: 'DELETE' });
+        const data = await res.json().catch(() => ({}));
+        if (res.ok || data.success) {
+          contracts.value = contracts.value.filter(item => item.id !== c.id);
+          if (selectedContract.value && selectedContract.value.id === c.id) {
+            selectedContract.value = null;
+          }
+          showToast('Contract Voided', `Contract ${c.code || ''} deleted successfully.`, 'success');
+        } else {
+          showToast('Error', data.error || 'Failed to delete contract', 'danger');
+        }
+      } catch (err) {
+        contracts.value = contracts.value.filter(item => item.id !== c.id);
+        if (selectedContract.value && selectedContract.value.id === c.id) {
+          selectedContract.value = null;
+        }
+        showToast('Contract Voided', `Contract ${c.code || ''} removed.`, 'info');
+      }
+    }
+
     return {
       icons,
       metrics,
@@ -695,7 +730,8 @@ export default {
       confirmUpload,
       downloadDoc,
       previewDoc,
-      formatCurrency
+      formatCurrency,
+      confirmDeleteContract
     };
   }
 };
@@ -1385,5 +1421,44 @@ export default {
 .etpb-line {
   white-space: pre-wrap;
   word-break: break-all;
+}
+
+.btn-icon-danger {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  background: rgba(239, 68, 68, 0.08);
+  color: #f87171;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.btn-icon-danger:hover {
+  border-color: #ef4444;
+  background: #ef4444;
+  color: #ffffff;
+}
+.btn-danger-outline {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #f87171;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 13px;
+  transition: all 0.15s ease;
+}
+.btn-danger-outline:hover {
+  background: #ef4444;
+  border-color: #ef4444;
+  color: #ffffff;
 }
 </style>

@@ -12,6 +12,12 @@
   --hh-sidebar: linear-gradient(145deg, #252e3c, #0e1723 37%, #0c1521 80%, #233044);
   --hh-selected: linear-gradient(180deg, #a77335, #513313 49%, #6e4820);
   --hh-gold-button: linear-gradient(#f0d089, #bb893e);
+  --hh-brand-height: 112px;
+  --hh-brand-mark: 54px;
+  --hh-brand-name: 11px;
+  --hh-brand-weight: 750;
+  --hh-brand-padding: 10px 8px 9px;
+  --hh-brand-tracking: 0.11em;
 }
 
 .hushhawk-gold :is(a, button, input, select, textarea, summary):focus-visible {
@@ -40,10 +46,9 @@
   overflow: hidden !important;
   box-sizing: border-box !important;
   z-index: 1000 !important;
-  background: 
-    linear-gradient(40deg, transparent 40%, rgba(212, 175, 55, 0.15) 47%, rgba(253, 230, 138, 0.45) 50%, rgba(212, 175, 55, 0.15) 53%, transparent 60%),
+  background: var(--hh-sidebar, linear-gradient(40deg, transparent 40%, rgba(212, 175, 55, 0.15) 47%, rgba(253, 230, 138, 0.45) 50%, rgba(212, 175, 55, 0.15) 53%, transparent 60%),
     linear-gradient(35deg, transparent 65%, rgba(212, 175, 55, 0.1) 72%, rgba(253, 230, 138, 0.35) 75%, rgba(212, 175, 55, 0.1) 78%, transparent 85%),
-    linear-gradient(180deg, #07111e 0%, #030812 60%, #02050b 100%) !important;
+    linear-gradient(180deg, #07111e 0%, #030812 60%, #02050b 100%)) !important;
   backdrop-filter: blur(20px);
   border-right: 1px solid rgba(212, 175, 55, 0.25) !important;
   border-left: 2px solid rgba(212, 175, 55, 0.45) !important;
@@ -72,8 +77,8 @@
 .hushhawk-gold .sidebar .brand,
 .hushhawk-gold.gold-section .sidebar .brand {
   flex-shrink: 0 !important;
-  height: 145px !important;
-  min-height: 145px !important;
+  height: var(--hh-brand-height) !important;
+  min-height: var(--hh-brand-height) !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -81,20 +86,27 @@
   color: white !important;
   text-decoration: none !important;
   border-bottom: 1px solid rgba(212, 175, 55, 0.2) !important;
-  padding: 14px 8px 10px !important;
+  padding: var(--hh-brand-padding) !important;
   text-align: center !important;
-  background: linear-gradient(180deg, rgba(212, 175, 55, 0.12) 0%, rgba(4, 18, 45, 0.4) 100%) !important;
+  background: var(--hh-nav-brand, linear-gradient(180deg, rgba(212, 175, 55, 0.12), rgba(4, 18, 45, 0.4))) !important;
+}
+
+.hushhawk-gold .sidebar .brand-icon,
+.hushhawk-gold.gold-section .sidebar .brand-icon {
+  width: var(--hh-brand-mark) !important;
+  height: var(--hh-brand-mark) !important;
+  flex: none;
 }
 
 .hushhawk-gold .sidebar .brand strong,
 .hushhawk-gold.gold-section .sidebar .brand strong {
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif !important;
-  font-size: 13px !important;
-  font-weight: 850 !important;
+  font-size: var(--hh-brand-name) !important;
+  font-weight: var(--hh-brand-weight) !important;
   line-height: 1.08 !important;
   margin-top: 6px !important;
-  color: #fff5e2 !important;
-  letter-spacing: 0.14em !important;
+  color: var(--hh-nav-text, #fff5e2) !important;
+  letter-spacing: var(--hh-brand-tracking) !important;
   text-transform: uppercase !important;
 }
 
@@ -133,7 +145,7 @@
   min-height: 38px !important;
   font-size: 13px !important;
   font-weight: 500 !important;
-  color: #f8fafc !important;
+  color: var(--hh-nav-text, #f8fafc) !important;
   text-decoration: none !important;
   border-radius: 8px !important;
   border: 1px solid transparent !important;
@@ -149,7 +161,7 @@
 .hushhawk-gold.gold-section .sidebar nav a .icon {
   width: 17px !important;
   height: 17px !important;
-  color: #eac16a !important;
+  color: var(--hh-gold, #eac16a) !important;
   flex-shrink: 0 !important;
 }
 
@@ -163,14 +175,14 @@
 .hushhawk-gold .sidebar nav a:hover,
 .hushhawk-gold.gold-section .sidebar nav a:hover {
   background: rgba(212, 175, 55, 0.1) !important;
-  color: #ffffff !important;
+  color: var(--hh-nav-text, #ffffff) !important;
   border-color: rgba(212, 175, 55, 0.25) !important;
   transform: translateX(2px);
 }
 
 .hushhawk-gold .sidebar nav a:hover .icon,
 .hushhawk-gold.gold-section .sidebar nav a:hover .icon svg {
-  color: #fde68a !important;
+  color: var(--hh-gold-light, #fde68a) !important;
   stroke: #fde68a !important;
 }
 
@@ -179,7 +191,7 @@
   background: linear-gradient(180deg, #744d1e 0%, #3e260c 100%) !important;
   border: 1.5px solid #dfa745 !important;
   border-radius: 11px !important;
-  color: #ffffff !important;
+  color: var(--hh-nav-text, #ffffff) !important;
   font-weight: 700 !important;
   box-shadow: 
     0 0 14px rgba(223, 167, 69, 0.45),
@@ -191,7 +203,7 @@
 
 .hushhawk-gold .sidebar nav a.active .icon,
 .hushhawk-gold.gold-section .sidebar nav a.active .icon svg {
-  color: #fde68a !important;
+  color: var(--hh-gold-light, #fde68a) !important;
   stroke: #fde68a !important;
   filter: drop-shadow(0 0 4px rgba(253, 230, 138, 0.7));
 }
@@ -210,7 +222,7 @@
   font-weight: 850 !important;
   text-transform: uppercase !important;
   letter-spacing: 0.1em !important;
-  color: #eac16a !important;
+  color: var(--hh-gold, #eac16a) !important;
   padding: 8px 12px !important;
   display: flex !important;
   align-items: center !important;
@@ -263,7 +275,7 @@
 .hushhawk-gold.gold-section .sidebar .sidebar-logout-btn:hover {
   background: rgba(239, 68, 68, 0.18) !important;
   border-color: rgba(239, 68, 68, 0.6) !important;
-  color: #ffffff !important;
+  color: var(--hh-nav-text, #ffffff) !important;
   box-shadow: 0 0 16px rgba(239, 68, 68, 0.35) !important;
   transform: translateY(-1px);
 }
@@ -331,14 +343,475 @@
   color: var(--hh-text);
 }
 
-.hushhawk-gold.hushhawk-auth-wrapper .auth-card {
-  background: var(--hh-panel);
-  border-color: #896c3e;
+/* Both layouts share the same navigation finish. */
+.hushhawk-gold:is(.gold-section, .dashboard-gold) .sidebar {
+  background: var(--hh-sidebar) !important;
+}
+.hushhawk-gold:is(.gold-section, .dashboard-gold) .sidebar nav a.active {
+  background: var(--hh-selected) !important;
+  border-color: #d8af68 !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold {
+  color-scheme: light;
+  --hh-canvas: #f1ede4;
+  --hh-text: #18273c;
+  --hh-muted: #46566b;
+  --hh-gold: #765018;
+  --hh-gold-light: #6f4913;
+  --hh-border: #cfc2ab;
+  --hh-panel: linear-gradient(155deg, #fffefa, #f8f4ec);
+  --hh-panel-header: linear-gradient(180deg, #fcf8ef, #eee5d6);
+  --hh-panel-shadow: inset 0 1px #fff, 0 4px 12px #35271512;
+  --hh-sidebar: linear-gradient(155deg, #fcf7eb, #e9e0d0 75%, #e0d0b6);
+  --hh-selected: linear-gradient(180deg, #f2d694, #ddb876);
+  --hh-control: #fffdfa;
+  --hh-subtle: #eee8dd;
+  --hh-hover: #e7d7b8;
+  --hh-link: #34587d;
+  --hh-focus: #815418;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold,
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.workspace, .command) {
+  background: var(--hh-canvas);
+  color: var(--hh-text);
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(a, button, input, select, textarea, summary):focus-visible {
+  outline-color: var(--hh-focus);
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold .sidebar {
+  background: var(--hh-sidebar) !important;
+  border-color: var(--hh-border) !important;
   box-shadow: var(--hh-panel-shadow);
 }
-.hushhawk-gold.hushhawk-auth-wrapper .auth-card-title { font-family: Georgia, serif; color: var(--hh-text); }
-.hushhawk-gold.hushhawk-auth-wrapper .btn-auth-gold {
+:root:not(.ww-app-theme-dark) .hushhawk-gold .sidebar :is(.brand, .brand-bottom) {
+  background: #f8efdde8 !important;
+  border-color: var(--hh-border) !important;
+  color: var(--hh-text) !important;
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold .sidebar :is(.brand strong, nav a, .sidebar nav a.active) {
+  color: var(--hh-text) !important;
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold .sidebar :is(.brand small, .brand-bottom span, nav .icon, nav .icon svg, nav summary) {
+  color: var(--hh-gold) !important;
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold .sidebar nav a { border-bottom-color: #ad967041 !important; }
+:root:not(.ww-app-theme-dark) .hushhawk-gold .sidebar nav a:hover { background: var(--hh-hover) !important; }
+:root:not(.ww-app-theme-dark) .hushhawk-gold .sidebar nav a.active {
+  background: var(--hh-selected) !important;
+  box-shadow: inset 0 1px #fff8;
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold .sidebar .sidebar-logout-btn {
+  background: #fff8f0 !important;
+  color: #a22930 !important;
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold .sidebar-foil { opacity: .35; }
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.topbar, .auth-topbar) {
+  background: var(--hh-panel-header);
+  border-color: var(--hh-border);
+  color: var(--hh-text);
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold .hero {
+  background: var(--hh-panel-header) !important;
+  border-color: var(--hh-border);
+  color: var(--hh-text);
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.masthead-brand, .identity-text strong, .hero h1, .dashboard-heading h1) {
+  color: var(--hh-text);
+  text-shadow: none;
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(
+  .masthead-brand small, .dashboard-heading em, .dashboard-heading p, .dashboard-location,
+  .jacksonville-calligraphy strong, .panel-title-icon, .panel-title a, .icon-title, .text-gold,
+  .quick-add-menu a, .btn-topbar-properties, .btn-live-sync, .btn-podio-sync
+) { color: var(--hh-gold); }
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(
+  .global-search, .live-clock, .notification-btn, .user-identity, .btn-topbar-properties,
+  .user-menu-dropdown, .quick-add-menu, .user-menu-header, .hushhawk-notif-dropdown,
+  .btn-secondary, .btn-subtle
+) {
+  background: var(--hh-control);
+  color: var(--hh-text);
+  border-color: var(--hh-border);
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(
+  .panel, .main-panel, .panel-card, .metric, .metric-card, .kpi, .stat-card, .vstat-card,
+  .quick-stat-card, .deal-card, .stage, .tab-content-panel, .panel-section, .pillar-strip-panel,
+  .distress-pillar-card, .vault-upload-panel, .photos-panel, .threads-panel, .chat-panel,
+  .intel-panel, .input-panel, .results-panel, .settings-card, .calendar-workspace, .event-card,
+  .agenda-item, .prop-header, .prop-sidebar, .vault-file-card, .vault-modal-card, .modal-content,
+  .import-lead-modal, .modal, .signin-form-panel, .pulse, .market-tape,
+  .jax-market-movement-bar, .lead-desk, .action-card, .outreach-card, .elite-maps
+) {
+  background: var(--hh-panel);
+  color: var(--hh-text);
+  border-color: var(--hh-border);
+  box-shadow: var(--hh-panel-shadow);
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(
+  .panel-title, .panel-header, .panel-heading, .panel-head, .panel-card-header, .modal-header,
+  .calendar-header, .settings-header, .day-header, .prop-sidebar-header, .lead-desk-header,
+  .desk-heading, .desk-header, .thread-heading, .chat-header, .intel-header, .market-head
+) {
+  background: var(--hh-panel-header);
+  border-color: var(--hh-border);
+  color: var(--hh-text);
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(
+  .metric strong, .metric-label, .signin-form-inner h1, .signin-form label,
+  .stage-box, .stage-name, .stage-num, .stage-volume, .action-card h3, .outreach-card h3,
+  .lead-desk h2, .lead-desk h3, .lead-desk h4, .lead-desk .message p
+) { color: var(--hh-text); }
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.panel, .main-panel, .panel-card, .settings-card, .metric-card, .kpi, .prop-header, .threads-panel, .chat-panel) :is(h1,h2,h3,h4, th, td, label, .prop-address, .thread-name) {
+  color: var(--hh-text);
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(
+  .hero p, .panel-note, .text-muted, .text-dim, .hint, .metric-label, .identity-text small, .clock-label,
+  .signin-intro, .signin-help, .desk-state, .thread-summary small,
+  .thread-heading p, .message small, .panel-empty, .panel-loading
+) { color: var(--hh-muted); }
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(
+  .stage-box, .stage-grid a, .thread-detail, .thread, .thread-card, .chat-body,
+  .tab-btn, .pill-btn, .county-card, .prop-tabs, .prop-card, .info-card, .card-inset
+) {
+  background: var(--hh-control);
+  color: var(--hh-text);
+  border-color: var(--hh-border);
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(
+  .stage-grid .stage-box:nth-last-child(-n+3), .thread[aria-pressed="true"], .thread-card.active,
+  .tab-btn.active, .pill-btn.active, .tab-button.active, .prop-card.active
+) {
+  background: var(--hh-selected);
+  border-color: #b18b50;
+  color: var(--hh-text);
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold .message { background: var(--hh-subtle); border-color: var(--hh-border); }
+:root:not(.ww-app-theme-dark) .hushhawk-gold .message.outgoing { background: #e1ebf5; border-color: #b0c5dd; }
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(table, thead, tbody, tr, th, td) { border-color: var(--hh-border); }
+:root:not(.ww-app-theme-dark) .hushhawk-gold thead th { background: var(--hh-panel-header); color: var(--hh-text); }
+:root:not(.ww-app-theme-dark) .hushhawk-gold tbody td { color: var(--hh-text); background-color: transparent; }
+:root:not(.ww-app-theme-dark) .hushhawk-gold tbody tr:hover { background-color: var(--hh-hover); }
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.panel, .main-panel, .panel-card) table a { color: var(--hh-link); }
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(input:not([type="checkbox"], [type="radio"], [type="range"]), select, textarea) {
+  background: var(--hh-control);
+  border-color: var(--hh-border);
+  color: var(--hh-text);
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(input, textarea)::placeholder { color: var(--hh-muted); }
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(
+  .btn-primary, .btn-gold, .btn-primary-gold, .btn-action-add, .modal-primary, .btn-auth-gold
+) { background: var(--hh-gold-button); color: #241807; }
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold {
+  --hh-nav-text: #18273c;
+  --hh-nav-brand: linear-gradient(160deg, #fff9ed, #f0e4ce);
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .sidebar nav a:is(.active, :hover),
+:root:not(.ww-app-theme-dark) .hushhawk-gold .sidebar .brand strong {
+  color: var(--hh-nav-text) !important;
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.global-search, .notification-btn, .btn-topbar-properties, .btn-funnel-add, .btn-executive-action, .btn-icon-refresh, .btn-live-sync, .btn-podio-sync) {
+  background: var(--hh-control) !important;
+  color: var(--hh-gold) !important;
+  border-color: var(--hh-border);
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.funnel-phase-ribbon, .phase-pill, .county-card header, .toolbar, .selected, .zip-list, .mail-list button, .chat .bubbles) {
+  background: var(--hh-subtle);
+  border-color: var(--hh-border);
+  color: var(--hh-text);
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold .map-state { background: var(--hh-subtle); color: var(--hh-text); }
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.stage-box span, .stage-box strong, .action-card .card-metric, .metric strong, .funnel-summary-badge, .funnel-milestones-tag, .phase-pill) {
+  color: var(--hh-text);
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.stage-box .deal-count, .phase-count, .action-card .card-description, .action-card .card-meta) {
+  color: var(--hh-muted);
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(
+  .lead-conversation-desk, .desk-top-bar, .desk-sub-bar, .desk-split-pane, .threads-column,
+  .conversation-column, .property-context-card, .messages-viewport, .quick-action-toolbar,
+  .thread-card, .email-tabs, .email-list, .email-footer, .team-chat-message-list, .tm-quick-reply-form,
+  .platforms-ribbon, .action-modal-container, .modal-top-bar, .funnel-detail-tray
+) {
+  background: var(--hh-panel);
+  border-color: var(--hh-border);
+  color: var(--hh-text);
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(
+  .platform-tab, .active-contact-pill, .btn-quick-action, .message-bubble, .email-category-tab, .email-action-btn
+) {
+  background: var(--hh-subtle);
+  border-color: var(--hh-border);
+  color: var(--hh-text);
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.platform-tab.active, .thread-card.selected, .email-category-tab.active) {
+  background: var(--hh-selected);
+  border-color: #b18b50;
+  color: var(--hh-text);
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(
+  .desk-title-group h2, .meta-label, .inbox-title, .contact-title, .contact-name-text, .prop-address-heading, .bubble-text
+) { color: var(--hh-text); }
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(
+  .platform-count, .thread-address-text, .thread-preview-text, .prop-specs-subtext, .bubble-timestamp, .last-resp-time, .threads-state, .conversation-state
+) { color: var(--hh-muted); }
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(
+  .stage-box-label, .stage-box-vol, .phase-title, .phase-stat, .header-info h2, .header-left h2,
+  .prop-sidebar-header h2, .prop-sidebar-header h3, .prop-card-address, .quick-stat-card strong,
+  .action-card .card-metric, .platform-name
+) {
+  color: var(--hh-text) !important;
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(
+  .settings-subtitle, .card-desc, .prop-card-city, .quick-stat-card small, .jacksonville-calligraphy span,
+  .hero-motto, .principles > span
+) {
+  color: var(--hh-muted) !important;
+  text-shadow: none;
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(
+  .btn-funnel-add, .btn-executive-action, .btn-add-prop, .sidebar .brand small, .sidebar nav summary,
+  .sidebar nav a .icon, .sidebar nav a .icon svg
+) { color: var(--hh-gold) !important; }
+:root:not(.ww-app-theme-dark) .hushhawk-gold .platform-tab {
+  background: var(--hh-subtle) !important;
+  border-color: var(--hh-border) !important;
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold .platform-tab.active {
+  background: var(--hh-selected) !important;
+  border-color: #b18b50 !important;
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.properties-workspace, .prop-detail) {
+  background: var(--hh-canvas) !important;
+  color: var(--hh-text);
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-auth-wrapper.hushhawk-gold {
+  background: radial-gradient(ellipse at 20% 10%, #fffdf9, #eee6d8 75%);
+}
+:root:not(.ww-app-theme-dark) .hushhawk-auth-wrapper :is(.signin-eyebrow, .signin-password button) {
+  color: var(--hh-gold);
+}
+:root:not(.ww-app-theme-dark) .hushhawk-auth-wrapper :is(.signin-help, .signin-form .signin-remember) {
+  color: var(--hh-muted);
+}
+:root:not(.ww-app-theme-dark) .hushhawk-auth-wrapper :is(.signin-layout, .signin-form-panel, .signin-help, .signin-password, .signin-form > input) {
+  border-color: var(--hh-border);
+}
+:root:not(.ww-app-theme-dark) .hushhawk-auth-wrapper .signin-password {
+  background: var(--hh-control);
+}
+:root:not(.ww-app-theme-dark) .hushhawk-auth-wrapper .signin-password input {
+  background: transparent;
+}
+:root:not(.ww-app-theme-dark) .hushhawk-auth-wrapper .signin-error { color: #942b20; }
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(
+  .stage-box-num, .stage-box-label, .stage-box-vol,
+  .desk-title-group h2, .inbox-title, .contact-title, .contact-name-text, .prop-address-heading,
+  .bubble-text, .tm-sender, .tm-text
+) { color: var(--hh-text) !important; }
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(
+  .platform-count, .meta-label, .priority-selector, .thread-preview-text, .thread-address-text,
+  .team-chat-message-list, .tm-time, .funnel-rev-stat, .live-clock strong
+) { color: var(--hh-muted) !important; }
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(
+  .btn-funnel-add, .btn-funnel-close-tray, .btn-executive-action, .btn-tm-open,
+  .btn-prop-context, .btn-quick-action, .btn-topbar-properties, .btn-add-prop
+) {
+  background: #fcf3e1 !important;
+  color: var(--hh-gold) !important;
+  border-color: #b99a62 !important;
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.v2-badge, .stage-deal-count, .funnel-milestones-tag) {
+  background: #f3e6cb;
+  color: var(--hh-gold) !important;
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold .stage-deal-count.active-count,
+:root:not(.ww-app-theme-dark) .hushhawk-gold .live-sync-indicator {
+  background: #e5f2ea;
+  color: #246242;
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.funnel-inspector-tray, .funnel-modal-window, .email-modal-card, .tm-messages-list) {
+  background: var(--hh-panel);
+  color: var(--hh-text);
+  border-color: var(--hh-border);
+}
+
+/* Shared type scale and controls for workspace cards, tables and forms. */
+.hushhawk-gold {
+  --hh-type-body: 14px;
+  --hh-type-control: 13px;
+  --hh-type-meta: 12px;
+  --hh-type-panel: 16px;
+  --hh-control-height: 34px;
+  --hh-control-radius: 7px;
+  --hh-control: #152132;
+  --hh-accent-control: #2d281f;
+  --hh-accent-border: #a5864e;
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold {
+  --hh-control: #fffdfa;
+  --hh-accent-control: #f5ead5;
+  --hh-accent-border: #b59660;
+}
+
+.hushhawk-gold:is(.gold-section, .dashboard-gold) { font-variant-numeric: tabular-nums; }
+
+.hushhawk-gold:is(.gold-section, .dashboard-gold) :is(
+  .hh-action, .btn-primary, .btn-secondary, .btn-gold, .btn-primary-gold,
+  .btn-action-add, .btn-action-import, .modal-primary, .btn-topbar-properties
+) {
+  min-height: var(--hh-control-height);
+  border-radius: var(--hh-control-radius);
+  font-size: var(--hh-type-control);
+  font-weight: 650;
+  line-height: 1.25;
+}
+.hushhawk-gold .hh-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 11px;
+  border: 1px solid var(--hh-border);
+  background: var(--hh-control);
+  color: var(--hh-text);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.hushhawk-gold .hh-action-highlight {
+  background: var(--hh-accent-control);
+  border-color: var(--hh-accent-border);
+  color: var(--hh-gold-light);
+}
+.hushhawk-gold .hh-action-primary {
   background: var(--hh-gold-button);
-  border-color: #edc57d;
+  border-color: var(--hh-accent-border);
   color: #241807;
+}
+.hushhawk-gold .hh-action:hover:not(:disabled) { border-color: var(--hh-gold); }
+.hushhawk-gold .hh-action:disabled { cursor: not-allowed; opacity: .64; }
+
+.hushhawk-gold.gold-section :is(
+  .panel-title, .panel-header, .panel-heading, .panel-head, .panel-card-header, .modal-header
+) {
+  align-items: center;
+  row-gap: 8px;
+}
+.hushhawk-gold.gold-section :is(
+  .panel-title, .panel-header, .panel-heading, .panel-head, .panel-card-header,
+  .modal-header, .header-info, .header-left
+) :is(h2, h3) {
+  font-size: var(--hh-type-panel);
+  line-height: 1.3;
+  letter-spacing: -.015em;
+}
+.hushhawk-gold.gold-section :is(.data-table, .vault-table, .hh-table, .all-leads table, .records table) :is(th, td) {
+  font-size: var(--hh-type-control);
+  line-height: 1.35;
+  vertical-align: middle;
+}
+.hushhawk-gold.gold-section :is(.card-desc, .panel-empty, .panel-loading, .metric-label, .vstat-label, .settings-subtitle) {
+  font-size: var(--hh-type-meta);
+  line-height: 1.45;
+}
+.hushhawk-gold.gold-section :is(.form-group, .filter-group) label {
+  font-size: var(--hh-type-meta);
+  font-weight: 650;
+  line-height: 1.35;
+}
+.hushhawk-gold.gold-section :is(.form-group, .filter-group) :is(
+  input:not([type="checkbox"], [type="radio"], [type="range"], [type="file"]), select, textarea
+) {
+  min-height: var(--hh-control-height);
+  font-size: var(--hh-type-control);
+  line-height: 1.35;
+}
+.hushhawk-gold .hh-panel-empty {
+  margin: 0;
+  padding: 15px 12px;
+  text-align: center;
+  font-size: var(--hh-type-meta);
+  line-height: 1.45;
+  color: var(--hh-muted);
+}
+
+.hushhawk-gold.gold-section :is(.tabs, .filter-toolbar, .all-leads .filters) {
+  row-gap: 8px;
+}
+.hushhawk-gold.gold-section .tabs button[role="tab"] {
+  min-height: 30px;
+  border-radius: var(--hh-control-radius);
+  font-size: var(--hh-type-meta);
+  line-height: 1.25;
+}
+.hushhawk-gold.gold-section :is(.badge-count, .metric-change, .task-desc, .due-pill, .legend button) {
+  font-size: var(--hh-type-meta);
+  line-height: 1.35;
+}
+.hushhawk-gold.gold-section .kpi > div > span {
+  font-size: var(--hh-type-meta);
+  line-height: 1.25;
+}
+.hushhawk-gold.gold-section .kpi strong {
+  font-size: 21px;
+  line-height: 1.12;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold.gold-section :is(
+  .metric-val, .kpi > div > span, .kpi strong, .task-title, .owner dt, .estimates dt,
+  .all-leads th button, .donut > div strong
+) { color: var(--hh-text); }
+:root:not(.ww-app-theme-dark) .hushhawk-gold.gold-section :is(
+  .metric-change, .badge-count, .task-desc, .legend button, .chart-caption, .owner dd, .estimates dd, .donut > div span
+) { color: var(--hh-muted); }
+:root:not(.ww-app-theme-dark) .hushhawk-gold.gold-section :is(
+  .filter-toolbar, .all-leads .filters, .table-search, .filter-toolbar .search-box, .donut > div, .category-chip
+) {
+  background: #eee8dd;
+  border-color: var(--hh-border);
+  color: var(--hh-text);
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold.gold-section :is(.table-search, .filter-toolbar .search-box) input {
+  background: transparent;
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold.gold-section :is(.priority-badge.high, .priority-badge.medium) {
+  background: #f3e6cb;
+  color: #694414;
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold.gold-section .checkbox-btn {
+  border-color: #a29581;
+  background: var(--hh-control);
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold.gold-section .checkbox-btn.checked {
+  background: #dfeee4;
+  color: #225d3b;
+  border-color: #6c977b;
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold.gold-section .tabs button[role="tab"] {
+  background: var(--hh-control);
+  color: var(--hh-text);
+  border-color: var(--hh-border);
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold.gold-section .tabs button[aria-selected="true"] {
+  background: var(--hh-selected);
+  color: var(--hh-text);
+  border-color: var(--hh-accent-border);
+}
+
+@media (max-width: 860px) {
+  .hushhawk-gold {
+    --hh-brand-height: 100px;
+    --hh-brand-mark: 44px;
+    --hh-brand-name: 10px;
+  }
 }

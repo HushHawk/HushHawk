@@ -160,6 +160,9 @@
                 <button class="btn btn-xs" @click="toggleCampaignStatus(c)">
                   {{ c.status === 'Active' ? 'Pause' : 'Activate' }}
                 </button>
+                <button class="btn-danger-action" style="margin-left: 6px;" @click="confirmDeleteCampaign(c)" title="Delete Campaign">
+                  <span v-html="icons.trash"></span>
+                </button>
               </td>
             </tr>
           </tbody>
@@ -389,6 +392,18 @@ export default {
       return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(val || 0);
     }
 
+    async function confirmDeleteCampaign(c) {
+      if (!c) return;
+      if (!confirm(`Are you sure you want to delete campaign "${c.name}"?`)) return;
+      try {
+        await fetch(`/api/v1/marketing/${c.id}`, { method: 'DELETE' });
+      } catch (e) {}
+      campaigns.value = campaigns.value.filter(item => item.id !== c.id);
+      if (typeof window !== 'undefined' && window.showHushHawkToast) {
+        window.showHushHawkToast('Campaign Removed', `Campaign "${c.name}" deleted.`, 'info');
+      }
+    }
+
     return {
       icons,
       metrics,
@@ -406,7 +421,8 @@ export default {
       openModal,
       toggleCampaignStatus,
       saveNewCampaign,
-      formatCurrency
+      formatCurrency,
+      confirmDeleteCampaign
     };
   }
 };
@@ -838,5 +854,22 @@ export default {
   display: grid;
   place-items: center;
   color: #edcf7c;
+}
+.btn-danger-action {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #f87171;
+  padding: 4px 6px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+.btn-danger-action:hover {
+  background: #ef4444;
+  border-color: #ef4444;
+  color: #ffffff;
 }
 </style>

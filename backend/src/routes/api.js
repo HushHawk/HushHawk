@@ -3177,13 +3177,18 @@ const handlePostBuyer = async (req, res) => {
 apiRouter.post('/buyers', handlePostBuyer);
 apiRouter.post('/cash-buyers', handlePostBuyer);
 
-const handleDeleteBuyer = (req, res) => {
+const handleDeleteBuyer = async (req, res) => {
     try {
         const { id } = req.params;
+        try {
+            await pool.query('DELETE FROM crm.cash_buyers WHERE id = $1', [id]);
+        } catch (dbErr) {
+            console.warn('[Buyer Delete PG Warn]', dbErr.message);
+        }
         if (!db.data.crm.buyers) db.data.crm.buyers = [];
         db.data.crm.buyers = db.data.crm.buyers.filter(b => b.id !== id);
         db.persist();
-        res.json({ success: true });
+        res.json({ success: true, deleted: id });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

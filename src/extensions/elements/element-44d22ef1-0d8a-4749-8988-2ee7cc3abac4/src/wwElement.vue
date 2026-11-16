@@ -107,6 +107,7 @@
       </div>
 
       <!-- User Identity Menu & Logout Option -->
+      <HushHawkThemeToggle />
       <div class="user-identity-wrap">
         <button
           type="button"
@@ -262,6 +263,7 @@
 </section>
 </template>
 <script>
+import HushHawkThemeToggle from '@/_front/components/HushHawkThemeToggle.vue';
 import "@/assets/css/hushhawk-gold.css";
 import {ref,reactive,computed,watch,nextTick,onMounted,onBeforeUnmount} from 'vue';
 import CountyMap from './components/CountyMap.vue';
@@ -269,7 +271,7 @@ import HushHawkNotificationDropdown from '@/_front/components/HushHawkNotificati
 import { useNotifications } from '@/_common/use/useNotifications.js';
 import {sampleLeads,navigation,iconDefaults} from './data.js';
 import { icons as masterIcons } from '../../element-f1b67d54-2716-43a4-a414-ab7f505c2ace/src/icons.js';
-export default {components:{CountyMap,HushHawkNotificationDropdown},props:{uid:{type:String,required:true},content:{type:Object,required:true},},setup(props){
+export default {components:{HushHawkThemeToggle,CountyMap,HushHawkNotificationDropdown},props:{uid:{type:String,required:true},content:{type:Object,required:true},},setup(props){
 const uid=computed(()=>props.uid||'seller-leads');
 const isEditing=computed(()=>{return false;});
 const {getIcon}=wwLib.useIcons();const icons=ref({ ...masterIcons });let iconVersion=0;
@@ -571,10 +573,9 @@ return{uid,isEditing,icons,navigation,navOpen,heroStyle,mode,metrics,tabs,column
   overflow: hidden !important;
   box-sizing: border-box !important;
   z-index: 1000 !important;
-  background: 
-    linear-gradient(40deg, transparent 40%, rgba(212, 175, 55, 0.15) 47%, rgba(253, 230, 138, 0.45) 50%, rgba(212, 175, 55, 0.15) 53%, transparent 60%),
+  background: var(--hh-sidebar, linear-gradient(40deg, transparent 40%, rgba(212, 175, 55, 0.15) 47%, rgba(253, 230, 138, 0.45) 50%, rgba(212, 175, 55, 0.15) 53%, transparent 60%),
     linear-gradient(35deg, transparent 65%, rgba(212, 175, 55, 0.1) 72%, rgba(253, 230, 138, 0.35) 75%, rgba(212, 175, 55, 0.1) 78%, transparent 85%),
-    linear-gradient(180deg, #07111e 0%, #030812 60%, #02050b 100%) !important;
+    linear-gradient(180deg, #07111e 0%, #030812 60%, #02050b 100%)) !important;
   backdrop-filter: blur(20px);
   border-right: 1px solid rgba(212, 175, 55, 0.25) !important;
   border-left: 2px solid rgba(212, 175, 55, 0.45) !important;
@@ -601,8 +602,8 @@ return{uid,isEditing,icons,navigation,navOpen,heroStyle,mode,metrics,tabs,column
 
 .brand {
   flex-shrink: 0 !important;
-  height: 145px !important;
-  min-height: 145px !important;
+  height: var(--hh-brand-height, 145px) !important;
+  min-height: var(--hh-brand-height, 145px) !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -610,7 +611,7 @@ return{uid,isEditing,icons,navigation,navOpen,heroStyle,mode,metrics,tabs,column
   color: white !important;
   text-decoration: none !important;
   border-bottom: 1px solid rgba(212, 175, 55, 0.2) !important;
-  padding: 14px 8px 10px !important;
+  padding: var(--hh-brand-padding, 14px 8px 10px) !important;
   text-align: center !important;
   background: linear-gradient(180deg, rgba(212, 175, 55, 0.12) 0%, rgba(4, 18, 45, 0.4) 100%) !important;
 }
@@ -624,12 +625,12 @@ return{uid,isEditing,icons,navigation,navOpen,heroStyle,mode,metrics,tabs,column
 
 .brand strong {
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif !important;
-  font-size: 13px !important;
-  font-weight: 850 !important;
+  font-size: var(--hh-brand-name, 13px) !important;
+  font-weight: var(--hh-brand-weight, 850) !important;
   line-height: 1.08 !important;
   margin-top: 6px !important;
-  color: #fff5e2 !important;
-  letter-spacing: 0.14em !important;
+  color: var(--hh-nav-text, #fff5e2) !important;
+  letter-spacing: var(--hh-brand-tracking, 0.14em) !important;
   text-transform: uppercase !important;
 }
 
@@ -679,7 +680,7 @@ return{uid,isEditing,icons,navigation,navOpen,heroStyle,mode,metrics,tabs,column
   min-height: 38px !important;
   font-size: 13px !important;
   font-weight: 500 !important;
-  color: #f8fafc !important;
+  color: var(--hh-nav-text, #f8fafc) !important;
   text-decoration: none !important;
   border-radius: 8px !important;
   border: 1px solid transparent !important;

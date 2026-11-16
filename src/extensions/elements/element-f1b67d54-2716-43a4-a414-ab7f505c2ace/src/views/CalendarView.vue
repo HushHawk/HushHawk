@@ -155,12 +155,18 @@
             </div>
           </div>
         </div>
-        <div class="modal-footer">
-          <button class="btn btn-secondary" @click="selectedEvent = null">Close</button>
-          <button class="btn btn-primary" @click="sendDirections(selectedEvent)">
-            <span v-html="icons.send"></span>
-            SMS Directions &amp; Lockbox
+        <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+          <button class="btn btn-danger-outline" @click="confirmDeleteEvent(selectedEvent)">
+            <span v-html="icons.trash"></span>
+            Cancel &amp; Delete Appointment
           </button>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn btn-secondary" @click="selectedEvent = null">Close</button>
+            <button class="btn btn-primary" @click="sendDirections(selectedEvent)">
+              <span v-html="icons.send"></span>
+              SMS Directions &amp; Lockbox
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -404,6 +410,17 @@ export default {
         notes: ''
       };
       this.showToast('Appointment Booked', `"${payload.title}" scheduled for ${payload.date}.`, 'success');
+    },
+
+    async confirmDeleteEvent(ev) {
+      if (!ev) return;
+      if (!confirm(`Are you sure you want to cancel and delete the appointment "${ev.title}"?`)) return;
+      try {
+        await fetch(`/api/v1/calendar/events/${ev.id}`, { method: 'DELETE' });
+      } catch (e) {}
+      this.events = this.events.filter(item => item.id !== ev.id);
+      this.selectedEvent = null;
+      this.showToast('Appointment Cancelled', `"${ev.title}" was removed from calendar.`, 'info');
     }
   }
 };
@@ -910,6 +927,27 @@ export default {
   border: none;
   color: #94a3b8;
   cursor: pointer;
+}
+
+.btn-danger-outline {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #f87171;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 13px;
+  transition: all 0.15s ease;
+}
+.btn-danger-outline:hover {
+  background: #ef4444;
+  border-color: #ef4444;
+  color: #ffffff;
 }
 
 @media (max-width: 1200px) {

@@ -86,12 +86,18 @@ function syncHomeRoute() {
 }
 
 function applyDarkThemeToDist() {
-    const darkGuard = `<style id="hushhawk-dark-guard">html,body{background-color:#04182d!important;background:#04182d!important;color:#f8fafc!important;margin:0;padding:0;min-height:100vh;}#app{background-color:#04182d!important;min-height:100vh;}</style>
+    const darkGuard = `<script>try{document.documentElement.classList.toggle('ww-app-theme-dark',localStorage.getItem('ww-app-theme')!=='light')}catch{document.documentElement.classList.add('ww-app-theme-dark')}</script>
+    <style id="hushhawk-dark-guard">
+        :root{--hh-page:#f1ede4;--hh-page-text:#18273c}
+        :root.ww-app-theme-dark{--hh-page:#04182d;--hh-page-text:#f8fafc}
+        html,body{background:var(--hh-page)!important;color:var(--hh-page-text)!important;margin:0;padding:0;min-height:100vh}
+        #app{background-color:var(--hh-page)!important;min-height:100vh}
+    </style>
     <style id="hushhawk-preloader-css">
         #hushhawk-initial-preloader {
             position: fixed;
             inset: 0;
-            background-color: #04182d;
+            background-color: var(--hh-page);
             display: flex;
             align-items: center;
             justify-content: center;

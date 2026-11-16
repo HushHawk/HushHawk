@@ -39,10 +39,9 @@ isServerRendering = isServerRenderMode(renderMode);
 isHydrating = renderMode === 'hydrate';
 isStaticRendering = isStaticRenderMode(renderMode);
 
-if (!isServerRendering && window.localStorage?.getItem('ww-app-theme') === 'dark')
-    document.documentElement.classList.add('ww-app-theme-dark');
-else if (!isServerRendering && window.localStorage?.getItem('ww-app-theme') === 'light')
-    document.documentElement.classList.remove('ww-app-theme-dark');
+if (!isServerRendering) {
+    document.documentElement.classList.toggle('ww-app-theme-dark', storeImport.getters['front/getTheme'] === 'dark');
+}
 
 store = storeImport;
 pinia = createPinia();

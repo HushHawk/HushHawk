@@ -109,6 +109,8 @@
                 <button
                   class="checkbox-btn"
                   :class="{ checked: task.done }"
+                  :aria-pressed="Boolean(task.done)"
+                  :aria-label="task.done ? 'Reopen task' : 'Complete task'"
                   @click="toggleTask(task)"
                 >
                   <span v-if="task.done" v-html="icons.check"></span>
@@ -137,7 +139,7 @@
               </td>
               <td>
                 <span class="due-pill" :class="(task.dueStatus || 'today').toLowerCase()">
-                  {{ task.dueDate || 'Today' }}
+                  {{ formatDueDate(task.dueDate) }}
                 </span>
               </td>
               <td>
@@ -405,6 +407,18 @@ export default {
     this.loadTasks();
   },
   methods: {
+    formatDueDate(value) {
+      if (!value) return 'Today';
+      if (!/^\d{4}-\d{2}-\d{2}(?:T|$)/.test(value)) return value;
+      const dateOnly = value.length === 10;
+      const date = new Date(dateOnly ? `${value}T00:00:00Z` : value);
+      if (Number.isNaN(date.getTime())) return value;
+      return new Intl.DateTimeFormat('en-US', {
+        month: 'short', day: 'numeric', year: 'numeric',
+        timeZone: dateOnly ? 'UTC' : 'America/New_York',
+        ...(dateOnly ? {} : { hour: 'numeric', minute: '2-digit' })
+      }).format(date);
+    },
     async loadTasks() {
       try {
         let res = null;

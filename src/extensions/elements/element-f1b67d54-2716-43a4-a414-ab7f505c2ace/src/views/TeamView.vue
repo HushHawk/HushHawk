@@ -162,7 +162,7 @@
                 <col style="width: 115px;">
                 <col style="width: 125px;">
                 <col style="width: 80px;">
-                <col style="width: 195px;">
+                <col style="width: 220px;">
               </colgroup>
               <thead>
                 <tr>
@@ -285,13 +285,22 @@
                       </button>
 
                       <button 
-                        v-if="member.role !== 'SUPER_ADMIN' && member.email !== 'admin@hushhawk.com'"
+                        v-if="member.email !== 'admin@hushhawk.com' && member.id !== '01111111-1111-1111-1111-111111111111'"
                         type="button" 
                         class="btn-icon btn-danger" 
                         @click="confirmDeleteMember(member)" 
-                        title="Delete or Deactivate Member"
+                        title="Delete Member"
                       >
                         <span v-html="icons.trash"></span>
+                      </button>
+                      <button 
+                        v-else
+                        type="button" 
+                        class="btn-icon btn-locked" 
+                        disabled
+                        title="System Root Administrator cannot be deleted"
+                      >
+                        <span v-html="icons.lock"></span>
                       </button>
                     </div>
                   </td>
@@ -414,7 +423,7 @@
                 Edit Member Details
               </button>
               <button 
-                v-if="selectedMember.role !== 'SUPER_ADMIN' && selectedMember.email !== 'admin@hushhawk.com'"
+                v-if="selectedMember.email !== 'admin@hushhawk.com' && selectedMember.id !== '01111111-1111-1111-1111-111111111111'"
                 class="btn btn-danger" 
                 @click="confirmDeleteMember(selectedMember)"
               >
@@ -1745,13 +1754,13 @@ export default {
         return;
       }
       try {
-        const res = await fetch(`/api/v1/team/${member.id}`, {
+        const res = await this.fetchApi(`/api/v1/team/${member.id}`, {
           method: 'DELETE',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ actor: 'Main Administrator' })
         });
-        const data = await res.json();
-        if (res.ok && data.success) {
+        const data = res ? await res.json() : { error: 'Connection failed' };
+        if (res && res.ok && data.success) {
           this.showToast('Member Removed', `Removed ${member.name} from the active roster.`, 'success');
           if (this.selectedMember?.id === member.id) this.selectedMember = null;
           await this.loadTeamMembers();
@@ -2582,8 +2591,8 @@ export default {
 
 .actions-col {
   white-space: nowrap;
-  width: 195px;
-  min-width: 195px;
+  width: 220px;
+  min-width: 220px;
   text-align: right;
   padding-right: 14px;
   position: sticky;
@@ -2845,9 +2854,24 @@ export default {
   color: #38bdf8;
 }
 
+.btn-icon.btn-danger {
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #f87171;
+  background: rgba(239, 68, 68, 0.08);
+}
+
 .btn-icon.btn-danger:hover {
   border-color: #ef4444;
-  color: #ef4444;
+  color: #ffffff;
+  background: #ef4444;
+}
+
+.btn-icon.btn-locked {
+  border-color: rgba(148, 163, 184, 0.2);
+  color: #64748b;
+  background: rgba(15, 23, 42, 0.4);
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 /* Empty State */

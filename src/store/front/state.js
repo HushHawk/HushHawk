@@ -1,3 +1,11 @@
+function initialTheme() {
+    try {
+        return window.localStorage.getItem('ww-app-theme') === 'light' ? 'light' : 'dark';
+    } catch {
+        return 'dark';
+    }
+}
+
 export default {
     showPageLoadProgress: false,
     /*=============================================m_ÔÔ_m=============================================\
@@ -48,7 +56,7 @@ export default {
         },
     },
     isScreenSizeActive: {},
-    theme: window.localStorage?.getItem('ww-app-theme') || undefined,
+    theme: initialTheme(),
     activeLinkPopup: null,
     elementStates: {},
 };

@@ -148,9 +148,14 @@
                   <span class="tier-badge" :class="b.tierClass">{{ b.tier }}</span>
                 </td>
                 <td>
-                  <button class="btn btn-xs" @click.stop="openSendDealModal(b)">
-                    Send Deal
-                  </button>
+                  <div class="row-action-btns">
+                    <button class="btn btn-xs" @click.stop="openSendDealModal(b)">
+                      Send Deal
+                    </button>
+                    <button class="btn btn-xs btn-danger-subtle" @click.stop="confirmDeleteBuyer(b)" title="Delete Cash Buyer">
+                      <span v-html="icons.trash"></span>
+                    </button>
+                  </div>
                 </td>
               </tr>
               <tr v-if="filteredBuyers.length === 0">
@@ -244,6 +249,10 @@
           <button class="btn btn-primary btn-block" @click="openSendDealModal(selectedBuyer)">
             <span v-html="icons.send"></span>
             Send Deal to {{ selectedBuyer.name.split(' ')[0] }}
+          </button>
+          <button class="btn btn-danger-outline btn-block" style="margin-top: 8px;" @click="confirmDeleteBuyer(selectedBuyer)" title="Delete Cash Buyer">
+            <span v-html="icons.trash"></span>
+            Delete Cash Buyer
           </button>
         </div>
       </aside>
@@ -628,6 +637,23 @@ export default {
       return name ? name.split(' ').map(n => n[0]).join('').slice(0, 2) : 'CB';
     }
 
+    async function confirmDeleteBuyer(b) {
+      if (!b) return;
+      if (!confirm(`Are you sure you want to delete cash buyer "${b.name}" (${b.company || b.phone || ''})?`)) return;
+      try {
+        await fetch(`${API_BASE}/cash-buyers/${b.id}`, { method: 'DELETE' });
+      } catch (err) {
+        console.warn('Delete error:', err);
+      }
+      buyers.value = buyers.value.filter(item => item.id !== b.id);
+      if (selectedBuyer.value?.id === b.id) {
+        selectedBuyer.value = buyers.value[0] || null;
+      }
+      if (typeof window.showHushHawkToast === 'function') {
+        window.showHushHawkToast('Buyer Removed', `Cash buyer "${b.name}" has been deleted.`, 'success');
+      }
+    }
+
     return {
       icons,
       metrics,
@@ -654,6 +680,7 @@ export default {
       openModal,
       closeModal,
       openSendDealModal,
+      confirmDeleteBuyer,
       confirmSendDeal,
       sendSelectedDeal,
       saveNewBuyer,
@@ -1296,6 +1323,41 @@ export default {
 }
 .btn-secondary:hover {
   background: #18446d;
+}
+.row-action-btns {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn-danger-subtle {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #f87171;
+  padding: 5px 8px;
+}
+.btn-danger-subtle:hover {
+  background: #ef4444;
+  border-color: #ef4444;
+  color: #ffffff;
+}
+.btn-danger-outline {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #f87171;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-weight: 600;
+  transition: all 0.15s ease;
+}
+.btn-danger-outline:hover {
+  background: #ef4444;
+  border-color: #ef4444;
+  color: #ffffff;
 }
 .btn-subtle {
   background: transparent;

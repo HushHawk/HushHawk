@@ -984,3 +984,84 @@
 .dashboard-gold.hushhawk-command-center .leads :is(th, td) { overflow: hidden; text-overflow: ellipsis; }
 .dashboard-gold.hushhawk-command-center .leads :is(th, td):nth-child(2) { width: 38%; }
 .dashboard-gold.hushhawk-command-center .leads :is(th, td):nth-child(3) { width: 15%; }
+
+/* Communication cards use the same control sizes and surface colors as the workspaces. */
+.dashboard-gold.hushhawk-command-center :is(.ec-title, .tm-title) {
+  min-height: 44px;
+  padding: 8px 12px;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.dashboard-gold.hushhawk-command-center :is(.ec-title, .tm-title) h3 {
+  font-size: var(--hh-type-panel);
+  line-height: 1.25;
+}
+.dashboard-gold.hushhawk-command-center :is(.ec-supported-badge, .ec-inbox-meta, .ec-inbox-badge, .tm-time, .tm-unread-badge) {
+  font-size: var(--hh-type-meta);
+  line-height: 1.25;
+}
+.dashboard-gold.hushhawk-command-center :is(.ec-supported-badge, .ec-inbox-meta, .ec-inbox-badge:not(.unread-tag), .tm-time) {
+  color: var(--hh-muted);
+}
+.dashboard-gold.hushhawk-command-center :is(.ec-inbox-name, .tm-sender, .tm-text) {
+  font-size: var(--hh-type-control);
+  line-height: 1.35;
+}
+.dashboard-gold.hushhawk-command-center :is(.ec-inbox-name, .tm-text) { color: var(--hh-text); }
+.dashboard-gold.hushhawk-command-center :is(.ec-tabs-bar, .ec-actions-bar, .tm-quick-reply-form) {
+  background: var(--hh-panel);
+  border-color: var(--hh-border);
+  padding: 8px 10px;
+  gap: 6px;
+}
+.dashboard-gold.hushhawk-command-center .ec-tabs-bar {
+  flex-wrap: wrap;
+  overflow: visible;
+}
+.dashboard-gold.hushhawk-command-center .ec-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 30px;
+  padding: 4px 8px;
+  border-color: var(--hh-border);
+  border-radius: var(--hh-control-radius);
+  background: var(--hh-control);
+  color: var(--hh-muted);
+  font-size: var(--hh-type-meta);
+  font-weight: 650;
+  line-height: 1.25;
+}
+.dashboard-gold.hushhawk-command-center .ec-tab-btn:is(.active, :hover) {
+  background: var(--hh-accent-control);
+  border-color: var(--hh-accent-border);
+  color: var(--hh-gold-light);
+}
+.dashboard-gold.hushhawk-command-center .ec-tab-count {
+  min-width: 1.2em;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.dashboard-gold.hushhawk-command-center .ec-actions-bar > * { flex: 1 1 0; }
+.dashboard-gold.hushhawk-command-center .tm-channel-selector {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.dashboard-gold.hushhawk-command-center :is(.tm-channel-selector select, .tm-quick-reply-form input) {
+  min-height: var(--hh-control-height);
+  border: 1px solid var(--hh-border);
+  border-radius: var(--hh-control-radius);
+  background: var(--hh-control);
+  color: var(--hh-text);
+  font-size: var(--hh-type-control);
+  line-height: 1.25;
+}
+.dashboard-gold.hushhawk-command-center .tm-quick-reply-form input { font-size: max(16px, var(--hh-type-control)); }
+.dashboard-gold.hushhawk-command-center .hh-action {
+  font-size: var(--hh-type-control);
+  color: var(--hh-text);
+}
+.dashboard-gold.hushhawk-command-center .hh-action-highlight { color: var(--hh-gold-light); }
+.dashboard-gold.hushhawk-command-center .hh-action-primary { color: #241807; }
