@@ -174,20 +174,16 @@
          <span v-if="checked.length" class="selected-count">{{checked.length}} selected</span>
        </div>
        <div class="lead-header-actions">
-         <button type="button" class="btn-action-refresh" :class="{ spinning: isRefreshing }" @click="refreshLeads(true)" title="Refresh & Sync Latest Leads from PostgreSQL">
-           <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" :class="{ 'icon-spin': isRefreshing }"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
-           <span>{{ isRefreshing ? 'Syncing...' : 'Refresh Leads' }}</span>
-         </button>
-         <button type="button" class="btn-action-seed-batch" :disabled="isSeeding" @click="seedBatchLead" title="Simulate Real-Time Push from Darren's BatchLeads Workspace">
-           <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-           <span>{{ isSeeding ? 'Pushing...' : '⚡ Simulate Batch Push' }}</span>
+         <button type="button" class="btn-action-refresh" :class="{ spinning: isRefreshing }" @click="refreshLeads(true)" title="Refresh Leads from PostgreSQL">
+           <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" :class="{ 'icon-spin': isRefreshing }"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+           <span>{{ isRefreshing ? 'Syncing...' : 'Refresh' }}</span>
          </button>
          <button type="button" class="btn-action-import" @click="openModal('import')" title="Bulk Ingest CSV / Skip-Trace List">
-           <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+           <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
            <span>Import CSV</span>
          </button>
          <button type="button" class="btn-action-add" @click="openModal('add')" title="Add Single Lead to PostgreSQL">
-           <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+           <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
            <span>Add Lead</span>
          </button>
        </div>
@@ -326,7 +322,6 @@ function updateClock(){
 const liveRows=ref([]);
 const mode=ref('live'),previewRows=ref([]),query=ref(''),stage=ref('all'),statusFilter=ref(''),sourceFilter=ref(''),zipFilter=ref(''),sortKey=ref('date'),sortAscending=ref(false),extraFilters=ref(false),checked=ref([]),selectedId=ref(''),navOpen=ref(false),photoFailed=ref(false);
 const isRefreshing=ref(false);
-const isSeeding=ref(false);
 let autoRefreshInterval=null;
 
 async function refreshLeads(forceSelectFirst = false) {
@@ -343,27 +338,6 @@ async function refreshLeads(forceSelectFirst = false) {
     setTimeout(() => {
       isRefreshing.value = false;
     }, 400);
-  }
-}
-
-async function seedBatchLead() {
-  if (isSeeding.value) return;
-  isSeeding.value = true;
-  try {
-    const res = await fetch('/api/v1/integrations/batchleads/seed', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' }
-    });
-    if (res.ok) {
-      await loadSellerLeads();
-      if (liveRows.value && liveRows.value.length) {
-        selectedId.value = liveRows.value[0].id;
-      }
-    }
-  } catch (err) {
-    console.error('Seed BatchLead error:', err);
-  } finally {
-    isSeeding.value = false;
   }
 }
 
@@ -604,7 +578,7 @@ async function keepOffer(){
     offerNotice.value='Worksheet kept on this page · no offer sent';
   }
 }
-return{uid,isEditing,icons,navigation,navOpen,heroStyle,mode,metrics,tabs,columns,statuses,query,stage,statusFilter,sourceFilter,zipFilter,sortKey,sortAscending,extraFilters,checked,filtered,selected,selectedIndex,photoUrl,photoFailed,availableSources,sourceChart,donutGradient,allChecked,number,money,dateLabel,statusClass,initials,guard,handleNav,resetFilters,setMode,setStage,metricAction,sortBy,selectLead,stepLead,toggleRow,toggleAll,changeStatus,onZip,chooseSource,firstName,messages,smsInput,smsDraft,draftNotice,focusDraft,keepDraft,modal,modalTitle,modalBox,closeButton,openModal,closeModal,modalKeys,newLead,addPreview,sourceNames,tagDraft,addTag,emailSubject,emailDraft,emailNotice,keepEmail,offerValues,offerMAO,offerNotice,keepOffer,rows,isQuickAddOpen,isNotifOpen,currentTime,notifications,unreadCount,isUserMenuOpen,activeUserName,activeUserRole,activeUserEmail,handleLogout,importBatchName,importSourceCode,importDataText,importNotice,isImporting,submitBulkImport,isRefreshing,isSeeding,refreshLeads,seedBatchLead};
+return{uid,isEditing,icons,navigation,navOpen,heroStyle,mode,metrics,tabs,columns,statuses,query,stage,statusFilter,sourceFilter,zipFilter,sortKey,sortAscending,extraFilters,checked,filtered,selected,selectedIndex,photoUrl,photoFailed,availableSources,sourceChart,donutGradient,allChecked,number,money,dateLabel,statusClass,initials,guard,handleNav,resetFilters,setMode,setStage,metricAction,sortBy,selectLead,stepLead,toggleRow,toggleAll,changeStatus,onZip,chooseSource,firstName,messages,smsInput,smsDraft,draftNotice,focusDraft,keepDraft,modal,modalTitle,modalBox,closeButton,openModal,closeModal,modalKeys,newLead,addPreview,sourceNames,tagDraft,addTag,emailSubject,emailDraft,emailNotice,keepEmail,offerValues,offerMAO,offerNotice,keepOffer,rows,isQuickAddOpen,isNotifOpen,currentTime,notifications,unreadCount,isUserMenuOpen,activeUserName,activeUserRole,activeUserEmail,handleLogout,importBatchName,importSourceCode,importDataText,importNotice,isImporting,submitBulkImport,isRefreshing,refreshLeads};
 }};
 </script>
 <style scoped>
@@ -1346,16 +1320,14 @@ return{uid,isEditing,icons,navigation,navOpen,heroStyle,mode,metrics,tabs,column
 .kpi-row{display:grid;grid-template-columns:1.12fr 1fr 1fr 1.08fr 1fr 1.1fr 1.2fr 1.18fr;gap:6px;margin-bottom:3px}.kpi{display:flex;align-items:center;gap:10px;min-width:0;min-height:66px;text-align:left;padding:8px 10px;background:linear-gradient(135deg,#0e3357,#061b34);border:1px solid #245b99;border-radius:5px;box-shadow:inset 0 1px #ffffff12,0 3px 8px #00112660}.kpi:hover{border-color:#71cfff;background:#123953}.kpi-icon{display:block;width:24px;height:24px;flex-shrink:0;color:#60cafa}.kpi-icon.golden{color:#f2cd71}.kpi>div{min-width:0}.kpi>div>span{display:block;font-size:8px;color:#d2deec;white-space:nowrap}.kpi strong{font-size:19px;line-height:1.3;white-space:nowrap;display:block;letter-spacing:-.5px}.kpi small{display:block;color:#13e798;font-size:10px;font-weight:700}.kpi small.scope{color:#95b3cc;font-size:7px;font-weight:400}.skyline-tail{background-size:cover;background-position:right bottom;border:1px solid #174571;border-radius:5px;opacity:.8}
 .mode-bar{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:3px 1px 5px;font-size:7px;letter-spacing:.25px;color:#a2b9ce}.mode-bar>div{display:flex;gap:4px}.mode-bar button{border:1px solid #2c5679;border-radius:3px;background:#071e35;font-size:8px;padding:2px 7px;color:#b6cbde}.mode-bar button.active{color:#f4d88f;border-color:#a58d53;background:#cfad5815}
 .columns{display:grid;grid-template-columns:minmax(0,1.36fr) minmax(0,1fr);gap:8px;align-items:start}.left-column,.right-column{min-width:0;display:flex;flex-direction:column;gap:8px}.panel{border:1px solid #205589;border-radius:7px;overflow:hidden;background:linear-gradient(130deg,#0a2946,#051b31 85%);box-shadow:inset 0 1px #ffffff0d,0 3px 8px #00102066}.panel-heading{display:flex;align-items:center;justify-content:space-between;gap:7px;padding:7px 10px;min-height:34px;border-bottom:1px solid #173f66;background:linear-gradient(180deg,#193d5a65,#051d36)}.panel-heading h2{display:flex;align-items:center;gap:9px;font-size:15px;line-height:1.2;font-weight:750;margin:0;white-space:nowrap}.panel-heading h2 .icon{width:22px;height:22px}.panel-heading .gold-icon{color:#ebcd74}.panel-heading>a,.panel-heading>button{font-size:9px;color:#50c4ff;white-space:nowrap}.panel-heading>button{background:none;border:0;padding:0}.selected-count{font-size:9px;color:#e6ce85}
-.lead-header-actions{display:flex;align-items:center;gap:6px}
-.btn-action-refresh{display:inline-flex;align-items:center;gap:5px;background:rgba(15,23,42,0.7);border:1px solid #334155;border-radius:5px;padding:4px 9px;color:#cbd5e1!important;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s ease}
+.lead-header-actions{display:flex;align-items:center;gap:6px;flex-wrap:nowrap}
+.btn-action-refresh{display:inline-flex;align-items:center;gap:5px;background:rgba(15,23,42,0.7);border:1px solid #334155;border-radius:4px;padding:4px 9px;color:#cbd5e1!important;font-size:11px;font-weight:600;white-space:nowrap!important;cursor:pointer;transition:all .2s ease;height:28px;box-sizing:border-box}
 .btn-action-refresh:hover{background:rgba(30,41,59,0.9);color:#ffffff!important;border-color:#64748b}
 .btn-action-refresh.spinning svg{animation:spin 1s linear infinite}
 @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-.btn-action-seed-batch{display:inline-flex;align-items:center;gap:5px;background:rgba(139,92,246,0.18);border:1px solid rgba(139,92,246,0.5);border-radius:5px;padding:4px 10px;color:#c4b5fd!important;font-size:11px;font-weight:700;cursor:pointer;transition:all .2s ease;box-shadow:0 0 10px rgba(139,92,246,0.15)}
-.btn-action-seed-batch:hover{background:rgba(139,92,246,0.35);color:#ffffff!important;border-color:#a78bfa;box-shadow:0 0 14px rgba(139,92,246,0.4)}
-.btn-action-import{display:inline-flex;align-items:center;gap:6px;background:rgba(30,58,138,0.5);border:1px solid #3b82f6;border-radius:5px;padding:4px 10px;color:#93c5fd!important;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s ease}
+.btn-action-import{display:inline-flex;align-items:center;gap:5px;background:rgba(30,58,138,0.5);border:1px solid #3b82f6;border-radius:4px;padding:4px 9px;color:#93c5fd!important;font-size:11px;font-weight:600;white-space:nowrap!important;cursor:pointer;transition:all .2s ease;height:28px;box-sizing:border-box}
 .btn-action-import:hover{background:#2563eb;color:#ffffff!important;border-color:#60a5fa}
-.btn-action-add{display:inline-flex;align-items:center;gap:5px;background:linear-gradient(135deg,#f59e0b,#d97706);border:1px solid #fcd34d;border-radius:5px;padding:4px 11px;color:#0f172a!important;font-size:11px;font-weight:700;cursor:pointer;transition:all .2s ease}
+.btn-action-add{display:inline-flex;align-items:center;gap:5px;background:linear-gradient(135deg,#f59e0b,#d97706);border:1px solid #fcd34d;border-radius:4px;padding:4px 10px;color:#0f172a!important;font-size:11px;font-weight:700;white-space:nowrap!important;cursor:pointer;transition:all .2s ease;height:28px;box-sizing:border-box}
 .btn-action-add:hover{filter:brightness(1.15);box-shadow:0 0 12px rgba(245,158,11,0.4)}
 .import-feedback-box{background:rgba(16,185,129,0.15);border:1px solid #10b981;border-radius:6px;padding:10px 12px;color:#6ee7b7;font-size:12px;margin-top:10px}
 .import-feedback-box.is-err{background:rgba(239,68,68,0.15);border-color:#ef4444;color:#fca5a5}
