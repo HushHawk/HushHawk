@@ -112,7 +112,8 @@
                 v-for="b in filteredBuyers"
                 :key="b.id"
                 :class="{ active: selectedBuyer?.id === b.id }"
-                @click="selectBuyer(b)"
+                style="cursor: pointer;"
+                @click="openBuyerDossier(b)"
               >
                 <td>
                   <div class="buyer-cell">
@@ -147,12 +148,15 @@
                 <td>
                   <span class="tier-badge" :class="b.tierClass">{{ b.tier }}</span>
                 </td>
-                <td>
+                <td @click.stop>
                   <div class="row-action-btns">
-                    <button class="btn btn-xs" @click.stop="openSendDealModal(b)">
+                    <button class="btn btn-xs btn-primary-subtle" @click="openBuyerDossier(b)">
+                      View Details
+                    </button>
+                    <button class="btn btn-xs" @click="openSendDealModal(b)">
                       Send Deal
                     </button>
-                    <button class="btn btn-xs btn-danger-subtle" @click.stop="confirmDeleteBuyer(b)" title="Delete Cash Buyer">
+                    <button class="btn btn-xs btn-danger-subtle" @click="confirmDeleteBuyer(b)" title="Delete Cash Buyer">
                       <span v-html="icons.trash"></span>
                     </button>
                   </div>
@@ -260,6 +264,108 @@
 
     <!-- Modals Teleported to body -->
     <Teleport to="body">
+    <!-- Buyer Details Dossier Modal -->
+    <div v-if="modalType === 'buyerDetails' && activeBuyerDossier" class="modal-overlay" @click.self="closeModal">
+      <div class="modal-card modal-card-lg">
+        <div class="modal-header">
+          <div class="buyer-profile-top">
+            <div class="avatar">{{ getInitials(activeBuyerDossier.name) }}</div>
+            <div>
+              <h3>{{ activeBuyerDossier.name }}</h3>
+              <p>{{ activeBuyerDossier.company || 'Private Investor' }} · <span class="tier-tag">{{ activeBuyerDossier.tier || 'VIP Buyer' }}</span></p>
+            </div>
+          </div>
+          <button class="close-btn" @click="closeModal" aria-label="Close modal">
+            <span v-html="icons.close"></span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <!-- Contact Strip -->
+          <div class="contact-details-box">
+            <div><span v-html="icons.phone"></span> <strong>Direct Phone:</strong> <a :href="'tel:' + activeBuyerDossier.phone" style="color: #7dcaf4; text-decoration: underline;">{{ activeBuyerDossier.phone || '—' }}</a></div>
+            <div><span v-html="icons.mail"></span> <strong>Email:</strong> <a :href="'mailto:' + activeBuyerDossier.email" style="color: #7dcaf4; text-decoration: underline;">{{ activeBuyerDossier.email || '—' }}</a></div>
+            <div><span v-html="icons.pin"></span> <strong>Target Market:</strong> {{ activeBuyerDossier.location || 'Jacksonville, FL' }}</div>
+          </div>
+
+          <!-- Buy Box & Financial Criteria -->
+          <div class="drawer-section">
+            <div class="section-title">
+              <span v-html="icons.badgeDollar"></span>
+              <h4>Buy Box &amp; Capital Profile</h4>
+            </div>
+            <div class="buybox-grid">
+              <div class="buybox-item">
+                <small>Buying Capacity</small>
+                <strong>{{ formatCurrency(activeBuyerDossier.min) }} – {{ formatCurrency(activeBuyerDossier.max) }}</strong>
+              </div>
+              <div class="buybox-item">
+                <small>Proof of Funds (POF)</small>
+                <strong :style="{ color: activeBuyerDossier.pofVerified ? '#35e6a2' : '#edcf7c' }">
+                  {{ activeBuyerDossier.pofVerified ? '✓ Verified Institutional Cash' : 'Pending Verification' }}
+                </strong>
+              </div>
+              <div class="buybox-item">
+                <small>Property Focus</small>
+                <strong>{{ activeBuyerDossier.types || 'Single Family, Multi-Family' }}</strong>
+              </div>
+              <div class="buybox-item">
+                <small>Closing Speed / Terms</small>
+                <strong>7–14 Days Cash Close</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Target ZIPs -->
+          <div class="drawer-section">
+            <div class="section-title">
+              <span v-html="icons.pin"></span>
+              <h4>Target Jacksonville ZIP Codes ({{ (activeBuyerDossier.zips || []).length }})</h4>
+            </div>
+            <div class="zip-tags">
+              <span v-for="z in (activeBuyerDossier.zips || [])" :key="z" class="zip-chip">{{ z }}</span>
+            </div>
+          </div>
+
+          <!-- Operating Criteria / Notes -->
+          <div class="drawer-section">
+            <div class="section-title">
+              <span v-html="icons.file"></span>
+              <h4>Acquisition Criteria &amp; Strategy Notes</h4>
+            </div>
+            <p class="buyer-notes-text">
+              {{ activeBuyerDossier.criteria || activeBuyerDossier.notes || activeBuyerDossier.lookingFor || 'No specific notes recorded. Buyer is actively seeking off-market Jacksonville SFR and multi-family inventory matching their price band.' }}
+            </p>
+          </div>
+
+          <!-- Matched Active Inventory -->
+          <div class="drawer-section">
+            <div class="section-title">
+              <span v-html="icons.house"></span>
+              <h4>Matched Pipeline Inventory ({{ matchedDealsForActive.length }})</h4>
+            </div>
+            <div class="matched-inventory-list">
+              <div v-for="item in matchedDealsForActive" :key="item.address" class="inventory-card">
+                <div>
+                  <strong>{{ item.address }}</strong>
+                  <small>{{ item.zip }} · Asking: {{ formatCurrency(item.price) }} · ARV: {{ formatCurrency(item.arv) }}</small>
+                </div>
+                <button class="btn btn-xs btn-primary" @click="sendSelectedDealToActive(item)">
+                  Send Deal Packet
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" @click="closeModal">Close</button>
+          <button class="btn btn-primary" @click="openSendDealFromDossier(activeBuyerDossier)">
+            <span v-html="icons.send"></span>
+            Send Deal to {{ activeBuyerDossier.name.split(' ')[0] }}
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Add Buyer Modal -->
     <div v-if="modalType === 'addBuyer'" class="modal-overlay" @click.self="closeModal">
       <div class="modal-card">
@@ -430,6 +536,18 @@ export default {
           buyers.value = data.buyers;
           if (!selectedBuyer.value && data.buyers.length) selectedBuyer.value = data.buyers[0];
         }
+        try {
+          const propRes = await fetch(API_BASE + '/properties');
+          const propData = await propRes.json();
+          if (propData && propData.properties) {
+            propertyInventory.value = propData.properties.slice(0, 10).map(p => ({
+              address: p.address_line1 || 'Jacksonville Property',
+              zip: p.postal_code || '32204',
+              price: Math.round(Number(p.assessed_value || 180000) * 0.75),
+              arv: Math.round(Number(p.assessed_value || 180000) * 1.25)
+            }));
+          }
+        } catch (_) {}
       } catch (err) {
         console.warn('[CashBuyers] Using local cache:', err.message);
       }
@@ -446,6 +564,7 @@ export default {
     const typeFilter = ref('');
     const sortBy = ref('capacityDesc');
     const selectedBuyer = ref(null);
+    const activeBuyerDossier = ref(null);
     const modalType = ref('');
     const targetBuyer = ref(null);
     const sendDealId = ref('');
@@ -460,36 +579,62 @@ export default {
     const filteredBuyers = computed(() => {
       let list = buyers.value.filter(b => {
         const q = searchQuery.value.toLowerCase().trim();
-        const matchesQuery = !q || [b.name, b.company, b.phone, ...b.zips, b.types].join(' ').toLowerCase().includes(q);
+        const bZips = Array.isArray(b.zips) ? b.zips : [];
+        const matchesQuery = !q || [b.name, b.company, b.phone, ...bZips, b.types].join(' ').toLowerCase().includes(q);
         let matchesStatus = true;
         if (statusFilter.value === 'Active') matchesStatus = true;
-        else if (statusFilter.value === 'VIP') matchesStatus = b.tier.includes('VIP Tier 1');
+        else if (statusFilter.value === 'VIP') matchesStatus = (b.tier || '').includes('VIP');
         else if (statusFilter.value === 'Verified POF') matchesStatus = b.pofVerified;
         else if (statusFilter.value === 'Inactive') matchesStatus = false;
 
-        const matchesType = !typeFilter.value || b.types.includes(typeFilter.value);
+        const matchesType = !typeFilter.value || (b.types || '').includes(typeFilter.value);
         return matchesQuery && matchesStatus && matchesType;
       });
 
       if (sortBy.value === 'capacityDesc') {
-        list.sort((a, b) => b.max - a.max);
+        list.sort((a, b) => (b.max || 0) - (a.max || 0));
       } else if (sortBy.value === 'responseDesc') {
-        list.sort((a, b) => b.response - a.response);
+        list.sort((a, b) => (b.response || 0) - (a.response || 0));
       } else if (sortBy.value === 'dealsDesc') {
-        list.sort((a, b) => b.dealsClosed - a.dealsClosed);
+        list.sort((a, b) => (b.dealsClosed || 0) - (a.dealsClosed || 0));
       } else if (sortBy.value === 'nameAsc') {
-        list.sort((a, b) => a.name.localeCompare(b.name));
+        list.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
       }
       return list;
     });
 
     const matchedDeals = computed(() => {
-      if (!selectedBuyer.value) return propertyInventory;
-      return propertyInventory.filter(d => selectedBuyer.value.zips.includes(d.zip) || d.price <= selectedBuyer.value.max);
+      if (!selectedBuyer.value) return propertyInventory.value;
+      const bZips = Array.isArray(selectedBuyer.value.zips) ? selectedBuyer.value.zips : [];
+      return propertyInventory.value.filter(d => bZips.includes(d.zip) || d.price <= (selectedBuyer.value.max || 99999999));
+    });
+
+    const matchedDealsForActive = computed(() => {
+      const b = activeBuyerDossier.value || selectedBuyer.value;
+      if (!b) return propertyInventory.value;
+      const bZips = Array.isArray(b.zips) ? b.zips : [];
+      return propertyInventory.value.filter(d => bZips.includes(d.zip) || d.price <= (b.max || 99999999));
     });
 
     function selectBuyer(b) {
       selectedBuyer.value = b;
+    }
+
+    function openBuyerDossier(b) {
+      activeBuyerDossier.value = b;
+      selectedBuyer.value = b;
+      modalType.value = 'buyerDetails';
+    }
+
+    function sendSelectedDealToActive(deal) {
+      closeModal();
+      sendDealId.value = deal.address;
+      openSendDealModal(activeBuyerDossier.value || selectedBuyer.value);
+    }
+
+    function openSendDealFromDossier(b) {
+      closeModal();
+      openSendDealModal(b);
     }
 
     function resetFilters() {
@@ -664,6 +809,11 @@ export default {
       typeFilter,
       sortBy,
       selectedBuyer,
+      activeBuyerDossier,
+      openBuyerDossier,
+      matchedDealsForActive,
+      sendSelectedDealToActive,
+      openSendDealFromDossier,
       modalType,
       targetBuyer,
       sendDealId,
@@ -1194,11 +1344,11 @@ export default {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(2, 10, 20, 0.75);
-  backdrop-filter: blur(4px);
+  background: rgba(2, 10, 20, 0.82);
+  backdrop-filter: blur(6px);
   display: grid;
   place-items: center;
-  z-index: 1000;
+  z-index: 99999 !important;
   padding: 20px;
 }
 .modal-card {
@@ -1209,6 +1359,16 @@ export default {
   max-width: 540px;
   box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5);
   overflow: hidden;
+}
+.modal-card.modal-card-lg {
+  max-width: 720px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+.modal-card.modal-card-lg .modal-body {
+  overflow-y: auto;
+  max-height: calc(90vh - 130px);
 }
 .modal-header {
   display: flex;
