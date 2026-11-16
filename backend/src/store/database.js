@@ -342,14 +342,13 @@ class CanonicalStore {
             { source_code: 'OTHER', source_name: 'Other Source', source_group: 'MISC', definition: 'Unclassified source; requires source_detail', assignment_rule: 'Manual attribution', review_status: 'APPROVED', production_enabled: true, dictionary_version: 'v1.0' },
         ];
 
-        // Users & Roles (Page 18)
+        // Institutional Team & Executive Leadership
         this.data.core.users = [
-            { user_id: 'u1111111-1111-1111-1111-111111111111', email: 'admin@hushhawk.internal', full_name: 'Sarah Connor', role: 'SUPER_ADMIN', status: 'ACTIVE' },
-            { user_id: 'u2222222-2222-2222-2222-222222222222', email: 'manager@hushhawk.internal', full_name: 'Marcus Vance', role: 'MANAGER', status: 'ACTIVE' },
-            { user_id: 'u3333333-3333-3333-3333-333333333333', email: 'acquisitions@hushhawk.internal', full_name: 'Elena Rostova', role: 'ACQUISITIONS', status: 'ACTIVE' },
-            { user_id: 'u4444444-4444-4444-4444-444444444444', email: 'reviewer@hushhawk.internal', full_name: 'David Sterling', role: 'DATA_REVIEWER', status: 'ACTIVE' },
-            { user_id: 'u5555555-5555-5555-5555-555555555555', email: 'marketing@hushhawk.internal', full_name: 'Chloe Bennett', role: 'MARKETING', status: 'ACTIVE' },
-            { user_id: 'u6666666-6666-6666-6666-666666666666', email: 'ops@hushhawk.internal', full_name: 'Alex Mercer', role: 'DEVELOPER_OPS', status: 'ACTIVE' },
+            { user_id: '01111111-1111-1111-1111-111111111111', email: 'admin@hushhawk.com', full_name: 'Main Administrator', role: 'SUPER_ADMIN', phone: '+19045790065', status: 'ACTIVE' },
+            { user_id: 'de92de43-b996-4aaa-a995-72323864840b', email: 'team@elitehomes1.com', full_name: 'Darren Richardson', role: 'SUPER_ADMIN', phone: '+13866273499', status: 'ACTIVE' },
+            { user_id: 'ed4f3e87-cb3e-4368-a01a-83569ca5bd9c', email: 'ellis@elitehomes1.com', full_name: 'Dejon Ellis', role: 'SUPER_ADMIN', phone: '+19043030775', status: 'ACTIVE' },
+            { user_id: '00000000-0000-0000-0000-0000000000a1', email: 'alex.richard@elitehomes1.com', full_name: 'Alex Richard', role: 'SUPER_ADMIN', phone: '+19045790065', status: 'ACTIVE' },
+            { user_id: '00000000-0000-0000-0000-0000000000e1', email: 'waldo.ellis@elitehomes1.com', full_name: 'Waldo Ellis', role: 'SUPER_ADMIN', phone: '+19047803358', status: 'ACTIVE' }
         ];
 
         // Pipeline Stages

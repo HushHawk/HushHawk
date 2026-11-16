@@ -26,7 +26,7 @@
         </a>
 
         <details v-if="secondaryNavigation.length > 0" class="more-workspaces" open>
-          <summary>More Workspaces ({{ secondaryNavigation.length }})</summary>
+          <summary>More Workspaces</summary>
           <a
             v-for="item in secondaryNavigation"
             :key="item.path"
@@ -744,6 +744,7 @@ export default {
       }
     },
     switchActiveAccount(account) {
+      const prevActor = this.activeUser?.name || 'Operator';
       this.activeUser = account;
       if (typeof window !== 'undefined') {
         try {
@@ -751,6 +752,19 @@ export default {
           window.localStorage.setItem('hushhawk_session', JSON.stringify(account));
         } catch (e) {}
       }
+      // Record role switch in immutable audit ledger
+      fetch('/api/v1/audit/log', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          actor: account.name || account.email,
+          action: 'ROLE_SWITCH',
+          entityType: 'AUTH',
+          entityId: account.id || account.user_id,
+          diff: { switchedTo: account.name, role: account.roleName || account.role, previousActor: prevActor }
+        })
+      }).catch(() => null);
+
       this.isUserMenuOpen = false;
       this.showToast('Role Switched', `Active session switched to ${account.name} (${account.roleName || account.role})`, 'success');
       if (!this.isCurrentSectionAuthorized) {
@@ -789,6 +803,19 @@ export default {
     },
     handleLogout() {
       if (typeof window !== 'undefined') {
+        const currentUser = this.activeUser || {};
+        fetch('/api/v1/audit/log', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            actor: currentUser.name || currentUser.email || 'Authorized Operator',
+            action: 'USER_LOGOUT',
+            entityType: 'AUTH',
+            entityId: currentUser.id || currentUser.user_id || 'system-user',
+            diff: { email: currentUser.email, role: currentUser.role }
+          })
+        }).catch(() => null);
+
         if (typeof window.hushhawkLogout === 'function') {
           window.hushhawkLogout();
           return;

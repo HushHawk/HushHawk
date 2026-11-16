@@ -401,20 +401,36 @@ export default {
           role: 'System Superadmin & Managing Partner'
         },
         {
-          badge: 'ACQUISITIONS',
-          roleTitle: 'Acquisitions Director',
-          name: 'Dejon Ellis',
-          email: 'dejon@hushhawk.com',
+          badge: 'OWNER',
+          roleTitle: 'Owner & Relation Manager',
+          name: 'Darren Richardson',
+          email: 'team@elitehomes1.com',
           password: 'admin',
-          role: 'Managing Partner & Head of Capital'
+          role: 'Owner & Executive Relations Lead'
         },
         {
-          badge: '⚡ DISPO',
-          roleTitle: 'Dispositions Lead',
-          name: 'Marcus Vance',
-          email: 'dispo@hushhawk.com',
+          badge: 'ACQUISITIONS',
+          roleTitle: 'Managing Partner',
+          name: 'Dejon Ellis',
+          email: 'ellis@elitehomes1.com',
           password: 'admin',
-          role: 'Dispositions & Buyer Desk Director'
+          role: 'Managing Partner & Acquisitions Lead'
+        },
+        {
+          badge: 'DISPOSITIONS',
+          roleTitle: 'Dispositions Lead',
+          name: 'Alex Richard',
+          email: 'alex.richard@elitehomes1.com',
+          password: 'admin',
+          role: 'Managing Partner & Dispositions Desk'
+        },
+        {
+          badge: 'INVESTMENT',
+          roleTitle: 'Chief Investment Officer',
+          name: 'Waldo Ellis',
+          email: 'waldo.ellis@elitehomes1.com',
+          password: 'admin',
+          role: 'Chief Investment Officer & Underwriting'
         }
       ]
     };
@@ -516,8 +532,11 @@ export default {
       let inputEmail = (this.email || '').trim().toLowerCase();
       // Auto-expand username aliases
       if (inputEmail === 'admin') inputEmail = 'admin@hushhawk.com';
-      if (inputEmail === 'dejon') inputEmail = 'dejon@hushhawk.com';
-      if (inputEmail === 'dispo') inputEmail = 'dispo@hushhawk.com';
+      if (inputEmail === 'dejon') inputEmail = 'ellis@elitehomes1.com';
+      if (inputEmail === 'darren') inputEmail = 'team@elitehomes1.com';
+      if (inputEmail === 'alex') inputEmail = 'alex.richard@elitehomes1.com';
+      if (inputEmail === 'waldo') inputEmail = 'waldo.ellis@elitehomes1.com';
+      if (inputEmail === 'dispo') inputEmail = 'alex.richard@elitehomes1.com';
 
       if (!inputEmail) {
         this.errorMessage = 'Please enter your authorized email or terminal ID.';
@@ -532,31 +551,66 @@ export default {
 
       this.isLoading = true;
 
-      // Find identity or create default admin session
-      const matched = this.authorizedCredentials.find(c => c.email.toLowerCase() === inputEmail);
-      const activeUser = matched ? {
-        id: 'u-admin-1',
-        name: matched.name,
-        email: matched.email,
-        role: matched.role,
-        authenticatedAt: new Date().toISOString()
-      } : {
-        id: 'u-admin-1',
-        name: inputEmail.includes('@') ? inputEmail.split('@')[0].toUpperCase() : 'MAIN ADMIN',
-        email: inputEmail,
-        role: 'Authorized Command Operator',
-        authenticatedAt: new Date().toISOString()
-      };
-
-      const sessionObj = {
-        token: 'hh_token_live_' + Date.now(),
-        user: activeUser,
-        authenticated: true
-      };
-
       try {
-        // Authenticate with backend API
-        await fetch('/api/auth').catch(() => null);
+        // Authenticate directly with live PostgreSQL authentication service
+        const authRes = await fetch('/api/v1/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: inputEmail, password: inputPass })
+        });
+
+        let authData = null;
+        try {
+          authData = await authRes.json();
+        } catch (e) {
+          authData = null;
+        }
+
+        let activeUser;
+        let token = 'hh_token_live_' + Date.now();
+
+        if (authRes.ok && authData && authData.ok && authData.user) {
+          activeUser = {
+            id: authData.user.id || authData.user.user_id,
+            user_id: authData.user.user_id || authData.user.id,
+            name: authData.user.name,
+            email: authData.user.email,
+            phone: authData.user.phone || '',
+            role: authData.user.role,
+            roleName: authData.user.roleName || authData.user.role,
+            status: authData.user.status,
+            isAdmin: authData.user.isAdmin,
+            permissions: authData.user.permissions,
+            authenticatedAt: authData.user.authenticatedAt || new Date().toISOString()
+          };
+          if (authData.token) token = authData.token;
+        } else if (authData && authData.error) {
+          this.errorMessage = authData.error;
+          this.isLoading = false;
+          return;
+        } else {
+          // Fallback if backend offline
+          const matched = this.authorizedCredentials.find(c => c.email.toLowerCase() === inputEmail);
+          activeUser = matched ? {
+            id: 'u-admin-1',
+            name: matched.name,
+            email: matched.email,
+            role: matched.role,
+            authenticatedAt: new Date().toISOString()
+          } : {
+            id: 'u-admin-1',
+            name: inputEmail.includes('@') ? inputEmail.split('@')[0].toUpperCase() : 'MAIN ADMIN',
+            email: inputEmail,
+            role: 'Authorized Command Operator',
+            authenticatedAt: new Date().toISOString()
+          };
+        }
+
+        const sessionObj = {
+          token,
+          user: activeUser,
+          authenticated: true
+        };
 
         if (typeof window !== 'undefined') {
           if (this.rememberMe) {
@@ -584,17 +638,9 @@ export default {
           }
         }
       } catch (err) {
-        console.warn('[Login Notice]', err);
-        if (typeof window !== 'undefined') {
-          window.sessionStorage.setItem('hushhawk_session', JSON.stringify(activeUser));
-          window.localStorage.setItem('hushhawk_session', JSON.stringify(activeUser));
-          window.localStorage.setItem('ww-auth-session', JSON.stringify(sessionObj));
-          this.isLoggedIn = true;
-          window.__HUSHHAWK_AUTHENTICATED__ = true;
-          window.dispatchEvent(new CustomEvent('hushhawk-auth-change', { detail: { authenticated: true } }));
-          this.isRedirecting = true;
-          window.location.replace('/');
-        }
+        console.warn('[Login Error]', err);
+        this.errorMessage = 'Network error communicating with authentication service.';
+        this.isLoading = false;
       } finally {
         setTimeout(() => {
           this.isLoading = false;

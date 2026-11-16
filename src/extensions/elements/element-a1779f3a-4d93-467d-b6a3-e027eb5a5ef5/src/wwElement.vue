@@ -3,69 +3,8 @@
   <!-- Mobile Backdrop -->
   <div v-if="navOpen" class="sidebar-backdrop" @click="navOpen = false"></div>
 
-  <!-- Left Navigation Sidebar -->
-  <aside class="sidebar">
-    <button v-if="navOpen" class="sidebar-close-btn" @click="navOpen = false" title="Close Menu" aria-label="Close menu">✕</button>
-    <a href="/home" class="brand" @click="handleNav('/home', $event)">
-      <span class="brand-icon" v-html="icons.logo"></span>
-      <strong>HUSHHAWK<br>INTELLIGENCE</strong>
-      <small>PEOPLE • PROPERTIES • PROSPERITY</small>
-    </a>
-
-    <nav aria-label="HushHawk navigation">
-      <a
-        v-for="item in primaryNavigation"
-        :key="item.path"
-        :href="item.path"
-        :aria-current="item.path === '/home' ? 'page' : undefined"
-        :class="{ active: item.path === '/home' }"
-        @click="handleNav(item.path, $event)"
-      >
-        <span class="icon" v-html="icons[item.icon] || icons.house"></span>
-        {{ item.name }}
-      </a>
-
-      <details class="more-workspaces">
-        <summary>More Workspaces</summary>
-        <a
-          v-for="item in secondaryNavigation"
-          :key="item.path"
-          :href="item.path"
-          :aria-current="item.path === '/home' ? 'page' : undefined"
-          :class="{ active: item.path === '/home' }"
-          @click="handleNav(item.path, $event)"
-        >
-          <span class="icon" v-html="icons[item.icon] || icons.file"></span>
-          {{ item.name }}
-        </a>
-      </details>
-    </nav>
-
-    <!-- Sidebar Quick Logout Button -->
-    <div class="sidebar-logout-section" style="display: flex !important; justify-content: center !important; align-items: center !important; width: 100% !important; box-sizing: border-box !important;">
-      <button
-        type="button"
-        class="sidebar-logout-btn"
-        style="display: flex !important; align-items: center !important; justify-content: center !important; text-align: center !important; width: 100% !important; margin: 0 auto !important;"
-        @click="handleLogout"
-        title="Log out of HushHawk Command Center"
-        aria-label="Log out"
-      >
-        <svg style="margin: 0 !important; flex-shrink: 0 !important;" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-          <polyline points="16 17 21 12 16 7"/>
-          <line x1="21" y1="12" x2="9" y2="12"/>
-        </svg>
-        <span style="margin: 0 !important; text-align: center !important; display: inline-block !important; line-height: 1 !important;">Log Out</span>
-      </button>
-    </div>
-
-    <div class="sidebar-foil" aria-hidden="true"><img src="/icons/brand/hushhawk-emblem.svg" alt=""></div>
-
-  </aside>
-
   <!-- Main Workspace -->
-  <main class="workspace">
+  <div class="workspace">
     <div class="topbar">
       <button class="mobile-menu" aria-label="Open navigation" @click="navOpen = !navOpen" :aria-expanded="navOpen">
         <span v-html="icons.sliders"></span>
@@ -201,7 +140,69 @@
       </div>
     </div>
   </div>
-  <div class="command">
+  <div class="dashboard-body">
+  <!-- Left Navigation Sidebar -->
+  <aside class="sidebar">
+    <button v-if="navOpen" class="sidebar-close-btn" @click="navOpen = false" title="Close Menu" aria-label="Close menu">✕</button>
+    <a href="/home" class="brand" @click="handleNav('/home', $event)">
+      <span class="brand-icon" v-html="icons.logo"></span>
+      <strong>HUSHHAWK<br>INTELLIGENCE</strong>
+      <small>PEOPLE • PROPERTIES • PROSPERITY</small>
+    </a>
+
+    <nav aria-label="HushHawk navigation">
+      <a
+        v-for="item in primaryNavigation"
+        :key="item.path"
+        :href="item.path"
+        :aria-current="item.path === '/home' ? 'page' : undefined"
+        :class="{ active: item.path === '/home' }"
+        @click="handleNav(item.path, $event)"
+      >
+        <span class="icon" v-html="icons[item.icon] || icons.house"></span>
+        {{ item.name }}
+      </a>
+
+      <details class="more-workspaces">
+        <summary>More Workspaces</summary>
+        <a
+          v-for="item in secondaryNavigation"
+          :key="item.path"
+          :href="item.path"
+          :aria-current="item.path === '/home' ? 'page' : undefined"
+          :class="{ active: item.path === '/home' }"
+          @click="handleNav(item.path, $event)"
+        >
+          <span class="icon" v-html="icons[item.icon] || icons.file"></span>
+          {{ item.name }}
+        </a>
+      </details>
+    </nav>
+
+    <!-- Sidebar Quick Logout Button -->
+    <div class="sidebar-logout-section" style="display: flex !important; justify-content: center !important; align-items: center !important; width: 100% !important; box-sizing: border-box !important;">
+      <button
+        type="button"
+        class="sidebar-logout-btn"
+        style="display: flex !important; align-items: center !important; justify-content: center !important; text-align: center !important; width: 100% !important; margin: 0 auto !important;"
+        @click="handleLogout"
+        title="Log out of HushHawk Command Center"
+        aria-label="Log out"
+      >
+        <svg style="margin: 0 !important; flex-shrink: 0 !important;" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+        <span style="margin: 0 !important; text-align: center !important; display: inline-block !important; line-height: 1 !important;">Log Out</span>
+      </button>
+    </div>
+
+    <div class="sidebar-foil" aria-hidden="true"><img src="/icons/brand/hushhawk-emblem.svg" alt=""></div>
+
+  </aside>
+
+  <main class="command">
     <div class="dashboard-columns">
       <div class="dashboard-main">
         <header class="dashboard-heading">
@@ -797,6 +798,7 @@
   <section class="pulse"><div class="pulse-heading"><strong><i></i> CAPITAL DESK</strong><div class="feed-tabs"><button :class="{active:feedMode==='deals'}" @click="!isEditing&&(feedMode='deals')">Deal Pulse</button><button :class="{active:feedMode==='markets'}" @click="!isEditing&&(feedMode='markets')">Market Watch</button></div><span v-if="feedMode==='deals'">LIVE CRM SIGNALS</span><button v-if="feedMode==='deals'" @click="!isEditing&&(paused=!paused)" :aria-pressed="paused">{{paused?'Resume':'Pause'}}</button></div><div class="tape-window" v-show="feedMode==='deals'"><div class="tape" :class="{paused}"><span v-for="(item,i) in signalTape" :key="i" :aria-hidden="i>=signalsCount"><b>{{item.code}}</b> {{item.label}} <strong>{{item.value}}</strong><em>▲ {{item.change}}</em></span></div></div></section>
   <section class="market-tape" v-show="feedMode==='markets'"><div class="market-label"><b>MARKET WATCH</b><span>External quotes · timing varies by exchange</span><a href="https://www.tradingview.com/markets/" target="_blank" rel="noopener noreferrer">TradingView ↗</a></div><div ref="marketHost" class="tradingview-widget-container"><div class="market-placeholder">{{marketError?'Market feed unavailable. Open TradingView ↗':'Loading market quotes…'}}</div></div></section>
   <footer class="footer"><span>HUSHHAWK PROPERTY INTELLIGENCE</span><span>EXECUTE WITH PRECISION. CLOSE WITH CONFIDENCE.</span><span>JACKSONVILLE, FL</span></footer>
+  </main>
   </div>
 
   <!-- Global System Refresh Toast Notification -->
@@ -804,7 +806,7 @@
     <span class="srt-icon">{{ refreshToast.type === 'success' ? '✓' : refreshToast.type === 'warning' ? '⚠️' : '✕' }}</span>
     <span class="srt-text">{{ refreshToast.message }}</span>
   </div>
-  </main>
+  </div>
 </section>
 </template>
 <script>
@@ -1783,22 +1785,6 @@ onMounted(()=>{
   tick();
   loadDashboardData();
   checkPodioStatus();
-  if (typeof window !== 'undefined') {
-    if ('scrollRestoration' in window.history) {
-      window.history.scrollRestoration = 'manual';
-    }
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-    requestAnimationFrame(() => {
-      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-      const navEl = document.querySelector('.sidebar nav');
-      if (navEl) navEl.scrollTop = 0;
-    });
-    setTimeout(() => {
-      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-      const navEl = document.querySelector('.sidebar nav');
-      if (navEl) navEl.scrollTop = 0;
-    }, 150);
-  }
   timer=setInterval(tick,30000);
   initNotificationPolling();
   clickOutsideHandler=(e)=>{
@@ -1829,11 +1815,6 @@ const doc=wwLib.getFrontDocument(),host=marketHost.value;if(!host)return;
 const widget=doc.createElement('div');widget.className='tradingview-widget-container__widget';host.appendChild(widget);
 const script=doc.createElement('script');script.type='text/javascript';script.src='https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js';script.async=true;
 script.textContent=JSON.stringify({symbols:[{proName:'NASDAQ:NVDA',title:'NVIDIA'},{proName:'NASDAQ:AAPL',title:'Apple'},{proName:'NASDAQ:MSFT',title:'Microsoft'},{proName:'NASDAQ:TSLA',title:'Tesla'},{proName:'AMEX:SPY',title:'S&P 500 ETF'},{proName:'AMEX:VNQ',title:'Real Estate ETF'},{proName:'BITSTAMP:BTCUSD',title:'Bitcoin'}],colorTheme:'dark',locale:'en',isTransparent:true,showSymbolLogo:true,displayMode:'adaptive'});
-script.onload=()=>{
-  if (typeof window !== 'undefined') {
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-  }
-};
 script.onerror=()=>marketError.value=true;host.appendChild(script);
 marketTimer=setTimeout(()=>{if(!host.querySelector('iframe'))marketError.value=true;},15000);
 });
@@ -1880,22 +1861,15 @@ return{icons,uid,feedMode,isEditing,metrics,query,zip,checked,tasks,imports,filt
   height: 100%;
 }
 
-/* Sidebar Styling - Locked & Fixed on Viewport (Executive Luxury Gold Edition) */
+/* Dashboard navigation */
 .sidebar {
   width: 220px !important;
   min-width: 220px !important;
   max-width: 220px !important;
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  bottom: 0 !important;
-  height: 100vh !important;
-  max-height: 100vh !important;
   display: flex !important;
   flex-direction: column !important;
   overflow: hidden !important;
   box-sizing: border-box !important;
-  z-index: 1000 !important;
   background: 
     linear-gradient(40deg, transparent 40%, rgba(212, 175, 55, 0.15) 47%, rgba(253, 230, 138, 0.45) 50%, rgba(212, 175, 55, 0.15) 53%, transparent 60%),
     linear-gradient(35deg, transparent 65%, rgba(212, 175, 55, 0.1) 72%, rgba(253, 230, 138, 0.35) 75%, rgba(212, 175, 55, 0.1) 78%, transparent 85%),
