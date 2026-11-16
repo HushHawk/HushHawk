@@ -47,10 +47,28 @@ export class BatchLeadsService {
      */
     static async ingestWebhook(payload = {}) {
         // Extract normalized fields regardless of whether nested in payload.property, payload.data, or root
-        const root = payload.property || payload.data || payload.lead || payload.item || payload;
+        const root = payload.property || payload.data || payload.lead || payload.item || payload || {};
+
+        // Safe helper to extract clean trimmed string from strings, numbers, or nested objects
+        const toCleanStr = (val, fallback = '') => {
+            if (val === null || val === undefined) return fallback;
+            if (typeof val === 'string') return val.trim();
+            if (typeof val === 'number') return String(val).trim();
+            if (typeof val === 'object') {
+                const inner = val.street || val.street_address || val.address || val.property_address || val.formatted || val.name || val.value || val.line1 || '';
+                if (typeof inner === 'string') return inner.trim();
+                return fallback;
+            }
+            return String(val).trim();
+        };
+
+        // If root has nested address object
+        const addrObj = (typeof root.address === 'object' && root.address !== null) ? root.address : 
+                        (typeof root.propertyAddress === 'object' && root.propertyAddress !== null) ? root.propertyAddress :
+                        (typeof root.property_address === 'object' && root.property_address !== null) ? root.property_address : {};
 
         // 1. Property Details
-        const rawAddress = (
+        const rawAddress = toCleanStr(
             root.street_address || 
             root.propertyAddress ||
             root.property_address || 
@@ -58,40 +76,80 @@ export class BatchLeadsService {
             root.address_line1 || 
             root.formatted_address || 
             root.address1 ||
+            addrObj.street ||
+            addrObj.street_address ||
+            addrObj.address ||
+            addrObj.line1,
             '1000 Commercial Way'
-        ).trim();
+        );
 
-        const city = (root.city || root.propertyCity || root.property_city || 'Jacksonville').trim();
-        const state = (root.state || root.propertyState || root.property_state || 'FL').trim().toUpperCase();
-        const zip = (root.zip || root.propertyZip || root.zip_code || root.property_zip || root.postal_code || '32202').trim();
-        const countyName = (root.county || root.propertyCounty || root.property_county || 'Duval').trim().toUpperCase();
+        const city = toCleanStr(
+            root.city || 
+            root.propertyCity || 
+            root.property_city || 
+            addrObj.city,
+            'Jacksonville'
+        );
+
+        const state = toCleanStr(
+            root.state || 
+            root.propertyState || 
+            root.property_state || 
+            addrObj.state,
+            'FL'
+        ).toUpperCase();
+
+        const zip = toCleanStr(
+            root.zip || 
+            root.propertyZip || 
+            root.zip_code || 
+            root.property_zip || 
+            root.postal_code || 
+            addrObj.zip ||
+            addrObj.postal_code ||
+            addrObj.zip_code,
+            '32202'
+        );
+
+        const countyName = toCleanStr(
+            root.county || 
+            root.propertyCounty || 
+            root.property_county || 
+            addrObj.county,
+            'Duval'
+        ).toUpperCase();
 
         const countyInfo = COUNTY_LOOKUP[countyName] || COUNTY_LOOKUP['DUVAL'];
         const countyCode = countyInfo.code;
         const countyId = countyInfo.id;
 
         // Parcel / APN (preserve formatting, leading zeros, hyphens)
-        const parcelRaw = (
+        const parcelRaw = toCleanStr(
             root.apn || 
             root.parcel_number || 
             root.parcel_id || 
             root.parcel || 
-            root.parcel_raw || 
+            root.parcel_raw,
             '091823-0000'
-        ).trim();
+        );
         const parcelMatch = normalizeParcelMatch(parcelRaw);
 
         // 2. Owner / Contact Details
-        let fullName = (
+        const ownerObj = (typeof root.owner === 'object' && root.owner !== null) ? root.owner :
+                         (typeof root.contact === 'object' && root.contact !== null) ? root.contact : {};
+
+        let fullName = toCleanStr(
             root.owner_name || 
             root.owner_full_name || 
             root.full_name || 
-            root.contact_name || 
+            root.contact_name ||
+            ownerObj.name ||
+            ownerObj.full_name,
             ''
-        ).trim();
+        );
 
-        const firstName = (root.owner_first_name || root.first_name || '').trim();
-        const lastName = (root.owner_last_name || root.last_name || '').trim();
+        const firstName = toCleanStr(root.owner_first_name || root.first_name || ownerObj.first_name, '');
+        const lastName = toCleanStr(root.owner_last_name || root.last_name || ownerObj.last_name, '');
         if (!fullName && (firstName || lastName)) {
             fullName = `${firstName} ${lastName}`.trim();
         }
@@ -143,10 +201,10 @@ export class BatchLeadsService {
         const primaryEmail = emails[0] || '';
 
         // Mailing Address
-        const mailCity = (root.mailing_city || root.mail_city || '').trim();
-        const mailState = (root.mailing_state || root.mail_state || '').trim();
-        const mailZip = (root.mailing_zip || root.mail_zip || '').trim();
-        const mailStreet = (root.mailing_street || root.mailing_address || '').trim();
+        const mailCity = toCleanStr(root.mailing_city || root.mail_city, '');
+        const mailState = toCleanStr(root.mailing_state || root.mail_state, '');
+        const mailZip = toCleanStr(root.mailing_zip || root.mail_zip, '');
+        const mailStreet = toCleanStr(root.mailing_street || root.mailing_address, '');
         const mailingAddress = mailStreet ? `${mailStreet}, ${mailCity} ${mailState} ${mailZip}`.trim() : (mailCity ? `${mailCity}, ${mailState} ${mailZip}`.trim() : '');
 
         // 3. Distress Indicators & List Attribution
