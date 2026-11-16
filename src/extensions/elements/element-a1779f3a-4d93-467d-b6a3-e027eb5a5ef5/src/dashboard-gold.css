@@ -119,19 +119,44 @@
   padding: 10px 8px 12px 6px;
 }
 .dashboard-gold.hushhawk-command-center .sidebar {
-  position: relative !important;
-  inset: auto !important;
-  height: auto !important;
-  max-height: none !important;
-  min-height: calc(100svh - var(--dashboard-masthead) - 20px);
-  z-index: 1 !important;
+  position: sticky !important;
+  top: 10px !important;
+  height: calc(100vh - 20px) !important;
+  max-height: calc(100vh - 20px) !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  scrollbar-width: thin !important;
+  scrollbar-color: rgba(212, 175, 55, 0.4) transparent !important;
+  overscroll-behavior: contain !important;
+  z-index: 10 !important;
   width: var(--dashboard-nav) !important; min-width: var(--dashboard-nav) !important; max-width: var(--dashboard-nav) !important;
   border: 1px solid #685744 !important; border-radius: 13px;
   box-shadow: inset 0 1px #fff3, inset 0 -1px #e9af5c8f, 0 8px 22px #0008;
   background: var(--hh-sidebar) !important;
 }
+.dashboard-gold.hushhawk-command-center .sidebar::-webkit-scrollbar {
+  width: 4px;
+}
+.dashboard-gold.hushhawk-command-center .sidebar::-webkit-scrollbar-track {
+  background: rgba(4, 24, 45, 0.3);
+}
+.dashboard-gold.hushhawk-command-center .sidebar::-webkit-scrollbar-thumb {
+  background: rgba(212, 175, 55, 0.35);
+  border-radius: 4px;
+}
+.dashboard-gold.hushhawk-command-center .sidebar::-webkit-scrollbar-thumb:hover {
+  background: #f5cf72;
+}
 .dashboard-gold.hushhawk-command-center .sidebar .brand { display: none; }
-.dashboard-gold.hushhawk-command-center .sidebar nav { flex: 1 0 auto !important; gap: 1px; padding: 10px 6px; }
+.dashboard-gold.hushhawk-command-center .sidebar nav {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: none !important;
+  height: auto !important;
+  overflow: visible !important;
+  gap: 1px;
+  padding: 10px 6px;
+}
 .dashboard-gold.hushhawk-command-center .sidebar nav a { min-height: 32px; padding: 6px; font-size: 12px; }
 .dashboard-gold.hushhawk-command-center .sidebar nav a.active {
   background: var(--hh-selected) !important;
@@ -154,7 +179,7 @@
   background: transparent;
 }
 .dashboard-gold.hushhawk-command-center .dashboard-columns {
-  display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 29%); gap: 8px; align-items: start;
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(290px, 32%); gap: 12px; align-items: start;
 }
 .dashboard-gold.hushhawk-command-center :is(.dashboard-main, .dashboard-context) { display: grid; gap: 8px; min-width: 0; align-content: start; }
 .dashboard-gold.hushhawk-command-center .dashboard-heading {
@@ -521,7 +546,7 @@
   max-height: 185px;
   overflow-y: auto;
 }
-.dashboard-gold.hushhawk-command-center .map-panel .map-canvas svg { height: clamp(145px, 15vw, 250px); aspect-ratio: auto; }
+.dashboard-gold.hushhawk-command-center .map-panel .map-canvas svg { height: clamp(320px, 25vw, 420px) !important; min-height: 320px !important; aspect-ratio: auto; }
 .dashboard-gold.hushhawk-command-center .map-panel .zip-region { fill: #ba9d4736; stroke: #f4cd70a8; }
 .dashboard-gold.hushhawk-command-center .map-panel .zip-region.highlighted { fill: #e2ae546e; stroke: #ffe0a3; }
 .dashboard-gold.hushhawk-command-center .map-panel .market-head { background: linear-gradient(#2c3b50, #101b2b); }
@@ -529,7 +554,7 @@
   align-self: start !important;
   display: flex !important;
   flex-direction: column !important;
-  gap: 10px !important;
+  gap: 16px !important;
   height: auto !important;
   min-height: auto !important;
 }
@@ -538,6 +563,7 @@
   min-height: auto !important;
   max-height: none !important;
   flex: 0 0 auto !important;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45) !important;
 }
 
 /* Email Center (HushHawk Executive Standard) */
@@ -603,7 +629,8 @@
 .ec-inbox-list {
   display: flex;
   flex-direction: column;
-  max-height: 135px;
+  min-height: 85px;
+  max-height: 165px;
   overflow-y: auto;
 }
 .ec-inbox-item {
@@ -748,7 +775,8 @@
   flex-direction: column;
   gap: 8px;
   padding: 10px 12px;
-  max-height: 180px;
+  min-height: 110px;
+  max-height: 220px;
   overflow-y: auto;
 }
 .tm-msg-row {

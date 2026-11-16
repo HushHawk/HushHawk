@@ -177,5 +177,5 @@ footer{margin:0;padding:5px 8px;display:block}footer .legend{display:none}footer
 .map-state{min-height:320px;font-size:12px}.map-state p{font-size:11px}
 .map-attribution{position:absolute;bottom:2px;right:4px;font-size:7px;padding:2px 4px;background:#00101dbd;color:white}
 @container(max-width:400px){.map-canvas svg{height:248px}.market-head{font-size:11px}}
-.map-canvas svg{height:210px}.zip-list{max-height:30px;padding:4px 8px}footer p{font-size:7px}.selected{min-height:34px}.county-card header{padding:4px 9px}.toolbar{padding:4px 8px}@container(max-width:400px){.map-canvas svg{height:210px}}
+.map-canvas svg{height:360px !important;min-height:320px !important}.zip-list{max-height:65px;padding:6px 10px;gap:5px}footer p{font-size:7.5px}.selected{min-height:36px}.county-card header{padding:5px 10px}.toolbar{padding:5px 8px}@container(max-width:400px){.map-canvas svg{height:320px !important}}
 </style>

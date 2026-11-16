@@ -910,7 +910,11 @@ export default {
   max-height: 100vh !important;
   display: flex !important;
   flex-direction: column !important;
-  overflow: hidden !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  overscroll-behavior: contain !important;
+  scrollbar-width: thin !important;
+  scrollbar-color: rgba(212, 175, 55, 0.4) transparent !important;
   box-sizing: border-box !important;
   z-index: 1000 !important;
   background: var(--hh-sidebar, linear-gradient(40deg, transparent 40%, rgba(212, 175, 55, 0.15) 47%, rgba(253, 230, 138, 0.45) 50%, rgba(212, 175, 55, 0.15) 53%, transparent 60%),
@@ -920,6 +924,20 @@ export default {
   border-right: 1px solid rgba(212, 175, 55, 0.25) !important;
   border-left: 2px solid rgba(212, 175, 55, 0.45) !important;
   box-shadow: 6px 0 28px rgba(0, 0, 0, 0.7);
+}
+
+.sidebar::-webkit-scrollbar {
+  width: 4px;
+}
+.sidebar::-webkit-scrollbar-track {
+  background: rgba(4, 24, 45, 0.3);
+}
+.sidebar::-webkit-scrollbar-thumb {
+  background: rgba(212, 175, 55, 0.35);
+  border-radius: 4px;
+}
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: #f5cf72;
 }
 
 .sidebar::after {
@@ -984,16 +1002,14 @@ export default {
 
 .sidebar nav {
   padding: 10px 8px !important;
-  flex: 1 1 0% !important;
+  flex: none !important;
   min-height: 0 !important;
-  overflow-y: auto !important;
+  height: auto !important;
+  overflow-y: visible !important;
   overflow-x: hidden !important;
-  overscroll-behavior: contain !important;
   display: flex !important;
   flex-direction: column !important;
   gap: 0 !important;
-  scrollbar-width: thin !important;
-  scrollbar-color: rgba(212, 175, 55, 0.3) transparent !important;
   position: relative !important;
   z-index: 2 !important;
 }
