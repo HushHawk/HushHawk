@@ -2346,6 +2346,37 @@ const handleBatchLeadsWebhook = async (req, res) => {
 apiRouter.post('/integrations/batchleads/webhook', handleBatchLeadsWebhook);
 apiRouter.post('/webhooks/batchleads', handleBatchLeadsWebhook);
 
+apiRouter.post('/integrations/batchleads/seed', async (req, res) => {
+    try {
+        const sampleStreets = [
+            { street: '3128 Hendricks Ave', apn: '154829-0000', owner: 'Arthur Pendelton', phone: '904-555-2144', zip: '32207' },
+            { street: '5520 San Jose Blvd', apn: '129482-0000', owner: 'Victoria Sterling', phone: '904-555-9382', zip: '32217' },
+            { street: '2241 St Johns Ave', apn: '083721-0000', owner: 'Harrison Ford', phone: '904-555-7319', zip: '32204' },
+            { street: '7840 Atlantic Blvd', apn: '149021-0000', owner: 'Eleanor Vance', phone: '904-555-4820', zip: '32211' }
+        ];
+        const pick = sampleStreets[Math.floor(Math.random() * sampleStreets.length)];
+        const result = await BatchLeadsService.ingestWebhook({
+            property: {
+                street_address: pick.street,
+                city: 'Jacksonville',
+                state: 'FL',
+                zip: pick.zip,
+                county: 'Duval',
+                apn: pick.apn,
+                owner_name: pick.owner,
+                owner_phone: pick.phone,
+                owner_email: `${pick.owner.toLowerCase().replace(/\s+/g, '.')}@gmail.com`,
+                is_vacant: true,
+                tags: ['Push to HushHawk', 'BatchLeads Vacant', 'Hot Lead']
+            }
+        });
+        res.json({ success: true, seeded: true, lead: result });
+    } catch (err) {
+        console.error('[BatchLeads Seed Error]', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
 apiRouter.get('/integrations/batchleads/status', (req, res) => {
     res.json({
         ok: true,
