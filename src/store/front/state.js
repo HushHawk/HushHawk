@@ -1,9 +1,14 @@
 function initialTheme() {
+    if (typeof window === 'undefined') return 'dark';
+
     try {
-        return window.localStorage.getItem('ww-app-theme') === 'light' ? 'light' : 'dark';
+        const savedTheme = window.localStorage.getItem('ww-app-theme');
+        if (savedTheme === 'light' || savedTheme === 'dark') return savedTheme;
     } catch {
-        return 'dark';
+        // Fall back to the browser color preference when storage is unavailable.
     }
+
+    return window.matchMedia?.('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
 }
 
 export default {
