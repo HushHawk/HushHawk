@@ -47,22 +47,24 @@ export class BatchLeadsService {
      */
     static async ingestWebhook(payload = {}) {
         // Extract normalized fields regardless of whether nested in payload.property, payload.data, or root
-        const root = payload.property || payload.data || payload.lead || payload;
+        const root = payload.property || payload.data || payload.lead || payload.item || payload;
 
         // 1. Property Details
         const rawAddress = (
             root.street_address || 
-            root.address || 
+            root.propertyAddress ||
             root.property_address || 
+            root.address || 
             root.address_line1 || 
             root.formatted_address || 
+            root.address1 ||
             '1000 Commercial Way'
         ).trim();
 
-        const city = (root.city || root.property_city || 'Jacksonville').trim();
-        const state = (root.state || root.property_state || 'FL').trim().toUpperCase();
-        const zip = (root.zip || root.zip_code || root.property_zip || root.postal_code || '32202').trim();
-        const countyName = (root.county || root.property_county || 'Duval').trim().toUpperCase();
+        const city = (root.city || root.propertyCity || root.property_city || 'Jacksonville').trim();
+        const state = (root.state || root.propertyState || root.property_state || 'FL').trim().toUpperCase();
+        const zip = (root.zip || root.propertyZip || root.zip_code || root.property_zip || root.postal_code || '32202').trim();
+        const countyName = (root.county || root.propertyCounty || root.property_county || 'Duval').trim().toUpperCase();
 
         const countyInfo = COUNTY_LOOKUP[countyName] || COUNTY_LOOKUP['DUVAL'];
         const countyCode = countyInfo.code;
@@ -187,7 +189,7 @@ export class BatchLeadsService {
             await client.query('BEGIN');
 
             // 4a. Insert/Update core.properties
-            await client.query(`
+            const propRes = await client.query(`
                 INSERT INTO core.properties (
                     property_id, county_id, parcel_raw, parcel_match, address_line1,
                     city, state_code, postal_code, property_type, assessed_value, metadata, created_at, updated_at
@@ -197,7 +199,8 @@ export class BatchLeadsService {
                     city = EXCLUDED.city,
                     assessed_value = EXCLUDED.assessed_value,
                     metadata = EXCLUDED.metadata,
-                    updated_at = NOW();
+                    updated_at = NOW()
+                RETURNING property_id;
             `, [
                 propertyId,
                 countyId,
@@ -219,6 +222,7 @@ export class BatchLeadsService {
                     darrenWorkspaceSync: true
                 })
             ]);
+            const finalPropertyId = propRes.rows[0]?.property_id || propertyId;
 
             // 4b. Insert/Update core.people
             await client.query(`
@@ -252,7 +256,7 @@ export class BatchLeadsService {
                     case_reference = EXCLUDED.case_reference;
             `, [
                 eventId,
-                propertyId,
+                finalPropertyId,
                 pillarCode,
                 String(batchLeadsPropertyId),
                 crownKey
@@ -267,7 +271,7 @@ export class BatchLeadsService {
             `, [
                 leadId,
                 `BatchLeads Webhook Tag Push: ${tags.join(', ')} (Darren's Workspace)`,
-                propertyId,
+                finalPropertyId,
                 personId,
                 JSON.stringify({
                     crown_key: crownKey,
@@ -296,7 +300,7 @@ export class BatchLeadsService {
             `, [
                 crypto.randomUUID(),
                 personId,
-                propertyId
+                finalPropertyId
             ]);
 
             // 4f. Create High-Priority Task in core.tasks

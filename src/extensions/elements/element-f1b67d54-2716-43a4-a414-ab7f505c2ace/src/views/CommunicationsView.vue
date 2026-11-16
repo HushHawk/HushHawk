@@ -152,9 +152,10 @@
             </button>
           </div>
         </div>
-        <div v-if="!activeThread" class="chat-empty" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #64748b; gap: 12px; padding: 40px;">
-          <span v-html="icons.mail" style="transform: scale(1.6); opacity: 0.5;"></span>
-          <p style="margin: 0; font-size: 14px;">Select a thread or start a new conversation.</p>
+        <div v-if="!activeThread" class="chat-empty" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94a3b8; gap: 12px; padding: 60px 24px; text-align: center;">
+          <span v-html="icons.mail" style="transform: scale(2); opacity: 0.6; color: #edcf7c; margin-bottom: 8px;"></span>
+          <strong style="color: #f8fafc; font-size: 16px;">No Active Conversation Selected</strong>
+          <p style="margin: 0; font-size: 13px; max-width: 380px; line-height: 1.5; color: #64748b;">Inbound SMS messages, smrtPhone calls, and seller emails from your marketing channels will appear in real-time.</p>
         </div>
       </div>
 

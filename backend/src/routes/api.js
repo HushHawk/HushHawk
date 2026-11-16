@@ -2333,8 +2333,17 @@ apiRouter.post('/integrations/smrtphone/simulate-call', (req, res) => {
 // BatchLeads Inbound Webhook & Automated Lead Ingestion Engine
 // ============================================================================
 const handleBatchLeadsWebhook = async (req, res) => {
+    if (req.method === 'GET' || req.method === 'HEAD') {
+        return res.status(200).json({
+            ok: true,
+            status: 'READY',
+            service: 'BatchLeads Webhook Ingestion Gateway',
+            endpoint: '/api/v1/integrations/batchleads/webhook',
+            timestamp: new Date().toISOString()
+        });
+    }
     try {
-        console.log('[BatchLeads Webhook] Received payload:', JSON.stringify(req.body).slice(0, 200));
+        console.log('[BatchLeads Webhook] Received payload:', JSON.stringify(req.body).slice(0, 500));
         const result = await BatchLeadsService.ingestWebhook(req.body);
         res.status(201).json(result);
     } catch (err) {
@@ -2343,8 +2352,8 @@ const handleBatchLeadsWebhook = async (req, res) => {
     }
 };
 
-apiRouter.post('/integrations/batchleads/webhook', handleBatchLeadsWebhook);
-apiRouter.post('/webhooks/batchleads', handleBatchLeadsWebhook);
+apiRouter.all('/integrations/batchleads/webhook', handleBatchLeadsWebhook);
+apiRouter.all('/webhooks/batchleads', handleBatchLeadsWebhook);
 
 apiRouter.post('/integrations/batchleads/seed', async (req, res) => {
     try {
@@ -2669,10 +2678,11 @@ apiRouter.get('/tasks', async (req, res) => {
                 });
                 return res.json({ total: formatted.length, tasks: formatted });
             }
+            return res.json({ total: 0, tasks: [] });
         } catch (dbErr) {
             console.warn('[Tasks RDS Fallback]:', dbErr.message);
         }
-        const tasks = db.data.core.tasks || [];
+        const tasks = db.data.core?.tasks || [];
         res.json({ total: tasks.length, tasks });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -6200,11 +6210,11 @@ apiRouter.post('/automations/:id/execute', async (req, res) => {
 // ============================================================================
 apiRouter.get('/marketing', async (req, res) => {
     try {
-        let directMailCount = 28;
-        let facebookCount = 16;
-        let coldCallCount = 12;
-        let smsCount = 8;
-        let websiteCount = 4;
+        let directMailCount = 0;
+        let facebookCount = 0;
+        let coldCallCount = 0;
+        let smsCount = 0;
+        let websiteCount = 0;
 
         try {
             const sourceRes = await pool.query(`
@@ -6218,21 +6228,19 @@ apiRouter.get('/marketing', async (req, res) => {
             sourceRes.rows.forEach(r => {
                 sourceCounts[(r.source || '').toUpperCase()] = parseInt(r.count, 10);
             });
-            if (Object.keys(sourceCounts).length > 0) {
-                directMailCount = sourceCounts['DIRECT_MAIL'] || directMailCount;
-                facebookCount = sourceCounts['FACEBOOK'] || facebookCount;
-                coldCallCount = sourceCounts['COLD_CALL'] || coldCallCount;
-                smsCount = sourceCounts['SMS'] || smsCount;
-                websiteCount = sourceCounts['WEBSITE'] || websiteCount;
-            }
+            directMailCount = sourceCounts['MAIL'] || sourceCounts['DIRECT_MAIL'] || 0;
+            facebookCount = sourceCounts['FB_AD'] || sourceCounts['FACEBOOK'] || 0;
+            coldCallCount = sourceCounts['INBOUND_CALL'] || sourceCounts['COLD_CALL'] || 0;
+            smsCount = sourceCounts['SMS_CAMPAIGN'] || sourceCounts['SMS'] || 0;
+            websiteCount = sourceCounts['INBOUND_WEB'] || sourceCounts['WEBSITE'] || 0;
         } catch (_) {}
 
         const channelStats = [
-            { channel: 'Direct Mail (USPS)', spend: '$3,840', leads: directMailCount, cpl: '$' + Math.round(3840 / directMailCount), contracts: 4, roi: '480%' },
-            { channel: 'Meta / Facebook Ads', spend: '$2,150', leads: facebookCount, cpl: '$' + Math.round(2150 / facebookCount), contracts: 2, roi: '360%' },
-            { channel: 'Cold Call (smrtPhone)', spend: '$1,200', leads: coldCallCount, cpl: '$' + Math.round(1200 / coldCallCount), contracts: 2, roi: '510%' },
-            { channel: 'SMS Carrier Outreach', spend: '$850', leads: smsCount, cpl: '$' + Math.round(850 / smsCount), contracts: 1, roi: '420%' },
-            { channel: 'Driving for Dollars / Inbound', spend: '$400', leads: websiteCount, cpl: '$' + Math.round(400 / websiteCount), contracts: 1, roi: '680%' }
+            { channel: 'Direct Mail (USPS)', spend: '$0', leads: directMailCount, cpl: '$0.00', contracts: 0, roi: '0%' },
+            { channel: 'Meta / Facebook Ads', spend: '$0', leads: facebookCount, cpl: '$0.00', contracts: 0, roi: '0%' },
+            { channel: 'Cold Call (smrtPhone)', spend: '$0', leads: coldCallCount, cpl: '$0.00', contracts: 0, roi: '0%' },
+            { channel: 'SMS Carrier Outreach', spend: '$0', leads: smsCount, cpl: '$0.00', contracts: 0, roi: '0%' },
+            { channel: 'Driving for Dollars / Inbound', spend: '$0', leads: websiteCount, cpl: '$0.00', contracts: 0, roi: '0%' }
         ];
 
         let podioCampaigns = [];
@@ -6243,16 +6251,6 @@ apiRouter.get('/marketing', async (req, res) => {
         }
 
         let campaigns = (podioCampaigns && podioCampaigns.length) ? podioCampaigns : (db.data.marketing_campaigns || []);
-        if (campaigns.length === 0) {
-            campaigns = [
-                { id: 'm-1', name: 'Duval High-Equity Direct Mail Drop #4', channel: 'Direct Mail', targetAudience: 'Duval County 40%+ Equity Homeowners', spend: 2800, leads: directMailCount, cpl: 100, contracts: 3, roi: 520, status: 'Active', dateRange: 'May 1 - May 30' },
-                { id: 'm-2', name: 'Jacksonville Pre-Foreclosure Urgent Cash Offer', channel: 'Direct Mail', targetAudience: 'Pre-Foreclosure / Tax Delinquent', spend: 1040, leads: 10, cpl: 104, contracts: 1, roi: 440, status: 'Active', dateRange: 'May 10 - June 10' },
-                { id: 'm-3', name: 'Meta Distressed Seller Inbound Campaign', channel: 'Social Ads', targetAudience: 'Jacksonville Metro 35-65 Age Demo', spend: 2150, leads: facebookCount, cpl: 134, contracts: 2, roi: 360, status: 'Active', dateRange: 'May 1 - Ongoing' },
-                { id: 'm-4', name: 'smrtPhone Absentee Owner Dialing Batch', channel: 'Cold Calling', targetAudience: 'Out-of-state Duval property owners', spend: 1200, leads: coldCallCount, cpl: 100, contracts: 2, roi: 510, status: 'Active', dateRange: 'May 15 - Ongoing' }
-            ];
-            db.data.marketing_campaigns = campaigns;
-            db.persist();
-        }
 
         res.json({ campaigns, channelStats, total: campaigns.length });
     } catch (err) {
@@ -6334,12 +6332,12 @@ apiRouter.post('/deal-analysis', (req, res) => {
 // ============================================================================
 apiRouter.get('/analytics', async (req, res) => {
     try {
-        let totalLeads = 68;
-        let totalContracts = 10;
-        let totalClosed = 2;
-        let totalRevenue = 475000;
-        let avgSpread = 31667;
-        let buyersCount = 5;
+        let totalLeads = 0;
+        let totalContracts = 0;
+        let totalClosed = 0;
+        let totalRevenue = 0;
+        let avgSpread = 0;
+        let buyersCount = 0;
 
         try {
             const [leadsCount, funnelStats, buyersStat] = await Promise.all([
@@ -6356,43 +6354,55 @@ apiRouter.get('/analytics', async (req, res) => {
                 pool.query('SELECT count(*)::int as count FROM crm.cash_buyers')
             ]);
 
-            totalLeads = leadsCount.rows[0]?.count || 68;
+            totalLeads = leadsCount.rows[0]?.count || 0;
             const fRow = funnelStats.rows[0];
-            totalContracts = fRow?.contracts_count || 10;
-            totalClosed = fRow?.closed_count || 2;
-            totalRevenue = Number(fRow?.total_revenue) || 475000;
-            avgSpread = Math.round(Number(fRow?.avg_spread) || 31667);
-            buyersCount = buyersStat.rows[0]?.count || 5;
+            totalContracts = fRow?.contracts_count || 0;
+            totalClosed = fRow?.closed_count || 0;
+            totalRevenue = Number(fRow?.total_revenue) || 0;
+            avgSpread = Math.round(Number(fRow?.avg_spread) || 0);
+            buyersCount = buyersStat.rows[0]?.count || 0;
         } catch (dbErr) {
             console.warn('[Analytics PG Warn]', dbErr.message);
         }
+
+        // Submarkets dynamic query from real properties
+        let submarkets = [];
+        try {
+            const subRes = await pool.query(`
+                SELECT postal_code, count(*)::int as prop_count
+                FROM core.properties
+                WHERE postal_code IS NOT NULL
+                GROUP BY postal_code
+                ORDER BY prop_count DESC
+                LIMIT 5
+            `);
+            submarkets = subRes.rows.map(r => ({
+                area: `${r.postal_code} (Jacksonville Metro)`,
+                deals: 0,
+                volume: 0,
+                avgSpread: 0
+            }));
+        } catch (_) {}
 
         res.json({
             kpis: {
                 totalRevenue: totalRevenue,
                 contractsUnderEscrow: totalContracts,
                 avgAssignmentSpread: avgSpread,
-                dispoSpeedDays: 4.8
+                dispoSpeedDays: 0
             },
             funnel: [
                 { label: 'Total Inbound Raw Leads', value: totalLeads },
-                { label: 'Qualified Distressed Sellers', value: Math.round(totalLeads * 0.72) },
-                { label: 'Cash Offers Presented', value: Math.round(totalLeads * 0.45) },
+                { label: 'Qualified Distressed Sellers', value: 0 },
+                { label: 'Cash Offers Presented', value: 0 },
                 { label: 'Executed Purchase Contracts (PSA)', value: totalContracts },
-                { label: 'Assigned to Cash Buyers', value: buyersCount },
+                { label: 'Assigned to Cash Buyers', value: 0 },
                 { label: 'Closed & Escrow Wire Disbursed', value: totalClosed }
             ],
             leaderboard: [
-                { rank: 1, name: 'Alex Richard', deals: 8, revenue: 268000, conversionRate: '34%' },
-                { rank: 2, name: 'Waldo Ellis', deals: 7, revenue: 207000, conversionRate: '31%' }
+                { rank: 1, name: 'Main Administrator', deals: 0, revenue: 0, conversionRate: '0%' }
             ],
-            submarkets: [
-                { area: '32204 (Riverside / Avondale)', deals: 4, volume: 580000, avgSpread: 34000 },
-                { area: '32210 (Westside / Ortega)', deals: 3, volume: 410000, avgSpread: 29000 },
-                { area: '32218 (Northside / Airport)', deals: 3, volume: 395000, avgSpread: 32000 },
-                { area: '32221 (Normandy / Herlong)', deals: 2, volume: 290000, avgSpread: 30000 },
-                { area: '32065 (Clay / Orange Park)', deals: 3, volume: 398000, avgSpread: 33000 }
-            ]
+            submarkets
         });
     } catch (err) {
         res.status(500).json({ error: err.message });

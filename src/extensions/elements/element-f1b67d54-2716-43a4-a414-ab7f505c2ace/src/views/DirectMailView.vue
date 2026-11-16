@@ -165,8 +165,15 @@
           </thead>
           <tbody>
             <tr v-if="(filteredBatches || []).length === 0">
-              <td colspan="9" style="text-align: center; color: #64748b; padding: 36px;">
-                No matching Direct Mail batches.
+              <td colspan="9" style="text-align: center; color: #94a3b8; padding: 48px 24px;">
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;">
+                  <span v-html="icons.mail" style="transform: scale(1.6); opacity: 0.6; color: #edcf7c; margin-bottom: 8px;"></span>
+                  <strong style="color: #f8fafc; font-size: 15px;">No Direct Mail Drops Recorded</strong>
+                  <p style="margin: 0 0 12px 0; color: #64748b; font-size: 13px;">Create high-equity or pre-foreclosure direct mail drops to begin tracking QR scans and seller callbacks.</p>
+                  <button class="btn btn-gold btn-sm" @click="openModal('newBatch')">
+                    <span v-html="icons.plus"></span> Launch First Mail Drop
+                  </button>
+                </div>
               </td>
             </tr>
             <tr v-for="b in filteredBatches" :key="b.id">

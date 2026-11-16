@@ -33,8 +33,9 @@ app.get('/', (req, res) => {
     });
 });
 
-// Mount /api/v1
+// Mount /api/v1 and /api for seamless webhook and API compatibility
 app.use('/api/v1', apiRouter);
+app.use('/api', apiRouter);
 
 // Auth login endpoint
 app.post('/api/auth/login', async (req, res) => {

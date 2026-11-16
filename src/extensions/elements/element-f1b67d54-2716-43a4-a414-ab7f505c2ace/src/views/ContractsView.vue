@@ -149,6 +149,19 @@
                   </button>
                 </td>
               </tr>
+              <tr v-if="filteredContracts.length === 0">
+                <td colspan="11" class="empty-contracts-cell">
+                  <div class="empty-contracts-box">
+                    <span class="empty-contracts-icon" v-html="icons.file"></span>
+                    <strong style="color: #f8fafc; font-size: 1.05rem;">No Active Contracts in Escrow</strong>
+                    <p style="color: #94a3b8; font-size: 0.85rem; margin: 0.35rem 0 1rem 0;">No wholesale purchase agreements or assignment contracts are currently executing. Push an accepted offer from Seller Leads or create a new contract.</p>
+                    <button class="btn btn-primary" @click="openModal('newContract')">
+                      <span v-html="icons.plus"></span>
+                      Draft First Contract
+                    </button>
+                  </div>
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -1460,5 +1473,32 @@ export default {
   background: #ef4444;
   border-color: #ef4444;
   color: #ffffff;
+}
+.empty-contracts-cell {
+  padding: 4rem 2rem !important;
+  text-align: center;
+}
+.empty-contracts-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  max-width: 440px;
+  margin: 0 auto;
+}
+.empty-contracts-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: rgba(237, 207, 124, 0.1);
+  color: #edcf7c;
+  margin-bottom: 1rem;
+}
+.empty-contracts-icon svg {
+  width: 28px;
+  height: 28px;
 }
 </style>
