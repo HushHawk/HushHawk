@@ -6,7 +6,7 @@
         type="button" 
         class="tab-btn" 
         :class="{ active: activeTab === 'members' }"
-        @click="activeTab = 'members'"
+        @click="switchTab('members')"
       >
         <span class="tab-icon" v-html="icons.users"></span>
         <span class="tab-title">Team Roster &amp; Members</span>
@@ -17,7 +17,7 @@
         type="button" 
         class="tab-btn" 
         :class="{ active: activeTab === 'roles' }"
-        @click="activeTab = 'roles'"
+        @click="switchTab('roles')"
       >
         <span class="tab-icon" v-html="icons.shield"></span>
         <span class="tab-title">Roles &amp; Section Permissions</span>
@@ -28,7 +28,7 @@
         type="button" 
         class="tab-btn audit-tab-btn" 
         :class="{ active: activeTab === 'audit' }"
-        @click="activeTab = 'audit'"
+        @click="switchTab('audit')"
       >
         <span class="tab-icon" v-html="icons.clock"></span>
         <span class="tab-title">Activity Log &amp; Audit Trail</span>
@@ -46,7 +46,7 @@
           <div class="metric-icon-wrap gold"><span v-html="icons.users"></span></div>
           <div class="metric-info">
             <span class="metric-label">Active Team Members</span>
-            <strong class="metric-val">{{ (members && members.length) ? members.length : 10 }} Personnel</strong>
+            <strong class="metric-val">{{ members.length }} Personnel</strong>
             <span class="metric-change positive">● Synchronized with PostgreSQL</span>
           </div>
         </div>
@@ -55,7 +55,7 @@
           <div class="metric-icon-wrap cyan"><span v-html="icons.shield"></span></div>
           <div class="metric-info">
             <span class="metric-label">Configured Access Roles</span>
-            <strong class="metric-val">{{ (roles && roles.length) ? roles.length : 6 }} Defined Roles</strong>
+            <strong class="metric-val">{{ roles.length }} Defined Roles</strong>
             <span class="metric-change">Fine-grained Section Matrix</span>
           </div>
         </div>
@@ -1273,82 +1273,6 @@ export const DEFAULT_MEMBERS = [
     permissions: DEFAULT_SECTIONS.map(s => s.path),
     allowedCount: 23,
     avatarBg: "#4338ca"
-  },
-  {
-    id: "de92de43-b996-4aaa-a995-72323864840b",
-    user_id: "de92de43-b996-4aaa-a995-72323864840b",
-    name: "Darren Richardson",
-    initials: "DR",
-    email: "team@elitehomes1.com",
-    phone: "+13866273499",
-    role: "SUPER_ADMIN",
-    roleName: "Owner & Relation Manager",
-    title: "Owner & Relation Manager",
-    department: "Executive Leadership",
-    accessLevel: "SUPER_ADMIN",
-    status: "Active",
-    statusClass: "status-active",
-    password: "admin123",
-    permissions: DEFAULT_SECTIONS.map(s => s.path),
-    allowedCount: 23,
-    avatarBg: "#1e3a5f"
-  },
-  {
-    id: "ed4f3e87-cb3e-4368-a01a-83569ca5bd9c",
-    user_id: "ed4f3e87-cb3e-4368-a01a-83569ca5bd9c",
-    name: "Dejon Ellis",
-    initials: "DE",
-    email: "ellis@elitehomes1.com",
-    phone: "+19043030775",
-    role: "SUPER_ADMIN",
-    roleName: "Managing Partner",
-    title: "Managing Partner & Acquisitions Lead",
-    department: "Executive Leadership",
-    accessLevel: "SUPER_ADMIN",
-    status: "Active",
-    statusClass: "status-active",
-    password: "admin123",
-    permissions: DEFAULT_SECTIONS.map(s => s.path),
-    allowedCount: 23,
-    avatarBg: "#0f766e"
-  },
-  {
-    id: "00000000-0000-0000-0000-0000000000a1",
-    user_id: "00000000-0000-0000-0000-0000000000a1",
-    name: "Alex Richard",
-    initials: "AR",
-    email: "alex.richard@elitehomes1.com",
-    phone: "+19045790065",
-    role: "SUPER_ADMIN",
-    roleName: "Master Administrator",
-    title: "Managing Partner & Dispo Lead",
-    department: "Executive Leadership",
-    accessLevel: "SUPER_ADMIN",
-    status: "Active",
-    statusClass: "status-active",
-    password: "admin123",
-    permissions: DEFAULT_SECTIONS.map(s => s.path),
-    allowedCount: 23,
-    avatarBg: "#b45309"
-  },
-  {
-    id: "00000000-0000-0000-0000-0000000000e1",
-    user_id: "00000000-0000-0000-0000-0000000000e1",
-    name: "Waldo Ellis",
-    initials: "WE",
-    email: "waldo.ellis@elitehomes1.com",
-    phone: "+19047803358",
-    role: "SUPER_ADMIN",
-    roleName: "Master Administrator",
-    title: "Chief Investment Officer",
-    department: "Executive Leadership",
-    accessLevel: "SUPER_ADMIN",
-    status: "Active",
-    statusClass: "status-active",
-    password: "admin123",
-    permissions: DEFAULT_SECTIONS.map(s => s.path),
-    allowedCount: 23,
-    avatarBg: "#0369a1"
   }
 ];
 
@@ -1473,6 +1397,17 @@ export default {
     ]);
   },
   methods: {
+    switchTab(tab) {
+      this.activeTab = tab;
+      if (tab === 'audit') {
+        this.fetchAuditLogs();
+      } else if (tab === 'roles') {
+        this.loadRoles();
+      } else if (tab === 'members') {
+        this.loadTeamMembers();
+      }
+    },
+
     // -------------------------------------------------------------------------
     // API Fetchers & Network Resiliency
     // -------------------------------------------------------------------------

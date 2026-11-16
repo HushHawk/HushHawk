@@ -342,13 +342,9 @@ class CanonicalStore {
             { source_code: 'OTHER', source_name: 'Other Source', source_group: 'MISC', definition: 'Unclassified source; requires source_detail', assignment_rule: 'Manual attribution', review_status: 'APPROVED', production_enabled: true, dictionary_version: 'v1.0' },
         ];
 
-        // Institutional Team & Executive Leadership
+        // Institutional Team & Executive Leadership (Default Root Admin Only; Additional Users Created by Admin)
         this.data.core.users = [
-            { user_id: '01111111-1111-1111-1111-111111111111', email: 'admin@hushhawk.com', full_name: 'Main Administrator', role: 'SUPER_ADMIN', phone: '+19045790065', status: 'ACTIVE' },
-            { user_id: 'de92de43-b996-4aaa-a995-72323864840b', email: 'team@elitehomes1.com', full_name: 'Darren Richardson', role: 'SUPER_ADMIN', phone: '+13866273499', status: 'ACTIVE' },
-            { user_id: 'ed4f3e87-cb3e-4368-a01a-83569ca5bd9c', email: 'ellis@elitehomes1.com', full_name: 'Dejon Ellis', role: 'SUPER_ADMIN', phone: '+19043030775', status: 'ACTIVE' },
-            { user_id: '00000000-0000-0000-0000-0000000000a1', email: 'alex.richard@elitehomes1.com', full_name: 'Alex Richard', role: 'SUPER_ADMIN', phone: '+19045790065', status: 'ACTIVE' },
-            { user_id: '00000000-0000-0000-0000-0000000000e1', email: 'waldo.ellis@elitehomes1.com', full_name: 'Waldo Ellis', role: 'SUPER_ADMIN', phone: '+19047803358', status: 'ACTIVE' }
+            { user_id: '01111111-1111-1111-1111-111111111111', email: 'admin@hushhawk.com', full_name: 'Main Administrator', role: 'SUPER_ADMIN', phone: '+19045790065', status: 'ACTIVE' }
         ];
 
         // Pipeline Stages

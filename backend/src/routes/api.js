@@ -5469,11 +5469,6 @@ apiRouter.get('/rbac/sections', (req, res) => {
 // 2. Team Members Management
 apiRouter.get('/team', async (req, res) => {
     try {
-        try {
-            await PodioSyncService.syncTeamMembers();
-        } catch (tErr) {
-            console.warn('[Podio Team Sync Warn]:', tErr.message);
-        }
         const members = await RbacService.getTeamMembers();
         res.json({ total: members.length, members });
     } catch (err) {

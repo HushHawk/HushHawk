@@ -1128,71 +1128,10 @@ export class PodioSyncService {
     }
 
     /**
-     * 8. Sync Real Team Members (Podio App 30087424)
+     * 8. Sync Real Team Members (Controlled via Admin RBAC Team Management)
      */
     static async syncTeamMembers() {
-        try {
-            console.log('[PodioSync] Fetching Real Team Members from Podio App 30087424...');
-            const auth = await PodioService.authenticateApp(this.LEADS_APP_ID, this.APP_TOKEN);
-            const res = await PodioService.fetchAppItems(auth.access_token, 30087424, 20);
-            const items = res.items || [];
-
-            const team = [];
-            for (const item of items) {
-                const getF = (label) => item.fields.find(f => f.label.toLowerCase() === label.toLowerCase())?.values?.[0];
-                const fullName = getF('Full Name')?.value || item.title || 'Team Member';
-                const phone = fullName.includes('Darren') ? '+13866273499' : (getF('Phone #(s)')?.value || '+19043030775');
-                const email = getF('Email ID(s)')?.value || (fullName.includes('Darren') ? 'team@elitehomes1.com' : 'ellis@elitehomes1.com');
-                const roleObj = getF('Role')?.value;
-                const roleText = (typeof roleObj === 'object' ? roleObj?.text : roleObj) || 'Owner';
-                const roleKey = (roleText.toLowerCase().includes('owner') || roleText.toLowerCase().includes('manager')) ? 'SUPER_ADMIN' : 'ACQUISITIONS';
-                const userId = toDeterministicUuid('podio-team-' + item.item_id);
-
-                // Upsert into core.users
-                await pool.query(`
-                    INSERT INTO core.users (
-                        user_id, email, full_name, role, status, phone, password_plain, permissions, created_at
-                    ) VALUES ($1, $2, $3, $4, 'ACTIVE', $5, 'admin123', $6, now())
-                    ON CONFLICT (email) DO UPDATE SET
-                        full_name = EXCLUDED.full_name,
-                        role = EXCLUDED.role,
-                        phone = EXCLUDED.phone,
-                        status = 'ACTIVE';
-                `, [
-                    userId,
-                    email,
-                    fullName,
-                    roleKey,
-                    phone,
-                    JSON.stringify(['/home', '/properties', '/vault', '/seller-leads', '/acquisitions', '/dispositions', '/cash-buyers', '/marketing', '/county-data', '/skip-tracing', '/contracts', '/follow-ups', '/analytics', '/team', '/settings', '/communications', '/tasks', '/calendar', '/contacts', '/automations', '/facebook-leads', '/direct-mail', '/deal-analyzer'])
-                ]);
-
-                team.push({
-                    id: userId,
-                    user_id: userId,
-                    podioItemId: item.item_id,
-                    name: fullName,
-                    email,
-                    phone,
-                    role: roleKey,
-                    roleName: roleText,
-                    title: fullName.includes('Darren') ? 'Owner & Relation Manager' : 'Managing Partner & Acquisitions Lead',
-                    status: 'Active'
-                });
-            }
-
-            // Also clean up any lingering 555 numbers from core.users
-            await pool.query(`
-                UPDATE core.users 
-                SET phone = '+19045790065' 
-                WHERE phone LIKE '%555%' OR phone IS NULL;
-            `);
-
-            return team;
-        } catch (err) {
-            console.error('[PodioSync.syncTeamMembers Error]:', err.message);
-            return [];
-        }
+        return [];
     }
 
     /**
