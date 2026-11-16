@@ -4,6 +4,7 @@
  */
 
 import pg from 'pg';
+import dns from 'dns';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -14,6 +15,19 @@ dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 
 const { Pool } = pg;
 
+const customLookup = (hostname, options, callback) => {
+    if (typeof options === 'function') {
+        callback = options;
+        options = {};
+    }
+    dns.resolve4(hostname, (err, addrs) => {
+        if (!err && addrs && addrs.length > 0) {
+            return callback(null, addrs[0], 4);
+        }
+        dns.lookup(hostname, options, callback);
+    });
+};
+
 const connectionString = process.env.DATABASE_URL || '***REMOVED***@hushhawk-postgres.cxsqkk2qulh9.us-east-2.rds.amazonaws.com:5432/hushhawk';
 
 export const pool = new Pool({
@@ -21,6 +35,7 @@ export const pool = new Pool({
     ssl: {
         rejectUnauthorized: false,
     },
+    lookup: customLookup,
     max: 20,
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 5000,
