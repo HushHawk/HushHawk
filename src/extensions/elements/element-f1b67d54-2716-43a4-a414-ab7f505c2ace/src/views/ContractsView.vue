@@ -153,8 +153,8 @@
                 <td colspan="11" class="empty-contracts-cell">
                   <div class="empty-contracts-box">
                     <span class="empty-contracts-icon" v-html="icons.file"></span>
-                    <strong style="color: #f8fafc; font-size: 1.05rem;">No Active Contracts in Escrow</strong>
-                    <p style="color: #94a3b8; font-size: 0.85rem; margin: 0.35rem 0 1rem 0;">No wholesale purchase agreements or assignment contracts are currently executing. Push an accepted offer from Seller Leads or create a new contract.</p>
+                    <strong style="color: var(--hh-text, #f8fafc); font-size: 1.05rem;">No Active Contracts in Escrow</strong>
+                    <p style="color: var(--hh-muted, #94a3b8); font-size: 0.85rem; margin: 0.35rem 0 1rem 0;">No wholesale purchase agreements or assignment contracts are currently executing. Push an accepted offer from Seller Leads or create a new contract.</p>
                     <button class="btn btn-primary" @click="openModal('newContract')">
                       <span v-html="icons.plus"></span>
                       Draft First Contract

@@ -1,5 +1,5 @@
 <template>
-  <div class="view-container">
+  <div class="view-container follow-ups-view">
     <!-- Top KPI Metrics -->
     <div class="metrics-grid">
       <div v-for="(m, i) in metrics" :key="m.label" class="metric-card">

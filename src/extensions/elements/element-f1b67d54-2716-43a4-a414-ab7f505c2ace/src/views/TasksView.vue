@@ -165,8 +165,8 @@
               <td colspan="8" class="empty-state">
                 <div class="empty-box">
                   <span class="empty-icon" v-html="icons.tasks"></span>
-                  <strong style="color: #f8fafc; font-size: 15px;">{{ tasks.length === 0 ? 'No Operational Tasks Pending' : 'No Tasks Match Filter' }}</strong>
-                  <p style="margin: 6px 0 16px 0; color: #94a3b8; font-size: 13px;">{{ tasks.length === 0 ? 'Create tasks to track inspections, title commitments, earnest money deposits, and closing milestones.' : 'Try adjusting your search query or status filter.' }}</p>
+                  <strong style="color: var(--hh-text, #f8fafc); font-size: 15px;">{{ tasks.length === 0 ? 'No Operational Tasks Pending' : 'No Tasks Match Filter' }}</strong>
+                  <p style="margin: 6px 0 16px 0; color: var(--hh-muted, #94a3b8); font-size: 13px;">{{ tasks.length === 0 ? 'Create tasks to track inspections, title commitments, earnest money deposits, and closing milestones.' : 'Try adjusting your search query or status filter.' }}</p>
                   <button v-if="tasks.length === 0" class="btn btn-primary" @click="isAddModalOpen = true">
                     <span v-html="icons.plus"></span>
                     Create First Task

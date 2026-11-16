@@ -543,7 +543,7 @@ export default {
 <style scoped>
 .hawk-copilot-container {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  color: #f1f5f9;
+  color: var(--hh-text, #f1f5f9);
   z-index: 999999;
 }
 
@@ -622,10 +622,10 @@ export default {
   max-width: calc(100vw - 32px);
   height: 680px;
   max-height: calc(100vh - 48px);
-  background: #04182D;
-  border: 1.5px solid rgba(212, 175, 55, 0.4);
+  background: var(--hh-surface, #04182D);
+  border: 1.5px solid var(--hh-border, rgba(212, 175, 55, 0.4));
   border-radius: 16px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(212, 175, 55, 0.15);
+  box-shadow: var(--hh-floating-shadow, 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(212, 175, 55, 0.15));
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -635,8 +635,8 @@ export default {
 /* Header */
 .hawk-drawer-header {
   padding: 16px 18px;
-  background: linear-gradient(180deg, #06203A 0%, #04182D 100%);
-  border-bottom: 1px solid rgba(212, 175, 55, 0.25);
+  background: var(--hh-panel-header, linear-gradient(180deg, #06203A 0%, #04182D 100%));
+  border-bottom: 1px solid var(--hh-border, rgba(212, 175, 55, 0.25));
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -662,7 +662,7 @@ export default {
 .hawk-title {
   font-size: 15px;
   font-weight: 700;
-  color: #FFDF73;
+  color: var(--hh-gold, #FFDF73);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -680,7 +680,7 @@ export default {
 
 .hawk-subtitle {
   font-size: 11px;
-  color: #94a3b8;
+  color: var(--hh-muted, #94a3b8);
   display: flex;
   align-items: center;
   gap: 6px;
@@ -705,9 +705,9 @@ export default {
   width: 30px;
   height: 30px;
   border-radius: 6px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #94a3b8;
+  background: var(--hh-control, rgba(255, 255, 255, 0.05));
+  border: 1px solid var(--hh-border, rgba(255, 255, 255, 0.1));
+  color: var(--hh-muted, #94a3b8);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -716,22 +716,22 @@ export default {
 }
 
 .hawk-action-btn:hover {
-  background: rgba(212, 175, 55, 0.15);
-  color: #FFDF73;
-  border-color: rgba(212, 175, 55, 0.4);
+  background: var(--hh-selected-row, rgba(212, 175, 55, 0.15));
+  color: var(--hh-gold, #FFDF73);
+  border-color: var(--hh-accent-border, rgba(212, 175, 55, 0.4));
 }
 
 .hawk-close-btn:hover {
-  background: rgba(239, 68, 68, 0.2);
-  color: #ef4444;
-  border-color: rgba(239, 68, 68, 0.4);
+  background: var(--hh-danger-surface, rgba(239, 68, 68, 0.2));
+  color: var(--hh-danger, #ef4444);
+  border-color: var(--hh-danger, rgba(239, 68, 68, 0.4));
 }
 
 /* Quick Chips */
 .hawk-quick-chips {
   padding: 10px 14px;
-  background: rgba(6, 32, 58, 0.4);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--hh-inset, rgba(6, 32, 58, 0.4));
+  border-bottom: 1px solid var(--hh-border, rgba(255, 255, 255, 0.06));
   display: flex;
   gap: 6px;
   overflow-x: auto;
@@ -751,9 +751,9 @@ export default {
   font-size: 11px;
   font-weight: 500;
   padding: 5px 10px;
-  background: rgba(15, 39, 68, 0.7);
-  border: 1px solid rgba(212, 175, 55, 0.25);
-  color: #cbd5e1;
+  background: var(--hh-control, rgba(15, 39, 68, 0.7));
+  border: 1px solid var(--hh-border, rgba(212, 175, 55, 0.25));
+  color: var(--hh-muted, #cbd5e1);
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -766,13 +766,13 @@ export default {
 .hawk-chip-icon {
   display: inline-flex;
   align-items: center;
-  color: #FFDF73;
+  color: var(--hh-gold, #FFDF73);
 }
 
 .hawk-chip-btn:hover {
-  background: rgba(212, 175, 55, 0.2);
-  border-color: #D4AF37;
-  color: #FFDF73;
+  background: var(--hh-selected-row, rgba(212, 175, 55, 0.2));
+  border-color: var(--hh-accent-border, #D4AF37);
+  color: var(--hh-gold, #FFDF73);
 }
 
 /* Messages Container */
@@ -783,7 +783,7 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  background: #031222;
+  background: var(--hh-canvas, #031222);
 }
 
 .hawk-messages-area::-webkit-scrollbar {
@@ -841,7 +841,7 @@ export default {
 .hawk-copy-btn {
   background: none;
   border: none;
-  color: #64748b;
+  color: var(--hh-muted, #64748b);
   cursor: pointer;
   padding: 2px;
   border-radius: 4px;
@@ -852,31 +852,31 @@ export default {
 }
 
 .hawk-copy-btn:hover {
-  color: #FFDF73;
-  background: rgba(212, 175, 55, 0.15);
+  color: var(--hh-gold, #FFDF73);
+  background: var(--hh-inset, rgba(212, 175, 55, 0.15));
 }
 
 .hawk-msg-user .hawk-msg-bubble {
-  background: linear-gradient(135deg, #1e3a8a 0%, #1e293b 100%);
-  color: #f8fafc;
-  border: 1px solid rgba(96, 165, 250, 0.3);
+  background: var(--hh-message-sent, linear-gradient(135deg, #1e3a8a 0%, #1e293b 100%));
+  color: var(--hh-text, #f8fafc);
+  border: 1px solid var(--hh-message-border, rgba(96, 165, 250, 0.3));
   border-top-right-radius: 2px;
 }
 
 .hawk-msg-ai .hawk-msg-bubble {
-  background: #06203A;
-  color: #e2e8f0;
-  border: 1px solid rgba(212, 175, 55, 0.25);
+  background: var(--hh-surface, #06203A);
+  color: var(--hh-text, #e2e8f0);
+  border: 1px solid var(--hh-border, rgba(212, 175, 55, 0.25));
   border-top-left-radius: 2px;
 }
 
 .hawk-msg-time {
   font-size: 10px;
-  color: #64748b;
+  color: var(--hh-muted, #64748b);
 }
 
 .hawk-msg-user .hawk-msg-time {
-  color: #93c5fd;
+  color: var(--hh-blue, #93c5fd);
 }
 
 /* Actions Container */
@@ -894,9 +894,9 @@ export default {
   font-weight: 600;
   padding: 4px 10px;
   border-radius: 6px;
-  background: rgba(212, 175, 55, 0.15);
-  border: 1px solid rgba(212, 175, 55, 0.4);
-  color: #FFDF73;
+  background: var(--hh-inset, rgba(212, 175, 55, 0.15));
+  border: 1px solid var(--hh-accent-border, rgba(212, 175, 55, 0.4));
+  color: var(--hh-gold, #FFDF73);
   cursor: pointer;
   transition: all 0.2s ease;
   display: inline-flex;
@@ -916,7 +916,7 @@ export default {
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #D4AF37;
+  color: var(--hh-gold, #D4AF37);
   font-size: 12px;
   font-style: italic;
 }
@@ -937,8 +937,8 @@ export default {
 /* Input Bar */
 .hawk-input-bar {
   padding: 12px 14px;
-  background: #04182D;
-  border-top: 1px solid rgba(212, 175, 55, 0.2);
+  background: var(--hh-surface, #04182D);
+  border-top: 1px solid var(--hh-border, rgba(212, 175, 55, 0.2));
 }
 
 .hawk-input-form {
@@ -949,19 +949,19 @@ export default {
 
 .hawk-input {
   flex: 1;
-  background: #06203A;
-  border: 1px solid rgba(212, 175, 55, 0.3);
+  background: var(--hh-control, #06203A);
+  border: 1px solid var(--hh-border, rgba(212, 175, 55, 0.3));
   border-radius: 8px;
   padding: 10px 12px;
-  color: #f8fafc;
+  color: var(--hh-text, #f8fafc);
   font-size: 13px;
   outline: none;
   transition: all 0.2s ease;
 }
 
 .hawk-input:focus {
-  border-color: #FFDF73;
-  box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+  border-color: var(--hh-focus, #FFDF73);
+  box-shadow: var(--hh-floating-focus, 0 0 10px rgba(212, 175, 55, 0.3));
 }
 
 .hawk-send-btn {
@@ -991,20 +991,20 @@ export default {
 
 .hawk-shortcut-hint {
   font-size: 10px;
-  color: #64748b;
+  color: var(--hh-muted, #64748b);
   margin-top: 6px;
   text-align: center;
 }
 
 .hawk-shortcut-hint strong {
-  color: #94a3b8;
+  color: var(--hh-muted, #94a3b8);
 }
 
 /* Markdown Rendering Helpers */
 :deep(.hawk-md-h3) {
   font-size: 14px;
   font-weight: 700;
-  color: #FFDF73;
+  color: var(--hh-gold, #FFDF73);
   margin: 0 0 8px 0;
   padding-bottom: 4px;
   border-bottom: 1px solid rgba(212, 175, 55, 0.2);
@@ -1013,7 +1013,7 @@ export default {
 :deep(.hawk-md-h4) {
   font-size: 13px;
   font-weight: 600;
-  color: #e2e8f0;
+  color: var(--hh-text, #e2e8f0);
   margin: 10px 0 6px 0;
 }
 
@@ -1023,36 +1023,36 @@ export default {
   font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
-  background: rgba(212, 175, 55, 0.15);
-  color: #FFDF73;
+  background: var(--hh-inset, rgba(212, 175, 55, 0.15));
+  color: var(--hh-gold, #FFDF73);
   padding: 2px 7px;
   border-radius: 4px;
-  border: 1px solid rgba(212, 175, 55, 0.3);
+  border: 1px solid var(--hh-accent-border, rgba(212, 175, 55, 0.3));
   margin-bottom: 4px;
 }
 
 :deep(.hawk-date-badge) {
   display: inline-flex;
   align-items: center;
-  background: rgba(16, 185, 129, 0.15);
-  color: #34d399;
+  background: var(--hh-success-surface, rgba(16, 185, 129, 0.15));
+  color: var(--hh-success, #34d399);
   padding: 1px 7px;
   border-radius: 4px;
   font-size: 11px;
   font-weight: 600;
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  border: 1px solid var(--hh-success, rgba(16, 185, 129, 0.3));
 }
 
 :deep(.hawk-money-badge) {
   display: inline-flex;
   align-items: center;
-  background: rgba(212, 175, 55, 0.2);
-  color: #FFDF73;
+  background: var(--hh-inset, rgba(212, 175, 55, 0.2));
+  color: var(--hh-gold, #FFDF73);
   padding: 1px 7px;
   border-radius: 4px;
   font-size: 11px;
   font-weight: 700;
-  border: 1px solid rgba(212, 175, 55, 0.4);
+  border: 1px solid var(--hh-accent-border, rgba(212, 175, 55, 0.4));
 }
 
 :deep(.hawk-priority-badge) {
@@ -1066,41 +1066,41 @@ export default {
 }
 
 :deep(.hawk-priority-badge.priority-high) {
-  background: rgba(239, 68, 68, 0.2);
-  color: #f87171;
-  border: 1px solid rgba(239, 68, 68, 0.4);
+  background: var(--hh-danger-surface, rgba(239, 68, 68, 0.2));
+  color: var(--hh-danger, #f87171);
+  border: 1px solid var(--hh-danger, rgba(239, 68, 68, 0.4));
 }
 
 :deep(.hawk-priority-badge.priority-med) {
-  background: rgba(245, 158, 11, 0.2);
-  color: #fbbf24;
-  border: 1px solid rgba(245, 158, 11, 0.4);
+  background: var(--hh-inset, rgba(245, 158, 11, 0.2));
+  color: var(--hh-gold, #fbbf24);
+  border: 1px solid var(--hh-accent-border, rgba(245, 158, 11, 0.4));
 }
 
 :deep(.hawk-priority-badge.priority-low) {
-  background: rgba(16, 185, 129, 0.2);
-  color: #34d399;
-  border: 1px solid rgba(16, 185, 129, 0.4);
+  background: var(--hh-success-surface, rgba(16, 185, 129, 0.2));
+  color: var(--hh-success, #34d399);
+  border: 1px solid var(--hh-success, rgba(16, 185, 129, 0.4));
 }
 
 :deep(.hawk-code) {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 11px;
-  background: rgba(0, 0, 0, 0.3);
-  color: #FFDF73;
+  background: var(--hh-inset, rgba(0, 0, 0, 0.3));
+  color: var(--hh-gold, #FFDF73);
   padding: 2px 5px;
   border-radius: 4px;
-  border: 1px solid rgba(212, 175, 55, 0.2);
+  border: 1px solid var(--hh-accent-border, rgba(212, 175, 55, 0.2));
 }
 
 :deep(.hawk-blockquote) {
   margin: 8px 0;
   padding: 6px 10px;
-  background: rgba(212, 175, 55, 0.08);
-  border-left: 3px solid #D4AF37;
+  background: var(--hh-inset, rgba(212, 175, 55, 0.08));
+  border-left: 3px solid var(--hh-accent-border, #D4AF37);
   border-radius: 0 4px 4px 0;
   font-size: 12px;
-  color: #cbd5e1;
+  color: var(--hh-muted, #cbd5e1);
 }
 
 :deep(.hawk-ul) {

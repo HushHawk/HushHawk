@@ -1,5 +1,5 @@
 <template>
-  <div class="view-container">
+  <div class="view-container team-view">
     <!-- Top Executive Navigation Tabs -->
     <div class="team-tab-nav">
       <button 

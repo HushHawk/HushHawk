@@ -454,7 +454,7 @@ const sourceChart=computed(()=>{
   });
 });
 const donutGradient=computed(()=>{if(!sourceChart.value.length)return'#243a51';let a=0;return'conic-gradient('+sourceChart.value.map(s=>{const start=a;a+=s.count/sourceChart.value.reduce((sum,r)=>sum+r.count,0)*100;return s.color+' '+start+'% '+a+'%'}).join(',')+')';});
-const heroStyle=computed(()=>({backgroundImage:'linear-gradient(90deg,#051a33 0%,#051a33e6 30%,#051a3310 68%,#051a3355),url("'+(props.content?.skyline||'')+'")'}));
+const heroStyle=computed(()=>({backgroundImage: `var(--hh-hero-scrim, linear-gradient(90deg,#051a33 0%,#051a33e6 30%,#051a3310 68%,#051a3355)), url("${props.content?.skyline || '/images/jacksonville-skyline-opt.jpg'}"), var(--hh-hero-fallback)`}));
 const allChecked=computed(()=>filtered.value.length>0&&filtered.value.every(r=>checked.value.includes(r.id)));
 function guard(e, customPath) {
   if (isEditing.value) {
@@ -640,7 +640,7 @@ return{uid,isEditing,icons,navigation,navOpen,heroStyle,mode,metrics,tabs,column
   border-bottom: 1px solid rgba(212, 175, 55, 0.2) !important;
   padding: var(--hh-brand-padding, 14px 8px 10px) !important;
   text-align: center !important;
-  background: linear-gradient(180deg, rgba(212, 175, 55, 0.12) 0%, rgba(4, 18, 45, 0.4) 100%) !important;
+  background: var(--hh-nav-brand, linear-gradient(180deg, rgba(212, 175, 55, 0.12), rgba(4, 18, 45, 0.4))) !important;
 }
 
 .brand-icon {
@@ -746,10 +746,10 @@ return{uid,isEditing,icons,navigation,navOpen,heroStyle,mode,metrics,tabs,column
 }
 
 .sidebar nav a.active {
-  background: linear-gradient(180deg, #744d1e 0%, #3e260c 100%) !important;
+  background: var(--hh-nav-active-surface, linear-gradient(180deg, #744d1e, #3e260c)) !important;
   border: 1.5px solid #dfa745 !important;
   border-radius: 11px !important;
-  color: #ffffff !important;
+  color: var(--hh-nav-active-ink, #ffffff) !important;
   font-weight: 700 !important;
   box-shadow: 
     0 0 14px rgba(223, 167, 69, 0.45),
@@ -804,7 +804,7 @@ return{uid,isEditing,icons,navigation,navOpen,heroStyle,mode,metrics,tabs,column
   height: 38px !important;
   min-height: 38px !important;
   padding: 0 14px !important;
-  background: rgba(10, 16, 28, 0.75) !important;
+  background: var(--hh-nav-logout-surface, rgba(10, 16, 28, 0.75)) !important;
   border: 1px solid rgba(212, 175, 55, 0.35) !important;
   border-radius: 9px !important;
   color: #fca5a5 !important;
@@ -1321,12 +1321,12 @@ return{uid,isEditing,icons,navigation,navOpen,heroStyle,mode,metrics,tabs,column
 .mode-bar{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:3px 1px 5px;font-size:7px;letter-spacing:.25px;color:#a2b9ce}.mode-bar>div{display:flex;gap:4px}.mode-bar button{border:1px solid #2c5679;border-radius:3px;background:#071e35;font-size:8px;padding:2px 7px;color:#b6cbde}.mode-bar button.active{color:#f4d88f;border-color:#a58d53;background:#cfad5815}
 .columns{display:grid;grid-template-columns:minmax(0,1.36fr) minmax(0,1fr);gap:8px;align-items:start}.left-column,.right-column{min-width:0;display:flex;flex-direction:column;gap:8px}.panel{border:1px solid #205589;border-radius:7px;overflow:hidden;background:linear-gradient(130deg,#0a2946,#051b31 85%);box-shadow:inset 0 1px #ffffff0d,0 3px 8px #00102066}.panel-heading{display:flex;align-items:center;justify-content:space-between;gap:7px;padding:7px 10px;min-height:34px;border-bottom:1px solid #173f66;background:linear-gradient(180deg,#193d5a65,#051d36)}.panel-heading h2{display:flex;align-items:center;gap:9px;font-size:15px;line-height:1.2;font-weight:750;margin:0;white-space:nowrap}.panel-heading h2 .icon{width:22px;height:22px}.panel-heading .gold-icon{color:#ebcd74}.panel-heading>a,.panel-heading>button{font-size:9px;color:#50c4ff;white-space:nowrap}.panel-heading>button{background:none;border:0;padding:0}.selected-count{font-size:9px;color:#e6ce85}
 .lead-header-actions{display:flex;align-items:center;gap:6px;flex-wrap:nowrap}
-.btn-action-refresh{display:inline-flex;align-items:center;gap:5px;background:rgba(15,23,42,0.7);border:1px solid #334155;border-radius:4px;padding:4px 9px;color:#cbd5e1!important;font-size:11px;font-weight:600;white-space:nowrap!important;cursor:pointer;transition:all .2s ease;height:28px;box-sizing:border-box}
-.btn-action-refresh:hover{background:rgba(30,41,59,0.9);color:#ffffff!important;border-color:#64748b}
+.btn-action-refresh{display:inline-flex;align-items:center;gap:5px;background:rgba(15,23,42,0.7);border:1px solid #334155;border-radius:4px;padding:4px 9px;color:var(--hh-light-control-ink,#cbd5e1)!important;font-size:11px;font-weight:600;white-space:nowrap!important;cursor:pointer;transition:all .2s ease;height:28px;box-sizing:border-box}
+.btn-action-refresh:hover{background:rgba(30,41,59,0.9);color:var(--hh-light-control-ink,#ffffff)!important;border-color:#64748b}
 .btn-action-refresh.spinning svg{animation:spin 1s linear infinite}
 @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-.btn-action-import{display:inline-flex;align-items:center;gap:5px;background:rgba(30,58,138,0.5);border:1px solid #3b82f6;border-radius:4px;padding:4px 9px;color:#93c5fd!important;font-size:11px;font-weight:600;white-space:nowrap!important;cursor:pointer;transition:all .2s ease;height:28px;box-sizing:border-box}
-.btn-action-import:hover{background:#2563eb;color:#ffffff!important;border-color:#60a5fa}
+.btn-action-import{display:inline-flex;align-items:center;gap:5px;background:rgba(30,58,138,0.5);border:1px solid #3b82f6;border-radius:4px;padding:4px 9px;color:var(--hh-light-control-ink,#93c5fd)!important;font-size:11px;font-weight:600;white-space:nowrap!important;cursor:pointer;transition:all .2s ease;height:28px;box-sizing:border-box}
+.btn-action-import:hover{background:#2563eb;color:var(--hh-light-control-ink,#ffffff)!important;border-color:#60a5fa}
 .btn-action-add{display:inline-flex;align-items:center;gap:5px;background:linear-gradient(135deg,#f59e0b,#d97706);border:1px solid #fcd34d;border-radius:4px;padding:4px 10px;color:#0f172a!important;font-size:11px;font-weight:700;white-space:nowrap!important;cursor:pointer;transition:all .2s ease;height:28px;box-sizing:border-box}
 .btn-action-add:hover{filter:brightness(1.15);box-shadow:0 0 12px rgba(245,158,11,0.4)}
 .import-feedback-box{background:rgba(16,185,129,0.15);border:1px solid #10b981;border-radius:6px;padding:10px 12px;color:#6ee7b7;font-size:12px;margin-top:10px}

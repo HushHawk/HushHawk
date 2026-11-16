@@ -9,6 +9,7 @@
 
 <script>
 import { reactive, computed, provide, onMounted, watch } from 'vue';
+import '@/assets/css/hushhawk-gold.css';
 import HawkAdminCopilot from './components/HawkAdminCopilot.vue';
 import PartnerChatMessenger from './components/PartnerChatMessenger.vue';
 import SmrtPhoneCallPopup from './components/SmrtPhoneCallPopup.vue';

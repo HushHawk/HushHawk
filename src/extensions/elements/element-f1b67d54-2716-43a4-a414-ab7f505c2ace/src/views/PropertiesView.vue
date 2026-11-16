@@ -193,7 +193,7 @@
           </div>
           <div class="ov-card">
             <span class="ov-label">Canonical Database</span>
-            <span class="ov-value small" style="color: #2ecc71;">AWS RDS PostgreSQL</span>
+            <span class="ov-value small" style="color: var(--hh-success, #2ecc71);">AWS RDS PostgreSQL</span>
           </div>
         </div>
 

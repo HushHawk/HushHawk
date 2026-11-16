@@ -1202,10 +1202,11 @@ export default {
   height: 680px;
   max-width: calc(100vw - 24px);
   max-height: calc(100vh - 36px);
-  background: #081426;
-  border: 1px solid rgba(212, 175, 55, 0.4);
+  background: var(--hh-surface, #081426);
+  color: var(--hh-text, #e2e8f0);
+  border: 1px solid var(--hh-border, rgba(212, 175, 55, 0.4));
   border-radius: 18px;
-  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  box-shadow: var(--hh-floating-shadow, 0 28px 70px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.05));
   display: flex;
   flex-direction: column;
   z-index: 2000000; /* Ultra-high z-index so HAWKAI never overlays the chat window */
@@ -1229,8 +1230,8 @@ export default {
 .mac-title-bar {
   height: 48px;
   min-height: 48px;
-  background: linear-gradient(180deg, #0e1e36 0%, #0a172a 100%);
-  border-bottom: 1px solid rgba(212, 175, 55, 0.25);
+  background: var(--hh-panel-header, linear-gradient(180deg, #0e1e36 0%, #0a172a 100%));
+  border-bottom: 1px solid var(--hh-border, rgba(212, 175, 55, 0.25));
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1271,7 +1272,7 @@ export default {
 .mac-app-title {
   font-size: 13px;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--hh-text, #ffffff);
   letter-spacing: -0.2px;
   white-space: nowrap;
 }
@@ -1280,9 +1281,9 @@ export default {
   font-size: 11px;
   padding: 2px 8px;
   border-radius: 9999px;
-  background: rgba(212, 175, 55, 0.15);
-  color: #d4af37;
-  border: 1px solid rgba(212, 175, 55, 0.35);
+  background: var(--hh-inset, rgba(212, 175, 55, 0.15));
+  color: var(--hh-gold, #d4af37);
+  border: 1px solid var(--hh-accent-border, rgba(212, 175, 55, 0.35));
   font-weight: 600;
   max-width: 140px;
   white-space: nowrap;
@@ -1301,8 +1302,8 @@ export default {
 .persona-segmented-control {
   display: flex;
   align-items: center;
-  background: rgba(15, 23, 42, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--hh-control, rgba(15, 23, 42, 0.8));
+  border: 1px solid var(--hh-border, rgba(255, 255, 255, 0.12));
   border-radius: 8px;
   padding: 2px;
 }
@@ -1315,7 +1316,7 @@ export default {
   border-radius: 6px;
   background: transparent;
   border: none;
-  color: #94a3b8;
+  color: var(--hh-muted, #94a3b8);
   font-size: 11px;
   font-weight: 600;
   cursor: pointer;
@@ -1324,9 +1325,9 @@ export default {
 }
 
 .psc-btn.active {
-  background: rgba(212, 175, 55, 0.22);
-  color: #ffffff;
-  border: 1px solid rgba(212, 175, 55, 0.45);
+  background: var(--hh-selected-row, rgba(212, 175, 55, 0.22));
+  color: var(--hh-text, #ffffff);
+  border: 1px solid var(--hh-accent-border, rgba(212, 175, 55, 0.45));
 }
 
 .psc-avatar {
@@ -1345,9 +1346,9 @@ export default {
 
 .mac-icon-btn {
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--hh-border, rgba(255, 255, 255, 0.08));
   border-radius: 6px;
-  color: #94a3b8;
+  color: var(--hh-muted, #94a3b8);
   padding: 5px 6px;
   cursor: pointer;
   display: flex;
@@ -1357,9 +1358,9 @@ export default {
 }
 
 .mac-icon-btn:hover, .mac-icon-btn.active {
-  color: #d4af37;
-  border-color: rgba(212, 175, 55, 0.4);
-  background: rgba(212, 175, 55, 0.1);
+  color: var(--hh-gold, #d4af37);
+  border-color: var(--hh-accent-border, rgba(212, 175, 55, 0.4));
+  background: var(--hh-selected-row, rgba(212, 175, 55, 0.1));
 }
 
 .spinning {
@@ -1377,21 +1378,21 @@ export default {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background: #081426;
+  background: var(--hh-surface, #081426);
 }
 
 /* 3. Online Status & Encryption Ribbon (Single Unbroken Line) */
 .partner-status-ribbon {
   height: 32px;
   min-height: 32px;
-  background: rgba(10, 23, 42, 0.7);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--hh-inset, rgba(10, 23, 42, 0.7));
+  border-bottom: 1px solid var(--hh-border, rgba(255, 255, 255, 0.06));
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 16px;
   font-size: 11px;
-  color: #cbd5e1;
+  color: var(--hh-text, #cbd5e1);
   white-space: nowrap;
 }
 
@@ -1420,12 +1421,12 @@ export default {
 }
 
 .psr-name {
-  color: #f1f5f9;
+  color: var(--hh-text, #f1f5f9);
   font-weight: 600;
 }
 
 .psr-role {
-  color: #64748b;
+  color: var(--hh-muted, #64748b);
   font-size: 10px;
 }
 
@@ -1434,14 +1435,14 @@ export default {
   font-weight: 800;
   padding: 1px 5px;
   border-radius: 4px;
-  background: rgba(212, 175, 55, 0.25);
-  color: #d4af37;
+  background: var(--hh-inset, rgba(212, 175, 55, 0.25));
+  color: var(--hh-gold, #d4af37);
   letter-spacing: 0.5px;
   flex-shrink: 0;
 }
 
 .psr-sep {
-  color: #475569;
+  color: var(--hh-muted, #475569);
 }
 
 .psr-right {
@@ -1452,7 +1453,7 @@ export default {
 
 .psr-secure {
   font-size: 10px;
-  color: #64748b;
+  color: var(--hh-muted, #64748b);
   display: flex;
   align-items: center;
   gap: 4px;
@@ -1469,16 +1470,16 @@ export default {
 .property-search-section {
   position: relative;
   padding: 8px 14px;
-  background: #0d1e38;
-  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+  background: var(--hh-inset, #0d1e38);
+  border-bottom: 1px solid var(--hh-border, rgba(212, 175, 55, 0.2));
 }
 
 .search-input-box {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: #081426;
-  border: 1px solid rgba(212, 175, 55, 0.35);
+  background: var(--hh-control, #081426);
+  border: 1px solid var(--hh-border, rgba(212, 175, 55, 0.35));
   border-radius: 8px;
   padding: 6px 10px;
 }
@@ -1488,18 +1489,18 @@ export default {
   background: transparent;
   border: none;
   outline: none;
-  color: #ffffff;
+  color: var(--hh-text, #ffffff);
   font-size: 12px;
 }
 
 .search-input-box input::placeholder {
-  color: #64748b;
+  color: var(--hh-muted, #64748b);
 }
 
 .search-clear-btn {
   background: transparent;
   border: none;
-  color: #94a3b8;
+  color: var(--hh-muted, #94a3b8);
   font-size: 14px;
   cursor: pointer;
   padding: 0 4px;
@@ -1511,10 +1512,10 @@ export default {
   left: 14px;
   right: 14px;
   max-height: 240px;
-  background: #0d1e38;
-  border: 1px solid rgba(212, 175, 55, 0.4);
+  background: var(--hh-surface, #0d1e38);
+  border: 1px solid var(--hh-border, rgba(212, 175, 55, 0.4));
   border-radius: 10px;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8);
+  box-shadow: var(--hh-floating-shadow, 0 16px 40px rgba(0, 0, 0, 0.8));
   overflow-y: auto;
   z-index: 10020;
 }
@@ -1527,14 +1528,14 @@ export default {
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.5px;
-  color: #d4af37;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--hh-gold, #d4af37);
+  border-bottom: 1px solid var(--hh-border, rgba(255, 255, 255, 0.08));
 }
 
 .dropdown-close-btn {
   background: transparent;
   border: none;
-  color: #94a3b8;
+  color: var(--hh-muted, #94a3b8);
   font-size: 11px;
   cursor: pointer;
 }
@@ -1545,12 +1546,12 @@ export default {
   gap: 10px;
   padding: 8px 12px;
   cursor: pointer;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid var(--hh-border, rgba(255, 255, 255, 0.04));
   transition: background 0.15s;
 }
 
 .property-dropdown-item:hover {
-  background: rgba(212, 175, 55, 0.12);
+  background: var(--hh-selected-row, rgba(212, 175, 55, 0.12));
 }
 
 .pdi-info {
@@ -1561,7 +1562,7 @@ export default {
 .pdi-address {
   font-size: 12px;
   font-weight: 600;
-  color: #ffffff;
+  color: var(--hh-text, #ffffff);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1569,7 +1570,7 @@ export default {
 
 .pdi-sub {
   font-size: 10px;
-  color: #94a3b8;
+  color: var(--hh-muted, #94a3b8);
 }
 
 .pdi-badge {
@@ -1577,23 +1578,23 @@ export default {
   font-weight: 600;
   padding: 2px 7px;
   border-radius: 9999px;
-  background: rgba(16, 185, 129, 0.2);
-  color: #10b981;
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  background: var(--hh-success-surface, rgba(16, 185, 129, 0.2));
+  color: var(--hh-success, #10b981);
+  border: 1px solid var(--hh-success, rgba(16, 185, 129, 0.3));
 }
 
 .pdi-badge.pdi-new {
-  background: rgba(212, 175, 55, 0.2);
-  color: #d4af37;
-  border-color: rgba(212, 175, 55, 0.4);
+  background: var(--hh-inset, rgba(212, 175, 55, 0.2));
+  color: var(--hh-gold, #d4af37);
+  border-color: var(--hh-accent-border, rgba(212, 175, 55, 0.4));
 }
 
 /* 5. Multi-Chat Sliding Bar (Single Unbroken Line) */
 .multi-chat-sliding-bar-wrap {
   display: flex;
   align-items: center;
-  background: #09172e;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--hh-inset, #09172e);
+  border-bottom: 1px solid var(--hh-border, rgba(255, 255, 255, 0.06));
   padding: 6px 8px;
   gap: 6px;
   white-space: nowrap;
@@ -1602,7 +1603,7 @@ export default {
 .bar-scroll-btn {
   background: transparent;
   border: none;
-  color: #64748b;
+  color: var(--hh-muted, #64748b);
   font-size: 16px;
   padding: 0 4px;
   cursor: pointer;
@@ -1610,7 +1611,7 @@ export default {
   flex-shrink: 0;
 }
 
-.bar-scroll-btn:hover { color: #d4af37; }
+.bar-scroll-btn:hover { color: var(--hh-gold, #d4af37); }
 
 .multi-chat-sliding-bar {
   flex: 1;
@@ -1631,9 +1632,9 @@ export default {
   gap: 6px;
   padding: 5px 12px;
   border-radius: 9999px;
-  background: rgba(15, 23, 42, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: #94a3b8;
+  background: var(--hh-control, rgba(15, 23, 42, 0.8));
+  border: 1px solid var(--hh-border, rgba(255, 255, 255, 0.08));
+  color: var(--hh-muted, #94a3b8);
   font-size: 11px;
   font-weight: 600;
   cursor: pointer;
@@ -1643,15 +1644,15 @@ export default {
 }
 
 .chat-layer-tab:hover {
-  background: rgba(212, 175, 55, 0.1);
-  color: #e2e8f0;
+  background: var(--hh-inset, rgba(212, 175, 55, 0.1));
+  color: var(--hh-text, #e2e8f0);
 }
 
 .chat-layer-tab.active {
-  background: linear-gradient(135deg, rgba(212, 175, 55, 0.22) 0%, rgba(8, 20, 38, 0.95) 100%);
-  border-color: #d4af37;
-  color: #ffffff;
-  box-shadow: 0 2px 8px rgba(212, 175, 55, 0.2);
+  background: var(--hh-selected-row, linear-gradient(135deg, rgba(212, 175, 55, 0.22) 0%, rgba(8, 20, 38, 0.95) 100%));
+  border-color: var(--hh-accent-border, #d4af37);
+  color: var(--hh-text, #ffffff);
+  box-shadow: var(--hh-panel-shadow, 0 2px 8px rgba(212, 175, 55, 0.2));
 }
 
 .clt-badge {
@@ -1676,8 +1677,8 @@ export default {
   align-items: center;
   justify-content: space-between;
   padding: 0 14px;
-  background: rgba(13, 30, 56, 0.85);
-  border-bottom: 1px solid rgba(212, 175, 55, 0.25);
+  background: var(--hh-inset, rgba(13, 30, 56, 0.85));
+  border-bottom: 1px solid var(--hh-border, rgba(212, 175, 55, 0.25));
   white-space: nowrap;
 }
 
@@ -1693,17 +1694,17 @@ export default {
 .pcb-tag {
   font-size: 9px;
   font-weight: 800;
-  color: #d4af37;
+  color: var(--hh-gold, #d4af37);
   letter-spacing: 0.5px;
   padding: 2px 6px;
   border-radius: 4px;
-  background: rgba(212, 175, 55, 0.15);
+  background: var(--hh-inset, rgba(212, 175, 55, 0.15));
   flex-shrink: 0;
 }
 
 .pcb-address {
   font-size: 12px;
-  color: #ffffff;
+  color: var(--hh-text, #ffffff);
   font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
@@ -1713,7 +1714,7 @@ export default {
 
 .pcb-crownkey {
   font-size: 11px;
-  color: #94a3b8;
+  color: var(--hh-muted, #94a3b8);
   font-family: monospace;
   white-space: nowrap;
   flex-shrink: 0;
@@ -1729,10 +1730,10 @@ export default {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  background: rgba(212, 175, 55, 0.15);
-  border: 1px solid rgba(212, 175, 55, 0.35);
+  background: var(--hh-inset, rgba(212, 175, 55, 0.15));
+  border: 1px solid var(--hh-accent-border, rgba(212, 175, 55, 0.35));
   border-radius: 6px;
-  color: #d4af37;
+  color: var(--hh-gold, #d4af37);
   padding: 4px 9px;
   font-size: 11px;
   font-weight: 600;
@@ -1742,7 +1743,7 @@ export default {
 }
 
 .pcb-dossier-link:hover {
-  background: rgba(212, 175, 55, 0.28);
+  background: var(--hh-selected-row, rgba(212, 175, 55, 0.28));
 }
 
 /* 7. Message Viewport */
@@ -1753,7 +1754,7 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  background: radial-gradient(circle at top right, rgba(14, 30, 54, 0.35), transparent 70%), #081426;
+  background: var(--hh-canvas, radial-gradient(circle at top right, rgba(14, 30, 54, 0.35), transparent 70%), #081426);
 }
 
 .thread-start-marker {
@@ -1767,17 +1768,24 @@ export default {
 .tsm-line {
   flex: 1;
   height: 1px;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--hh-border, rgba(255, 255, 255, 0.1));
 }
 
 .tsm-text {
   font-size: 11px;
-  color: #64748b;
+  color: var(--hh-muted, #64748b);
   font-weight: 600;
   text-align: center;
 }
 
 /* Empty State */
+.messages-loading-state {
+  padding: 18px 12px;
+  text-align: center;
+  color: var(--hh-muted, #94a3b8);
+  font-size: 12px;
+}
+
 .messages-empty-state {
   flex: 1;
   display: flex;
@@ -1786,15 +1794,15 @@ export default {
   justify-content: center;
   text-align: center;
   padding: 24px;
-  color: #64748b;
+  color: var(--hh-muted, #64748b);
 }
 
 .mes-icon-wrap {
   width: 52px;
   height: 52px;
   border-radius: 50%;
-  background: rgba(212, 175, 55, 0.1);
-  border: 1px solid rgba(212, 175, 55, 0.25);
+  background: var(--hh-inset, rgba(212, 175, 55, 0.1));
+  border: 1px solid var(--hh-border, rgba(212, 175, 55, 0.25));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1803,14 +1811,14 @@ export default {
 
 .messages-empty-state h4 {
   font-size: 15px;
-  color: #ffffff;
+  color: var(--hh-text, #ffffff);
   margin: 0 0 6px 0;
   font-weight: 600;
 }
 
 .messages-empty-state p {
   font-size: 12px;
-  color: #94a3b8;
+  color: var(--hh-muted, #94a3b8);
   max-width: 320px;
   margin: 0 0 16px 0;
   line-height: 1.4;
@@ -1825,11 +1833,11 @@ export default {
 }
 
 .mes-shortcuts button {
-  background: rgba(15, 23, 42, 0.8);
-  border: 1px solid rgba(212, 175, 55, 0.25);
+  background: var(--hh-control, rgba(15, 23, 42, 0.8));
+  border: 1px solid var(--hh-border, rgba(212, 175, 55, 0.25));
   border-radius: 8px;
   padding: 7px 12px;
-  color: #cbd5e1;
+  color: var(--hh-muted, #cbd5e1);
   font-size: 11px;
   cursor: pointer;
   text-align: left;
@@ -1837,9 +1845,9 @@ export default {
 }
 
 .mes-shortcuts button:hover {
-  background: rgba(212, 175, 55, 0.15);
-  border-color: #d4af37;
-  color: #ffffff;
+  background: var(--hh-inset, rgba(212, 175, 55, 0.15));
+  border-color: var(--hh-accent-border, #d4af37);
+  color: var(--hh-gold, #ffffff);
 }
 
 /* Messages Stream */
@@ -1897,12 +1905,12 @@ export default {
 }
 
 .msg-sender-name {
-  color: #cbd5e1;
+  color: var(--hh-text, #cbd5e1);
   font-weight: 600;
 }
 
 .msg-sender-role {
-  color: #64748b;
+  color: var(--hh-muted, #64748b);
   font-size: 10px;
 }
 
@@ -1910,9 +1918,9 @@ export default {
   font-size: 9px;
   padding: 1px 6px;
   border-radius: 4px;
-  background: rgba(212, 175, 55, 0.18);
-  color: #d4af37;
-  border: 1px solid rgba(212, 175, 55, 0.3);
+  background: var(--hh-inset, rgba(212, 175, 55, 0.18));
+  color: var(--hh-gold, #d4af37);
+  border: 1px solid var(--hh-accent-border, rgba(212, 175, 55, 0.3));
   font-weight: 600;
 }
 
@@ -1932,24 +1940,24 @@ export default {
 }
 
 .message-row.is-me .msg-bubble {
-  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
-  color: #ffffff;
+  background: var(--hh-message-sent, linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%));
+  color: var(--hh-text, #ffffff);
   border-bottom-right-radius: 4px;
-  box-shadow: 0 4px 12px rgba(29, 78, 216, 0.3);
+  box-shadow: var(--hh-panel-shadow, 0 4px 12px rgba(29, 78, 216, 0.3));
 }
 
 .message-row.is-partner .msg-bubble {
-  background: #142742;
-  color: #f1f5f9;
+  background: var(--hh-surface, #142742);
+  color: var(--hh-text, #f1f5f9);
   border-bottom-left-radius: 4px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--hh-border, rgba(255, 255, 255, 0.08));
+  box-shadow: var(--hh-panel-shadow, 0 4px 12px rgba(0, 0, 0, 0.25));
 }
 
 /* Quoted Reply inside Bubble */
 .msg-quoted-card {
-  background: rgba(0, 0, 0, 0.25);
-  border-left: 3px solid #d4af37;
+  background: var(--hh-inset, rgba(0, 0, 0, 0.25));
+  border-left: 3px solid var(--hh-accent-border, #d4af37);
   padding: 4px 8px;
   border-radius: 4px;
   margin-bottom: 6px;
@@ -1960,13 +1968,13 @@ export default {
   display: flex;
   align-items: center;
   gap: 4px;
-  color: #d4af37;
+  color: var(--hh-gold, #d4af37);
   font-weight: 700;
   margin-bottom: 2px;
 }
 
 .mqc-text {
-  color: #e2e8f0;
+  color: var(--hh-text, #e2e8f0);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1980,11 +1988,11 @@ export default {
   display: none;
   align-items: center;
   gap: 4px;
-  background: #0d1e38;
-  border: 1px solid rgba(212, 175, 55, 0.35);
+  background: var(--hh-surface, #0d1e38);
+  border: 1px solid var(--hh-border, rgba(212, 175, 55, 0.35));
   border-radius: 6px;
   padding: 2px 4px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--hh-floating-shadow, 0 4px 14px rgba(0, 0, 0, 0.5));
   z-index: 10;
 }
 
@@ -2003,7 +2011,7 @@ export default {
 .mah-btn {
   background: transparent;
   border: none;
-  color: #94a3b8;
+  color: var(--hh-muted, #94a3b8);
   padding: 2px 6px;
   font-size: 10px;
   display: flex;
@@ -2015,13 +2023,13 @@ export default {
 }
 
 .mah-btn:hover {
-  background: rgba(212, 175, 55, 0.18);
-  color: #ffffff;
+  background: var(--hh-inset, rgba(212, 175, 55, 0.18));
+  color: var(--hh-text, #ffffff);
 }
 
 .mah-btn.delete:hover {
-  background: rgba(239, 68, 68, 0.2);
-  color: #ef4444;
+  background: var(--hh-danger-surface, rgba(239, 68, 68, 0.2));
+  color: var(--hh-danger, #ef4444);
 }
 
 /* Delivery & Seen Meta */
@@ -2031,27 +2039,27 @@ export default {
   gap: 6px;
   margin-top: 3px;
   font-size: 10px;
-  color: #64748b;
+  color: var(--hh-muted, #64748b);
 }
 
 .seen-check {
-  color: #38bdf8;
+  color: var(--hh-blue, #38bdf8);
   font-weight: 800;
   letter-spacing: -1px;
 }
 
 .seen-text {
-  color: #38bdf8;
+  color: var(--hh-blue, #38bdf8);
   font-weight: 600;
 }
 
 .delivered-check {
-  color: #94a3b8;
+  color: var(--hh-muted, #94a3b8);
   font-weight: 700;
 }
 
 .delivered-text {
-  color: #94a3b8;
+  color: var(--hh-muted, #94a3b8);
 }
 
 /* 8. Reply Preview Banner */
@@ -2060,9 +2068,9 @@ export default {
   align-items: center;
   justify-content: space-between;
   padding: 6px 14px;
-  background: rgba(212, 175, 55, 0.12);
-  border-top: 1px solid rgba(212, 175, 55, 0.3);
-  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+  background: var(--hh-inset, rgba(212, 175, 55, 0.12));
+  border-top: 1px solid var(--hh-border, rgba(212, 175, 55, 0.3));
+  border-bottom: 1px solid var(--hh-border, rgba(212, 175, 55, 0.2));
 }
 
 .rab-left {
@@ -2081,12 +2089,12 @@ export default {
 .rab-sender {
   font-size: 10px;
   font-weight: 700;
-  color: #d4af37;
+  color: var(--hh-gold, #d4af37);
 }
 
 .rab-quote {
   font-size: 11px;
-  color: #e2e8f0;
+  color: var(--hh-text, #e2e8f0);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -2096,13 +2104,13 @@ export default {
 .rab-dismiss-btn {
   background: transparent;
   border: none;
-  color: #94a3b8;
+  color: var(--hh-muted, #94a3b8);
   font-size: 16px;
   cursor: pointer;
   padding: 0 4px;
 }
 
-.rab-dismiss-btn:hover { color: #ffffff; }
+.rab-dismiss-btn:hover { color: var(--hh-text, #ffffff); }
 
 /* 9. Quick Tags Strip */
 .quick-tags-strip {
@@ -2110,9 +2118,9 @@ export default {
   align-items: center;
   gap: 6px;
   padding: 6px 14px;
-  background: #09172e;
+  background: var(--hh-surface, #09172e);
   overflow-x: auto;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid var(--hh-border, rgba(255, 255, 255, 0.05));
   scrollbar-width: none;
   white-space: nowrap;
 }
@@ -2122,17 +2130,17 @@ export default {
 .qts-label {
   font-size: 10px;
   font-weight: 700;
-  color: #64748b;
+  color: var(--hh-muted, #64748b);
   text-transform: uppercase;
   flex-shrink: 0;
 }
 
 .quick-tag-chip {
-  background: rgba(15, 23, 42, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--hh-control, rgba(15, 23, 42, 0.7));
+  border: 1px solid var(--hh-border, rgba(255, 255, 255, 0.08));
   border-radius: 9999px;
   padding: 3px 9px;
-  color: #94a3b8;
+  color: var(--hh-muted, #94a3b8);
   font-size: 10px;
   font-weight: 600;
   cursor: pointer;
@@ -2142,14 +2150,14 @@ export default {
 }
 
 .quick-tag-chip:hover {
-  background: rgba(212, 175, 55, 0.1);
-  color: #e2e8f0;
+  background: var(--hh-inset, rgba(212, 175, 55, 0.1));
+  color: var(--hh-text, #e2e8f0);
 }
 
 .quick-tag-chip.active {
-  background: rgba(212, 175, 55, 0.22);
-  border-color: #d4af37;
-  color: #d4af37;
+  background: var(--hh-selected-row, rgba(212, 175, 55, 0.22));
+  border-color: var(--hh-accent-border, #d4af37);
+  color: var(--hh-gold, #d4af37);
 }
 
 /* 10. Message Composer Bar */
@@ -2158,8 +2166,8 @@ export default {
   align-items: flex-end;
   gap: 10px;
   padding: 12px 16px;
-  background: #0a172c;
-  border-top: 1px solid rgba(212, 175, 55, 0.25);
+  background: var(--hh-surface, #0a172c);
+  border-top: 1px solid var(--hh-border, rgba(212, 175, 55, 0.25));
   position: relative;
   z-index: 20;
 }
@@ -2172,11 +2180,11 @@ export default {
 
 .composer-textarea {
   width: 100%;
-  background: #081426;
-  border: 1px solid rgba(212, 175, 55, 0.35);
+  background: var(--hh-control, #081426);
+  border: 1px solid var(--hh-border, rgba(212, 175, 55, 0.35));
   border-radius: 12px;
   padding: 10px 14px;
-  color: #ffffff;
+  color: var(--hh-text, #ffffff);
   font-size: 13px;
   font-family: inherit;
   resize: none;
@@ -2187,21 +2195,21 @@ export default {
 }
 
 .composer-textarea:focus {
-  border-color: #d4af37;
-  box-shadow: 0 0 12px rgba(212, 175, 55, 0.25);
+  border-color: var(--hh-focus, #d4af37);
+  box-shadow: var(--hh-floating-focus, 0 0 12px rgba(212, 175, 55, 0.25));
 }
 
 .composer-textarea::placeholder {
-  color: #64748b;
+  color: var(--hh-muted, #64748b);
 }
 
 .composer-send-btn {
   width: 42px;
   height: 42px;
   border-radius: 50%;
-  background: #142742;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #64748b;
+  background: var(--hh-inset, #142742);
+  border: 1px solid var(--hh-border, rgba(255, 255, 255, 0.1));
+  color: var(--hh-muted, #64748b);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2298,9 +2306,9 @@ export default {
     width: 30px;
     height: 30px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    color: #e2e8f0;
+    background: var(--hh-control, rgba(255, 255, 255, 0.08));
+    border: 1px solid var(--hh-border, rgba(255, 255, 255, 0.15));
+    color: var(--hh-text, #e2e8f0);
     cursor: pointer;
     padding: 0;
     flex-shrink: 0;
@@ -2308,9 +2316,9 @@ export default {
   }
 
   .mobile-close-btn:active {
-    background: rgba(239, 68, 68, 0.3);
-    border-color: #ef4444;
-    color: #ffffff;
+    background: var(--hh-danger-surface, rgba(239, 68, 68, 0.3));
+    border-color: var(--hh-danger, #ef4444);
+    color: var(--hh-danger, #ffffff);
   }
 
   .mac-title-bar {

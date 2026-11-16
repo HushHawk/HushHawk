@@ -167,8 +167,8 @@
                 <td colspan="8" class="empty-state">
                   <div class="empty-box">
                     <span class="empty-icon" v-html="icons.facebook"></span>
-                    <strong style="color: #f8fafc; font-size: 15px;">{{ leads.length === 0 ? 'No Meta Seller Leads Ingested' : 'No Leads Match Filters' }}</strong>
-                    <p style="margin: 6px 0 16px 0; color: #94a3b8; font-size: 13px;">{{ leads.length === 0 ? 'Connect your Meta Ads webhook or launch Facebook lead ads to auto-capture motivated sellers directly into your acquisitions queue.' : 'Try adjusting or clearing your search and filter parameters.' }}</p>
+                    <strong style="color: var(--hh-text, #f8fafc); font-size: 15px;">{{ leads.length === 0 ? 'No Meta Seller Leads Ingested' : 'No Leads Match Filters' }}</strong>
+                    <p style="margin: 6px 0 16px 0; color: var(--hh-muted, #94a3b8); font-size: 13px;">{{ leads.length === 0 ? 'Connect your Meta Ads webhook or launch Facebook lead ads to auto-capture motivated sellers directly into your acquisitions queue.' : 'Try adjusting or clearing your search and filter parameters.' }}</p>
                     <button v-if="leads.length === 0" class="btn btn-primary" @click="syncMetaWebhook">
                       <span v-html="icons.refresh"></span>
                       Sync Meta Webhook

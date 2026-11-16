@@ -393,7 +393,7 @@ export default {
  });
  const drafts={},selected=computed(()=>deals.value.find(d=>d.id===selectedId.value)||null);
  const visible=computed(()=>(deals.value||[]).filter(d=>!query.value.trim()||[d.address,d.zip,d.owner,d.source,d.agent,stages[d.stage]?.name||''].join(' ').toLowerCase().includes(query.value.trim().toLowerCase())));
- const heroStyle=computed(()=>({backgroundImage:'linear-gradient(90deg,#03172fed 0%,#03172fc9 31%,#06244144 62%,#011a3440),url("'+(props.content?.skyline||'')+'")'}));
+ const heroStyle=computed(()=>({backgroundImage: `var(--hh-hero-scrim, linear-gradient(90deg,#03172fed 0%,#03172fc9 31%,#06244144 62%,#011a3440)), url("${props.content?.skyline || '/images/jacksonville-skyline-opt.jpg'}"), var(--hh-hero-fallback)`}));
  const metrics=computed(()=>{
    const d=deals.value||[];
    const total=d.length;
@@ -615,7 +615,7 @@ export default {
   border-bottom: 1px solid rgba(212, 175, 55, 0.2) !important;
   padding: var(--hh-brand-padding, 14px 8px 10px) !important;
   text-align: center !important;
-  background: linear-gradient(180deg, rgba(212, 175, 55, 0.12) 0%, rgba(4, 18, 45, 0.4) 100%) !important;
+  background: var(--hh-nav-brand, linear-gradient(180deg, rgba(212, 175, 55, 0.12), rgba(4, 18, 45, 0.4))) !important;
 }
 
 .brand-icon {
@@ -721,10 +721,10 @@ export default {
 }
 
 .sidebar nav a.active {
-  background: linear-gradient(180deg, #744d1e 0%, #3e260c 100%) !important;
+  background: var(--hh-nav-active-surface, linear-gradient(180deg, #744d1e, #3e260c)) !important;
   border: 1.5px solid #dfa745 !important;
   border-radius: 11px !important;
-  color: #ffffff !important;
+  color: var(--hh-nav-active-ink, #ffffff) !important;
   font-weight: 700 !important;
   box-shadow: 
     0 0 14px rgba(223, 167, 69, 0.45),
@@ -779,7 +779,7 @@ export default {
   height: 38px !important;
   min-height: 38px !important;
   padding: 0 14px !important;
-  background: rgba(10, 16, 28, 0.75) !important;
+  background: var(--hh-nav-logout-surface, rgba(10, 16, 28, 0.75)) !important;
   border: 1px solid rgba(212, 175, 55, 0.35) !important;
   border-radius: 9px !important;
   color: #fca5a5 !important;

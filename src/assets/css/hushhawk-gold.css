@@ -1,6 +1,7 @@
 /* Shared colors for the command dashboard and section workspaces. */
 .hushhawk-gold {
   --hh-canvas: #080e17;
+  --hh-hero-fallback: url("/images/jacksonville-skyline-opt.jpg");
   --hh-text: #fff5e2;
   --hh-muted: #bec8d8;
   --hh-gold: #eac16a;
@@ -372,7 +373,7 @@
   border-color: #d8af68 !important;
 }
 
-:root:not(.ww-app-theme-dark) .hushhawk-gold {
+:root:not(.ww-app-theme-dark) :is(.hushhawk-gold, .hawk-copilot-container, .partner-messenger-container, .smrtphone-popup-container) {
   color-scheme: light;
   --hh-canvas: #f1ede4;
   --hh-text: #18273c;
@@ -390,6 +391,7 @@
   --hh-hover: #e7d7b8;
   --hh-link: #34587d;
   --hh-focus: #815418;
+  --hh-accent-border: #b59660;
 }
 
 :root:not(.ww-app-theme-dark) .hushhawk-gold,
@@ -428,15 +430,42 @@
 }
 :root:not(.ww-app-theme-dark) .hushhawk-gold .sidebar-foil { opacity: .35; }
 
-:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.topbar, .auth-topbar) {
+:root:not(.ww-app-theme-dark) .hushhawk-gold .auth-topbar {
   background: var(--hh-panel-header);
   border-color: var(--hh-border);
   color: var(--hh-text);
 }
 :root:not(.ww-app-theme-dark) .hushhawk-gold .hero {
-  background: var(--hh-panel-header) !important;
+  --hh-hero-scrim: linear-gradient(90deg, #fff9ee 0%, #f9efdeef 43%, #f9efde66 72%, #f9efde22);
+  background-color: var(--hh-canvas);
   border-color: var(--hh-border);
   color: var(--hh-text);
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold:is(.gold-section, .dashboard-gold) .topbar {
+  background:
+    linear-gradient(90deg, #fff9eeef 0%, #f8eedba8 44%, #f8eedb99 67%, #fff9eee8),
+    url("/images/hushhawk-skyline-dusk.jpg") center 67% / cover;
+  border-color: var(--hh-border);
+  color: var(--hh-text);
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold .hero :is(.jacksonville-calligraphy, .jacksonville) {
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: #fff9eedb;
+  text-shadow: none;
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold .hero :is(.hero-motto, .motto) {
+  padding-inline: 8px;
+  background: #fff9eedb;
+  border-color: var(--hh-accent-border);
+}
+@media (max-width: 720px) {
+  :root:not(.ww-app-theme-dark) .hushhawk-gold .hero {
+    --hh-hero-scrim: linear-gradient(90deg, #fff9ee 0%, #f9efdef2 60%, #f9efdea6 82%, #f9efde48);
+  }
+  .hushhawk-gold.gold-section .hero .hero-copy {
+    max-width: 76%;
+  }
 }
 :root:not(.ww-app-theme-dark) .hushhawk-gold :is(.masthead-brand, .identity-text strong, .hero h1, .dashboard-heading h1) {
   color: var(--hh-text);
@@ -531,6 +560,11 @@
 :root:not(.ww-app-theme-dark) .hushhawk-gold {
   --hh-nav-text: #18273c;
   --hh-nav-brand: linear-gradient(160deg, #fff9ed, #f0e4ce);
+  --hh-nav-active-surface: var(--hh-selected);
+  --hh-nav-active-ink: var(--hh-text);
+  --hh-nav-logout-surface: var(--hh-control);
+  --hh-light-control-ink: var(--hh-text);
+  --hh-light-muted: var(--hh-muted);
 }
 
 :root:not(.ww-app-theme-dark) .hushhawk-gold .sidebar nav a:is(.active, :hover),
@@ -681,7 +715,6 @@
 :root:not(.ww-app-theme-dark) .hushhawk-gold {
   --hh-control: #fffdfa;
   --hh-accent-control: #f5ead5;
-  --hh-accent-border: #b59660;
 }
 
 .hushhawk-gold:is(.gold-section, .dashboard-gold) { font-variant-numeric: tabular-nums; }
@@ -835,3 +868,429 @@
     --hh-brand-name: 10px;
   }
 }
+
+/* Workspace rhythm. Keep card interiors separate from the gaps between panels. */
+.hushhawk-gold {
+  --hh-section-gap: clamp(16px, 1.5vw, 24px);
+  --hh-card-gap: clamp(12px, 1vw, 16px);
+  --hh-action-gap: 8px;
+}
+.hushhawk-gold:is(.seller-app, .acq-app) .hero {
+  margin-bottom: var(--hh-section-gap);
+}
+.hushhawk-gold:is(.seller-app, .acq-app) .kpi-row {
+  gap: var(--hh-card-gap);
+  margin-bottom: var(--hh-card-gap);
+}
+.hushhawk-gold:is(.seller-app, .acq-app) .kpi-row .kpi {
+  min-width: 0;
+  padding: 10px;
+}
+.hushhawk-gold.seller-app :is(.lower-left, .messages-grid, .left-column, .right-column),
+.hushhawk-gold.gold-section :is(.metrics-grid, .overview-quick-stats, .overview-grid) {
+  gap: var(--hh-card-gap);
+}
+.hushhawk-gold.gold-section :is(.content-split, .split-layout, .analyzer-grid, .analytics-grid-two),
+.hushhawk-gold .acquisition-layout {
+  gap: var(--hh-section-gap);
+}
+.hushhawk-gold :is(
+  .skip-tracing-view .header-actions, .follow-ups-view .header-actions, .follow-ups-view .drawer-action-strip,
+  .seller-app .lead-header-actions, .properties-workspace .prop-header-actions
+) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--hh-action-gap);
+}
+.hushhawk-gold .follow-ups-view .panel-header {
+  flex-wrap: wrap;
+  gap: var(--hh-card-gap);
+}
+.hushhawk-gold :is(.skip-tracing-view, .follow-ups-view) .panel-header .header-left {
+  flex-wrap: wrap;
+  gap: var(--hh-action-gap);
+}
+.hushhawk-gold .follow-ups-view .drawer-action-strip {
+  margin: 0;
+}
+.hushhawk-gold.seller-app .all-leads .panel-heading {
+  flex-wrap: wrap;
+  gap: var(--hh-action-gap);
+}
+.hushhawk-gold .follow-ups-view .metric-label {
+  white-space: normal;
+}
+@media (max-width: 600px) {
+  .hushhawk-gold .follow-ups-view .filter-group {
+    width: 100%;
+  }
+  .hushhawk-gold .follow-ups-view .filter-group select {
+    flex: 1;
+    min-width: 0;
+  }
+}
+.hushhawk-gold.gold-section :is(.skip-tracing-view, .follow-ups-view) .panel-header {
+  padding: 10px 12px;
+  border-radius: 8px;
+}
+.hushhawk-gold .follow-ups-view .drawer-body {
+  display: grid;
+  gap: var(--hh-card-gap);
+}
+.hushhawk-gold .acquisition-layout :is(.board, .stage-cards) {
+  gap: var(--hh-card-gap);
+}
+.hushhawk-gold .acquisition-layout .board {
+  grid-template-columns: repeat(8, minmax(132px, 1fr));
+}
+.hushhawk-gold .acquisition-layout .stage-cards {
+  display: grid;
+  grid-auto-rows: max-content;
+  padding: 0 6px 8px;
+}
+.hushhawk-gold .acquisition-layout .stage h2 {
+  padding-inline: 8px;
+  font-size: 12px;
+}
+.hushhawk-gold .acquisition-layout .card-body {
+  padding: 8px 5px;
+}
+.hushhawk-gold .acquisition-layout .card-body :is(h3, p, dl) {
+  font-size: 12px;
+}
+.hushhawk-gold .acquisition-layout .card-body :is(h3, p) {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.hushhawk-gold .acquisition-layout .preview-line {
+  margin: 0 0 8px;
+}
+@media (max-width: 1100px) {
+  .hushhawk-gold:is(.seller-app, .acq-app) .kpi-row {
+    grid-template-columns: repeat(auto-fit, minmax(min(145px, 100%), 1fr));
+  }
+}
+
+/* Ink and surface pairs for the light workspace palette. */
+:root:not(.ww-app-theme-dark) :is(.hushhawk-gold, .hawk-copilot-container, .partner-messenger-container, .smrtphone-popup-container) {
+  --hh-surface: #fffdf8;
+  --hh-inset: #f4ede0;
+  --hh-selected-row: #efe2c8;
+  --hh-success: #176349;
+  --hh-danger: #9b2d34;
+  --hh-violet: #603a95;
+  --hh-blue: #245786;
+  --hh-panel-shadow: inset 0 1px #fff, 0 3px 12px #3527150e;
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold.gold-section :is(.hero, .topbar) {
+  box-shadow: 0 3px 12px #382b1d14;
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(
+  .breadcrumbs, .breadcrumbs span, .crumb-sep, .app-footer span, .page-footer span,
+  .hero .motto, .hero .principles, .hero .jacksonville span,
+  .preview-line, .mode-bar > span
+) {
+  color: var(--hh-muted);
+  text-shadow: none;
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.hero h1 em, .hero .jacksonville strong, .hero .breadcrumbs a) {
+  color: var(--hh-gold);
+  text-shadow: none;
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(
+  .prop-empty p, .empty-box p, .empty-contracts-box p, .chat-empty p, .empty-row,
+  .vault-workspace .vstat-label, .vault-workspace .uph-desc, .dropzone-subtitle, .dropzone-meta,
+  .acquisition-layout .empty-stage, .acquisition-layout .card-body p, .acquisition-layout .card-body dt,
+  .acquisition-layout .agent, .seller-app .empty, .calendar-sub, .day-name, .no-events-slot,
+  .badge-sub, .step-pct, .step-name, .label-with-val > span:first-child
+) { color: var(--hh-muted); }
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(
+  .vstat-val, .uph-title, .dropzone-title, .qs-val, .ov-value, .day-num, .step-count,
+  .empty-box strong, .empty-contracts-box strong, .chat-empty strong,
+  .acquisition-layout .card-body dd, .acquisition-layout .activity strong,
+  .acquisition-layout .activity b, .activity small, .w-k, .w-v, .mao-price,
+  .panel-section h3, .section-top h3, .chip-name, .card-head h4
+) { color: var(--hh-text); }
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(
+  .gold, .tag-gold, .ov-value.gold, .btn-browse-link, .tab-pill-badge,
+  .jmm-left strong, .market-label b, .pulse-heading strong
+) { color: var(--hh-gold); }
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.text-cyan, .panel-heading a, .panel-heading button, .profile-pager button, .empty a, .empty button, .empty-row .btn-link) {
+  color: var(--hh-link);
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.text-purple, .vault-workspace .text-purple) { color: var(--hh-violet); }
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(
+  .text-emerald, .uph-badge, .badge-positive, .kpi small, .activity em, .jmm-up, .strat-badge.green
+) { color: var(--hh-success); }
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.text-amber, .vault-workspace .text-amber) { color: var(--hh-gold); }
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.jmm-down, .badge-motivation.hot) { color: var(--hh-danger); }
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(
+  .vault-explorer-header, .vault-asset-card, .vault-list-layout, .queue-item-card,
+  .detail-drawer, .drawer-header, .prop-tabs, .preview-modal-card, .delete-modal-card,
+  .modal-card, .acq-app .detail, .acq-app .dialog, .acquisition-layout .detail,
+  .acquisition-layout .activity, .mao-banner, .waterfall-row, .auth-chip
+) {
+  background: var(--hh-surface);
+  color: var(--hh-text);
+  border-color: var(--hh-border);
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(
+  .confidence-strip, .phone-row, .relative-card, .history-note,
+  .prop-hero-placeholder, .prop-thumb-placeholder, .card-photo-placeholder,
+  .vault-dropzone, .profile .property-photo, .acquisition-layout .empty-stage,
+  .detail-drawer .info-card, .profile .profile-pager, .app-footer, .page-footer
+) {
+  background: var(--hh-inset);
+  color: var(--hh-text);
+  border-color: var(--hh-border);
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.badge-count, .tab-counter, .tab-pill-badge, .prop-card-type, .seller-app .mode-bar button) {
+  background: var(--hh-inset);
+  color: var(--hh-gold);
+  border-color: var(--hh-border);
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.seller-app, .acq-app) :is(.kpi, .deal-card) {
+  border-radius: 8px;
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold .acquisition-layout .stage h2 {
+  background: var(--hh-inset);
+  color: var(--hh-text);
+  border: 1px solid var(--hh-border);
+  border-inline-start: 3px solid var(--stage);
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold .acquisition-layout .stage h2 b {
+  background: var(--hh-selected-row);
+  color: var(--hh-text);
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold .acquisition-layout .stage-badge {
+  background: var(--hh-inset);
+  color: var(--hh-text);
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(
+  .skip-tracing-view, .follow-ups-view
+) :is(tbody tr.active, tbody tr.selected) {
+  background: var(--hh-selected-row);
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.skip-tracing-view, .follow-ups-view) :is(
+  .owner-cell strong, .phone-cell strong, .cell-main, .info-row .v,
+  .drawer-header h3, .phone-row strong, .relative-card strong, .conf-item strong
+) { color: var(--hh-text); }
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.skip-tracing-view, .follow-ups-view) :is(
+  .owner-cell small, .property-cell small, .phone-cell small, .drawer-header p,
+  .drawer-sub, .conf-item small, .phone-row small, .relative-card small,
+  .notes-text, .script-text, .info-row .k, .lead-stage, .channel-badge, .cadence-step,
+  .address-sub, .attempt-label
+) { color: var(--hh-muted); }
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.skip-tracing-view, .follow-ups-view) :is(
+  .detail-drawer h4, .section-title, .offer-val, .info-row .v.text-gold
+) { color: var(--hh-gold); }
+:root:not(.ww-app-theme-dark) .hushhawk-gold .skip-tracing-view .conf-item .green { color: var(--hh-success); }
+:root:not(.ww-app-theme-dark) .hushhawk-gold .skip-tracing-view .conf-item .red { color: var(--hh-danger); }
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(
+  .ov-card, .analytics-header, .analyzer-header, .strat-box, .strat-box.highlight,
+  .sources-footer, .imports-footer, .priorities-footer
+) {
+  background: var(--hh-panel);
+  color: var(--hh-text);
+  border-color: var(--hh-border);
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(
+  .qs-num, .analyzer-dl dd, .strat-title, .pillar-strip-head .head-title h3, .prop-breadcrumb strong, .follow-ups-view .seller-name,
+  .jmm-stat-item strong, .import-row strong, .sources-list li b
+) { color: var(--hh-text); }
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(
+  .ov-label, .qs-label, .prop-location, .prop-tabs button, .badge-type,
+  .vault-explorer-header .exp-tab-btn, .vault-explorer-header .exp-count,
+  .follow-ups-view .prop-sub, .follow-ups-view .touch-counter, .follow-ups-view .script-quote,
+  .mao-formula, .strat-metrics span, .strat-metrics strong, .strat-badge, .analyzer-sub,
+  .analytics-subtitle, .analyzer-dl dt, .pillar-strip-head .head-title p, .input-panel .form-group label, .vault-explorer-header .btn-preview-mode-toggle,
+  .market-label span, .jmm-stat-item .lbl, .import-count small,
+  .sources-footer span, .sources-footer strong, .imports-footer span, .imports-footer strong, .sources-list li span,
+  .acq-app .footer span, .acq-app .footer b, .dashboard-gold .footer span
+) { color: var(--hh-muted); }
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(
+  .exp-tab-btn.active, .exp-tab-btn.active .exp-count, .prop-tabs button.active,
+  .follow-ups-view .due-badge.today, .follow-ups-view .badge-motivation.warm,
+  .mao-sub, .btn-partner-chat-head, .sync-crm-btn span,
+  .feed-tabs button, .market-label a, .live-tag
+) { color: var(--hh-gold); }
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(
+  .crownkey-badge, .badge-type, .btn-edit-prop, .btn-partner-chat-head,
+  .vault-explorer-header .exp-count, .vault-explorer-header .btn-preview-mode-toggle,
+  .follow-ups-view .channel-pill, .follow-ups-view .cadence-chip, .feed-tabs button
+) {
+  background: var(--hh-inset);
+  border-color: var(--hh-border);
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.prop-tabs button.active, .exp-tab-btn.active, .feed-tabs button.active) {
+  background: var(--hh-selected-row);
+  color: var(--hh-gold);
+  border-color: var(--hh-accent-border);
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.crownkey-badge, .btn-edit-prop, .mobile-back-to-props) { color: var(--hh-text); }
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.follow-ups-view .btn-danger-outline, .badge-motivation.hot) {
+  color: var(--hh-danger);
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(
+  .btn-market-intel, .panel table td a, .activity button, .sources-footer a,
+  .priorities-footer a, .imports-footer a, .tag-pill.tag-blue
+) { color: var(--hh-link); }
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.tag-pill.tag-blue, .panel .status.New) {
+  background: #e1edf4;
+  color: var(--hh-blue);
+  border-color: #b3cadb;
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold.seller-app :is(.mode-bar button, .btn-action-import, .btn-action-refresh, .actions button:not(.offer), .filters > button) {
+  background: var(--hh-inset);
+  color: var(--hh-text);
+  border-color: var(--hh-border);
+  box-shadow: none;
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold.seller-app :is(.mode-bar button.active, .btn-action-import:hover, .btn-action-refresh:hover, .actions button:not(.offer):hover) {
+  background: var(--hh-selected-row);
+  color: var(--hh-gold);
+  border-color: var(--hh-accent-border);
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold.seller-app :is(.tabs button span, .all-leads th button span, .legend button > span:last-child,
+  .photo-empty, .profile-pager span) {
+  color: var(--hh-muted);
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold .acquisition-layout :is(.agent i, .activity b em) {
+  background: var(--hh-inset);
+  color: var(--hh-muted);
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .sidebar {
+  box-shadow: 3px 0 16px #5a452a12 !important;
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold .sidebar nav a.active {
+  background: var(--hh-selected) !important;
+  color: var(--hh-text) !important;
+  box-shadow: inset 0 1px #fff8, 0 2px 7px #78552426 !important;
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold .sidebar :is(.brand, .brand-bottom) {
+  background: var(--hh-nav-brand) !important;
+  box-shadow: none !important;
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold .sidebar .sidebar-logout-btn:not(:hover) {
+  background: var(--hh-control) !important;
+  box-shadow: none !important;
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold .sidebar .sidebar-logout-btn svg {
+  stroke: currentColor !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.elite-maps footer p) { color: var(--hh-muted); }
+:root:not(.ww-app-theme-dark) .hushhawk-gold .elite-maps footer a { color: var(--hh-link); }
+:root:not(.ww-app-theme-dark) .hushhawk-gold .team-view :is(
+  .drawer-title h3, .profile-details strong, .credential-row label, .card-head h4
+) { color: var(--hh-text); }
+:root:not(.ww-app-theme-dark) .hushhawk-gold .team-view :is(
+  .drawer-title small, .profile-details p, .card-head small,
+  .chip-path, .password-hidden, .btn-toggle-all-passwords
+) { color: var(--hh-muted); }
+:root:not(.ww-app-theme-dark) .hushhawk-gold .team-view :is(
+  .member-profile-card, .drawer-card, .password-box
+) {
+  background: var(--hh-surface);
+  border-color: var(--hh-border);
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold .team-view :is(
+  .card-head, .role-pill.gold, .mini-badge, .drawer-badge
+) {
+  background: var(--hh-inset);
+  color: var(--hh-gold);
+  border-color: var(--hh-border);
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold .team-view :is(.status-indicator.active, .badge-tag.green) {
+  background: #e1f1e8;
+  color: var(--hh-success);
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold .team-view .chip-dot { color: var(--hh-gold); }
+
+/* Floating panels are mounted beside the workspace and share its light palette. */
+:root:not(.ww-app-theme-dark) :is(.hawk-copilot-container, .partner-messenger-container, .smrtphone-popup-container) {
+  --hh-message-sent: #e0ecf7;
+  --hh-message-border: #adc5db;
+  --hh-danger-surface: #f8e1e2;
+  --hh-success-surface: #e1f1e8;
+  --hh-floating-shadow: 0 16px 44px #372a2135;
+  --hh-floating-focus: 0 0 0 2px #a77b4c50;
+}
+:root:not(.ww-app-theme-dark) :is(
+  .hawk-copilot-container, .partner-messenger-container, .smrtphone-popup-container
+) :is(a, button, input, textarea):focus-visible {
+  outline: 2px solid var(--hh-focus);
+  outline-offset: 2px;
+}
+:root:not(.ww-app-theme-dark) :is(.hawk-launcher-btn, .partner-launcher-btn) {
+  background: linear-gradient(145deg, #fffdf8, #f5ead6);
+  border-color: #b49564;
+  color: var(--hh-text);
+  box-shadow: 0 4px 14px #372a211f;
+}
+:root:not(.ww-app-theme-dark) :is(.hawk-launcher-btn, .partner-launcher-btn):hover {
+  box-shadow: 0 6px 16px #372a212f;
+}
+:root:not(.ww-app-theme-dark) .hawk-launcher-label { color: var(--hh-gold); }
+:root:not(.ww-app-theme-dark) .partner-launcher-btn .launcher-title { color: var(--hh-text); }
+:root:not(.ww-app-theme-dark) .partner-launcher-btn .launcher-sub { color: var(--hh-muted); }
+
+.hushhawk-gold .vault-workspace .explorer-controls {
+  flex-wrap: wrap;
+  gap: var(--hh-action-gap);
+  min-width: 0;
+}
+.hushhawk-gold .vault-search-box input {
+  min-width: 0;
+  max-width: 100%;
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold .vault-workspace :is(.vault-search-box, .view-switch-group, .btn-refresh-vault) {
+  background: var(--hh-control);
+  color: var(--hh-text);
+  border-color: var(--hh-border);
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold .vault-search-box input { background: transparent; }
+:root:not(.ww-app-theme-dark) .hushhawk-gold .vault-workspace .view-switch-btn { color: var(--hh-muted); }
+:root:not(.ww-app-theme-dark) .hushhawk-gold .vault-workspace .view-switch-btn.active {
+  background: var(--hh-selected-row);
+  color: var(--hh-gold);
+}
+.hushhawk-gold .vault-workspace .vstat-label {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.hushhawk-gold .follow-ups-view .info-row {
+  gap: 12px;
+}
+.hushhawk-gold .follow-ups-view .info-row .v {
+  min-width: 0;
+  text-align: end;
+  overflow-wrap: anywhere;
+}
+.hushhawk-gold .skip-tracing-view .conf-item strong {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold.seller-app :is(.btn-action-import, .tabs button span) {
+  color: var(--hh-text) !important;
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold .follow-ups-view :is(.channel-pill, .cadence-chip) {
+  color: var(--hh-muted);
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold .mobile-back-to-props {
+  background: var(--hh-inset);
+  border-color: var(--hh-border);
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(
+  .team-view .btn-toggle-all-passwords, .follow-ups-view .row-actions .action-btn
+) {
+  background: var(--hh-inset);
+  border-color: var(--hh-border);
+  color: var(--hh-text);
+}
+:root:not(.ww-app-theme-dark) .hushhawk-gold .follow-ups-view .row-actions .delete { color: var(--hh-danger); }
+:root:not(.ww-app-theme-dark) .hushhawk-gold .hero .jacksonville-calligraphy strong { text-shadow: none; }

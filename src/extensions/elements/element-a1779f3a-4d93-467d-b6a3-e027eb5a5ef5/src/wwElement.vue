@@ -1927,7 +1927,7 @@ return{icons,uid,feedMode,isEditing,metrics,query,zip,checked,tasks,imports,filt
   border-bottom: 1px solid rgba(212, 175, 55, 0.2) !important;
   padding: var(--hh-brand-padding, 14px 8px 10px) !important;
   text-align: center !important;
-  background: linear-gradient(180deg, rgba(212, 175, 55, 0.12) 0%, rgba(4, 18, 45, 0.4) 100%) !important;
+  background: var(--hh-nav-brand, linear-gradient(180deg, rgba(212, 175, 55, 0.12), rgba(4, 18, 45, 0.4))) !important;
 }
 
 .brand-icon {
@@ -2018,10 +2018,10 @@ return{icons,uid,feedMode,isEditing,metrics,query,zip,checked,tasks,imports,filt
 }
 
 .sidebar nav a.active {
-  background: linear-gradient(180deg, #744d1e 0%, #3e260c 100%) !important;
+  background: var(--hh-nav-active-surface, linear-gradient(180deg, #744d1e, #3e260c)) !important;
   border: 1.5px solid #dfa745 !important;
   border-radius: 11px !important;
-  color: #ffffff !important;
+  color: var(--hh-nav-active-ink, #ffffff) !important;
   font-weight: 700 !important;
   box-shadow: 
     0 0 14px rgba(223, 167, 69, 0.45),
@@ -2076,7 +2076,7 @@ return{icons,uid,feedMode,isEditing,metrics,query,zip,checked,tasks,imports,filt
   height: 38px !important;
   min-height: 38px !important;
   padding: 0 14px !important;
-  background: rgba(10, 16, 28, 0.75) !important;
+  background: var(--hh-nav-logout-surface, rgba(10, 16, 28, 0.75)) !important;
   border: 1px solid rgba(212, 175, 55, 0.35) !important;
   border-radius: 9px !important;
   color: #fca5a5 !important;
@@ -4089,7 +4089,7 @@ return{icons,uid,feedMode,isEditing,metrics,query,zip,checked,tasks,imports,filt
 table { width: 100%; border-collapse: collapse; font-size: 8.5px; }
 th { text-align: left; color: #94a3b8; font-weight: 600; padding: 6px 8px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
 td { padding: 6px 8px; border-top: 1px solid rgba(255, 255, 255, 0.04); white-space: nowrap; color: #e2e8f0; }
-td a { color: #f5cf72 !important; }
+td a { color: var(--hh-link, #f5cf72) !important; }
 .status { font-size: 7.5px; padding: 2px 6px; border-radius: 4px; background: rgba(56, 189, 248, 0.2); color: #38bdf8; font-weight: 700; }
 .status.Contacted { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
 .status.Appointment { background: rgba(212, 175, 55, 0.2); color: #f5cf72; }
@@ -4166,7 +4166,7 @@ td a { color: #f5cf72 !important; }
   display: block !important;
   padding: 0 !important;
   margin: 0 !important;
-  color: #ffffff !important;
+  color: var(--hh-light-control-ink, #ffffff) !important;
   font-weight: 700 !important;
   letter-spacing: 0.15px;
   line-height: 1.3 !important;
@@ -4174,7 +4174,7 @@ td a { color: #f5cf72 !important; }
 .analyzer-prop-header p,
 .analyzer-prop-header .analyzer-prop-sub {
   font-size: 9.5px !important;
-  color: #94a3b8 !important;
+  color: var(--hh-light-muted, #94a3b8) !important;
   margin: 2px 0 0 !important;
   line-height: 1.35 !important;
   font-weight: 500 !important;
@@ -4195,7 +4195,7 @@ td a { color: #f5cf72 !important; }
   padding: 3px 0;
 }
 .analyzer dt, .analyzer-dl dt { color: #94a3b8; margin: 0; font-size: 8.5px; }
-.analyzer dd, .analyzer-dl dd { margin: 0; color: #ffffff; font-weight: 600; font-size: 9px; }
+.analyzer dd, .analyzer-dl dd { margin: 0; color: var(--hh-light-control-ink, #ffffff); font-weight: 600; font-size: 9px; }
 .profit {
   display: flex;
   justify-content: space-between;
@@ -4205,22 +4205,22 @@ td a { color: #f5cf72 !important; }
   border: 1px solid rgba(34, 197, 94, 0.3);
   border-radius: 6px;
   background: rgba(34, 197, 94, 0.08);
-  color: #4ade80;
+  color: var(--hh-success, #4ade80);
   font-size: 8.5px;
 }
 .profit span {
   font-size: 8.5px;
-  color: #4ade80;
+  color: var(--hh-success, #4ade80);
   font-weight: 600;
 }
 .profit strong {
   font-size: 13px !important;
-  color: #ffffff;
+  color: var(--hh-light-control-ink, #ffffff);
   font-weight: 850;
 }
 .analyzer-footer {
   padding: 7px 12px;
-  background: rgba(4, 18, 35, 0.75);
+  background: var(--hh-surface, rgba(4, 18, 35, 0.75));
   font-size: 8px;
   border-top: 1px solid rgba(255, 255, 255, 0.06);
   border-bottom-left-radius: 9px !important;
@@ -4231,7 +4231,7 @@ td a { color: #f5cf72 !important; }
 }
 .profit-sub, .analyzer-footer small {
   font-size: 8px !important;
-  color: #94a3b8 !important;
+  color: var(--hh-light-muted, #94a3b8) !important;
   display: block !important;
   padding: 0 !important;
   margin: 0 !important;

@@ -23,7 +23,7 @@
         <div class="card-caller-body">
           <div class="caller-avatar-ring">
             <div class="caller-avatar-circle">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFDF73" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
               </svg>
             </div>
@@ -208,12 +208,12 @@ export default {
 }
 
 .smrtphone-card {
-  background: linear-gradient(135deg, #04182D 0%, #0A223C 100%);
-  border: 1.5px solid #D4AF37;
+  background: var(--hh-panel, linear-gradient(135deg, #04182D 0%, #0A223C 100%));
+  border: 1.5px solid var(--hh-border, #D4AF37);
   border-radius: 12px;
-  box-shadow: 0 16px 40px rgba(4, 24, 45, 0.85), 0 0 24px rgba(212, 175, 55, 0.35);
+  box-shadow: var(--hh-floating-shadow, 0 16px 40px rgba(4, 24, 45, 0.85), 0 0 24px rgba(212, 175, 55, 0.35));
   padding: 12px 16px;
-  color: #f8fafc;
+  color: var(--hh-text, #f8fafc);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   animation: cardEntrance 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -262,7 +262,7 @@ export default {
   font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.8px;
-  color: #4ade80;
+  color: var(--hh-success, #4ade80);
   text-transform: uppercase;
 }
 
@@ -274,14 +274,14 @@ export default {
 
 .call-timer {
   font-size: 0.72rem;
-  color: #FFDF73;
+  color: var(--hh-gold, #FFDF73);
   font-weight: 600;
 }
 
 .call-dismiss-btn {
   background: transparent;
   border: none;
-  color: #94a3b8;
+  color: var(--hh-muted, #94a3b8);
   cursor: pointer;
   padding: 2px;
   display: flex;
@@ -291,8 +291,8 @@ export default {
 }
 
 .call-dismiss-btn:hover {
-  color: #f8fafc;
-  background: rgba(255, 255, 255, 0.1);
+  color: var(--hh-text, #f8fafc);
+  background: var(--hh-inset, rgba(255, 255, 255, 0.1));
 }
 
 /* Caller Body */
@@ -312,8 +312,9 @@ export default {
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #0A223C 0%, #17385E 100%);
-  border: 1.5px solid #D4AF37;
+  background: var(--hh-inset, linear-gradient(135deg, #0A223C 0%, #17385E 100%));
+  border: 1.5px solid var(--hh-accent-border, #D4AF37);
+  color: var(--hh-gold, #FFDF73);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -349,7 +350,7 @@ export default {
 
 .caller-name {
   font-size: 0.95rem;
-  color: #ffffff;
+  color: var(--hh-text, #ffffff);
   font-weight: 700;
 }
 
@@ -358,15 +359,15 @@ export default {
   font-weight: 700;
   padding: 1px 6px;
   border-radius: 4px;
-  background: rgba(239, 68, 68, 0.2);
-  color: #f87171;
-  border: 1px solid rgba(239, 68, 68, 0.4);
+  background: var(--hh-danger-surface, rgba(239, 68, 68, 0.2));
+  color: var(--hh-danger, #f87171);
+  border: 1px solid var(--hh-danger, rgba(239, 68, 68, 0.4));
   letter-spacing: 0.3px;
 }
 
 .caller-phone {
   font-size: 0.78rem;
-  color: #FFDF73;
+  color: var(--hh-gold, #FFDF73);
   margin: 2px 0;
 }
 
@@ -375,7 +376,7 @@ export default {
   align-items: center;
   gap: 4px;
   font-size: 0.7rem;
-  color: #cbd5e1;
+  color: var(--hh-muted, #cbd5e1);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -410,9 +411,9 @@ export default {
 }
 
 .btn-action-secondary {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  color: #f8fafc;
+  background: var(--hh-control, rgba(255, 255, 255, 0.08));
+  border: 1px solid var(--hh-border, rgba(255, 255, 255, 0.18));
+  color: var(--hh-text, #f8fafc);
   font-size: 0.75rem;
   font-weight: 600;
   padding: 7px 10px;
@@ -426,9 +427,9 @@ export default {
 }
 
 .btn-action-secondary:hover {
-  background: rgba(255, 255, 255, 0.14);
-  border-color: #D4AF37;
-  color: #FFDF73;
+  background: var(--hh-inset, rgba(255, 255, 255, 0.14));
+  border-color: var(--hh-accent-border, #D4AF37);
+  color: var(--hh-gold, #FFDF73);
 }
 
 /* Slide Transition */

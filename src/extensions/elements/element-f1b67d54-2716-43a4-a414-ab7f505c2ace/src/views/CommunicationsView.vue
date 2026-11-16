@@ -35,7 +35,7 @@
         </div>
 
         <div class="thread-list">
-          <div v-if="filteredThreads.length === 0" style="padding: 24px; text-align: center; color: #64748b; font-size: 13px;">
+          <div v-if="filteredThreads.length === 0" style="padding: 24px; text-align: center; color: var(--hh-muted, #64748b); font-size: 13px;">
             No conversation threads found.
           </div>
           <div
@@ -152,10 +152,10 @@
             </button>
           </div>
         </div>
-        <div v-if="!activeThread" class="chat-empty" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94a3b8; gap: 12px; padding: 60px 24px; text-align: center;">
+        <div v-if="!activeThread" class="chat-empty" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--hh-muted, #94a3b8); gap: 12px; padding: 60px 24px; text-align: center;">
           <span v-html="icons.mail" style="transform: scale(2); opacity: 0.6; color: #edcf7c; margin-bottom: 8px;"></span>
-          <strong style="color: #f8fafc; font-size: 16px;">No Active Conversation Selected</strong>
-          <p style="margin: 0; font-size: 13px; max-width: 380px; line-height: 1.5; color: #64748b;">Inbound SMS messages, smrtPhone calls, and seller emails from your marketing channels will appear in real-time.</p>
+          <strong style="color: var(--hh-text, #f8fafc); font-size: 16px;">No Active Conversation Selected</strong>
+          <p style="margin: 0; font-size: 13px; max-width: 380px; line-height: 1.5; color: var(--hh-muted, #64748b);">Inbound SMS messages, smrtPhone calls, and seller emails from your marketing channels will appear in real-time.</p>
         </div>
       </div>
 

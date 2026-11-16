@@ -639,9 +639,9 @@ export default {
       return metas[this.activeSectionKey] || metas['dispositions'];
     },
     heroStyle() {
-      const skylineUrl = this.content?.skyline || 'https://u.realgeeks.media/nuviewrealty/Jacksonville_Skyline_Sunset_2.jpeg';
+      const skylineUrl = this.content?.skyline || '/images/jacksonville-skyline-opt.jpg';
       return {
-        backgroundImage: `linear-gradient(90deg, #03172fee 0%, #03172fc9 35%, #06244144 65%, #011a3440), url("${skylineUrl}")`
+        backgroundImage: `var(--hh-hero-scrim, linear-gradient(90deg, #03172fee 0%, #03172fc9 35%, #06244144 65%, #011a3440)), url("${skylineUrl}"), var(--hh-hero-fallback)`
       };
     }
   },
@@ -971,7 +971,7 @@ export default {
   border-bottom: 1px solid rgba(212, 175, 55, 0.2) !important;
   padding: var(--hh-brand-padding, 14px 8px 10px) !important;
   text-align: center !important;
-  background: linear-gradient(180deg, rgba(212, 175, 55, 0.12) 0%, rgba(4, 18, 45, 0.4) 100%) !important;
+  background: var(--hh-nav-brand, linear-gradient(180deg, rgba(212, 175, 55, 0.12), rgba(4, 18, 45, 0.4))) !important;
 }
 
 .brand-icon {
@@ -1075,10 +1075,10 @@ export default {
 }
 
 .sidebar nav a.active {
-  background: linear-gradient(180deg, #744d1e 0%, #3e260c 100%) !important;
+  background: var(--hh-nav-active-surface, linear-gradient(180deg, #744d1e, #3e260c)) !important;
   border: 1.5px solid #dfa745 !important;
   border-radius: 11px !important;
-  color: #ffffff !important;
+  color: var(--hh-nav-active-ink, #ffffff) !important;
   font-weight: 700 !important;
   box-shadow: 
     0 0 14px rgba(223, 167, 69, 0.45),

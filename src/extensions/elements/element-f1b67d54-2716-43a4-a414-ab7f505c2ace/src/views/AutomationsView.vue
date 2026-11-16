@@ -39,9 +39,9 @@
       </div>
 
       <!-- Automations Rules List -->
-      <div v-if="!automations.length" style="text-align: center; padding: 48px 20px; background: rgba(0,0,0,0.2); border-radius: 12px; border: 1px dashed rgba(255,255,255,0.1); margin-bottom: 1.5rem;">
-        <h3 style="color: #f8fafc; font-size: 1.1rem; margin-bottom: 0.5rem;">No active automations</h3>
-        <p style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 1rem;">Create your first wholesale webhook or event trigger to automate inbound leads, skip tracing, and dispo blasts.</p>
+      <div v-if="!automations.length" style="text-align: center; padding: 48px 20px; background: var(--hh-inset, rgba(0,0,0,0.2)); border-radius: 12px; border: 1px dashed var(--hh-border, rgba(255,255,255,0.1)); margin-bottom: 1.5rem;">
+        <h3 style="color: var(--hh-text, #f8fafc); font-size: 1.1rem; margin-bottom: 0.5rem;">No active automations</h3>
+        <p style="color: var(--hh-muted, #94a3b8); font-size: 0.85rem; margin-bottom: 1rem;">Create your first wholesale webhook or event trigger to automate inbound leads, skip tracing, and dispo blasts.</p>
         <button class="btn btn-primary" @click="isAddModalOpen = true">
           <span v-html="icons.plus"></span>
           Create First Automation
@@ -129,7 +129,7 @@
             </thead>
             <tbody>
               <tr v-if="!auditLogs.length">
-                <td colspan="6" style="text-align: center; color: #64748b; padding: 28px;">
+                <td colspan="6" style="text-align: center; color: var(--hh-muted, #64748b); padding: 28px;">
                   No automation events executed yet. Trigger a workflow manually or connect a webhook to stream execution logs in real time.
                 </td>
               </tr>
