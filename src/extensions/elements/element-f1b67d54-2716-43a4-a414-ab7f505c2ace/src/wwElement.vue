@@ -1870,6 +1870,9 @@ export default {
 
 .hushhawk-view-container {
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   animation: hushhawkFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 

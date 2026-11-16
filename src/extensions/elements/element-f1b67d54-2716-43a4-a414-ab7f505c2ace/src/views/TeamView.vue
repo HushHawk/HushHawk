@@ -153,17 +153,27 @@
 
           <!-- Members Table -->
           <div class="table-container">
-            <table class="data-table">
+            <table class="data-table team-roster-table">
+              <colgroup>
+                <col style="width: 170px;">
+                <col style="width: 135px;">
+                <col style="width: 130px;">
+                <col style="width: 180px;">
+                <col style="width: 115px;">
+                <col style="width: 125px;">
+                <col style="width: 80px;">
+                <col style="width: 195px;">
+              </colgroup>
               <thead>
                 <tr>
-                  <th>Team Member</th>
-                  <th>Role / Access Tier</th>
-                  <th>Phone Number</th>
-                  <th>Email Address</th>
-                  <th>Allowed Workspaces</th>
-                  <th>Password Credential</th>
-                  <th>Status</th>
-                  <th class="actions-col">Actions</th>
+                  <th class="col-member">Team Member</th>
+                  <th class="col-role">Role / Tier</th>
+                  <th class="col-phone">Phone Number</th>
+                  <th class="col-email">Email Address</th>
+                  <th class="col-workspaces">Workspaces</th>
+                  <th class="col-password">Password</th>
+                  <th class="col-status">Status</th>
+                  <th class="col-actions actions-col">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -173,7 +183,7 @@
                   :class="{ 'row-selected': selectedMember?.id === member.id }"
                   @click="selectMember(member)"
                 >
-                  <td class="member-cell">
+                  <td class="col-member member-cell">
                     <div class="avatar-badge" :style="{ background: member.avatarBg || '#1e3a5f' }">
                       {{ member.initials || 'TM' }}
                     </div>
@@ -183,33 +193,33 @@
                     </div>
                   </td>
 
-                  <td>
+                  <td class="col-role">
                     <span class="role-pill" :class="getRoleBadgeClass(member.role)">
                       {{ member.roleName || member.role }}
                     </span>
                   </td>
 
-                  <td class="contact-cell">
+                  <td class="col-phone contact-cell">
                     <span class="phone-text font-mono">
                       <span class="mini-icon" v-html="icons.phone"></span>
                       {{ member.phone || '+13866273499' }}
                     </span>
                   </td>
 
-                  <td class="contact-cell">
-                    <span class="email-text">
+                  <td class="col-email contact-cell">
+                    <span class="email-text" :title="member.email">
                       <span class="mini-icon" v-html="icons.mail"></span>
                       {{ member.email }}
                     </span>
                   </td>
 
-                  <td>
+                  <td class="col-workspaces">
                     <span class="permission-count-pill" :class="{ 'full-access': (member.allowedCount >= 20 || member.role === 'SUPER_ADMIN') }">
                       {{ (member.role === 'SUPER_ADMIN' || member.allowedCount >= 23) ? 'All 23 Sections' : `${member.allowedCount || member.permissions?.length || 1} Sections` }}
                     </span>
                   </td>
 
-                  <td class="password-cell" @click.stop>
+                  <td class="col-password password-cell" @click.stop>
                     <div class="password-box">
                       <span v-if="showAllPasswords || visiblePasswords[member.id]" class="password-text font-mono">
                         {{ member.password || '••••••••' }}
@@ -236,14 +246,14 @@
                     </div>
                   </td>
 
-                  <td>
+                  <td class="col-status">
                     <span class="status-indicator" :class="member.status === 'Active' ? 'active' : 'offline'">
                       <span class="status-dot"></span>
                       {{ member.status || 'Active' }}
                     </span>
                   </td>
 
-                  <td class="actions-col" @click.stop>
+                  <td class="col-actions actions-col" @click.stop>
                     <div class="action-buttons-group">
                       <button 
                         type="button" 
@@ -2154,6 +2164,10 @@ export default {
   flex-direction: column;
   gap: 20px;
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding-bottom: 96px; /* Clearance so floating Partner Chat & HawkAI buttons never obscure content */
 }
 
 /* ========================================================================== */
@@ -2167,6 +2181,10 @@ export default {
   border-radius: 10px;
   padding: 6px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  max-width: 100%;
+  overflow-x: auto;
+  box-sizing: border-box;
+  flex-wrap: wrap;
 }
 
 .tab-btn {
@@ -2236,8 +2254,11 @@ export default {
 .tab-pane {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 20px;
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .audit-trail-view {
@@ -2245,6 +2266,9 @@ export default {
   flex-direction: column;
   gap: 24px;
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .roles-management-view {
@@ -2252,6 +2276,9 @@ export default {
   flex-direction: column;
   gap: 24px;
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 /* ========================================================================== */
@@ -2259,21 +2286,24 @@ export default {
 /* ========================================================================== */
 .metrics-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 14px;
   width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .metric-card {
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 18px 20px;
+  padding: 16px 18px;
   background: linear-gradient(135deg, rgba(8, 28, 54, 0.95), rgba(4, 21, 41, 0.98));
   border: 1px solid #1a3c63;
   border-radius: 10px;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
   transition: transform 0.15s ease, border-color 0.15s ease;
+  min-width: 0;
 }
 
 .metric-card:hover {
@@ -2323,6 +2353,7 @@ export default {
 .metric-info {
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .metric-label {
@@ -2331,19 +2362,26 @@ export default {
   color: #8da6c4;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .metric-val {
-  font-size: 19px;
+  font-size: 18px;
   font-weight: 800;
   color: #ffffff;
   line-height: 1.2;
+  white-space: nowrap;
 }
 
 .metric-change {
   font-size: 11px;
   color: #94a3b8;
   margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .metric-change.positive {
@@ -2355,13 +2393,22 @@ export default {
 /* ========================================================================== */
 .content-split {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   gap: 16px;
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .content-split.has-drawer {
-  grid-template-columns: 1fr 380px;
+  grid-template-columns: minmax(0, 1fr) 380px;
+}
+
+@media (max-width: 1200px) {
+  .content-split.has-drawer {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .main-panel {
@@ -2372,6 +2419,11 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .panel-header {
@@ -2380,6 +2432,9 @@ export default {
   align-items: center;
   flex-wrap: wrap;
   gap: 12px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .header-left {
@@ -2387,6 +2442,7 @@ export default {
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
+  min-width: 0;
 }
 
 .header-left h2 {
@@ -2397,6 +2453,7 @@ export default {
   display: flex;
   align-items: center;
   gap: 8px;
+  white-space: nowrap;
 }
 
 .header-desc {
@@ -2415,11 +2472,14 @@ export default {
   color: #38bdf8;
   border: 1px solid rgba(56, 189, 248, 0.3);
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .header-actions {
   display: flex;
   gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
 /* ========================================================================== */
@@ -2434,6 +2494,9 @@ export default {
   background: rgba(5, 17, 33, 0.7);
   border: 1px solid #153250;
   border-radius: 8px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .search-box {
@@ -2444,9 +2507,11 @@ export default {
   border: 1px solid #1d4573;
   border-radius: 6px;
   padding: 6px 10px;
-  flex: 1;
-  min-width: 240px;
+  flex: 1 1 220px;
+  min-width: 200px;
+  max-width: 100%;
   color: #94a3b8;
+  box-sizing: border-box;
 }
 
 .search-box input {
@@ -2471,6 +2536,7 @@ export default {
   display: flex;
   align-items: center;
   gap: 6px;
+  white-space: nowrap;
 }
 
 .filter-group label {
@@ -2502,6 +2568,7 @@ export default {
   font-size: 11.5px;
   font-weight: 600;
   cursor: pointer;
+  white-space: nowrap;
   transition: all 0.2s ease;
 }
 
@@ -2515,32 +2582,55 @@ export default {
 /* Data Tables */
 /* ========================================================================== */
 .table-container {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   overflow-x: auto;
+  overflow-y: visible;
   border: 1px solid #1a3c63;
   border-radius: 8px;
   background: rgba(4, 18, 36, 0.9);
+  box-sizing: border-box;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table-container::-webkit-scrollbar {
+  height: 6px;
+}
+.table-container::-webkit-scrollbar-track {
+  background: rgba(5, 17, 33, 0.8);
+  border-radius: 3px;
+}
+.table-container::-webkit-scrollbar-thumb {
+  background: rgba(212, 168, 83, 0.35);
+  border-radius: 3px;
+}
+.table-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(212, 168, 83, 0.65);
 }
 
 .data-table {
   width: 100%;
+  min-width: 960px;
   border-collapse: collapse;
-  font-size: 13px;
+  font-size: 12.5px;
   text-align: left;
 }
 
 .data-table th {
-  padding: 12px 14px;
-  font-size: 11px;
+  padding: 10px 12px;
+  font-size: 10.5px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   color: #8da6c4;
   background: rgba(8, 28, 54, 0.95);
   border-bottom: 1px solid #1a3c63;
+  white-space: nowrap;
 }
 
 .data-table td {
-  padding: 12px 14px;
+  padding: 10px 12px;
   border-bottom: 1px solid rgba(26, 60, 99, 0.5);
   color: #e2e8f0;
   vertical-align: middle;
@@ -2553,6 +2643,81 @@ export default {
 .data-table tr.row-selected td {
   background: rgba(212, 168, 83, 0.12);
   border-color: rgba(212, 168, 83, 0.3);
+}
+
+.team-roster-table {
+  table-layout: fixed;
+  width: 100%;
+  min-width: 1130px;
+}
+
+/* Column Sizing & Formatting */
+.col-member {
+  width: 170px;
+  min-width: 170px;
+  max-width: 180px;
+}
+
+.col-role {
+  white-space: nowrap;
+  width: 135px;
+  min-width: 135px;
+}
+
+.col-phone {
+  white-space: nowrap;
+  width: 130px;
+  min-width: 130px;
+}
+
+.col-email {
+  width: 180px;
+  min-width: 180px;
+  max-width: 200px;
+}
+
+.col-workspaces {
+  white-space: nowrap;
+  width: 115px;
+  min-width: 115px;
+}
+
+.col-password {
+  white-space: nowrap;
+  width: 125px;
+  min-width: 125px;
+}
+
+.col-status {
+  white-space: nowrap;
+  width: 80px;
+  min-width: 80px;
+}
+
+.actions-col {
+  white-space: nowrap;
+  width: 195px;
+  min-width: 195px;
+  text-align: right;
+  padding-right: 14px;
+  position: sticky;
+  right: 0;
+  background: rgba(8, 28, 54, 0.98);
+  box-shadow: -4px 0 10px rgba(0, 0, 0, 0.4);
+  z-index: 2;
+}
+
+.data-table th.actions-col {
+  z-index: 3;
+  background: rgba(8, 28, 54, 0.98);
+}
+
+.data-table tr:hover td.actions-col {
+  background: rgba(14, 38, 70, 0.98);
+}
+
+.data-table tr.row-selected td.actions-col {
+  background: rgba(28, 48, 76, 0.98);
 }
 
 .member-cell {
@@ -2594,22 +2759,31 @@ export default {
 }
 
 .phone-text {
-  font-size: 12px;
+  font-size: 11.5px;
   color: #38bdf8;
+  white-space: nowrap;
 }
 
 .email-text {
-  font-size: 12px;
+  font-size: 11.5px;
   color: #cbd5e1;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 190px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .role-pill {
   display: inline-block;
-  padding: 3px 9px;
+  padding: 2px 8px;
   border-radius: 12px;
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 600;
   border: 1px solid transparent;
+  white-space: nowrap;
 }
 
 .role-pill.gold {
@@ -2638,13 +2812,14 @@ export default {
 
 .permission-count-pill {
   display: inline-block;
-  padding: 3px 9px;
+  padding: 2px 8px;
   border-radius: 12px;
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 600;
   background: rgba(30, 58, 95, 0.5);
   color: #94a3b8;
   border: 1px solid #1a3c63;
+  white-space: nowrap;
 }
 
 .permission-count-pill.full-access {
@@ -2655,18 +2830,19 @@ export default {
 
 /* Password Cell */
 .password-box {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   background: rgba(10, 25, 47, 0.6);
-  padding: 4px 8px;
+  padding: 3px 7px;
   border-radius: 6px;
   border: 1px solid #1a3c63;
   width: fit-content;
+  white-space: nowrap;
 }
 
 .password-text {
-  font-size: 12px;
+  font-size: 11.5px;
   color: #fbbf24;
   font-weight: 600;
 }
@@ -2674,7 +2850,7 @@ export default {
 .password-hidden {
   font-size: 11px;
   color: #64748b;
-  letter-spacing: 2px;
+  letter-spacing: 1.5px;
 }
 
 .btn-icon-subtle {
@@ -2699,6 +2875,7 @@ export default {
   gap: 6px;
   font-size: 11.5px;
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .status-dot {
@@ -2719,21 +2896,24 @@ export default {
 
 /* Actions Column */
 .action-buttons-group {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 6px;
+  justify-content: flex-end;
+  gap: 4px;
+  flex-wrap: nowrap;
 }
 
 .btn-action-pill {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 4px 9px;
-  border-radius: 6px;
-  font-size: 11px;
+  gap: 3px;
+  padding: 3px 7px;
+  border-radius: 5px;
+  font-size: 10.5px;
   font-weight: 600;
   border: 1px solid transparent;
   cursor: pointer;
+  white-space: nowrap;
   transition: all 0.15s ease;
 }
 
@@ -2760,15 +2940,17 @@ export default {
 }
 
 .btn-icon {
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
+  width: 26px;
+  height: 26px;
+  border-radius: 5px;
   border: 1px solid #1a3c63;
   background: rgba(10, 28, 54, 0.8);
   color: #8da6c4;
-  display: grid;
-  place-items: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
+  flex-shrink: 0;
   transition: all 0.15s ease;
 }
 
@@ -2811,6 +2993,9 @@ export default {
   flex-direction: column;
   overflow: hidden;
   height: fit-content;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .drawer-header {
