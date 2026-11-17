@@ -1286,13 +1286,19 @@ export default {
 
 .pillar-cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
 }
 
-@media (min-width: 1400px) {
+@media (max-width: 1080px) {
   .pillar-cards-grid {
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .pillar-cards-grid {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -1300,10 +1306,10 @@ export default {
   background: linear-gradient(145deg, rgba(8, 39, 74, 0.45) 0%, rgba(4, 24, 45, 0.75) 100%);
   border: 1px solid rgba(212, 175, 55, 0.2);
   border-radius: 10px;
-  padding: 12px 14px;
+  padding: 14px 16px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   position: relative;
   overflow: hidden;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
@@ -1332,12 +1338,14 @@ export default {
   align-items: center;
   justify-content: space-between;
   gap: 8px;
+  flex-wrap: nowrap;
 }
 
 .p-badge-wrap {
   display: flex;
   align-items: center;
   gap: 6px;
+  flex-shrink: 0;
 }
 
 .p-code-badge {
@@ -1361,12 +1369,14 @@ export default {
 
 .p-rate-pill {
   display: inline-flex;
-  align-items: baseline;
+  align-items: center;
   gap: 4px;
   padding: 2px 8px;
   border-radius: 12px;
   background: rgba(34, 197, 94, 0.12);
   border: 1px solid rgba(34, 197, 94, 0.28);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .p-rate-num {
@@ -1380,6 +1390,7 @@ export default {
   font-weight: 700;
   color: #86efac;
   letter-spacing: 0.03em;
+  white-space: nowrap;
 }
 
 .p-title-wrap {

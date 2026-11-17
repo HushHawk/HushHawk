@@ -878,25 +878,38 @@ export default {
 .live-clock {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.45rem;
   font-size: 0.75rem;
-  color: #94a3b8;
-  background: rgba(0, 0, 0, 0.25);
-  padding: 0.3rem 0.65rem;
-  border-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: #f8fafc;
+  background: rgba(4, 20, 38, 0.88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 0.35rem 0.75rem;
+  border-radius: 20px;
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  flex-shrink: 0;
 }
 
 .pulse-dot {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #4ade80;
-  box-shadow: 0 0 6px #4ade80;
+  background: #22c55e;
+  box-shadow: 0 0 8px #22c55e;
+  flex-shrink: 0;
 }
 
 .clock-label {
-  color: #64748b;
+  color: #cbd5e1;
+  font-weight: 600;
+}
+
+.live-clock strong {
+  color: #fde68a;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-shadow: 0 0 6px rgba(253, 230, 138, 0.35);
 }
 
 .btn-topbar-properties {
