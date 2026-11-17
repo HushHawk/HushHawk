@@ -1063,4 +1063,38 @@ input:checked + .toggle-slider:before {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+/* Automations Light Mode Scoped Overrides */
+:root:not(.ww-app-theme-dark) .rule-card {
+  background: var(--hh-panel, #fffefa) !important;
+  border-color: var(--hh-border, #cfc2ab) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+}
+:root:not(.ww-app-theme-dark) .rule-title {
+  color: #18273c !important;
+  font-weight: 700 !important;
+}
+:root:not(.ww-app-theme-dark) .rule-desc {
+  color: #46566b !important;
+}
+:root:not(.ww-app-theme-dark) .rule-category {
+  background: #ede7da !important;
+  color: #765018 !important;
+  border-color: #cfc2ab !important;
+}
+:root:not(.ww-app-theme-dark) .rule-flow {
+  background: #f4eee2 !important;
+  border-color: #cfc2ab !important;
+}
+:root:not(.ww-app-theme-dark) .step-text {
+  color: #18273c !important;
+  font-weight: 600 !important;
+}
+:root:not(.ww-app-theme-dark) .flow-arrow {
+  color: #765018 !important;
+}
+:root:not(.ww-app-theme-dark) .rule-stats {
+  color: #46566b !important;
+  font-weight: 500 !important;
+}
 </style>

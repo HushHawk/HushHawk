@@ -1127,4 +1127,28 @@ export default {
     width: 100%;
   }
 }
+
+/* Contacts Light Mode Scoped Overrides */
+:root:not(.ww-app-theme-dark) .c-name {
+  color: #18273c !important;
+  font-weight: 700 !important;
+}
+:root:not(.ww-app-theme-dark) .c-comp {
+  color: #46566b !important;
+}
+:root:not(.ww-app-theme-dark) .tag-badge {
+  background: #ede7da !important;
+  color: #18273c !important;
+  border: 1px solid #cfc2ab !important;
+  font-weight: 600 !important;
+}
+:root:not(.ww-app-theme-dark) .prop-link-cell {
+  color: #2563eb !important;
+  font-weight: 600 !important;
+}
+:root:not(.ww-app-theme-dark) .contact-avatar {
+  background: #e9dac0 !important;
+  color: #765018 !important;
+  border: 1px solid #d4af37 !important;
+}
 </style>

@@ -1117,4 +1117,36 @@ export default {
   .thread-list { max-height: 240px; }
   .chat-contact-info { flex-basis: 100%; }
 }
+
+/* Communications Light Mode Scoped Overrides */
+:root:not(.ww-app-theme-dark) .thread-card .contact-name {
+  color: #18273c !important;
+  font-weight: 700 !important;
+}
+:root:not(.ww-app-theme-dark) .thread-card .thread-snippet {
+  color: #46566b !important;
+}
+:root:not(.ww-app-theme-dark) .thread-card .prop-link {
+  color: #2563eb !important;
+}
+:root:not(.ww-app-theme-dark) .thread-card .thread-time {
+  color: #64748b !important;
+}
+:root:not(.ww-app-theme-dark) .thread-card.active {
+  background: #f7edd7 !important;
+  border-left-color: #765018 !important;
+}
+:root:not(.ww-app-theme-dark) .thread-card.active .contact-name {
+  color: #18273c !important;
+}
+:root:not(.ww-app-theme-dark) .tpl-btn {
+  background: #ede7da !important;
+  color: #18273c !important;
+  border-color: #cfc2ab !important;
+  font-weight: 600 !important;
+}
+:root:not(.ww-app-theme-dark) .template-label {
+  color: #46566b !important;
+  font-weight: 700 !important;
+}
 </style>

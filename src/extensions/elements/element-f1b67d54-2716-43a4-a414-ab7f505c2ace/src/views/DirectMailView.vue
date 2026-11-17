@@ -2062,4 +2062,27 @@ export default {
   flex-direction: column;
   gap: 8px;
 }
+
+/* Direct Mail Light Mode Scoped Overrides */
+:root:not(.ww-app-theme-dark) .distress-pillar-card {
+  background: var(--hh-panel, #fffefa) !important;
+  border-color: var(--hh-border, #cfc2ab) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05) !important;
+}
+:root:not(.ww-app-theme-dark) .p-pillar-title {
+  color: #18273c !important;
+  font-weight: 800 !important;
+}
+:root:not(.ww-app-theme-dark) .p-metric-cell {
+  background: #ede7da !important;
+  border-color: #cfc2ab !important;
+}
+:root:not(.ww-app-theme-dark) .p-metric-label {
+  color: #46566b !important;
+  font-weight: 600 !important;
+}
+:root:not(.ww-app-theme-dark) .p-metric-value {
+  color: #18273c !important;
+  font-weight: 700 !important;
+}
 </style>
