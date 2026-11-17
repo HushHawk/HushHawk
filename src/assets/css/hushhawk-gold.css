@@ -1081,7 +1081,7 @@
   .vault-explorer-header, .vault-asset-card, .vault-list-layout, .queue-item-card,
   .detail-drawer, .drawer-header, .prop-tabs, .preview-modal-card, .delete-modal-card,
   .modal-card, .acq-app .detail, .acq-app .dialog, .acquisition-layout .detail,
-  .acquisition-layout .activity, .mao-banner, .waterfall-row, .auth-chip
+  .acquisition-layout .activity, .mao-banner, .auth-chip
 ) {
   background: var(--hh-surface);
   color: var(--hh-text);
@@ -1411,3 +1411,390 @@
   border-inline-start-color: var(--hh-blue);
 }
 :root:not(.ww-app-theme-dark) .hushhawk-gold .hushhawk-notif-card:hover { background: var(--hh-inset); }
+
+
+/* ============================================================================
+   COMPREHENSIVE LIGHT MODE CONTRAST & LEGIBILITY ENHANCEMENTS
+   Ensures 100% crisp, dark, perfectly readable text across all views in light mode
+   ============================================================================ */
+
+/* 1. Universal Table & Data Cell Readability in Light Mode */
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.data-table, table) {
+  border-color: var(--hh-border, #cfc2ab) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.data-table, table) thead th {
+  background: var(--hh-panel-header, #fcf8ef) !important;
+  color: var(--hh-text, #18273c) !important;
+  font-weight: 700 !important;
+  border-bottom: 1px solid var(--hh-border, #cfc2ab) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.data-table, table) tbody td {
+  color: var(--hh-text, #18273c) !important;
+  border-bottom: 1px solid rgba(207, 194, 171, 0.4) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.data-table, table) tbody tr:hover td {
+  background: var(--hh-hover, #e7d7b8) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.data-table, table) tbody tr.selected td {
+  background: var(--hh-selected, #f2d694) !important;
+  color: #0f172a !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.data-table, table) tbody tr.selected :is(.c-name, strong, .font-mono, td) {
+  color: #0f172a !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.data-table, table) tbody tr.selected .c-comp {
+  color: #334155 !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.data-table, table) .font-mono {
+  color: var(--hh-text, #18273c) !important;
+}
+
+/* 2. Contacts View Light Mode Fixes */
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.c-name, .contact-name-cell strong, .contact-name) {
+  color: var(--hh-text, #18273c) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.c-comp, .contact-company) {
+  color: var(--hh-muted, #46566b) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .tag-badge {
+  background: #e9e2d5 !important;
+  color: var(--hh-text, #18273c) !important;
+  border: 1px solid var(--hh-border, #cfc2ab) !important;
+  font-weight: 600 !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .prop-link-cell {
+  color: var(--hh-link, #2563eb) !important;
+  font-weight: 600 !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .contact-avatar {
+  background: #e9dac0 !important;
+  color: var(--hh-gold, #765018) !important;
+  border: 1px solid #d4af37 !important;
+}
+
+/* 3. Direct Mail View Light Mode Fixes (Distress Pillar Cards & Mail Batches) */
+:root:not(.ww-app-theme-dark) .hushhawk-gold .pillar-strip-panel {
+  background: var(--hh-panel, #fffefa) !important;
+  border-color: var(--hh-border, #cfc2ab) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .distress-pillar-card {
+  background: var(--hh-control, #fffdfa) !important;
+  border-color: var(--hh-border, #cfc2ab) !important;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.p-pillar-title, .tracking-pillar-name) {
+  color: var(--hh-text, #18273c) !important;
+  font-weight: 700 !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .p-code-badge {
+  background: #f7edd7 !important;
+  color: var(--hh-gold, #765018) !important;
+  border-color: #d4af37 !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .p-rate-pill {
+  background: #e1f1e8 !important;
+  border-color: #b3d7c3 !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .p-rate-num {
+  color: #15803d !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .p-rate-lbl {
+  color: var(--hh-muted, #46566b) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .p-metric-cell {
+  background: var(--hh-subtle, #ede7da) !important;
+  border-color: var(--hh-border, #cfc2ab) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .p-metric-label {
+  color: var(--hh-muted, #46566b) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .p-metric-value {
+  color: var(--hh-text, #18273c) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .p-metric-value.text-cyan {
+  color: #0284c7 !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .p-metric-value.text-green {
+  color: #16a34a !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .p-metric-value.text-gold {
+  color: var(--hh-gold, #765018) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.imb-progression-panel, .scan-dossier-box) {
+  background: var(--hh-control, #fffdfa) !important;
+  border-color: var(--hh-border, #cfc2ab) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.imb-header h4, .dossier-line strong, .scan-pillar-badge) {
+  color: var(--hh-text, #18273c) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .dossier-line .d-label {
+  color: var(--hh-muted, #46566b) !important;
+}
+
+/* 4. Deal Analyzer View Light Mode Fixes (Underwriting Waterfall & Strategies) */
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.waterfall-card, .strategies-card, .comps-card) {
+  background: var(--hh-panel, #fffefa) !important;
+  border-color: var(--hh-border, #cfc2ab) !important;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.waterfall-card h4, .strategies-card h4, .comps-card h4) {
+  color: var(--hh-gold, #765018) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .waterfall-row {
+  background: transparent !important;
+  color: var(--hh-text, #18273c) !important;
+  border-bottom: 1px solid rgba(207, 194, 171, 0.4) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .waterfall-row :is(.w-k, .w-v) {
+  color: var(--hh-text, #18273c) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .waterfall-row.text-red :is(.w-k, .w-v) {
+  color: var(--hh-danger, #b91c1c) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .waterfall-row.text-gold :is(.w-k, .w-v) {
+  color: var(--hh-gold, #765018) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .waterfall-row.subtotal {
+  border-top: 1px dashed var(--hh-border, #cfc2ab) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .waterfall-row.grand-total {
+  border-top: 2px solid var(--hh-gold, #765018) !important;
+  background: var(--hh-subtle, #ede7da) !important;
+  padding: 6px 10px !important;
+  border-radius: 6px !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .strat-box {
+  background: var(--hh-control, #fffdfa) !important;
+  border-color: var(--hh-border, #cfc2ab) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .strat-box.highlight {
+  background: #fdf8ed !important;
+  border-color: #d4af37 !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .strat-title {
+  color: var(--hh-text, #18273c) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .strat-metrics {
+  color: var(--hh-muted, #46566b) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .strat-metrics strong {
+  color: var(--hh-text, #18273c) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .comp-item {
+  background: var(--hh-control, #fffdfa) !important;
+  border-color: var(--hh-border, #cfc2ab) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .comp-info strong {
+  color: var(--hh-text, #18273c) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .comp-specs {
+  color: var(--hh-muted, #46566b) !important;
+}
+
+/* 5. Communications View Light Mode Fixes (Omnichannel Threads & Chat) */
+:root:not(.ww-app-theme-dark) .hushhawk-gold .threads-panel {
+  background: var(--hh-panel, #fffefa) !important;
+  border-color: var(--hh-border, #cfc2ab) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .thread-card {
+  border-bottom: 1px solid var(--hh-border, #cfc2ab) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .thread-card:hover {
+  background: var(--hh-hover, #e7d7b8) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .thread-card.active {
+  background: var(--hh-selected, #f2d694) !important;
+  border-left: 3px solid var(--hh-gold, #765018) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .thread-card .contact-name {
+  color: var(--hh-text, #18273c) !important;
+  font-weight: 700 !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .thread-card.active .contact-name {
+  color: #0f172a !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .thread-card .thread-snippet {
+  color: var(--hh-muted, #46566b) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .thread-card.active .thread-snippet {
+  color: #334155 !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .thread-card .prop-link {
+  color: var(--hh-link, #2563eb) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .thread-card .thread-time {
+  color: var(--hh-muted, #46566b) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.chat-panel, .lead-details-panel) {
+  background: var(--hh-panel, #fffefa) !important;
+  border-color: var(--hh-border, #cfc2ab) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .chat-header {
+  background: var(--hh-panel-header, #fcf8ef) !important;
+  border-color: var(--hh-border, #cfc2ab) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .chat-header h3 {
+  color: var(--hh-text, #18273c) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .message-row.incoming .message-bubble {
+  background: var(--hh-subtle, #ede7da) !important;
+  color: var(--hh-text, #18273c) !important;
+  border: 1px solid var(--hh-border, #cfc2ab) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .message-row.outgoing .message-bubble {
+  background: #dbeafe !important;
+  color: #1e3a8a !important;
+  border: 1px solid #93c5fd !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .message-bubble .bubble-text {
+  color: inherit !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .message-bubble .sender-name {
+  color: var(--hh-gold, #765018) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .message-bubble .msg-time {
+  color: var(--hh-muted, #46566b) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.templates-bar, .templates-label) {
+  color: var(--hh-muted, #46566b) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .template-btn {
+  background: var(--hh-control, #fffdfa) !important;
+  color: var(--hh-text, #18273c) !important;
+  border: 1px solid var(--hh-border, #cfc2ab) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .template-btn:hover {
+  background: var(--hh-hover, #e7d7b8) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .lead-details-panel :is(h3, h4, strong, .d-val) {
+  color: var(--hh-text, #18273c) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .lead-details-panel :is(.d-lbl, small, p) {
+  color: var(--hh-muted, #46566b) !important;
+}
+
+/* 6. Automations View Light Mode Fixes */
+:root:not(.ww-app-theme-dark) .hushhawk-gold .rule-card {
+  background: var(--hh-control, #fffdfa) !important;
+  border-color: var(--hh-border, #cfc2ab) !important;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .rule-name-row h4 {
+  color: var(--hh-text, #18273c) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .rule-desc {
+  color: var(--hh-muted, #46566b) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .rule-category {
+  background: var(--hh-inset, #ede7da) !important;
+  color: var(--hh-text, #18273c) !important;
+  border: 1px solid var(--hh-border, #cfc2ab) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .rule-flow {
+  background: var(--hh-inset, #ede7da) !important;
+  border-color: var(--hh-border, #cfc2ab) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .rule-flow .step-text {
+  color: var(--hh-text, #18273c) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .rule-stats {
+  color: var(--hh-muted, #46566b) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .rule-stats strong {
+  color: var(--hh-text, #18273c) !important;
+}
+
+/* 7. General Views (Tasks, Calendar, Facebook Leads, Skip Tracing, Marketing, Settings, Vault) */
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.task-item, .task-card, .calendar-event, .fb-lead-card, .lead-row) {
+  background: var(--hh-control, #fffdfa) !important;
+  border-color: var(--hh-border, #cfc2ab) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(
+  .task-title, .event-title, .fb-lead-name, .campaign-title, .buyer-name,
+  .contract-title, .dispo-deal-name, .county-parcel-id, .skip-person-name
+) {
+  color: var(--hh-text, #18273c) !important;
+  font-weight: 700 !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(
+  .task-meta, .event-meta, .fb-lead-meta, .campaign-meta, .buyer-meta,
+  .contract-meta, .dispo-meta, .county-meta, .skip-meta, .text-dim
+) {
+  color: var(--hh-muted, #46566b) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.status-chip, .badge, .chip) {
+  font-weight: 600 !important;
+}

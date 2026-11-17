@@ -528,19 +528,19 @@ export default {
   align-items: flex-start;
   gap: 0.75rem;
   padding: 0.85rem 1rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid var(--hh-border, rgba(255, 255, 255, 0.04));
   cursor: pointer;
   transition: all 0.15s ease;
   position: relative;
 }
 
 .thread-card:hover {
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--hh-hover, rgba(255, 255, 255, 0.03));
 }
 
 .thread-card.active {
-  background: rgba(237, 207, 124, 0.08);
-  border-left: 3px solid #edcf7c;
+  background: var(--hh-selected, rgba(237, 207, 124, 0.08));
+  border-left: 3px solid var(--hh-gold, #edcf7c);
 }
 
 .thread-avatar {
@@ -582,18 +582,22 @@ export default {
 }
 
 .contact-name {
-  color: #f8fafc;
+  color: var(--hh-text, #f8fafc);
   font-size: 0.85rem;
+}
+
+.thread-card.active .contact-name {
+  color: #0f172a;
 }
 
 .thread-time {
   font-size: 0.7rem;
-  color: #64748b;
+  color: var(--hh-muted, #64748b);
 }
 
 .prop-link {
   font-size: 0.7rem;
-  color: #94a3b8;
+  color: var(--hh-link, #94a3b8);
   display: flex;
   align-items: center;
   gap: 0.2rem;
@@ -604,11 +608,15 @@ export default {
 
 .thread-snippet {
   font-size: 0.75rem;
-  color: #cbd5e1;
+  color: var(--hh-muted, #cbd5e1);
   margin: 0.2rem 0 0 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.thread-card.active .thread-snippet {
+  color: #334155;
 }
 
 .unread-dot {

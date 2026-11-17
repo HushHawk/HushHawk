@@ -622,8 +622,8 @@ export default {
 }
 
 .rule-card {
-  background: rgba(0, 0, 0, 0.25);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--hh-control, rgba(0, 0, 0, 0.25));
+  border: 1px solid var(--hh-border, rgba(255, 255, 255, 0.06));
   border-radius: 10px;
   padding: 1.15rem;
   display: flex;
@@ -633,7 +633,7 @@ export default {
 }
 
 .rule-card:hover {
-  border-color: rgba(237, 207, 124, 0.25);
+  border-color: rgba(237, 207, 124, 0.35);
 }
 
 .rule-card.inactive {
@@ -690,7 +690,7 @@ export default {
 
 .rule-name-row h4 {
   font-size: 0.95rem;
-  color: #f8fafc;
+  color: var(--hh-text, #f8fafc);
   margin: 0;
 }
 
@@ -698,13 +698,14 @@ export default {
   font-size: 0.7rem;
   padding: 0.15rem 0.45rem;
   border-radius: 4px;
-  background: rgba(255, 255, 255, 0.06);
-  color: #94a3b8;
+  background: var(--hh-inset, rgba(255, 255, 255, 0.06));
+  color: var(--hh-muted, #94a3b8);
+  border: 1px solid var(--hh-border, transparent);
 }
 
 .rule-desc {
   font-size: 0.8rem;
-  color: #94a3b8;
+  color: var(--hh-muted, #94a3b8);
   margin: 0.25rem 0 0 0;
   line-height: 1.35;
 }
@@ -713,10 +714,10 @@ export default {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  background: rgba(0, 0, 0, 0.3);
+  background: var(--hh-inset, rgba(0, 0, 0, 0.3));
   padding: 0.65rem 0.85rem;
   border-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--hh-border, rgba(255, 255, 255, 0.04));
 }
 
 .flow-step {
@@ -745,7 +746,7 @@ export default {
 
 .step-text {
   font-size: 0.8rem;
-  color: #cbd5e1;
+  color: var(--hh-text, #cbd5e1);
 }
 
 .flow-arrow {
@@ -861,17 +862,17 @@ input:checked + .toggle-slider:before {
 }
 
 .data-table th {
-  background: rgba(255, 255, 255, 0.03);
-  color: #94a3b8;
+  background: var(--hh-panel-header, rgba(255, 255, 255, 0.03));
+  color: var(--hh-muted, #94a3b8);
   padding: 0.65rem 0.75rem;
   font-weight: 600;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid var(--hh-border, rgba(255, 255, 255, 0.08));
 }
 
 .data-table td {
   padding: 0.65rem 0.75rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-  color: #e2e8f0;
+  border-bottom: 1px solid var(--hh-border, rgba(255, 255, 255, 0.04));
+  color: var(--hh-text, #e2e8f0);
 }
 
 .status-chip.success {

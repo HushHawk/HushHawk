@@ -761,8 +761,8 @@ export default {
 }
 
 .waterfall-card, .strategies-card, .comps-card {
-  background: #07192d;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--hh-surface, #07192d);
+  border: 1px solid var(--hh-border, rgba(255, 255, 255, 0.08));
   border-radius: 12px;
   padding: 1.25rem;
   display: flex;
@@ -772,7 +772,7 @@ export default {
 
 .waterfall-card h4, .strategies-card h4, .comps-card h4 {
   font-size: 0.85rem;
-  color: #edcf7c;
+  color: var(--hh-gold, #edcf7c);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin: 0;
@@ -783,10 +783,11 @@ export default {
   justify-content: space-between;
   font-size: 0.8rem;
   padding: 0.25rem 0;
+  color: var(--hh-text, inherit);
 }
 
 .waterfall-row.subtotal {
-  border-top: 1px dashed rgba(255, 255, 255, 0.1);
+  border-top: 1px dashed var(--hh-border, rgba(255, 255, 255, 0.1));
   padding-top: 0.5rem;
   font-weight: 600;
 }
@@ -805,8 +806,8 @@ export default {
 }
 
 .strat-box {
-  background: rgba(0, 0, 0, 0.25);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--hh-control, rgba(0, 0, 0, 0.25));
+  border: 1px solid var(--hh-border, rgba(255, 255, 255, 0.06));
   border-radius: 8px;
   padding: 0.85rem;
   display: flex;
@@ -828,7 +829,7 @@ export default {
 .strat-title {
   font-size: 0.75rem;
   font-weight: 600;
-  color: #f8fafc;
+  color: var(--hh-text, #f8fafc);
 }
 
 .strat-badge {

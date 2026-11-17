@@ -714,26 +714,26 @@ export default {
 }
 
 .data-table th {
-  background: rgba(255, 255, 255, 0.03);
-  color: #94a3b8;
+  background: var(--hh-panel-header, rgba(255, 255, 255, 0.03));
+  color: var(--hh-muted, #94a3b8);
   padding: 0.75rem 0.9rem;
   font-weight: 600;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid var(--hh-border, rgba(255, 255, 255, 0.08));
 }
 
 .data-table td {
   padding: 0.75rem 0.9rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-  color: #e2e8f0;
+  border-bottom: 1px solid var(--hh-border, rgba(255, 255, 255, 0.04));
+  color: var(--hh-text, #e2e8f0);
 }
 
 .data-table tr:hover {
-  background: rgba(237, 207, 124, 0.04);
+  background: var(--hh-hover, rgba(237, 207, 124, 0.04));
   cursor: pointer;
 }
 
 .data-table tr.selected {
-  background: rgba(237, 207, 124, 0.08);
+  background: var(--hh-selected, rgba(237, 207, 124, 0.08));
   border-left: 3px solid #edcf7c;
 }
 
@@ -748,7 +748,7 @@ export default {
   height: 32px;
   border-radius: 50%;
   background: rgba(237, 207, 124, 0.15);
-  color: #edcf7c;
+  color: var(--hh-gold, #edcf7c);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -757,13 +757,13 @@ export default {
 }
 
 .c-name {
-  color: #f8fafc;
+  color: var(--hh-text, #f8fafc);
   display: block;
 }
 
 .c-comp {
   font-size: 0.7rem;
-  color: #94a3b8;
+  color: var(--hh-muted, #94a3b8);
 }
 
 .role-pill {
@@ -806,9 +806,9 @@ export default {
 }
 
 .tag-badge {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: #cbd5e1;
+  background: var(--hh-subtle, rgba(255, 255, 255, 0.06));
+  border: 1px solid var(--hh-border, rgba(255, 255, 255, 0.08));
+  color: var(--hh-text, #cbd5e1);
   padding: 0.1rem 0.4rem;
   border-radius: 4px;
   font-size: 0.65rem;
@@ -816,7 +816,7 @@ export default {
 
 .prop-link-cell {
   font-size: 0.75rem;
-  color: #cbd5e1;
+  color: var(--hh-link, #38bdf8);
   display: flex;
   align-items: center;
   gap: 0.25rem;

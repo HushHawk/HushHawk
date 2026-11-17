@@ -1391,7 +1391,7 @@ export default {
 .p-pillar-title {
   font-size: 0.88rem;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--hh-text, #ffffff);
   margin: 0;
   line-height: 1.25;
   white-space: normal;
@@ -1406,8 +1406,8 @@ export default {
 }
 
 .p-metric-cell {
-  background: rgba(4, 24, 45, 0.65);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--hh-control, rgba(4, 24, 45, 0.65));
+  border: 1px solid var(--hh-border, rgba(255, 255, 255, 0.05));
   border-radius: 6px;
   padding: 6px 8px;
   display: flex;
@@ -1420,13 +1420,13 @@ export default {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #94a3b8;
+  color: var(--hh-muted, #94a3b8);
 }
 
 .p-metric-value {
   font-size: 0.95rem;
   font-weight: 800;
-  color: #f8fafc;
+  color: var(--hh-text, #f8fafc);
   line-height: 1.1;
 }
 
