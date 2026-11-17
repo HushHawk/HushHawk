@@ -4748,14 +4748,17 @@ apiRouter.get('/county-records', async (req, res) => {
                     p.assessed_value, p.legal_description, p.property_type, p.created_at,
                     c.county_code, c.county_name,
                     per.full_name AS owner_name,
-                    per.phone_primary AS owner_phone,
-                    per.email_primary AS owner_email,
-                    per.owner_type,
-                    l.distress_pillar, l.delinquent_amount, l.last_filing_date, l.skip_status
+                    per.primary_phone AS owner_phone,
+                    per.primary_email AS owner_email,
+                    per.mailing_address AS owner_mailing_address,
+                    pe.pillar_code AS distress_pillar,
+                    pe.filing_amount AS delinquent_amount,
+                    pe.event_date AS last_filing_date
                 FROM core.properties p
                 LEFT JOIN ref.counties c ON p.county_id = c.county_id
                 LEFT JOIN core.leads l ON l.property_id = p.property_id
-                LEFT JOIN core.people per ON l.seller_id = per.person_id
+                LEFT JOIN core.people per ON l.person_id = per.person_id
+                LEFT JOIN core.pillar_events pe ON pe.property_id = p.property_id
                 ORDER BY p.created_at DESC
             `);
             if (rows && rows.length > 0) {
@@ -4770,11 +4773,25 @@ apiRouter.get('/county-records', async (req, res) => {
                         const assessed = Number(r.assessed_value) || 0;
                         const estValue = assessed > 0 ? Math.round(assessed * 1.25) : 0;
                         const equity = assessed > 0 ? Math.round(estValue * 0.45) : 0;
-                        const countyName = r.county_name || (r.county_code === 'POL' ? 'Polk' : (r.county_code === 'CLA' ? 'Clay' : 'Duval'));
+                        const countyName = r.county_name || (r.county_code === 'POL' ? 'Polk County' : (r.county_code === 'CLA' ? 'Clay County' : 'Duval County'));
                         const ownerName = r.owner_name || null;
-                        const ownerType = r.owner_type || (ownerName ? 'Owner of Record' : null);
-                        const PILLAR_LABELS = { FC: 'Foreclosure', PFC: 'Pre-Foreclosure', TAX: 'Tax Delinquent', CODE: 'Code Violation', PRB: 'Probate / Estate', VAC: 'Vacant Property', ML: 'Municipal Lien', EVICT: 'Eviction / Landlord', ABS: 'Absentee High Equity' };
+                        const PILLAR_LABELS = {
+                            FC: 'Foreclosure',
+                            PFC: 'Pre-Foreclosure',
+                            TAX: 'Tax Delinquency',
+                            CODE: 'Code Violation',
+                            PRB: 'Probate / Estate',
+                            VAC: 'Vacant Property',
+                            ML: 'Municipal Lien',
+                            EVICT: 'Eviction / Landlord',
+                            ABS: 'Absentee High Equity'
+                        };
                         const distressLabel = r.distress_pillar ? (PILLAR_LABELS[r.distress_pillar] || r.distress_pillar) : null;
+                        const tags = [];
+                        if (ownerName) tags.push('Absentee Owner');
+                        if (equity > 50000) tags.push('High Equity');
+                        if (distressLabel) tags.push(distressLabel);
+
                         return {
                             id: r.property_id || `rec-${idx}`,
                             crownKey: `${r.county_code || 'DUV'}-${r.parcel_raw || 'PARCEL-' + idx}`,
@@ -4784,7 +4801,8 @@ apiRouter.get('/county-records', async (req, res) => {
                             county: countyName,
                             zip: r.postal_code || '',
                             owner: ownerName,
-                            ownerType: ownerType,
+                            ownerType: ownerName ? 'Absentee Owner' : null,
+                            mailingAddress: r.owner_mailing_address || null,
                             assessedValue: assessed || null,
                             estimatedValue: estValue || null,
                             equity: equity || null,
@@ -4794,9 +4812,9 @@ apiRouter.get('/county-records', async (req, res) => {
                             distressClass: r.distress_pillar ? `distress-${r.distress_pillar.toLowerCase()}` : 'distress-tax',
                             delinquentAmount: r.delinquent_amount ? Number(r.delinquent_amount) : null,
                             lastFiling: r.last_filing_date ? new Date(r.last_filing_date).toISOString().split('T')[0] : null,
-                            skipStatus: r.skip_status || null,
+                            skipStatus: r.owner_phone ? 'Enriched' : 'Unskipped',
                             status: 'Active Record',
-                            tags: [ownerType, distressLabel].filter(Boolean),
+                            tags: tags,
                             phone: r.owner_phone || null,
                             email: r.owner_email || null
                         };
