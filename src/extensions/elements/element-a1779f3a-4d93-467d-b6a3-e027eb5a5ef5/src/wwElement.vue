@@ -768,30 +768,9 @@
     <section class="jax-market-movement-bar">
       <div class="jmm-left">
         <span class="jmm-bar-icon" v-html="icons.chart"></span>
-        <strong>Jacksonville Market Snapshot (Illustrative)</strong>
+        <strong>Jacksonville Market Intelligence</strong>
       </div>
-      <div class="jmm-stats">
-        <div class="jmm-stat-item">
-          <span class="lbl"><span class="tiny-svg" v-html="icons.house"></span> Median Sale Price</span>
-          <strong>$402,000</strong>
-          <span class="jmm-up">▲+3.1%</span>
-        </div>
-        <div class="jmm-stat-item">
-          <span class="lbl"><span class="tiny-svg" v-html="icons.layers"></span> Median Rent</span>
-          <strong>$2,995</strong>
-          <span class="jmm-up">▲+2.4%</span>
-        </div>
-        <div class="jmm-stat-item">
-          <span class="lbl"><span class="tiny-svg" v-html="icons.house"></span> Inventory</span>
-          <strong>3,842</strong>
-          <span class="jmm-up">▲+6.7%</span>
-        </div>
-        <div class="jmm-stat-item">
-          <span class="lbl"><span class="tiny-svg" v-html="icons.clock"></span> Days on Market</span>
-          <strong>38</strong>
-          <span class="jmm-down">▼-4 days</span>
-        </div>
-      </div>
+      <p>Local pricing and inventory feed unavailable.</p>
       <a href="#market-intel" @click="guard" class="btn-market-intel">View Market Intel →</a>
     </section>
   <section class="pulse"><div class="pulse-heading"><strong><i></i> CAPITAL DESK</strong><div class="feed-tabs"><button :class="{active:feedMode==='deals'}" @click="!isEditing&&(feedMode='deals')">Deal Pulse</button><button :class="{active:feedMode==='markets'}" @click="!isEditing&&(feedMode='markets')">Market Watch</button></div><span v-if="feedMode==='deals'">LIVE CRM SIGNALS</span><button v-if="feedMode==='deals'" @click="!isEditing&&(paused=!paused)" :aria-pressed="paused">{{paused?'Resume':'Pause'}}</button></div><div class="tape-window" v-show="feedMode==='deals'"><div class="tape" :class="{paused}"><span v-for="(item,i) in signalTape" :key="i" :aria-hidden="i>=signalsCount"><b>{{item.code}}</b> {{item.label}} <strong>{{item.value}}</strong><em>▲ {{item.change}}</em></span></div></div></section>

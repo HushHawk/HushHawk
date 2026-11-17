@@ -73,65 +73,16 @@ export default {
     content: { type: Object, default: () => ({}) }
   },
   data() {
-    let hasSession = false;
-    if (typeof window !== 'undefined') {
-      hasSession = !!(
-        window.sessionStorage.getItem('hushhawk_session') ||
-        window.localStorage.getItem('hushhawk_session') ||
-        window.localStorage.getItem('ww-auth-session')
-      );
-    }
     return {
-      isLoggedIn: hasSession,
+      isLoggedIn: false,
+      checkingSession: typeof window !== 'undefined' && !!window.localStorage.getItem('hushhawk_auth_token'),
       isRedirecting: false,
       email: '',
       password: '',
       rememberMe: true,
       showPassword: false,
       isLoading: false,
-      errorMessage: '',
-      authorizedCredentials: [
-        {
-          badge: 'MAIN ADMIN',
-          roleTitle: 'Master Administrator',
-          name: 'Main Administrator',
-          email: 'admin@hushhawk.com',
-          password: 'admin',
-          role: 'System Superadmin & Managing Partner'
-        },
-        {
-          badge: 'OWNER',
-          roleTitle: 'Owner & Relation Manager',
-          name: 'Darren Richardson',
-          email: 'team@elitehomes1.com',
-          password: 'admin',
-          role: 'Owner & Executive Relations Lead'
-        },
-        {
-          badge: 'ACQUISITIONS',
-          roleTitle: 'Managing Partner',
-          name: 'Dejon Ellis',
-          email: 'ellis@elitehomes1.com',
-          password: 'admin',
-          role: 'Managing Partner & Acquisitions Lead'
-        },
-        {
-          badge: 'DISPOSITIONS',
-          roleTitle: 'Dispositions Lead',
-          name: 'Alex Richard',
-          email: 'alex.richard@elitehomes1.com',
-          password: 'admin',
-          role: 'Managing Partner & Dispositions Desk'
-        },
-        {
-          badge: 'INVESTMENT',
-          roleTitle: 'Chief Investment Officer',
-          name: 'Waldo Ellis',
-          email: 'waldo.ellis@elitehomes1.com',
-          password: 'admin',
-          role: 'Chief Investment Officer & Underwriting'
-        }
-      ]
+      errorMessage: ''
     };
   },
   computed: {
@@ -141,28 +92,21 @@ export default {
       return path.includes('/login') || path.includes('/signup') || path.includes('/forgot-password');
     },
     showLoginUI() {
-      if (this.isRedirecting) return false;
-      // If user is on an auth route, show login form unless already logged in
-      if (this.isAuthRoute) {
-        return !this.isLoggedIn;
-      }
-      // On all other routes (root '/', '/properties', etc.), require authentication
-      return !this.isLoggedIn;
+      return !this.isRedirecting && !this.checkingSession && !this.isLoggedIn;
     }
   },
-  mounted() {
+  async mounted() {
     if (typeof window !== 'undefined') {
-      const hasSession = !!(
-        window.sessionStorage.getItem('hushhawk_session') ||
-        window.localStorage.getItem('hushhawk_session') ||
-        window.localStorage.getItem('ww-auth-session')
-      );
-      this.isLoggedIn = hasSession;
-      window.__HUSHHAWK_AUTHENTICATED__ = hasSession;
-      window.dispatchEvent(new CustomEvent('hushhawk-auth-change', { detail: { authenticated: hasSession } }));
-
       // Global logout helper callable anytime
       window.hushhawkLogout = () => {
+        const token = window.localStorage.getItem('hushhawk_auth_token');
+        if (token) {
+          fetch('/api/v1/auth/logout', {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${token}` },
+            keepalive: true
+          }).catch(() => {});
+        }
         window.__HUSHHAWK_AUTHENTICATED__ = false;
         window.sessionStorage.removeItem('hushhawk_session');
         window.localStorage.removeItem('hushhawk_session');
@@ -172,7 +116,34 @@ export default {
         window.location.href = '/login';
       };
 
-      // If user visits /login or any auth route and is ALREADY authenticated, forward into dashboard immediately
+      const token = window.localStorage.getItem('hushhawk_auth_token');
+      if (token) {
+        try {
+          const response = await fetch('/api/auth/get-session', {
+            headers: { Authorization: `Bearer ${token}` },
+            cache: 'no-store',
+            signal: AbortSignal.timeout(10000)
+          });
+          if (!response.ok) throw new Error('Could not verify the session.');
+          const session = await response.json();
+          if (session?.user) {
+            window.sessionStorage.setItem('hushhawk_session', JSON.stringify(session.user));
+            window.localStorage.setItem('hushhawk_session', JSON.stringify(session.user));
+            this.isLoggedIn = true;
+          } else {
+            window.sessionStorage.removeItem('hushhawk_session');
+            window.localStorage.removeItem('hushhawk_session');
+            window.localStorage.removeItem('ww-auth-session');
+            window.localStorage.removeItem('hushhawk_auth_token');
+          }
+        } catch {
+          this.errorMessage = 'Could not verify your session. Please sign in again.';
+        } finally {
+          this.checkingSession = false;
+        }
+      }
+      window.__HUSHHAWK_AUTHENTICATED__ = this.isLoggedIn;
+      window.dispatchEvent(new CustomEvent('hushhawk-auth-change', { detail: { authenticated: this.isLoggedIn } }));
       if (this.isAuthRoute && this.isLoggedIn) {
         this.isRedirecting = true;
         window.location.replace('/');
@@ -226,45 +197,12 @@ export default {
           authData = null;
         }
 
-        let activeUser;
-        let token = 'hh_token_live_' + Date.now();
-
-        if (authRes.ok && authData && authData.ok && authData.user) {
-          activeUser = {
-            id: authData.user.id || authData.user.user_id,
-            user_id: authData.user.user_id || authData.user.id,
-            name: authData.user.name,
-            email: authData.user.email,
-            phone: authData.user.phone || '',
-            role: authData.user.role,
-            roleName: authData.user.roleName || authData.user.role,
-            status: authData.user.status,
-            isAdmin: authData.user.isAdmin,
-            permissions: authData.user.permissions,
-            authenticatedAt: authData.user.authenticatedAt || new Date().toISOString()
-          };
-          if (authData.token) token = authData.token;
-        } else if (authData && authData.error) {
-          this.errorMessage = authData.error;
-          this.isLoading = false;
+        if (!authRes.ok || !authData?.ok || !authData.user || !/^[a-f0-9]{64}$/.test(authData.token || '')) {
+          this.errorMessage = authData?.error || 'Sign-in is temporarily unavailable. Please try again.';
           return;
-        } else {
-          // Fallback if backend offline
-          const matched = this.authorizedCredentials.find(c => c.email.toLowerCase() === inputEmail);
-          activeUser = matched ? {
-            id: 'u-admin-1',
-            name: matched.name,
-            email: matched.email,
-            role: matched.role,
-            authenticatedAt: new Date().toISOString()
-          } : {
-            id: 'u-admin-1',
-            name: inputEmail.includes('@') ? inputEmail.split('@')[0].toUpperCase() : 'MAIN ADMIN',
-            email: inputEmail,
-            role: 'Authorized Command Operator',
-            authenticatedAt: new Date().toISOString()
-          };
         }
+        const activeUser = authData.user;
+        const token = authData.token;
 
         const sessionObj = {
           token,

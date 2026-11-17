@@ -182,10 +182,10 @@ export class StorageService {
     /**
      * Direct upload of server-side generated buffer (e.g. PDF contracts, exports)
      */
-    static async uploadBuffer({ objectKey, buffer, contentType = 'application/octet-stream', metadata = {} }) {
+    static async uploadBuffer({ objectKey, buffer, contentType = 'application/octet-stream', metadata = {}, requireStorage = false }) {
         if (!objectKey || !buffer) throw new Error('Object key and buffer are required for upload');
 
-        if (HAS_AWS_CREDS) {
+        if (HAS_AWS_CREDS || requireStorage) {
             const command = new PutObjectCommand({
                 Bucket: AWS_S3_BUCKET,
                 Key: objectKey,

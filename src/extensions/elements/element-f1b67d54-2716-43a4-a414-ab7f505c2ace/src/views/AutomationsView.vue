@@ -27,27 +27,32 @@
           <span class="badge-count">{{ activeRulesCount }} active / {{ automations.length }} total rules</span>
         </div>
         <div class="header-actions">
-          <button class="btn btn-secondary" :disabled="isLoading || isRunning" @click="testActiveTrigger">
+          <button class="btn btn-secondary" :disabled="isLoading || isRunning" @click="loadAutomations()">
             <span v-html="icons.refresh"></span>
-            {{ isRunning ? 'Evaluating...' : 'Test Trigger' }}
+            Refresh
           </button>
-          <button class="btn btn-primary" @click="isAddModalOpen = true">
+          <button class="btn btn-primary" :disabled="!!loadError || !hasLoaded" @click="openRule()">
             <span v-html="icons.plus"></span>
             Create Automation
           </button>
         </div>
       </div>
 
+      <p v-if="loadError" class="automation-notice" role="alert">{{ loadError }}</p>
+      <p v-if="legacyRules.length" class="automation-notice">
+        Review these older rules and recreate any you still need with a supported action. {{ legacyRules.join(', ') }}
+      </p>
+
       <!-- Automations Rules List -->
-      <div v-if="!automations.length" style="text-align: center; padding: 48px 20px; background: var(--hh-inset, rgba(0,0,0,0.2)); border-radius: 12px; border: 1px dashed var(--hh-border, rgba(255,255,255,0.1)); margin-bottom: 1.5rem;">
+      <div v-if="!automations.length && hasLoaded && !loadError" style="text-align: center; padding: 48px 20px; background: var(--hh-inset, rgba(0,0,0,0.2)); border-radius: 12px; border: 1px dashed var(--hh-border, rgba(255,255,255,0.1)); margin-bottom: 1.5rem;">
         <h3 style="color: var(--hh-text, #f8fafc); font-size: 1.1rem; margin-bottom: 0.5rem;">No active automation rules</h3>
         <p style="color: var(--hh-muted, #94a3b8); font-size: 0.85rem; margin-bottom: 1rem;">Create an event trigger backed by PostgreSQL to automate alerts and follow-up tasks on live lead ingestion.</p>
-        <button class="btn btn-primary" @click="isAddModalOpen = true">
+        <button class="btn btn-primary" :disabled="!!loadError || !hasLoaded" @click="openRule()">
           <span v-html="icons.plus"></span>
           Create First Automation
         </button>
       </div>
-      <div v-else class="automations-grid">
+      <div v-if="automations.length" class="automations-grid">
         <div
           v-for="rule in automations"
           :key="rule.rule_id"
@@ -67,7 +72,7 @@
             </div>
             <div class="rule-toggle">
               <label class="toggle-switch">
-                <input v-model="rule.enabled" type="checkbox" @change="toggleAutomation(rule)" />
+                <input :checked="rule.enabled" :disabled="isRunning || !!pendingRule" :aria-label="`Enable ${rule.name}`" type="checkbox" @change="toggleAutomation(rule, $event)" />
                 <span class="toggle-slider"></span>
               </label>
             </div>
@@ -93,13 +98,14 @@
               <span>Success: <strong class="text-green">{{ getSuccessRate(rule) }}</strong></span>
               <span>Last: <span class="text-muted">{{ formatTimestamp(rule.last_run) }}</span></span>
             </div>
-            <div style="display: flex; gap: 0.5rem;">
+            <div class="rule-actions">
               <button class="btn btn-subtle btn-sm" :disabled="isRunning || !rule.enabled" @click="runManual(rule)">
                 <span v-html="icons.zap"></span>
-                Trigger Now
+                Run now
               </button>
-              <button class="btn btn-subtle btn-sm" style="color: #ef4444; border-color: rgba(239,68,68,0.3);" @click="deleteAutomation(rule.rule_id)" title="Archive Rule">
-                ✕ Delete
+              <button class="btn btn-subtle btn-sm" :disabled="!!pendingRule || isRunning" @click="openRule(rule)">Edit</button>
+              <button class="btn btn-subtle btn-sm" :disabled="!!pendingRule || isRunning" style="color: #ef4444; border-color: rgba(239,68,68,0.3);" @click="deleteAutomation(rule.rule_id)" title="Archive Rule">
+                Archive
               </button>
             </div>
           </div>
@@ -111,9 +117,9 @@
         <div class="audit-header">
           <h3>
             <span v-html="icons.database"></span>
-            Recent Execution Audit Stream (PostgreSQL ops.automation_runs)
+            Recent Runs
           </h3>
-          <span class="badge-sub">Live Event Bus</span>
+
         </div>
         <div class="table-container">
           <table class="data-table">
@@ -122,29 +128,31 @@
                 <th>Run ID</th>
                 <th>Workflow Rule</th>
                 <th>Target Asset / Contact</th>
-                <th>Latency</th>
+                <th>Run by</th>
+                <th>Duration</th>
                 <th>Status</th>
                 <th>Timestamp</th>
               </tr>
             </thead>
             <tbody>
               <tr v-if="!auditRuns.length">
-                <td colspan="6" style="text-align: center; color: var(--hh-muted, #64748b); padding: 28px;">
+                <td colspan="7" style="text-align: center; color: var(--hh-muted, #64748b); padding: 28px;">
                   No automation events executed yet. Trigger a workflow rule to record live execution logs in PostgreSQL.
                 </td>
               </tr>
               <tr v-for="run in auditRuns" :key="run.run_id">
                 <td class="font-mono text-muted">#{{ (run.run_id || '').slice(0, 8) }}</td>
                 <td><strong>{{ run.rule_name }}</strong></td>
-                <td>{{ run.target || 'Live Pipeline Bus' }}</td>
-                <td class="font-mono">{{ run.duration_ms }}ms</td>
+                <td>{{ run.target || '—' }}</td>
+                <td>{{ run.actor }}</td>
+                <td class="font-mono">{{ run.duration_ms }} ms</td>
                 <td>
                   <span v-if="run.status === 'succeeded'" class="status-chip success">
                     <span v-html="icons.check" class="tiny-icon"></span>
                     Succeeded
                   </span>
                   <span v-else class="status-chip error" :title="run.error || 'Execution failed'">
-                    ✕ Failed
+                    {{ run.error || 'Failed' }}
                   </span>
                 </td>
                 <td class="font-mono text-muted">{{ formatTimestamp(run.created_at) }}</td>
@@ -158,11 +166,11 @@
     <!-- Create Automation Modal -->
     <Teleport to="body">
     <div v-if="isAddModalOpen" class="modal-overlay" @click.self="isAddModalOpen = false">
-      <div class="modal-content">
+      <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="automation-form-title" @keydown.esc="isAddModalOpen = false">
         <div class="modal-header">
-          <h3>
+          <h3 id="automation-form-title">
             <span v-html="icons.zap"></span>
-            Configure New Real-time Automation Rule
+            {{ editingRule ? 'Edit Automation' : 'Create Automation' }}
           </h3>
           <button class="close-btn" @click="isAddModalOpen = false">
             <span v-html="icons.close"></span>
@@ -171,37 +179,37 @@
         <form class="modal-body" @submit.prevent="saveNewAutomation">
           <div class="form-grid">
             <div class="form-group full">
-              <label>Workflow Name * (Max 100 characters)</label>
-              <input v-model="newRule.name" type="text" required maxlength="100" placeholder="e.g. BatchLeads Inbound Dispo Review" />
+              <label for="automation-name">Rule name</label>
+              <input id="automation-name" v-model="newRule.name" type="text" required maxlength="100" placeholder="e.g. BatchLeads Inbound Dispo Review" />
             </div>
             <div class="form-group">
-              <label>Supported Trigger Event *</label>
-              <select v-model="newRule.trigger_code" required>
+              <label for="automation-trigger">Trigger</label>
+              <select id="automation-trigger" v-model="newRule.trigger_code" required>
                 <option value="batchleads_lead">BatchLeads lead saved (Webhook)</option>
-                <option value="podio_lead">Podio lead saved (Live Sync)</option>
+                <option value="podio_lead">Podio lead saved (Webhook)</option>
                 <option value="manual">Manual only (On-demand Trigger)</option>
               </select>
             </div>
             <div class="form-group">
-              <label>Supported Backend Action *</label>
-              <select v-model="newRule.action_code" required>
-                <option value="notification">Create an in-app alert (ops.notifications)</option>
-                <option value="task">Create a follow-up task (core.tasks)</option>
+              <label for="automation-action">Action</label>
+              <select id="automation-action" v-model="newRule.action_code" required>
+                <option value="notification">Create an in-app alert</option>
+                <option value="task">Create a follow-up task</option>
               </select>
             </div>
             <div class="form-group full">
-              <label>Action Text / Payload * (Max 180 characters)</label>
-              <input v-model="newRule.action_text" type="text" required maxlength="180" placeholder="e.g. High-equity distressed seller lead ready for underwriting review" />
+              <label for="automation-text">Action text</label>
+              <input id="automation-text" v-model="newRule.action_text" type="text" required maxlength="180" placeholder="e.g. High-equity distressed seller lead ready for underwriting review" />
             </div>
             <div class="form-group full">
-              <label>Description &amp; Operational Notes (Optional)</label>
-              <textarea v-model="newRule.description" rows="3" maxlength="500" placeholder="Operational purpose of this rule in the Jacksonville wholesale funnel..."></textarea>
+              <label for="automation-description">Description (optional)</label>
+              <textarea id="automation-description" v-model="newRule.description" rows="3" maxlength="500" placeholder="Operational purpose of this rule in the Jacksonville wholesale funnel..."></textarea>
             </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" @click="isAddModalOpen = false">Cancel</button>
             <button type="submit" class="btn btn-primary" :disabled="isSaving">
-              {{ isSaving ? 'Saving...' : 'Save & Activate Rule' }}
+              {{ isSaving ? 'Saving...' : 'Save rule' }}
             </button>
           </div>
         </form>
@@ -223,6 +231,11 @@ export default {
     return {
       icons,
       isLoading: false,
+      hasLoaded: false,
+      loadError: '',
+      legacyRules: [],
+      pendingRule: null,
+      editingRule: null,
       isRunning: false,
       isSaving: false,
       isAddModalOpen: false,
@@ -236,10 +249,10 @@ export default {
         task: 'Create a follow-up task'
       },
       metrics: [
-        { label: 'Active Rules', value: '0 Rules', change: 'Live PostgreSQL', icon: 'zap' },
-        { label: 'Executions (24h)', value: '0', change: 'Realtime', icon: 'trendingUp' },
-        { label: 'Success Rate', value: '100%', change: 'Live Event Bus', icon: 'check' },
-        { label: 'Avg Latency', value: '0 ms', change: 'Zero Drift', icon: 'clock' }
+        { label: 'Active Rules', value: '—', change: '', icon: 'zap' },
+        { label: 'Runs in 24 Hours', value: '—', change: '', icon: 'trendingUp' },
+        { label: 'Success Rate', value: '—', change: '', icon: 'check' },
+        { label: 'Average Duration', value: '—', change: '', icon: 'clock' }
       ],
       newRule: {
         name: '',
@@ -260,6 +273,12 @@ export default {
   },
   mounted() {
     this.loadAutomations();
+    this.refreshTimer = setInterval(() => {
+      if (!this.isRunning && !this.isSaving && !this.pendingRule && !document.hidden) this.loadAutomations();
+    }, 10000);
+  },
+  beforeUnmount() {
+    clearInterval(this.refreshTimer);
   },
   methods: {
     getAuthHeaders() {
@@ -267,19 +286,22 @@ export default {
       if (typeof window !== 'undefined') {
         const token = window.localStorage.getItem('hushhawk_auth_token');
         if (token) headers['Authorization'] = `Bearer ${token}`;
-        const session = window.sessionStorage.getItem('hushhawk_session') || window.localStorage.getItem('hushhawk_session');
-        if (session) headers['x-hushhawk-session'] = encodeURIComponent(session);
       }
       return headers;
     },
     async loadAutomations() {
+      if (this.isLoading) return;
       this.isLoading = true;
       try {
         const res = await fetch('/api/v1/automations', {
-          headers: this.getAuthHeaders()
+          headers: this.getAuthHeaders(),
+          cache: 'no-store'
         });
         if (res.ok) {
           const data = await res.json();
+          this.hasLoaded = true;
+          this.loadError = '';
+          this.legacyRules = data.legacyRules || [];
           this.automations = data.automations || [];
           this.auditRuns = data.runs || [];
           if (data.triggers) this.triggers = data.triggers;
@@ -287,10 +309,10 @@ export default {
           this.updateMetrics(data.metrics);
         } else {
           const errData = await res.json().catch(() => ({}));
-          console.warn('[Automations API Error]:', errData.error || res.statusText);
+          this.loadError = errData.error || 'Automation data is unavailable.';
         }
       } catch (err) {
-        console.warn('[Automations Load Exception]:', err.message);
+        this.loadError = 'Could not connect to Automations.';
       } finally {
         this.isLoading = false;
       }
@@ -301,17 +323,17 @@ export default {
       const totalExecutions = summary?.executions ?? this.auditRuns.length;
       const succeeded = summary?.succeeded ?? this.auditRuns.filter(r => r.status === 'succeeded').length;
       const avgDuration = summary?.avg_duration ?? (this.auditRuns.length ? Math.round(this.auditRuns.reduce((acc, r) => acc + (r.duration_ms || 0), 0) / this.auditRuns.length) : 0);
-      const successRate = totalExecutions > 0 ? Math.round((succeeded / totalExecutions) * 100) + '%' : '100%';
+      const successRate = totalExecutions > 0 ? Math.round((succeeded / totalExecutions) * 100) + '%' : '—';
 
       this.metrics[0].value = `${activeRules} of ${totalRules}`;
       this.metrics[0].change = `${totalRules} Registered`;
       this.metrics[1].value = String(totalExecutions);
       this.metrics[1].change = `${succeeded} Succeeded`;
       this.metrics[2].value = successRate;
-      this.metrics[3].value = `${avgDuration || 0} ms`;
+      this.metrics[3].value = totalExecutions ? `${avgDuration} ms` : '—';
     },
     getSuccessRate(rule) {
-      if (!rule.runs_count || rule.runs_count === 0) return '100%';
+      if (!rule.runs_count || rule.runs_count === 0) return '—';
       const rate = Math.round(((rule.succeeded_count || 0) / rule.runs_count) * 100);
       return `${rate}%`;
     },
@@ -367,24 +389,24 @@ export default {
         this.showToast('Error', e.message, 'error');
       }
     },
-    async toggleAutomation(rule) {
+    async toggleAutomation(rule, event) {
+      const enabled = event.target.checked;
+      event.target.checked = rule.enabled;
+      this.pendingRule = rule.rule_id;
       try {
         const res = await fetch(`/api/v1/automations/${rule.rule_id}`, {
           method: 'PATCH',
           headers: this.getAuthHeaders(),
-          body: JSON.stringify({ enabled: rule.enabled })
+          body: JSON.stringify({ enabled })
         });
-        if (res.ok) {
-          this.showToast('Rule Updated', `Rule "${rule.name}" is now ${rule.enabled ? 'Active' : 'Disabled'}.`, 'info');
-          this.updateMetrics();
-        } else {
-          const errData = await res.json().catch(() => ({}));
-          rule.enabled = !rule.enabled;
-          this.showToast('Update Failed', errData.error || 'Could not update rule status.', 'error');
-        }
-      } catch (err) {
-        rule.enabled = !rule.enabled;
-        this.showToast('Network Error', err.message, 'error');
+        const result = await res.json();
+        if (!res.ok) throw new Error(result.error || 'Could not update the rule.');
+        rule.enabled = result.enabled;
+        await this.loadAutomations();
+      } catch (error) {
+        this.showToast('Update failed', error.message, 'error');
+      } finally {
+        this.pendingRule = null;
       }
     },
     async runManual(rule) {
@@ -409,13 +431,13 @@ export default {
         this.isRunning = false;
       }
     },
-    async testActiveTrigger() {
-      const active = this.automations.find(a => a.enabled && a.trigger_code === 'manual') || this.automations.find(a => a.enabled);
-      if (!active) {
-        this.showToast('No Active Rules', 'Enable at least one automation rule before testing.', 'info');
-        return;
-      }
-      await this.runManual(active);
+    openRule(rule = null) {
+      this.editingRule = rule;
+      this.newRule = rule ? { ...rule } : {
+        name: '', description: '', trigger_code: 'manual',
+        action_code: 'notification', action_text: '', enabled: true
+      };
+      this.isAddModalOpen = true;
     },
     async saveNewAutomation() {
       if (!this.newRule.name || !this.newRule.name.trim()) return;
@@ -429,27 +451,20 @@ export default {
           trigger_code: this.newRule.trigger_code,
           action_code: this.newRule.action_code,
           action_text: this.newRule.action_text.trim(),
-          enabled: true
+          enabled: this.newRule.enabled
         };
 
-        const res = await fetch('/api/v1/automations', {
-          method: 'POST',
+        const endpoint = this.editingRule ? `/api/v1/automations/${this.editingRule.rule_id}` : '/api/v1/automations';
+        const res = await fetch(endpoint, {
+          method: this.editingRule ? 'PATCH' : 'POST',
           headers: this.getAuthHeaders(),
           body: JSON.stringify(payload)
         });
 
         if (res.ok) {
           const created = await res.json();
-          this.showToast('Automation Rule Created', `Rule "${created.name}" is now live and evaluating events.`, 'success');
+          this.showToast('Rule saved', created.name, 'success');
           this.isAddModalOpen = false;
-          this.newRule = {
-            name: '',
-            description: '',
-            trigger_code: 'batchleads_lead',
-            action_code: 'notification',
-            action_text: '',
-            enabled: true
-          };
           await this.loadAutomations();
         } else {
           const errData = await res.json().catch(() => ({}));
@@ -475,6 +490,9 @@ export default {
 </script>
 
 <style scoped>
+.automation-notice { padding: 12px 16px; color: var(--hh-text, #f8fafc); overflow-wrap: anywhere; }
+.rule-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
 .view-container {
   display: flex;
   flex-direction: column;

@@ -39,13 +39,12 @@ apiRouter.use((req, res, next) => {
 // ============================================================================
 apiRouter.get('/health', async (req, res) => {
     const pgHealth = await checkDatabaseHealth();
-    res.json({
-        status: 'ONLINE',
+    res.status(pgHealth.status === 'ONLINE' ? 200 : 503).json({
+        status: pgHealth.status === 'ONLINE' ? 'ONLINE' : 'DEGRADED',
         platform: 'HushHawk A-to-Z Property Intelligence Platform',
         version: '1.0.0',
         canonical_db: `AWS-RDS-PostgreSQL (${pgHealth.status})`,
-        db_details: pgHealth,
-        graph_projection: 'Neo4j Outbox-Synchronized',
+        db_details: { status: pgHealth.status },
         time: new Date().toISOString(),
     });
 });
@@ -404,12 +403,32 @@ apiRouter.post('/properties/:propertyId/photos', async (req, res) => {
 
     if (!filename) return res.status(400).json({ error: 'filename is required' });
 
-    const safeKey = object_key || StorageService.buildObjectKey({
+    const hasPhotoContent = typeof data_url === 'string' && /^data:[^,]+;base64,/.test(data_url);
+    if (data_url && !hasPhotoContent) return res.status(400).json({ error: 'Invalid photo content.' });
+    if (!hasPhotoContent && !object_key) return res.status(400).json({ error: 'Photo content or an uploaded object key is required.' });
+
+    const safeKey = (hasPhotoContent ? null : object_key) || StorageService.buildObjectKey({
         entityType: 'properties',
         entityId: propertyId,
         category: 'photos',
         filename
     });
+
+    if (hasPhotoContent) {
+        const buffer = Buffer.from(data_url.slice(data_url.indexOf(',') + 1), 'base64');
+        if (!buffer.length) return res.status(400).json({ error: 'The photo file is empty.' });
+        try {
+            await StorageService.uploadBuffer({
+                objectKey: safeKey,
+                buffer,
+                contentType: mime_type || 'image/jpeg',
+                requireStorage: true
+            });
+        } catch (error) {
+            console.error('[Property photo storage unavailable]', error.name);
+            return res.status(503).json({ error: 'Photo storage is unavailable. Try again later.' });
+        }
+    }
 
     try {
         const { rows } = await pool.query(
@@ -434,26 +453,6 @@ apiRouter.post('/properties/:propertyId/photos', async (req, res) => {
                 status
             ]
         );
-
-        // Upload buffer to S3 Private Vault if base64 data_url is supplied
-        if (data_url && typeof data_url === 'string' && data_url.includes('base64,')) {
-            try {
-                const base64Data = data_url.split('base64,')[1];
-                const buffer = Buffer.from(base64Data, 'base64');
-                await StorageService.uploadBuffer({
-                    objectKey: safeKey,
-                    buffer,
-                    contentType: mime_type || 'image/jpeg',
-                    metadata: {
-                        propertyId,
-                        tag: tag || 'General',
-                        uploadedBy: uploaded_by
-                    }
-                });
-            } catch (s3Err) {
-                console.warn('[Property Photo S3 Buffer Upload Warn]', s3Err.message);
-            }
-        }
 
         // Mirror automatically into core.vault_files for centralized Media Vault visibility
         await pool.query(
@@ -2362,37 +2361,6 @@ const handleBatchLeadsWebhook = async (req, res) => {
 apiRouter.all('/integrations/batchleads/webhook', handleBatchLeadsWebhook);
 apiRouter.all('/webhooks/batchleads', handleBatchLeadsWebhook);
 
-apiRouter.post('/integrations/batchleads/seed', async (req, res) => {
-    try {
-        const sampleStreets = [
-            { street: '3128 Hendricks Ave', apn: '154829-0000', owner: 'Arthur Pendelton', phone: '904-555-2144', zip: '32207' },
-            { street: '5520 San Jose Blvd', apn: '129482-0000', owner: 'Victoria Sterling', phone: '904-555-9382', zip: '32217' },
-            { street: '2241 St Johns Ave', apn: '083721-0000', owner: 'Harrison Ford', phone: '904-555-7319', zip: '32204' },
-            { street: '7840 Atlantic Blvd', apn: '149021-0000', owner: 'Eleanor Vance', phone: '904-555-4820', zip: '32211' }
-        ];
-        const pick = sampleStreets[Math.floor(Math.random() * sampleStreets.length)];
-        const result = await BatchLeadsService.ingestWebhook({
-            property: {
-                street_address: pick.street,
-                city: 'Jacksonville',
-                state: 'FL',
-                zip: pick.zip,
-                county: 'Duval',
-                apn: pick.apn,
-                owner_name: pick.owner,
-                owner_phone: pick.phone,
-                owner_email: `${pick.owner.toLowerCase().replace(/\s+/g, '.')}@gmail.com`,
-                is_vacant: true,
-                tags: ['Push to HushHawk', 'BatchLeads Vacant', 'Hot Lead']
-            }
-        });
-        res.json({ success: true, seeded: true, lead: result });
-    } catch (err) {
-        console.error('[BatchLeads Seed Error]', err);
-        res.status(500).json({ error: err.message });
-    }
-});
-
 apiRouter.get('/integrations/batchleads/status', (req, res) => {
     res.json({
         ok: true,
@@ -2498,7 +2466,7 @@ apiRouter.post('/integrations/podio/sync-communications', async (req, res) => {
             message: `Podio communications synchronized live (${count} feeds refreshed)`
         });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        res.status(502).json({ error: err.message });
     }
 });
 
@@ -4128,161 +4096,64 @@ apiRouter.delete('/contacts/:id', (req, res) => {
 
 
 // --- Skip Tracing (Podio App 30087425 Cold Leads Live Sync) ---
-apiRouter.get('/skip-tracing', async (req, res) => {
+apiRouter.get('/skip-tracing', async (req, res, next) => {
     try {
-        let coldLeads = [];
-        try {
-            coldLeads = await PodioSyncService.syncColdLeads();
-        } catch (pErr) {
-            console.warn('[Podio Cold Leads Sync Warn]', pErr.message);
-        }
-
-        const traces = (coldLeads && coldLeads.length) 
-            ? coldLeads.map(cl => ({
-                id: cl.id,
-                ownerName: cl.name,
-                address: cl.address,
-                phone: cl.phone,
-                email: cl.email,
-                mailingAddress: cl.address,
-                equity: cl.equity,
-                distress: cl.distress,
-                status: 'Enriched',
-                confidence: 96,
-                created_at: new Date().toISOString()
-            }))
-            : (db.data.crm.skip_traces || []);
-
+        const [leads, queued] = await Promise.all([
+            PodioSyncService.syncColdLeads(),
+            pool.query(`SELECT lead.lead_id AS id, property.address_line1 AS address,
+                    property.postal_code AS zip, person.full_name AS "ownerName"
+                FROM core.leads lead JOIN core.properties property USING (property_id)
+                LEFT JOIN core.people person USING (person_id)
+                WHERE lead.status = 'QUEUED_FOR_SKIP_TRACE'
+                ORDER BY lead.created_at DESC`)
+        ]);
+        const traces = [
+            ...leads.map(lead => ({
+                id: lead.id, ownerName: lead.name, address: lead.address,
+                primaryPhone: lead.phone, email: lead.email, source: 'Podio'
+            })),
+            ...queued.rows.map(lead => ({ ...lead, ownerName: lead.ownerName ?? 'Owner unavailable', source: 'County queue' })),
+            ...(db.data.crm.skip_traces || []).filter(trace => trace.source === 'Internal lookup')
+        ];
         res.json({ total: traces.length, traces });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+    } catch (error) {
+        next(error);
     }
 });
 
-apiRouter.post('/skip-tracing', async (req, res) => {
+apiRouter.post('/skip-tracing', async (req, res, next) => {
     try {
-        const { ownerName, address, zip, mailingAddress, phone, email, notes } = req.body;
-        if (!ownerName) return res.status(400).json({ error: 'Owner name is required' });
-
-        const traceId = 't-' + Date.now();
-        let verifiedPhone = phone ? phone.trim() : null;
-        let verifiedEmail = email ? email.trim() : null;
-        let matchedPropertyId = null;
-
-        // If phone or email is not provided, search PostgreSQL core.properties & core.leads for matching address or owner
-        if (!verifiedPhone || !verifiedEmail) {
-            try {
-                if (address) {
-                    const cleanAddr = address.split(',')[0].trim();
-                    const pRes = await pool.query(
-                        `SELECT property_id, seller_phone, contact_phone, contact_email 
-                         FROM core.properties 
-                         WHERE address_line1 ILIKE $1 
-                         LIMIT 1`,
-                        [`%${cleanAddr}%`]
-                    );
-                    if (pRes.rows.length) {
-                        matchedPropertyId = pRes.rows[0].property_id;
-                        if (!verifiedPhone) verifiedPhone = pRes.rows[0].seller_phone || pRes.rows[0].contact_phone || null;
-                        if (!verifiedEmail) verifiedEmail = pRes.rows[0].contact_email || null;
-                    }
-                }
-            } catch (err) {
-                console.warn('[SkipTrace DB Match Warn]', err.message);
-            }
+        const { ownerName, address, zip } = req.body;
+        if (typeof ownerName !== 'string' || !ownerName.trim() || typeof address !== 'string' || !address.trim()) {
+            return res.status(400).json({ error: 'Owner name and street address are required.' });
         }
-
-        const isEnriched = Boolean(verifiedPhone || verifiedEmail);
-        const newTrace = {
-            id: traceId,
-            property_id: matchedPropertyId,
-            ownerName,
-            age: 55,
-            deceased: false,
-            address: address || 'Jacksonville, FL',
-            zip: zip || '32208',
-            mailingAddress: mailingAddress || address || 'Jacksonville, FL',
-            score: isEnriched ? 95 : 70,
-            primaryPhone: verifiedPhone || 'Pending Carrier Enrichment',
-            phoneType: verifiedPhone ? 'Mobile (Verified)' : 'Requires Telco Lookup',
-            carrier: verifiedPhone ? 'Verified Carrier' : 'Awaiting Batch Provider',
-            dncStatus: isEnriched ? 'Clean / Safe' : 'Awaiting DNC Scrub',
-            dncClass: isEnriched ? 'status-clean' : 'status-pending',
-            email: verifiedEmail || (isEnriched ? 'N/A' : 'Pending Carrier Lookup'),
-            bankruptcy: false,
-            liens: '$0 recorded',
-            tier: isEnriched ? 'Tier 1 Gold' : 'Tier 2 Queued',
-            tierClass: isEnriched ? 'tier-gold' : 'tier-pending',
-            matchType: isEnriched ? 'Direct Contact Match' : 'Queued for Telco Lookup',
-            notes: notes || 'Enriched via Skip-Trace Command Center',
+        const street = address.split(',')[0].trim();
+        const result = await pool.query(
+            `SELECT DISTINCT person.primary_phone, person.primary_email, property.property_id
+             FROM core.properties property JOIN core.leads lead USING (property_id)
+             JOIN core.people person USING (person_id)
+             WHERE lower(property.address_line1) = lower($1)
+               AND lower(person.full_name) = lower($2)
+               AND ($3 = '' OR property.postal_code = $3)
+             LIMIT 2`, [street, ownerName.trim(), typeof zip === 'string' ? zip.trim() : '']
+        );
+        const match = result.rows.length === 1 ? result.rows[0] : null;
+        const trace = {
+            id: crypto.randomUUID(), ownerName: ownerName.trim(), address, zip,
+            primaryPhone: match?.primary_phone ?? null, email: match?.primary_email ?? null,
+            property_id: match?.property_id ?? null, source: 'Internal lookup',
             created_at: new Date().toISOString()
         };
-
-        if (!db.data.crm.skip_traces) db.data.crm.skip_traces = [];
-        db.data.crm.skip_traces.unshift(newTrace);
+        (db.data.crm.skip_traces ||= []).unshift(trace);
         db.persist();
-
-        // Also record touch in PostgreSQL core.leads
-        try {
-            await pool.query(
-                `INSERT INTO core.leads (lead_id, property_id, first_source_code, status, created_at)
-                 VALUES ($1, $2, 'SKIP_TRACE', $3, NOW())
-                 ON CONFLICT DO NOTHING`,
-                [crypto.randomUUID(), matchedPropertyId, isEnriched ? 'ENRICHED' : 'QUEUED_FOR_SKIP_TRACE']
-            );
-        } catch (_) {}
-
-        res.status(201).json(newTrace);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+        res.status(201).json(trace);
+    } catch (error) {
+        next(error);
     }
 });
 
-apiRouter.post('/skip-tracing/batch', async (req, res) => {
-    try {
-        const leadsRes = await pool.query(`
-            SELECT l.lead_id, p.address_line1, p.postal_code, p.parcel_raw, pe.full_name, pe.primary_phone, pe.primary_email
-            FROM core.leads l
-            LEFT JOIN core.properties p ON l.property_id = p.property_id
-            LEFT JOIN core.people pe ON l.person_id = pe.person_id
-            LIMIT 25
-        `);
-        const rows = leadsRes.rows || [];
-        const enrichedRecords = [];
-
-        for (let i = 0; i < rows.length; i++) {
-            const r = rows[i];
-            const phone = r.primary_phone || `(904) 555-0${100 + i}`;
-            const email = r.primary_email || `${(r.full_name || 'owner').toLowerCase().replace(/\s+/g, '.')}@gmail.com`;
-            const traceItem = {
-                id: 't-' + Date.now() + '-' + i,
-                ownerName: r.full_name || 'Property Owner',
-                propertyAddress: r.address_line1 || 'Jacksonville, FL',
-                mailingAddress: r.address_line1 ? `${r.address_line1}, Jacksonville, FL ${r.postal_code || '32204'}` : 'Jacksonville, FL',
-                primaryPhone: phone,
-                secondaryPhone: `(904) 555-9${100 + i}`,
-                primaryEmail: email,
-                relativesCount: 2,
-                dncStatus: 'Clear',
-                score: 95 - (i % 8),
-                qualityClass: 'score-high',
-                timestamp: 'Just Now',
-                verified: true
-            };
-            enrichedRecords.push(traceItem);
-            if (!db.data.crm.skip_traces) db.data.crm.skip_traces = [];
-            db.data.crm.skip_traces.unshift(traceItem);
-        }
-        db.persist();
-
-        res.json({
-            success: true,
-            enrichedCount: enrichedRecords.length,
-            records: enrichedRecords
-        });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
+apiRouter.post('/skip-tracing/batch', (req, res) => {
+    res.status(503).json({ error: 'Batch contact verification requires a configured skip-tracing provider.' });
 });
 
 // --- Facebook Leads ---
@@ -4844,57 +4715,18 @@ apiRouter.post('/county-records/push-to-skip-trace', async (req, res) => {
         const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
         for (const id of targetIds) {
+            if (typeof id !== 'string' || !UUID_REGEX.test(id)) continue;
             const leadId = crypto.randomUUID();
-            let propertyId = null;
-            let address = 'Jacksonville, FL';
-            let owner = 'Owner of Record';
-
-            if (UUID_REGEX.test(id)) {
-                propertyId = id;
-                try {
-                    const propRes = await pool.query('SELECT address_line1, city FROM core.properties WHERE property_id = $1', [id]);
-                    if (propRes.rows.length) {
-                        address = `${propRes.rows[0].address_line1}, ${propRes.rows[0].city || 'Jacksonville'}`;
-                    }
-                } catch (_) {}
-            }
-
-            // Insert into core.leads in PostgreSQL
-            try {
-                await pool.query(
-                    `INSERT INTO core.leads (lead_id, property_id, first_source_code, status, created_at)
-                     VALUES ($1, $2, 'COUNTY_TAX_DELINQUENT', 'QUEUED_FOR_SKIP_TRACE', $3)
-                     ON CONFLICT DO NOTHING`,
-                    [leadId, propertyId, now]
-                );
-            } catch (err) {
-                console.warn('[County Push PG Warn]', err.message);
-            }
-
-            // Also register in skip traces queue
-            if (!db.data.crm.skip_traces) db.data.crm.skip_traces = [];
-            const traceItem = {
-                id: 't-' + Date.now() + '-' + leadId.slice(0, 4),
-                ownerName: owner,
-                address,
-                zip: '32208',
-                score: 92,
-                primaryPhone: 'Pending Telco Enrichment',
-                phoneType: 'Mobile',
-                carrier: 'Awaiting Telco Scrub',
-                dncStatus: 'Queued for Verification',
-                dncClass: 'status-pending',
-                email: 'Pending Lookup',
-                tier: 'Tier 1 Priority',
-                tierClass: 'tier-gold',
-                matchType: 'County Tax Delinquent Lead',
-                created_at: now.toISOString()
-            };
-            db.data.crm.skip_traces.unshift(traceItem);
+            const { rowCount } = await pool.query(
+                `INSERT INTO core.leads (lead_id, property_id, first_source_code, status, created_at)
+                 SELECT $1, property_id, 'COUNTY_TAX_DELINQUENT', 'QUEUED_FOR_SKIP_TRACE', $3
+                 FROM core.properties WHERE property_id = $2`,
+                [leadId, id, now]
+            );
+            if (!rowCount) continue;
             insertedLeads.push(leadId);
         }
 
-        db.persist();
 
         // Audit log
         db.logAudit({
@@ -4937,7 +4769,7 @@ apiRouter.get('/communications', async (req, res) => {
                 t.unread_count,
                 t.last_message_preview,
                 t.last_message_at,
-                p.assessed_value
+                p.parcel_raw
             FROM core.conversation_desk_threads t
             LEFT JOIN core.properties p ON t.property_id = p.property_id
             ORDER BY t.last_message_at DESC NULLS LAST
@@ -4968,18 +4800,6 @@ apiRouter.get('/communications', async (req, res) => {
         }
 
         const threads = threadsRows.map((t) => {
-            const assessed = Number(t.assessed_value) || 215000;
-            const arv = Math.round(assessed * 1.35);
-            const lastOffer = Math.round(arv * 0.65);
-            const msgs = messagesByThread[t.id] || [
-                {
-                    sender: 'contact',
-                    name: t.contact_name,
-                    text: t.last_message_preview || ('Inquiry regarding ' + (t.property_address || 'property')),
-                    time: t.last_message_at ? new Date(t.last_message_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }) : 'Today'
-                }
-            ];
-
             let commType = 'SMS';
             if (t.platform_id === 'smrtphone' || t.platform_id === 'calls') commType = 'Calls';
             else if (t.platform_id === 'email' || t.platform_id === 'gmail') commType = 'Email';
@@ -4989,20 +4809,18 @@ apiRouter.get('/communications', async (req, res) => {
             return {
                 id: t.id,
                 contact: t.contact_name,
-                phone: t.contact_phone || '+13866273499',
+                phone: t.contact_phone || '',
                 email: t.contact_email,
-                address: t.property_address || 'Jacksonville, FL',
+                address: t.property_address || '',
+                property_id: t.property_id,
+                parcelId: t.parcel_raw,
                 type: commType,
-                role: t.status || 'Matched Contact',
-                rep: 'Alex Richard',
-                repInitials: 'AR',
+                role: t.status || '',
                 source: t.platform_id ? t.platform_id.toUpperCase() : 'CRM',
                 lastMessage: t.last_message_preview || '',
-                time: t.last_message_at ? new Date(t.last_message_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }) : 'Today',
+                time: t.last_message_at ? new Date(t.last_message_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }) : '',
                 unread: (t.unread_count || 0) > 0,
-                lastOffer,
-                arv,
-                messages: msgs
+                messages: messagesByThread[t.id] || []
             };
         });
 
@@ -5012,96 +4830,60 @@ apiRouter.get('/communications', async (req, res) => {
     }
 });
 
-apiRouter.post('/communications/messages', async (req, res) => {
+apiRouter.post('/communications/messages', async (req, res, next) => {
     try {
+        const session = await getAuthenticatedSession(req);
+        if (!session) return res.status(401).json({ error: 'Sign in again to send a message.' });
+        if (!session.user.permissions.includes('/communications')) {
+            return res.status(403).json({ error: 'Your role cannot send messages from Communications.' });
+        }
         const { threadId, text } = req.body;
-        if (!text || !text.trim()) return res.status(400).json({ error: 'Message text is required' });
+        const message = typeof text === 'string' ? text.trim() : '';
+        if (!message || message.length > 10000) {
+            return res.status(400).json({ error: 'Enter a message of 1 to 10,000 characters.' });
+        }
+        const { rows: [thread] } = await pool.query(
+            'SELECT property_id, contact_phone, contact_email, platform_id FROM core.conversation_desk_threads WHERE id = $1',
+            [threadId]
+        );
+        if (!thread) return res.status(404).json({ error: 'Conversation not found.' });
+        const isEmail = ['email', 'gmail'].includes(thread.platform_id) || (!thread.contact_phone && Boolean(thread.contact_email));
+        const to = isEmail ? thread.contact_email : thread.contact_phone;
+        if (!to) return res.status(409).json({ error: 'This contact has no address or number for the selected channel.' });
 
-        const msgId = 'msg-' + crypto.randomUUID();
+        const subject = 'Property update from HushHawk';
+        const carrier = await (isEmail
+            ? CarrierDispatchService.dispatchEmail({ to, subject, text: message })
+            : CarrierDispatchService.dispatchSms({ to, message }));
+        if (!carrier?.liveCarrier || !carrier.success) {
+            return res.status(503).json({ error: 'The delivery provider could not accept this message. Your draft was kept.' });
+        }
+
+        const id = `msg-${crypto.randomUUID()}`;
         const now = new Date();
-        const trimmed = text.trim();
-
-        // 1. Insert message into PostgreSQL core.conversation_desk_messages
-        await pool.query(
-            `INSERT INTO core.conversation_desk_messages (id, thread_id, sender_type, sender_name, content, sent_at)
-             VALUES ($1, $2, 'agent', 'Alex Richard (HushHawk)', $3, $4)`,
-            [msgId, threadId, trimmed, now]
-        );
-
-        // 2. Update thread preview and timestamp in core.conversation_desk_threads
-        const threadRes = await pool.query(
-            `UPDATE core.conversation_desk_threads 
-             SET last_message_preview = $1, last_message_at = $2, updated_at = $2
-             WHERE id = $3
-             RETURNING property_id, contact_name, contact_phone, contact_email, platform_id`,
-            [trimmed, now, threadId]
-        );
-
-        const threadRow = threadRes.rows[0] || {};
-        const isEmail = threadRow.platform_id === 'email' || Boolean(threadRow.contact_email && !threadRow.contact_phone);
-        const method = isEmail ? 'EMAIL' : 'TEXT';
-
-        // 3. Carrier Live Transmission (Twilio / SendGrid / SMTP / Native Fallback)
-        let carrierResult = null;
-        if (isEmail && threadRow.contact_email) {
-            carrierResult = await CarrierDispatchService.dispatchEmail({
-                to: threadRow.contact_email,
-                subject: `Update regarding property - HushHawk Acquisitions`,
-                text: trimmed
-            });
-        } else if (threadRow.contact_phone) {
-            carrierResult = await CarrierDispatchService.dispatchSms({
-                to: threadRow.contact_phone,
-                message: trimmed
-            });
-        }
-
-        const carrierNote = carrierResult?.liveCarrier 
-            ? `[Live ${carrierResult.provider.toUpperCase()} SID: ${carrierResult.messageSid || carrierResult.messageId || 'OK'}]` 
-            : `[Status: ${carrierResult?.status || 'SAVED_TO_DB'}]`;
-
-        // 3b. Podio Feeds live dispatch
+        let historySaved = false;
         try {
-            await PodioSyncService.sendOutboundCommunication({
-                type: method,
-                to: isEmail ? threadRow.contact_email : threadRow.contact_phone,
-                body: trimmed,
-                subject: `Update regarding property - ${threadRow.property_address || 'Jacksonville'}`,
-                propertyAddress: threadRow.property_address,
-                leadName: threadRow.contact_name
-            });
-        } catch (podioErr) {
-            console.warn('[Communications] Podio Feeds outbound dispatch notice:', podioErr.message);
+            await pool.query(
+                `WITH saved AS (
+                    INSERT INTO core.conversation_desk_messages (id, thread_id, sender_type, sender_name, content, sent_at)
+                    VALUES ($1, $2, 'agent', $3, $4, $5) RETURNING id
+                 ), updated AS (
+                    UPDATE core.conversation_desk_threads
+                    SET last_message_preview = $4, last_message_at = $5, updated_at = $5
+                    WHERE id = $2 AND (last_message_at IS NULL OR last_message_at <= $5)
+                 )
+                 INSERT INTO core.interactions (property_id, method, direction, actor_id, result, notes, occurred_at)
+                 SELECT $6, $7, 'OUTBOUND', $8, 'ACCEPTED', $9, $5 FROM saved`,
+                [id, threadId, session.user.name, message, now, thread.property_id,
+                    isEmail ? 'EMAIL' : 'TEXT', session.user.id, `Accepted by ${carrier.provider}`]
+            );
+            historySaved = true;
+        } catch (error) {
+            console.error('[Communications history unavailable]', error.message);
         }
-
-        // 4. Log real-time outbound touch to core.interactions audit ledger
-        const interactionId = crypto.randomUUID();
-        await pool.query(
-            `INSERT INTO core.interactions (interaction_id, property_id, method, direction, actor_id, result, notes, occurred_at)
-             VALUES ($1, $2, $3, 'OUTBOUND', 'Alex Richard', 'SENT', $4, $5)`,
-            [
-                interactionId,
-                threadRow.property_id || null,
-                method,
-                `Outbound ${method} to ${threadRow.contact_name || 'Contact'} (${threadRow.contact_phone || threadRow.contact_email || 'N/A'}): "${trimmed.slice(0, 100)}" ${carrierNote}`,
-                now
-            ]
-        );
-
-        res.status(201).json({
-            ok: true,
-            message: {
-                id: msgId,
-                thread_id: threadId,
-                sender: 'rep',
-                name: 'Alex Richard (HushHawk)',
-                text: trimmed,
-                time: 'Just now'
-            },
-            carrier: carrierResult
-        });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+        return res.status(historySaved ? 201 : 202).json({ accepted: true, historySaved });
+    } catch (error) {
+        next(error);
     }
 });
 
@@ -5557,6 +5339,27 @@ apiRouter.post('/calendar', (req, res) => {
 // Team Management, Role-Based Access Control (RBAC) & Audit Trails
 // ============================================================================
 
+async function getAuthenticatedSession(req) {
+    const token = req.get('authorization')?.match(/^Bearer (.+)$/i)?.[1];
+    const session = await RbacService.getSession(token);
+    return session ? { token, user: session.user } : null;
+}
+
+async function requireTeamAdmin(req, res, next) {
+    res.set('Cache-Control', 'no-store');
+    try {
+        const session = await getAuthenticatedSession(req);
+        if (!session) return res.status(401).json({ error: 'Sign in again to continue.' });
+        if (!session.user.isAdmin) return res.status(403).json({ error: 'Administrator access is required.' });
+        req.teamActor = session.user;
+        next();
+    } catch (error) {
+        next(error);
+    }
+}
+
+apiRouter.use(['/roles', '/rbac', '/team', '/audit'], requireTeamAdmin);
+
 // 1. Roles & Section Permissions
 const handleGetRoles = async (req, res) => {
     try {
@@ -5569,8 +5372,8 @@ const handleGetRoles = async (req, res) => {
 
 const handleCreateRole = async (req, res) => {
     try {
-        const { name, description, permissions, actor } = req.body;
-        const role = await RbacService.createRole({ name, description, permissions, actor });
+        const { name, description, permissions } = req.body;
+        const role = await RbacService.createRole({ name, description, permissions, actor: req.teamActor });
         res.status(201).json({ success: true, role });
     } catch (err) {
         res.status(400).json({ error: err.message });
@@ -5580,8 +5383,8 @@ const handleCreateRole = async (req, res) => {
 const handleUpdateRole = async (req, res) => {
     try {
         const { id } = req.params;
-        const { name, description, permissions, actor } = req.body;
-        const role = await RbacService.updateRole(id, { name, description, permissions, actor });
+        const { name, description, permissions } = req.body;
+        const role = await RbacService.updateRole(id, { name, description, permissions, actor: req.teamActor });
         res.json({ success: true, role });
     } catch (err) {
         res.status(400).json({ error: err.message });
@@ -5591,7 +5394,7 @@ const handleUpdateRole = async (req, res) => {
 const handleDeleteRole = async (req, res) => {
     try {
         const { id } = req.params;
-        const actor = req.body?.actor || 'Main Administrator';
+        const actor = req.teamActor;
         const result = await RbacService.deleteRole(id, actor);
         res.json(result);
     } catch (err) {
@@ -5627,7 +5430,7 @@ apiRouter.get('/team', async (req, res) => {
 
 apiRouter.post('/team', async (req, res) => {
     try {
-        const { name, email, phone, role, password, permissions, actor } = req.body;
+        const { name, email, phone, role, password, permissions } = req.body;
         const newMember = await RbacService.createTeamMember({
             name,
             email,
@@ -5635,7 +5438,7 @@ apiRouter.post('/team', async (req, res) => {
             role,
             password,
             permissions,
-            actor
+            actor: req.teamActor
         });
         res.status(201).json(newMember);
     } catch (err) {
@@ -5646,7 +5449,7 @@ apiRouter.post('/team', async (req, res) => {
 apiRouter.patch('/team/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const updated = await RbacService.updateTeamMember(id, req.body);
+        const updated = await RbacService.updateTeamMember(id, { ...req.body, actor: req.teamActor });
         res.json({ success: true, member: updated });
     } catch (err) {
         res.status(400).json({ error: err.message });
@@ -5656,7 +5459,7 @@ apiRouter.patch('/team/:id', async (req, res) => {
 apiRouter.put('/team/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const updated = await RbacService.updateTeamMember(id, req.body);
+        const updated = await RbacService.updateTeamMember(id, { ...req.body, actor: req.teamActor });
         res.json({ success: true, member: updated });
     } catch (err) {
         res.status(400).json({ error: err.message });
@@ -5667,8 +5470,8 @@ apiRouter.put('/team/:id', async (req, res) => {
 apiRouter.post('/team/:id/password', async (req, res) => {
     try {
         const { id } = req.params;
-        const { password, autoGenerate, actor } = req.body;
-        const result = await RbacService.updatePassword(id, { password, autoGenerate, actor });
+        const { password, autoGenerate } = req.body;
+        const result = await RbacService.updatePassword(id, { password, autoGenerate, actor: req.teamActor });
         res.json(result);
     } catch (err) {
         res.status(400).json({ error: err.message });
@@ -5678,7 +5481,7 @@ apiRouter.post('/team/:id/password', async (req, res) => {
 apiRouter.delete('/team/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const actor = req.body?.actor || 'Main Administrator';
+        const actor = req.teamActor;
         const result = await RbacService.deleteTeamMember(id, actor);
         res.json(result);
     } catch (err) {
@@ -5707,12 +5510,13 @@ apiRouter.get('/audit/logs', async (req, res) => {
     }
 });
 
-apiRouter.post('/audit/log', async (req, res) => {
+apiRouter.post('/auth/logout', async (req, res, next) => {
     try {
-        await RbacService.logAudit(req.body);
-        res.json({ success: true, loggedAt: new Date().toISOString() });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+        const session = await getAuthenticatedSession(req);
+        if (session) await RbacService.signOut(session.token, session.user);
+        res.sendStatus(204);
+    } catch (error) {
+        next(error);
     }
 });
 
@@ -6144,33 +5948,8 @@ apiRouter.post('/integrations/test/:name', async (req, res) => {
 // ============================================================================
 async function requireAutomationAccess(req, res, next) {
     try {
-        const token = req.get('authorization')?.match(/^Bearer (.+)$/i)?.[1];
-        let session = token ? await RbacService.getSession(token) : null;
-
-        if (!session) {
-            const sessionHeader = req.headers['x-hushhawk-session'];
-            if (sessionHeader) {
-                try {
-                    const parsed = JSON.parse(decodeURIComponent(sessionHeader));
-                    if (parsed && (parsed.role === 'SUPER_ADMIN' || parsed.isAdmin || (Array.isArray(parsed.permissions) && parsed.permissions.includes('/automations')))) {
-                        req.automationActor = parsed.name || parsed.email || 'Authorized Operator';
-                        return next();
-                    }
-                } catch (_) {}
-            }
-        }
-
-        if (!session) {
-            // Default to Super Administrator for internal command center operations if valid session token not cached
-            try {
-                const adminRes = await pool.query("SELECT user_id, full_name, role FROM core.users WHERE role = 'SUPER_ADMIN' AND status = 'ACTIVE' LIMIT 1");
-                if (adminRes.rows.length) {
-                    req.automationActor = adminRes.rows[0].full_name || 'Main Administrator';
-                    return next();
-                }
-            } catch (_) {}
-            return res.status(401).json({ error: 'Sign in again to use Automations.' });
-        }
+        const session = await getAuthenticatedSession(req);
+        if (!session) return res.status(401).json({ error: 'Sign in again to use Automations.' });
 
         if (!session.user.permissions.includes('/automations')) {
             return res.status(403).json({ error: 'Your role does not have access to Automations.' });

@@ -180,30 +180,6 @@
                 </span>
               </div>
 
-              <!-- Quick Switch Role / Account Tester -->
-              <div v-if="demoTeamAccounts && demoTeamAccounts.length > 0" class="user-switcher-section">
-                <span class="switcher-title">SWITCH / TEST ACTIVE ROLE ACCESS</span>
-                <div class="switcher-list">
-                  <button 
-                    v-for="u in demoTeamAccounts.slice(0, 5)" 
-                    :key="u.email" 
-                    type="button" 
-                    class="switcher-item-btn" 
-                    :class="{ active: activeUserEmail === u.email }"
-                    @click="switchActiveAccount(u)"
-                    :title="`Switch session to ${u.name} (${u.roleName || u.role})`"
-                  >
-                    <span class="switch-avatar" :style="{ background: u.avatarBg || '#1e3a5f' }">
-                      {{ u.initials || 'TM' }}
-                    </span>
-                    <div class="switch-info">
-                      <strong>{{ u.name }}</strong>
-                      <small>{{ u.roleName || u.role }} · {{ (u.allowedCount || u.permissions?.length || 23) }} sections</small>
-                    </div>
-                  </button>
-                </div>
-              </div>
-
               <div class="user-menu-divider"></div>
 
               <a href="/settings" class="user-menu-item" @click="handleNav('/settings', $event); isUserMenuOpen = false;">
@@ -211,7 +187,7 @@
                 <span>System Configuration</span>
               </a>
 
-              <a href="/team" class="user-menu-item" @click="handleNav('/team', $event); isUserMenuOpen = false;">
+              <a v-if="activeUserIsAdmin" href="/team" class="user-menu-item" @click="handleNav('/team', $event); isUserMenuOpen = false;">
                 <span class="menu-icon" v-html="icons.users"></span>
                 <span>Team &amp; Access Controls</span>
               </a>
@@ -415,7 +391,6 @@ export default {
       isNotifOpen: false,
       isUserMenuOpen: false,
       activeUser: null,
-      demoTeamAccounts: [],
       currentTime: '09:42 AM',
       timeInterval: null,
       selectedSection: null,
@@ -692,7 +667,6 @@ export default {
     notifStore.initNotificationPolling();
     this.updateClock();
     this.timeInterval = setInterval(this.updateClock, 30000);
-    this.loadDemoAccounts();
     this.clickOutsideHandler = (e) => {
       if (!e.target.closest('.quick-add-wrap')) {
         this.isQuickAddOpen = false;
@@ -773,45 +747,6 @@ export default {
         hour12: true
       });
     },
-    async loadDemoAccounts() {
-      try {
-        const res = await fetch('/api/v1/team');
-        const data = await res.json();
-        if (data && data.members) {
-          this.demoTeamAccounts = data.members;
-        }
-      } catch (e) {
-        console.warn('Failed to load team accounts:', e.message);
-      }
-    },
-    switchActiveAccount(account) {
-      const prevActor = this.activeUser?.name || 'Operator';
-      this.activeUser = account;
-      if (typeof window !== 'undefined') {
-        try {
-          window.sessionStorage.setItem('hushhawk_session', JSON.stringify(account));
-          window.localStorage.setItem('hushhawk_session', JSON.stringify(account));
-        } catch (e) {}
-      }
-      // Record role switch in immutable audit ledger
-      fetch('/api/v1/audit/log', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          actor: account.name || account.email,
-          action: 'ROLE_SWITCH',
-          entityType: 'AUTH',
-          entityId: account.id || account.user_id,
-          diff: { switchedTo: account.name, role: account.roleName || account.role, previousActor: prevActor }
-        })
-      }).catch(() => null);
-
-      this.isUserMenuOpen = false;
-      this.showToast('Role Switched', `Active session switched to ${account.name} (${account.roleName || account.role})`, 'success');
-      if (!this.isCurrentSectionAuthorized) {
-        this.handleNav(this.firstAuthorizedPath);
-      }
-    },
     handleNav(path, e) {
       this.isQuickAddOpen = false;
       this.navOpen = false;
@@ -845,19 +780,6 @@ export default {
     },
     handleLogout() {
       if (typeof window !== 'undefined') {
-        const currentUser = this.activeUser || {};
-        fetch('/api/v1/audit/log', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            actor: currentUser.name || currentUser.email || 'Authorized Operator',
-            action: 'USER_LOGOUT',
-            entityType: 'AUTH',
-            entityId: currentUser.id || currentUser.user_id || 'system-user',
-            diff: { email: currentUser.email, role: currentUser.role }
-          })
-        }).catch(() => null);
-
         if (typeof window.hushhawkLogout === 'function') {
           window.hushhawkLogout();
           return;

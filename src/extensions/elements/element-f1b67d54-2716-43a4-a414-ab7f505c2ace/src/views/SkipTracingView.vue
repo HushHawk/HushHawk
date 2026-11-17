@@ -25,7 +25,7 @@
               <span class="icon-title" v-html="icons.search"></span>
               Skip Tracing &amp; Contact Intelligence
             </h2>
-            <span class="badge-count">{{ filteredTraces.length }} verified contacts</span>
+            <span class="badge-count">{{ filteredTraces.length }} records</span>
           </div>
           <div class="header-actions">
             <button class="btn btn-secondary" @click="openModal('batch')">
@@ -119,24 +119,24 @@
                 <td>
                   <div class="owner-cell">
                     <strong>{{ t.ownerName }}</strong>
-                    <small>Age: {{ t.age }} · {{ t.deceased ? 'Deceased' : 'Alive' }}</small>
+                    <small>{{ t.source }}</small>
                   </div>
                 </td>
                 <td>
                   <div class="property-cell">
                     <span>{{ t.address }}</span>
-                    <small>Jacksonville, FL {{ t.zip }}</small>
+                    <small>{{ t.zip }}</small>
                   </div>
                 </td>
                 <td>
                   <span class="score-badge" :class="t.score >= 90 ? 'score-high' : 'score-med'">
-                    {{ t.score }}%
+                    Unavailable
                   </span>
                 </td>
                 <td>
                   <div class="phone-cell">
                     <strong>{{ t.primaryPhone }}</strong>
-                    <small>Mobile 1 · 98% active</small>
+
                   </div>
                 </td>
                 <td>
@@ -153,9 +153,9 @@
                   </span>
                 </td>
                 <td>
-                  <span class="dnc-tag" :class="{ clean: !t.dncFlag, flagged: t.dncFlag }">
-                    <span v-html="t.dncFlag ? icons.close : icons.check"></span>
-                    {{ t.dncFlag ? 'DNC Flagged' : 'Clean / Safe' }}
+                  <span class="dnc-tag">
+
+                    Unverified
                   </span>
                 </td>
                 <td @click.stop>
@@ -163,7 +163,7 @@
                     <button class="btn btn-xs btn-primary-subtle" @click="selectTrace(t)">
                       Details
                     </button>
-                    <button class="btn btn-xs" @click="openSmsModal(t)">
+                    <button class="btn btn-xs" :disabled="!t.primaryPhone" @click="openSmsModal(t)">
                       SMS
                     </button>
                   </div>
@@ -190,17 +190,17 @@
         <div class="confidence-strip">
           <div class="conf-item">
             <small>Match Confidence</small>
-            <strong class="green">{{ selectedTrace.score }}%</strong>
+            <strong>Unavailable</strong>
           </div>
           <div class="conf-item">
             <small>TCPA Compliance</small>
-            <strong :class="selectedTrace.dncFlag ? 'red' : 'green'">
-              {{ selectedTrace.dncFlag ? 'Litigator Scrub' : 'DNC Approved' }}
+            <strong>
+              Unverified
             </strong>
           </div>
           <div class="conf-item">
             <small>Owner Age</small>
-            <strong>{{ selectedTrace.age }} yrs</strong>
+            <strong>Unavailable</strong>
           </div>
         </div>
 
@@ -214,14 +214,14 @@
             <div class="phone-row">
               <div>
                 <strong>{{ selectedTrace.primaryPhone }}</strong>
-                <small>Wireless · Verizon Wireless · High Activity</small>
+
               </div>
-              <button class="btn btn-xs btn-primary" @click="quickDial(selectedTrace.primaryPhone)">Call</button>
+              <button class="btn btn-xs btn-primary" :disabled="!selectedTrace.primaryPhone" @click="quickDial(selectedTrace.primaryPhone)">Call</button>
             </div>
             <div v-if="selectedTrace.alternatePhone" class="phone-row">
               <div>
                 <strong>{{ selectedTrace.alternatePhone }}</strong>
-                <small>Wireless · AT&amp;T Mobility</small>
+
               </div>
               <button class="btn btn-xs btn-secondary" @click="quickDial(selectedTrace.alternatePhone)">Call</button>
             </div>
@@ -258,7 +258,7 @@
         </div>
 
         <div class="drawer-footer">
-          <button class="btn btn-primary btn-block" @click="openSmsModal(selectedTrace)">
+          <button class="btn btn-primary btn-block" :disabled="!selectedTrace.primaryPhone" @click="openSmsModal(selectedTrace)">
             <span v-html="icons.text"></span>
             Send Instant SMS to {{ (selectedTrace.ownerName || 'Owner').split(' ')[0] }}
           </button>
@@ -330,7 +330,7 @@
           </button>
         </div>
         <div class="modal-body">
-          <p>Upload lists up to 10,000 records. Instant Tier-1 carrier identification and DNC scrubbing.</p>
+          <p>Batch contact verification requires a configured provider.</p>
           <div class="upload-dropzone">
             <span v-html="icons.file"></span>
             <p>Upload CSV containing: First Name, Last Name, Address, City, State, ZIP</p>
@@ -362,15 +362,13 @@ export default {
       const list = traces.value || [];
       const total = list.length;
       const matched = list.filter(t => (t.phones && t.phones.length) || (t.primaryPhone && t.primaryPhone !== '—')).length;
-      const verified = list.reduce((acc, t) => acc + (t.phones ? t.phones.length : (t.primaryPhone && t.primaryPhone !== '—' ? 1 : 0)), 0);
-      const dncSafe = list.filter(t => !t.dncFlag).length;
       const matchRate = total ? Math.round((matched / total) * 100) + '%' : '0%';
       return [
-        { label: 'Total Traces Run', value: total.toLocaleString(), change: total ? '+0%' : '0%', icon: 'search' },
-        { label: 'Phone Match Rate', value: matchRate, change: total ? 'Active' : '0%', icon: 'check' },
-        { label: 'Verified Mobiles', value: verified.toLocaleString(), change: total ? 'Active' : '0%', icon: 'phone' },
-        { label: 'DNC Clean Recipient', value: dncSafe.toLocaleString(), change: 'Safe', icon: 'shield' },
-        { label: 'Avg Cost per Trace', value: '$0.00', change: '0%', icon: 'badgeDollar' }
+        { label: 'Lead Records', value: total.toLocaleString(), change: '', icon: 'search' },
+        { label: 'Records With a Phone', value: matchRate, change: '', icon: 'check' },
+        { label: 'Verified Mobiles', value: '—', change: '', icon: 'phone' },
+        { label: 'DNC Status', value: '—', change: '', icon: 'shield' },
+        { label: 'Avg Cost per Trace', value: '—', change: '', icon: 'badgeDollar' }
       ];
     });
 
@@ -383,28 +381,11 @@ export default {
         const data = await res.json();
         if (data && data.traces) {
           traces.value = data.traces.map(t => {
-            const score = Number(t.confidence || t.score || 95);
-            const phone = t.primaryPhone || t.phone || '—';
-            const relatives = Array.isArray(t.relatives) ? t.relatives : [
-              { name: 'Family Contact', relationship: 'Spouse / Co-Owner', phone: '(904) 555-0142' }
-            ];
-            const phones = Array.isArray(t.phones) ? t.phones : [
-              { number: phone, type: 'Mobile', active: '98%', carrier: 'Verizon Wireless' },
-              { number: t.alternatePhone || '(904) 555-0199', type: 'Landline / Voip', active: '85%', carrier: 'AT&T' }
-            ];
             return {
               ...t,
-              score,
-              confidence: score,
-              primaryPhone: phone,
-              alternatePhone: t.alternatePhone || '—',
-              email: t.email || '—',
-              age: t.age || 58,
-              deceased: t.deceased || false,
-              dncFlag: t.dncFlag || false,
-              zip: t.zip || (t.address && t.address.match(/\b\d{5}\b/)?.[0]) || '32204',
-              relatives,
-              phones
+              primaryPhone: t.primaryPhone || '',
+              zip: t.zip || t.address?.match(/\b\d{5}\b/)?.[0] || '',
+              relatives: []
             };
           });
           if (!selectedTrace.value && traces.value.length) selectedTrace.value = traces.value[0];
@@ -426,7 +407,7 @@ export default {
     const modalType = ref('');
     const lookupNotice = ref('');
     const batchNotice = ref('');
-    const singleForm = ref({ firstName: '', lastName: '', address: '', city: 'Jacksonville', zip: '32209' });
+    const singleForm = ref({ firstName: '', lastName: '', address: '', city: '', zip: '' });
 
     const hasActiveFilters = computed(() => searchQuery.value || qualityFilter.value || dncFilter.value || sortBy.value !== 'scoreDesc');
 
@@ -438,17 +419,17 @@ export default {
         let matchesQuality = true;
         if (qualityFilter.value === 'high') matchesQuality = t.score >= 90;
         else if (qualityFilter.value === 'medium') matchesQuality = t.score >= 75 && t.score < 90;
-        else if (qualityFilter.value === 'review') matchesQuality = t.score < 75;
+        else if (qualityFilter.value === 'review') matchesQuality = t.score == null || t.score < 75;
 
         let matchesDnc = true;
-        if (dncFilter.value === 'clear') matchesDnc = !t.dncFlag;
+        if (dncFilter.value === 'clear') matchesDnc = t.dncFlag === false;
         else if (dncFilter.value === 'scrubbed') matchesDnc = t.dncFlag;
 
         return matchesQuery && matchesQuality && matchesDnc;
       });
 
       if (sortBy.value === 'scoreDesc') {
-        list.sort((a, b) => b.score - a.score);
+        list.sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
       } else if (sortBy.value === 'nameAsc') {
         list.sort((a, b) => a.ownerName.localeCompare(b.ownerName));
       }
@@ -477,12 +458,11 @@ export default {
     }
 
     async function runSingleLookup() {
-      const ownerName = `${singleForm.value.firstName || ''} ${singleForm.value.lastName || ''}`.trim() || 'Property Owner';
+      const ownerName = `${singleForm.value.firstName || ''} ${singleForm.value.lastName || ''}`.trim();
       const payload = {
         ownerName,
-        address: singleForm.value.address || 'Jacksonville, FL',
-        zip: singleForm.value.zip || '32209',
-        notes: 'Enriched via Skip-Trace Command Center single lookup'
+        address: singleForm.value.address,
+        zip: singleForm.value.zip
       };
       try {
         const res = await fetch(API_BASE + '/skip-tracing', {
@@ -490,45 +470,26 @@ export default {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
-        if (res.ok) {
-          const saved = await res.json();
-          traces.value.unshift(saved);
-          selectedTrace.value = saved;
-          lookupNotice.value = `Identity verified for ${ownerName}: Score ${saved.score || 94}%. Added to directory.`;
-        } else {
-          lookupNotice.value = 'Identity located: 2 mobile numbers, 1 email, 2 relatives verified (Confidence 94%).';
-        }
-      } catch (e) {
-        lookupNotice.value = 'Identity located: 2 mobile numbers, 1 email, 2 relatives verified (Confidence 94%).';
+        const saved = await res.json();
+        if (!res.ok) throw new Error(saved.error || 'Could not save this lookup.');
+        traces.value.unshift(saved);
+        selectedTrace.value = saved;
+        lookupNotice.value = saved.primaryPhone || saved.email
+          ? 'Contact details found in existing records. Verification is pending.'
+          : 'No matching contact details were found in existing records.';
+      } catch (error) {
+        lookupNotice.value = error.message;
       }
-      setTimeout(() => {
-        closeModal();
-      }, 1500);
-      showToast('Skip Trace Complete', `Identity and contact ladder enriched for ${ownerName}.`, 'success');
     }
 
     async function runBatchLookup() {
       try {
-        const res = await fetch('/api/v1/skip-tracing/batch', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' }
-        });
-        if (res.ok) {
-          const data = await res.json();
-          if (data.records && data.records.length) {
-            traces.value.unshift(...data.records);
-          }
-          batchNotice.value = `Batch verified: ${data.enrichedCount || 25} canonical property records enriched in PostgreSQL.`;
-          showToast('Batch Skip Trace Complete', `Enriched ${data.enrichedCount || 25} records with verified phone numbers.`, 'success');
-        } else {
-          batchNotice.value = 'Batch verified: 25 property records enriched in PostgreSQL.';
-        }
-      } catch (e) {
-        batchNotice.value = 'Batch verified: 25 property records enriched in PostgreSQL.';
+        const res = await fetch('/api/v1/skip-tracing/batch', { method: 'POST' });
+        const result = await res.json();
+        batchNotice.value = result.error || 'Batch lookup status unavailable.';
+      } catch {
+        batchNotice.value = 'Could not connect to batch lookup.';
       }
-      setTimeout(() => {
-        closeModal();
-      }, 1500);
     }
 
     function showToast(title, message, type = 'info') {

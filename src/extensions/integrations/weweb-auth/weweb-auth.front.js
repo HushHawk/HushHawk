@@ -22,6 +22,10 @@ export default {
             basePath: '/api/auth',
             fetchOptions: {
                 credentials: 'include',
+                auth: {
+                    type: 'Bearer',
+                    token: () => window.localStorage.getItem('hushhawk_auth_token') || ''
+                },
                 retry: {
                     type: 'linear',
                     attempts: 20,

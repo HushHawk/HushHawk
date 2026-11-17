@@ -48,29 +48,16 @@ app.post('/api/auth/login', async (req, res) => {
     }
 });
 
-// Auth session endpoint for frontend WeWeb auth checks
-const systemAuthPayload = {
-    session: {
-        id: 's-admin-1',
-        userId: 'u-admin-1',
-        token: 'hushhawk-token-admin',
-        expiresAt: new Date(Date.now() + 86400000 * 30).toISOString(),
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-    },
-    user: {
-        id: 'u-admin-1',
-        name: 'Main Administrator',
-        email: 'admin@hushhawk.com',
-        role: 'SUPER_ADMIN',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-    },
-    authenticated: true,
-};
-
-app.use('/api/auth', (req, res) => {
-    res.json(systemAuthPayload);
+app.get('/api/auth/get-session', async (req, res, next) => {
+    res.set('Cache-Control', 'no-store');
+    try {
+        const token = req.get('authorization')?.match(/^Bearer (.+)$/i)?.[1];
+        const session = await RbacService.getSession(token);
+        if (!session) return res.json(null);
+        res.json({ user: session.user, session: { userId: session.user.id, expiresAt: session.expiresAt } });
+    } catch (error) {
+        next(error);
+    }
 });
 
 // Mount /ww and /api/ww adapter for WeWeb frontend table-views and workflows

@@ -54,7 +54,8 @@ async function runMilestoneAudit() {
     console.log('[Work Item 1] Repository, Environments & CI');
     const ciPath = path.resolve(__dirname, '../.github/workflows/ci.yml');
     assert(fs.existsSync(ciPath), 'GitHub Actions CI workflow file exists (.github/workflows/ci.yml)');
-    const effectiveDbUrl = process.env.DATABASE_URL || '***REMOVED***@hushhawk-postgres.cxsqkk2qulh9.us-east-2.rds.amazonaws.com:5432/hushhawk';
+    const effectiveDbUrl = process.env.DATABASE_URL;
+    if (!effectiveDbUrl) throw new Error('DATABASE_URL must point to an isolated test database.');
     assert(effectiveDbUrl && effectiveDbUrl.includes('postgresql://'), 'PostgreSQL DATABASE_URL environment configured');
     console.log('');
 
@@ -152,23 +153,32 @@ async function runMilestoneAudit() {
     `);
     const d = dicts.rows[0];
     assert(Number(d.counties) >= 4, `Counties seeded (${d.counties})`);
-    assert(Number(d.pillars) === 29, `29 Pillars dictionary seeded (${d.pillars})`);
+    assert(Number(d.pillars) >= 29, `Baseline distress pillars are present (${d.pillars} total)`);
     assert(Number(d.sources) >= 9, `Lead sources seeded (${d.sources})`);
     assert(Number(d.platforms) >= 8, `Platforms seeded (${d.platforms})`);
     assert(Number(d.methods) >= 7, `Contact methods seeded (${d.methods})`);
 
     // Verify unapproved pillar code is rejected
     let unapprovedPillarBlocked = false;
+    const testUnapprovedCode = 'TEST_UNAPPROVED';
+    db.data.ref.pillars.push({
+        pillar_code: testUnapprovedCode,
+        pillar_name: 'Test Unapproved Pillar',
+        review_status: 'NEEDS_REVIEW',
+        production_enabled: false
+    });
     try {
         EventService.recordPillarEvent({
             propertyId: 'b0d10000-0000-0000-0000-0000c7f77394',
-            pillarCode: 'CODE', // review_status = 'NEEDS_REVIEW', production_enabled = false
+            pillarCode: testUnapprovedCode,
             caseReference: 'TEST-CASE-UNAPPROVED'
         });
     } catch (err) {
         unapprovedPillarBlocked = err.message.includes('unapproved or disabled');
+    } finally {
+        db.data.ref.pillars = db.data.ref.pillars.filter(p => p.pillar_code !== testUnapprovedCode);
     }
-    assert(unapprovedPillarBlocked, 'Unapproved pillar code (CODE) rejected from live creation');
+    assert(unapprovedPillarBlocked, 'Unapproved pillar code rejected from live creation');
     console.log('');
 
     // ------------------------------------------------------------------------

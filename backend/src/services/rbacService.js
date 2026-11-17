@@ -144,11 +144,8 @@ async function recordAudit(client, { actor, action, entityType, entityId, diff }
 async function manage(actor, work) {
     return transaction(async client => {
         await client.query('SELECT pg_advisory_xact_lock(628192019)');
-        let actorId = typeof actor === 'object' && actor?.id 
-            ? actor.id 
-            : (typeof actor === 'string' && /^[0-9a-fA-F-]{36}$/.test(actor) 
-                ? actor 
-                : '01111111-1111-1111-1111-111111111111');
+        const actorId = actor?.id;
+        if (!actorId) throw new Error('Administrator access is required.');
         const current = await lookupMember(client, actorId);
         if (!current.isAdmin || current.status !== 'Active') throw new Error('Administrator access is required.');
         return work(client, current);
@@ -224,8 +221,8 @@ export class RbacService {
         return manage(actor, async (client, current) => {
             const assigned = await lookupRole(client, role);
             const { rows: [member] } = await client.query(
-                `INSERT INTO core.users (full_name, email, phone, role, password_plain, custom_role_id)
-                 VALUES ($1, $2, $3, $4, $5, $6)
+                `INSERT INTO core.users (full_name, email, phone, role, password_hash, custom_role_id)
+                 VALUES ($1, $2, $3, $4, crypt($5, gen_salt('bf', 10)), $6)
                  ON CONFLICT (email) DO NOTHING RETURNING user_id`,
                 [name, email, phone?.trim() || null, assigned.role_key, password, assigned.role_id]
             );
@@ -267,7 +264,7 @@ export class RbacService {
         const value = autoGenerate === true ? crypto.randomBytes(18).toString('base64url') : newPassword(password);
         return manage(actor, async (client, current) => {
             const member = await lookupMember(client, userId);
-            await client.query("UPDATE core.users SET password_plain = $1 WHERE user_id = $2", [value, userId]);
+            await client.query("UPDATE core.users SET password_hash = crypt($1, gen_salt('bf', 10)), password_plain = NULL WHERE user_id = $2", [value, userId]);
             await client.query('DELETE FROM core.user_sessions WHERE user_id = $1', [userId]);
             await recordAudit(client, { actor: current, action: autoGenerate ? 'PASSWORD_RESET' : 'PASSWORD_CHANGED',
                 entityType: 'USER', entityId: userId, diff: { targetUser: member.email } });
@@ -292,7 +289,7 @@ export class RbacService {
         return transaction(async client => {
             const { rows: [row] } = await client.query(
                 `SELECT ${memberColumns} FROM core.users u ${roleJoin}
-                 WHERE lower(u.email) = $1 AND u.status = 'ACTIVE' AND (u.password_plain = $2 OR $2 = 'admin' OR $2 = 'admin123')
+                 WHERE lower(u.email) = $1 AND u.status = 'ACTIVE' AND u.password_hash = crypt($2, u.password_hash)
                  FOR UPDATE OF u`, [email.trim().toLowerCase(), password.trim()]
             );
             if (!row) throw error();

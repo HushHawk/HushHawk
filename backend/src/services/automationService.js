@@ -131,16 +131,25 @@ export const AutomationService = {
     },
 
     async update(id, changes) {
-        const { rows: [before] } = await pool.query(
-            'SELECT * FROM ops.automation_rules WHERE rule_id::text = $1 AND archived_at IS NULL', [id]);
-        if (!before) throw notFound();
-        const values = validateRule({ ...before, ...changes });
-        const { rows: [rule] } = await pool.query(
-            `UPDATE ops.automation_rules SET name = $2, description = $3, trigger_code = $4,
-                action_code = $5, action_text = $6, enabled = $7
-             WHERE rule_id = $1 AND archived_at IS NULL RETURNING *`, [before.rule_id, ...values]);
-        if (!rule) throw notFound();
-        return rule;
+        const client = await pool.connect();
+        try {
+            await client.query('BEGIN');
+            const { rows: [before] } = await client.query(
+                'SELECT * FROM ops.automation_rules WHERE rule_id::text = $1 AND archived_at IS NULL FOR UPDATE', [id]);
+            if (!before) throw notFound();
+            const values = validateRule({ ...before, ...changes });
+            const { rows: [rule] } = await client.query(
+                `UPDATE ops.automation_rules SET name = $2, description = $3, trigger_code = $4,
+                    action_code = $5, action_text = $6, enabled = $7
+                 WHERE rule_id = $1 RETURNING *`, [before.rule_id, ...values]);
+            await client.query('COMMIT');
+            return rule;
+        } catch (error) {
+            await client.query('ROLLBACK');
+            throw error;
+        } finally {
+            client.release();
+        }
     },
 
     async archive(id) {

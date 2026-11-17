@@ -374,6 +374,15 @@ export class PodioSyncService {
             const items = data.items || [];
             console.log(`[PodioSync] Ingesting ${items.length} real communication records from Podio Feeds...`);
 
+            if (items.length) {
+                await pool.query(`
+                    INSERT INTO core.conversation_desk_platforms (platform_id, name, color)
+                    VALUES ('podio', 'Podio', '#2686cc'), ('smrtphone', 'smrtPhone', '#49b6db'),
+                           ('email', 'Email', '#d4a928')
+                    ON CONFLICT (platform_id) DO NOTHING
+                `);
+            }
+
             let ingestedCount = 0;
             for (const it of items) {
                 try {
@@ -390,14 +399,14 @@ export class PodioSyncService {
                     const typeText = (typeof typeObj === 'object' ? typeObj?.text : typeObj) || 'Text Message';
 
                     const statusObj = fMap['Status'];
-                    const statusText = (typeof statusObj === 'object' ? statusObj?.text : statusObj) || 'Success';
+                    const statusText = (typeof statusObj === 'object' ? statusObj?.text : statusObj) || 'Unknown';
 
-                    const callerName = fMap['Caller Name'] || it.title || 'Jacksonville Seller';
-                    const fromPhone = fMap['From Phone'] || (isInbound ? '+13866273499' : this.OUTBOUND_PHONE);
-                    const toPhone = fMap['To Phone'] || (isInbound ? this.OUTBOUND_PHONE : '+13866273499');
-                    const fromEmail = fMap['From Email'] || (isInbound ? 'team@elitehomes1.com' : this.OUTBOUND_EMAIL);
-                    const toEmail = fMap['To Email'] || (isInbound ? this.OUTBOUND_EMAIL : 'team@elitehomes1.com');
-                    
+                    const callerName = fMap['Caller Name'] || it.title || 'Unknown contact';
+                    const contactPhone = fMap[isInbound ? 'From Phone' : 'To Phone'];
+                    const contactEmail = fMap[isInbound ? 'From Email' : 'To Email'];
+                    const phone = typeof contactPhone === 'string' ? contactPhone.trim() || null : null;
+                    const email = typeof contactEmail === 'string' ? contactEmail.trim() || null : null;
+
                     const textMessage = fMap['Text Message'];
                     const callSummary = fMap['Call Summary'];
                     const callPrompt = fMap['Call Prompt'];
@@ -413,8 +422,8 @@ export class PodioSyncService {
                     if (typeText.toLowerCase().includes('call')) {
                         method = 'CALL';
                         platformId = 'smrtphone';
-                        const durationStr = callDuration ? `${Math.floor(callDuration / 60)}m ${callDuration % 60}s` : '1m 24s';
-                        content = callSummary || callPrompt || `Call with ${callerName} (${durationStr}). Status: ${statusText}`;
+                        const durationStr = callDuration ? `${Math.floor(callDuration / 60)}m ${callDuration % 60}s` : '';
+                        content = callSummary || callPrompt || `Call with ${callerName}${durationStr ? ` (${durationStr})` : ''}. Status: ${statusText}`;
                         if (callRecording) content += ` · Audio Recording: ${callRecording}`;
                     } else if (typeText.toLowerCase().includes('email')) {
                         method = 'EMAIL';
@@ -434,14 +443,13 @@ export class PodioSyncService {
                             ? fMap['Property Address'] 
                             : (fMap['Property Address'].value || fMap['Property Address'].formatted || '');
                     }
-                    if (!propAddress) propAddress = 'Jacksonville Metro, FL';
 
                     // Clean contact identifier for thread grouping
-                    const contactKey = (typeText.toLowerCase().includes('email') && (fromEmail || toEmail))
-                        ? (isInbound ? fromEmail : toEmail).toLowerCase().trim()
-                        : (isInbound ? fromPhone : toPhone).replace(/\D/g, '') || callerName.toLowerCase().trim();
+                    const contactKey = method === 'EMAIL'
+                        ? email?.toLowerCase()
+                        : phone?.replace(/\D/g, '');
 
-                    const threadId = 'th-' + toDeterministicUuid(`thread-${contactKey}`);
+                    const threadId = 'th-' + toDeterministicUuid(`thread-${contactKey || `podio-item-${it.item_id}`}`);
                     const msgId = 'msg-podio-' + it.item_id;
                     const itemDate = it.created_on ? new Date(it.created_on) : new Date();
 
@@ -451,7 +459,9 @@ export class PodioSyncService {
                         (id, platform_id, contact_name, contact_phone, contact_email, property_address, property_city, property_state, status, unread_count, last_message_preview, last_message_at, created_at, updated_at)
                         VALUES ($1, $2, $3, $4, $5, $6, 'Jacksonville', 'FL', 'Active', $7, $8, $9, $9, $9)
                         ON CONFLICT (id) DO UPDATE SET
-                            last_message_preview = EXCLUDED.last_message_preview,
+                            last_message_preview = CASE
+                                WHEN EXCLUDED.last_message_at >= core.conversation_desk_threads.last_message_at
+                                THEN EXCLUDED.last_message_preview ELSE core.conversation_desk_threads.last_message_preview END,
                             last_message_at = GREATEST(core.conversation_desk_threads.last_message_at, EXCLUDED.last_message_at),
                             contact_phone = COALESCE(EXCLUDED.contact_phone, core.conversation_desk_threads.contact_phone),
                             contact_email = COALESCE(EXCLUDED.contact_email, core.conversation_desk_threads.contact_email),
@@ -460,8 +470,8 @@ export class PodioSyncService {
                         threadId,
                         platformId,
                         callerName,
-                        isInbound ? fromPhone : toPhone,
-                        isInbound ? fromEmail : toEmail,
+                        phone,
+                        email,
                         propAddress,
                         isInbound ? 1 : 0,
                         content.slice(0, 200),
@@ -507,11 +517,12 @@ export class PodioSyncService {
                 }
             }
 
+            if (items.length && ingestedCount === 0) throw new Error('No Podio items could be saved.');
             console.log(`[PodioSync] Successfully synced ${ingestedCount} communications from Podio Feeds into PostgreSQL!`);
             return ingestedCount;
         } catch (err) {
             console.error('[PodioSync] Communication sync failed:', err.message);
-            return 492;
+            throw new Error('Podio communications could not be synchronized. Check the integration connection.', { cause: err });
         }
     }
 
@@ -1101,9 +1112,9 @@ export class PodioSyncService {
 
             const coldLeads = items.map((cl) => {
                 const getF = (label) => cl.fields.find(f => f.label.toLowerCase() === label.toLowerCase())?.values?.[0];
-                const phone = getF('Phone #(s)')?.value || '(904) 579-0065';
-                const email = getF('Email ID(s)')?.value || 'lead@elitehomes1.com';
-                const addr = getF('Property Address')?.formatted || 'Jacksonville, FL';
+                const phone = getF('Phone #(s)')?.value || null;
+                const email = getF('Email ID(s)')?.value || null;
+                const addr = getF('Property Address')?.formatted || null;
                 const leadSource = getF('Lead Source')?.value?.text || 'Cold Skip Trace';
 
                 return {
@@ -1114,9 +1125,7 @@ export class PodioSyncService {
                     email,
                     address: addr,
                     source: leadSource,
-                    status: 'Cold / Uncontacted',
-                    equity: '$85,000',
-                    distress: 'High Distress Tax Lien'
+                    status: 'Cold / Uncontacted'
                 };
             });
 
@@ -1152,9 +1161,9 @@ export class PodioSyncService {
             coldLeads,
             team
         ] = await Promise.all([
-            this.syncProperties().catch(() => 18),
-            this.syncLeads().catch(() => 68),
-            this.syncCommunications(100).catch(() => 493),
+            this.syncProperties().catch(() => null),
+            this.syncLeads().catch(() => null),
+            this.syncCommunications(100).catch(() => null),
             this.syncCashBuyers().catch(() => []),
             this.syncContacts().catch(() => []),
             this.syncOffers().catch(() => []),
@@ -1166,7 +1175,7 @@ export class PodioSyncService {
         ]);
 
         return {
-            ok: true,
+            ok: [propsCount, leadsCount, commsCount].every(count => count !== null),
             syncedAt: new Date().toISOString(),
             workspace: 'Elite Homes USA Group LLC',
             spaceId: 10347996,

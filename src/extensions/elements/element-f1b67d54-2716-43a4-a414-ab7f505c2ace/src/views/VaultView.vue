@@ -94,8 +94,7 @@
           </div>
         </div>
         <div class="uph-badge">
-          <span class="live-dot"></span>
-          <span>AWS S3 (us-east-2) · Connected</span>
+          <span>Private AWS S3 storage</span>
         </div>
       </div>
 
@@ -1190,25 +1189,21 @@ export default {
           const auth = await authRes.json();
           item.progress = 40;
 
-          // 2. Direct browser-to-S3 presigned PUT upload
-          if (auth.upload_url && typeof auth.upload_url === 'string' && auth.upload_url.startsWith('https://')) {
-            try {
-              await fetch(auth.upload_url, {
-                method: 'PUT',
-                headers: auth.headers || { 'Content-Type': item.file.type || 'application/octet-stream' },
-                body: item.file
-              });
-            } catch (putErr) {
-              console.warn('[Direct S3 PUT skipped / server will persist buffer]', putErr.message);
-            }
+          if (auth.mode === 'DEVELOPMENT_PRESET' || !auth.upload_url?.startsWith('https://')) {
+            throw new Error('Private storage is unavailable. Check the S3 connection.');
           }
-          item.progress = 70;
-
-          // 3. Read preview base64 data URL
-          const dataUrl = await this.readFileAsDataUrl(item.file);
+          const upload = await fetch(auth.upload_url, {
+            method: 'PUT',
+            headers: auth.headers,
+            body: item.file
+          });
+          if (!upload.ok) throw new Error(`S3 rejected the upload (HTTP ${upload.status}).`);
           item.progress = 85;
+          // Keep small image previews inline for the Vault grid.
+          const preview = item.file.type.startsWith('image/') && item.file.size <= 1024 * 1024
+            ? await this.readFileAsDataUrl(item.file)
+            : null;
 
-          // 4. Register in PostgreSQL RDS core.vault_files
           const regRes = await fetch(`${API_BASE}/vault/files`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -1219,13 +1214,13 @@ export default {
               mime_type: item.file.type || 'application/octet-stream',
               category: this.selectedCategory,
               object_key: auth.object_key,
-              data_url: dataUrl,
+              ...(preview ? { data_url: preview } : {}),
               linked_property_id: this.selectedPropertyId || null,
               uploaded_by: 'Main Administrator'
             })
           });
 
-          if (!regRes.ok) throw new Error('Database registration failed');
+          if (!regRes.ok) throw new Error('S3 received the file, but Vault could not save its record.');
 
           item.progress = 100;
           item.status = 'done';
@@ -1289,6 +1284,8 @@ export default {
         try {
           const res = await fetch(`${API_BASE}/vault/files/${file.id}/download-url?disposition=inline`);
           const data = await res.json();
+          if (!res.ok) throw new Error(data.error || 'Could not open the preview.');
+          if (this.previewFile?.id !== file.id) return;
           if (data.preview_url || data.download_url || data.data_url) {
             this.previewFile = {
               ...this.previewFile,
@@ -1297,12 +1294,18 @@ export default {
               mime_type: data.mime_type || this.previewFile.mime_type,
               loadingPreview: false
             };
+            if (this.isTextFile(this.previewFile) && !this.previewFile.data_url && this.previewFile.preview_url) {
+              const textResponse = await fetch(this.previewFile.preview_url);
+              if (!textResponse.ok) throw new Error('Could not load the text preview.');
+              const text = await textResponse.text();
+              if (this.previewFile?.id === file.id) this.previewFile.previewText = text;
+            }
           } else {
             this.previewFile.loadingPreview = false;
           }
         } catch (err) {
           console.warn('[Vault Preview URL Load Warn]', err);
-          this.previewFile.loadingPreview = false;
+          if (this.previewFile?.id === file.id) this.previewFile.loadingPreview = false;
         }
       }
     },
@@ -1332,7 +1335,7 @@ export default {
           if (b64) return atob(b64);
         } catch (e) {}
       }
-      return `[HushHawk Private Vault Document]\nFilename: ${file.original_filename || file.filename}\nCategory: ${file.category}\nS3 Key: ${file.object_key}\nStatus: Verified and Encrypted (AES256)`;
+      return file.previewText ?? 'Text preview unavailable.';
     },
     async downloadFile(file) {
       if (this.previewOnlyMode) {

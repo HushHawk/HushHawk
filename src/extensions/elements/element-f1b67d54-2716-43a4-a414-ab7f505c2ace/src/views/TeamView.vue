@@ -1420,20 +1420,16 @@ export default {
     // API Fetchers & Network Resiliency
     // -------------------------------------------------------------------------
     async fetchApi(endpoint, options = {}) {
+      const token = window.localStorage.getItem('hushhawk_auth_token');
+      const headers = new Headers(options.headers);
+      if (token) headers.set('Authorization', `Bearer ${token}`);
       try {
-        const res = await fetch(endpoint, options);
+        const res = await fetch(endpoint, { ...options, headers });
         if (res.ok) return res;
-      } catch (e) {
-        // Relative fetch error
-      }
-      if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
-        try {
-          const directUrl = `http://localhost:3001${endpoint}`;
-          const res = await fetch(directUrl, options);
-          if (res.ok) return res;
-        } catch (e) {
-          // ignore
-        }
+        const { error } = await res.json().catch(() => ({}));
+        this.showToast('Request failed', error || `Server returned ${res.status}`, 'error');
+      } catch (error) {
+        this.showToast('Request failed', error.message, 'error');
       }
       return null;
     },

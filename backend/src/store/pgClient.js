@@ -28,7 +28,8 @@ const customLookup = (hostname, options, callback) => {
     });
 };
 
-const connectionString = process.env.DATABASE_URL || '***REMOVED***@hushhawk-postgres.cxsqkk2qulh9.us-east-2.rds.amazonaws.com:5432/hushhawk';
+const connectionString = process.env.DATABASE_URL;
+if (!connectionString) throw new Error('DATABASE_URL is required.');
 
 export const pool = new Pool({
     connectionString,

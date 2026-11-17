@@ -6,8 +6,8 @@
         <div class="panel-top">
           <div class="top-header">
             <h3>
-              <span v-html="icons.mail"></span>
-              Omnichannel Comms
+              <span v-html="icons.mail" aria-hidden="true"></span>
+              Communications
             </h3>
             <div class="thread-header-controls">
               <button class="sync-crm-btn" @click="syncPodioAndSmrtPhone" :disabled="isSyncing" title="Sync Podio & smrtPhone">
@@ -74,7 +74,7 @@
             <div class="chat-contact-details">
               <div class="name-phone-row">
                 <h3>{{ activeThread.contact }}</h3>
-                <span class="contact-badge" :class="activeThread.role.toLowerCase()">{{ activeThread.role }}</span>
+                <span v-if="activeThread.role" class="contact-badge" :class="activeThread.role.toLowerCase()">{{ activeThread.role }}</span>
               </div>
               <div class="contact-meta">
                 <span v-if="activeThread.phone" class="contact-phone font-mono">{{ activeThread.phone }}</span>
@@ -83,7 +83,7 @@
             </div>
           </div>
           <div class="chat-actions">
-            <button class="btn btn-secondary btn-sm" @click="makeCall(activeThread)">
+            <button class="btn btn-secondary btn-sm" :disabled="!activeThread.phone" @click="makeCall(activeThread)">
               <span v-html="icons.phone"></span>
               <span>Call Now</span>
             </button>
@@ -108,7 +108,7 @@
             </div>
             <div v-else class="message-bubble">
               <div class="bubble-header">
-                <span class="sender-name">{{ msg.sender }}</span>
+                <span class="sender-name">{{ msg.name || msg.sender }}</span>
                 <span v-if="msg.source" class="msg-source-tag">{{ msg.source }}</span>
                 <span class="msg-time">{{ msg.time }}</span>
               </div>
@@ -130,6 +130,7 @@
 
         <!-- Message Composer -->
         <div v-if="activeThread" class="chat-composer">
+          <p v-if="sendFeedback" class="send-feedback" role="status">{{ sendFeedback }}</p>
           <!-- Quick Templates Bar -->
           <div class="quick-templates">
             <span class="template-label">Templates:</span>
@@ -149,9 +150,9 @@
               placeholder="Type your message, cash offer, or touch update... (Press Enter to Send)"
               @keydown.enter.exact.prevent="sendMessage"
             ></textarea>
-            <button class="btn btn-primary send-btn" @click="sendMessage">
+            <button class="btn btn-primary send-btn" :disabled="sending || !outgoingText.trim()" @click="sendMessage">
               <span v-html="icons.send"></span>
-              Send
+              {{ sending ? 'Sending…' : 'Send' }}
             </button>
           </div>
         </div>
@@ -172,13 +173,13 @@
         </div>
         <div class="intel-body">
           <div class="prop-highlight">
-            <strong>{{ activeThread.address }}</strong>
+            <strong>{{ activeThread.address || "No property linked" }}</strong>
             <span class="font-mono text-gold">{{ activeThread.parcelId }}</span>
           </div>
 
           <div class="info-card">
             <span class="k">Wholesale Stage</span>
-            <span class="v status-pill">{{ activeThread.stage }}</span>
+            <span class="v status-pill">{{ activeThread.stage || "Unavailable" }}</span>
           </div>
 
           <div class="info-card">
@@ -186,11 +187,11 @@
             <div class="val-grid">
               <div>
                 <span class="sub-k">Last Offer</span>
-                <strong class="text-gold">${{ activeThread.lastOffer?.toLocaleString() || 'N/A' }}</strong>
+                <strong class="text-gold">{{ activeThread.lastOffer == null ? 'Unavailable' : '$' + activeThread.lastOffer.toLocaleString() }}</strong>
               </div>
               <div>
                 <span class="sub-k">Target ARV</span>
-                <strong>${{ activeThread.arv?.toLocaleString() || 'N/A' }}</strong>
+                <strong>{{ activeThread.arv == null ? 'Unavailable' : '$' + activeThread.arv.toLocaleString() }}</strong>
               </div>
             </div>
           </div>
@@ -212,8 +213,8 @@
           <div class="info-card">
             <span class="k">Assigned Lead Rep</span>
             <div class="rep-row">
-              <span class="rep-avatar">{{ activeThread.repInitials }}</span>
-              <span>{{ activeThread.rep }}</span>
+              <span v-if="activeThread.repInitials" class="rep-avatar">{{ activeThread.repInitials }}</span>
+              <span>{{ activeThread.rep || "Unassigned" }}</span>
             </div>
           </div>
         </div>
@@ -236,13 +237,15 @@ export default {
       searchQuery: '',
       channelFilter: 'All',
       outgoingText: '',
+      sending: false,
+      sendFeedback: '',
       isSyncing: false,
       showIntel: true,
       activeThread: null,
       quickTemplates: [
-        { label: 'Cash Offer', text: 'Hi, this is Marcus with HushHawk. Following up on our cash purchase agreement of $145,000 net to you—can we finalize paperwork today?' },
+        { label: 'Cash Offer', text: 'Hi, this is HushHawk. Is now a good time to discuss your cash offer?' },
         { label: 'Inspection Request', text: 'Good morning! Our field underwriter would like to schedule a 15-minute walkthrough of the property tomorrow between 1-3 PM. Does that time work?' },
-        { label: 'Buyer Deal Blast', text: 'VIP INVESTOR ALERT: Off-market duplex in 32208 locked at $110,000. ARV $210,000. Clean title in escrow. Reply for walkthrough lockbox code.' }
+        { label: 'Buyer Deal Blast', text: 'Hi, are you interested in reviewing a new property opportunity? Reply and our team can share the details.' }
       ],
       threads: []
     };
@@ -256,8 +259,8 @@ export default {
         if (this.channelFilter === 'SMS' && t.type !== 'SMS') return false;
         if (this.channelFilter === 'Calls' && t.type !== 'Calls') return false;
         if (this.channelFilter === 'Email' && t.type !== 'Email') return false;
-        if (this.channelFilter === 'smrtPhone' && t.source !== 'smrtPhone' && t.type !== 'Calls') return false;
-        if (this.channelFilter === 'Podio' && t.source !== 'Podio' && t.type !== 'Email') return false;
+        if (this.channelFilter === 'smrtPhone' && t.source !== 'SMRTPHONE' && t.type !== 'Calls') return false;
+        if (this.channelFilter === 'Podio' && t.source !== 'PODIO' && t.type !== 'Email') return false;
         if (this.channelFilter === 'Buyers' && t.role !== 'VIP Buyer') return false;
         if (this.searchQuery) {
           const q = this.searchQuery.toLowerCase();
@@ -271,12 +274,6 @@ export default {
       });
     }
   },
-  created() {
-    if (this.threads.length > 0) {
-      this.activeThread = this.threads[0];
-    }
-  },
-
   mounted() {
     this.loadCommunications();
   },
@@ -290,15 +287,11 @@ export default {
           headers: { 'Content-Type': 'application/json' }
         });
         const data = await res.json();
-        if (data && data.success) {
-          this.showToast('Podio & smrtPhone Synced', `Omnichannel communications synchronized live (${data.synced} communications refreshed).`, 'success');
-          await this.loadCommunications();
-        } else {
-          this.showToast('Sync In Progress', 'Podio and smrtPhone communication bridge synchronized.', 'info');
-          await this.loadCommunications();
-        }
-      } catch (err) {
-        this.showToast('Sync Cached', 'Using active PostgreSQL RDS communication ledger.', 'info');
+        if (!res.ok || !data.success) throw new Error(data.error || 'Could not sync conversations.');
+        this.showToast('Podio sync complete', `${data.synced} conversations refreshed.`, 'success');
+        await this.loadCommunications();
+      } catch (error) {
+        this.showToast('Podio sync failed', error.message, 'error');
       } finally {
         this.isSyncing = false;
       }
@@ -307,12 +300,12 @@ export default {
       try {
         const res = await fetch('/api/v1/communications');
         const data = await res.json();
-        if (data) {
-          this.threads = data.threads;
-          if (!this.activeThread) this.activeThread = data.threads[0];
-        }
-      } catch (err) {
-        console.warn('[Communications] Using local cache:', err.message);
+        if (!res.ok || !Array.isArray(data.threads)) throw new Error(data.error || 'Could not load conversations.');
+        const selected = this.activeThread?.id;
+        this.threads = data.threads;
+        this.activeThread = data.threads.find(thread => thread.id === selected) || data.threads[0] || null;
+      } catch (error) {
+        this.showToast('Communications unavailable', error.message, 'error');
       }
     },
 
@@ -329,26 +322,29 @@ export default {
       this.outgoingText = text;
     },
     async sendMessage() {
-      if (!this.outgoingText.trim() || !this.activeThread) return;
       const text = this.outgoingText.trim();
-      const threadId = this.activeThread.id;
-      this.activeThread.messages.push({
-        sender: 'HushHawk Rep',
-        time: 'Just now',
-        text: text,
-        outgoing: true
-      });
-      this.activeThread.lastMessage = text;
-      this.outgoingText = '';
-
+      const threadId = this.activeThread?.id;
+      if (!text || !threadId || this.sending) return;
+      this.sending = true;
+      this.sendFeedback = '';
       try {
-        await fetch('/api/v1/communications/messages', {
+        const token = window.localStorage.getItem('hushhawk_auth_token');
+        const response = await fetch('/api/v1/communications/messages', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token || ''}` },
           body: JSON.stringify({ threadId, text })
         });
-      } catch (err) {
-        console.warn('[Communications] Message dispatch cached:', err.message);
+        const result = await response.json();
+        if (!response.ok || !result.accepted) throw new Error(result.error || 'Could not send the message.');
+        if (this.outgoingText.trim() === text) this.outgoingText = '';
+        this.sendFeedback = result.historySaved
+          ? 'Accepted by the delivery provider.'
+          : 'Accepted by the delivery provider. Conversation history could not be saved.';
+        await this.loadCommunications();
+      } catch (error) {
+        this.sendFeedback = error.message;
+      } finally {
+        this.sending = false;
       }
     },
     showToast(title, message, type = 'info') {
@@ -360,30 +356,9 @@ export default {
         }
       }
     },
-    async makeCall(th) {
-      if (!th || !th.phone) return;
-      this.showToast('Voice Bridge Connecting', `Connecting to ${th.contact} (${th.phone})...`, 'info');
-      try {
-        const res = await fetch('/api/v1/calls/dispatch', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            recipientPhone: th.phone,
-            propertyId: th.property_id || null,
-            actor: 'Alex Richard (HushHawk)',
-            notes: `Outbound call to ${th.contact} regarding ${th.address || 'property'}`
-          })
-        });
-        const data = await res.json();
-        if (data.carrier && data.carrier.nativeUri) {
-          window.location.href = data.carrier.nativeUri;
-        } else {
-          window.location.href = `tel:${th.phone.replace(/[^\d+]/g, '')}`;
-        }
-        this.showToast('Call Bridge Dispatched', `Connected to ${th.contact}. Logged in PostgreSQL interactions.`, 'success');
-      } catch (e) {
-        window.location.href = `tel:${th.phone.replace(/[^\d+]/g, '')}`;
-      }
+    makeCall(thread) {
+      const phone = thread.phone?.replace(/[^\d+]/g, '');
+      if (phone) window.location.href = `tel:${phone}`;
     },
     toggleContextDrawer() {
       this.showIntel = !this.showIntel;
@@ -403,6 +378,7 @@ export default {
 </script>
 
 <style scoped>
+.send-feedback { color: var(--hh-text, #f8fafc); margin: 0 0 8px; }
 .view-container {
   display: flex;
   flex-direction: column;
@@ -459,7 +435,7 @@ export default {
 
 .top-header h3 {
   font-size: 1.05rem;
-  color: #f8fafc;
+  color: var(--hh-text, #f8fafc);
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -678,7 +654,7 @@ export default {
 
 .name-phone-row h3 {
   font-size: 0.95rem;
-  color: #f8fafc;
+  color: var(--hh-text, #f8fafc);
   margin: 0;
 }
 
@@ -692,7 +668,7 @@ export default {
 
 .contact-phone {
   font-size: 0.75rem;
-  color: #94a3b8;
+  color: var(--hh-muted, #94a3b8);
 }
 
 .contact-meta {
@@ -711,7 +687,7 @@ export default {
   gap: var(--hh-action-gap, 8px);
 }
 
-.chat-actions .btn { white-space: nowrap; }
+.chat-actions .btn { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
 .chat-actions .btn > span:first-child { display: inline-flex; flex-shrink: 0; }
 .chat-actions .btn :deep(svg) { width: 16px; height: 16px; }
 

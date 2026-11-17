@@ -593,41 +593,35 @@ export default {
           body: JSON.stringify({
             filename: file.name,
             content_type: file.type || 'application/pdf',
-            entity_type: 'contracts',
-            category: 'escrow'
+            file_size_bytes: file.size,
+            category: 'Title & Escrow'
           })
         });
 
-        if (authRes.ok) {
-          const auth = await authRes.json();
-          // 2. Direct browser-to-S3 presigned PUT upload
-          if (auth.upload_url && auth.upload_url.startsWith('https://')) {
-            try {
-              await fetch(auth.upload_url, {
-                method: 'PUT',
-                headers: auth.headers || { 'Content-Type': file.type || 'application/pdf' },
-                body: file
-              });
-            } catch (putErr) {
-              console.warn('[Contract S3 PUT warn]', putErr.message);
-            }
-          }
-
-          // 3. Register in PostgreSQL RDS core.vault_files
-          await fetch('/api/v1/vault/files', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              filename: file.name,
-              original_filename: file.name,
-              category: 'contracts',
-              object_key: auth.object_key,
-              s3_bucket: auth.bucket,
-              file_size: file.size,
-              mime_type: file.type || 'application/pdf'
-            })
-          });
+        if (!authRes.ok) throw new Error('Could not authorize the S3 upload.');
+        const auth = await authRes.json();
+        if (auth.mode === 'DEVELOPMENT_PRESET' || !auth.upload_url?.startsWith('https://')) {
+          throw new Error('Private storage is unavailable. Check the S3 connection.');
         }
+        const upload = await fetch(auth.upload_url, {
+          method: 'PUT',
+          headers: auth.headers,
+          body: file
+        });
+        if (!upload.ok) throw new Error(`S3 rejected the upload (HTTP ${upload.status}).`);
+
+        const registration = await fetch('/api/v1/vault/files', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            filename: file.name,
+            category: 'Title & Escrow',
+            object_key: auth.object_key,
+            file_size_bytes: file.size,
+            mime_type: file.type || 'application/pdf'
+          })
+        });
+        if (!registration.ok) throw new Error('S3 received the file, but Vault could not save its record.');
 
         // 4. Attach doc to active contract
         if (selectedContract.value) {
@@ -644,9 +638,8 @@ export default {
           isUploadingDoc.value = false;
         }, 1200);
       } catch (err) {
-        showToast('Attached to File', `"${file.name}" saved to escrow records.`, 'info');
-        closeModal();
-        selectedUploadFile.value = null;
+        uploadNotice.value = err.message;
+        showToast('Escrow upload failed', err.message, 'error');
         isUploadingDoc.value = false;
       }
     }

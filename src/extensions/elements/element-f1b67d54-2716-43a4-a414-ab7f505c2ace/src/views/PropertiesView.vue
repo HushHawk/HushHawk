@@ -1385,8 +1385,9 @@
 
         <div class="camera-viewfinder-box">
           <video v-if="hasCameraStream" ref="cameraVideo" autoplay playsinline class="viewfinder-feed"></video>
-          <div v-else class="viewfinder-simulated" :style="`background-image: url('${currentCameraFramePreview}')`">
-            <div class="simulated-view-badge">Field Camera</div>
+          <div v-else class="camera-unavailable">
+            <p>{{ cameraError || 'Waiting for camera permission…' }}</p>
+            <button type="button" class="btn-cancel-flat" @click="triggerChooseFromLibrary">Choose a photo</button>
           </div>
           <div v-if="shutterFlashed" class="shutter-flash-overlay"></div>
         </div>
@@ -1403,7 +1404,7 @@
             {{ capturedQueue.length }} photo{{ capturedQueue.length !== 1 ? 's' : '' }} captured
           </span>
 
-          <button class="camera-shutter-ring" @click="snapPhoto" title="Capture photo">
+          <button class="camera-shutter-ring" :disabled="!hasCameraStream || capturingPhoto" @click="snapPhoto" title="Capture photo">
             <span class="camera-shutter-inner"></span>
           </button>
 
@@ -1489,6 +1490,7 @@
           <div v-for="(file, idx) in uploadChecklist" :key="idx" class="s3-check-row">
             <span class="file-label">{{ file.name }}</span>
             <span v-if="file.status === 'done'" class="check-done">✓</span>
+            <span v-else-if="file.status === 'error'">Failed</span>
             <span v-else class="check-pending">○</span>
           </div>
         </div>
@@ -1730,7 +1732,9 @@ export default {
       showPhotoAddedToast: false,
       lastAddedCount: 0,
       defaultPhotoPlaceholder: '',
-      currentCameraFramePreview: '',
+      cameraError: '',
+      capturingPhoto: false,
+      cameraRequest: 0,
 
       // Properties list
       properties: [],
@@ -1936,6 +1940,7 @@ export default {
     window.addEventListener('hushhawk-select-property', this.onCustomSelectProperty);
   },
   beforeUnmount() {
+    this.stopCameraStream();
     document.removeEventListener('click', this.closeAllMenus);
     if (this.onCustomSelectProperty) {
       window.removeEventListener('hushhawk-select-property', this.onCustomSelectProperty);
@@ -2011,28 +2016,27 @@ export default {
       this.startCameraStream();
     },
     async startCameraStream() {
-      if (typeof navigator !== 'undefined' && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-          this.hasCameraStream = true;
-          this.$nextTick(() => {
-            if (this.$refs.cameraVideo) {
-              this.$refs.cameraVideo.srcObject = stream;
-            }
-          });
-        } catch (err) {
-          this.hasCameraStream = false;
+      const request = ++this.cameraRequest;
+      this.cameraError = '';
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+        if (request !== this.cameraRequest || this.modalStep !== 'camera') {
+          stream.getTracks().forEach(track => track.stop());
+          return;
         }
-      } else {
-        this.hasCameraStream = false;
+        this.hasCameraStream = true;
+        await this.$nextTick();
+        if (this.$refs.cameraVideo) this.$refs.cameraVideo.srcObject = stream;
+        else stream.getTracks().forEach(track => track.stop());
+      } catch {
+        if (request === this.cameraRequest) this.cameraError = 'Camera unavailable. Check your browser permissions or choose a photo.';
       }
     },
     stopCameraStream() {
-      if (this.$refs.cameraVideo && this.$refs.cameraVideo.srcObject) {
-        const stream = this.$refs.cameraVideo.srcObject;
-        stream.getTracks().forEach(track => track.stop());
-        this.$refs.cameraVideo.srcObject = null;
-      }
+      this.cameraRequest++;
+      const video = this.$refs.cameraVideo;
+      video?.srcObject?.getTracks().forEach(track => track.stop());
+      if (video) video.srcObject = null;
       this.hasCameraStream = false;
     },
     cycleCategory() {
@@ -2040,23 +2044,31 @@ export default {
       this.activeCameraTag = this.cameraTags[this.cameraTagIndex];
       this.reviewCategory = this.activeCameraTag;
     },
-    snapPhoto() {
-      this.shutterFlashed = true;
-      setTimeout(() => { this.shutterFlashed = false; }, 180);
-
-      const seq = String(this.capturedQueue.length + 1).padStart(2, '0');
-      const filename = `site-photo-${seq}.jpg`;
-      const previewUrl = '';
-
-      this.capturedQueue.push({
-        name: filename,
-        previewUrl,
-        dataUrl: previewUrl,
-        tag: this.activeCameraTag,
-        file: null,
-      });
-
-      this.currentCameraFramePreview = frameUrls[(nextIdx + 1) % frameUrls.length];
+    async snapPhoto() {
+      const video = this.$refs.cameraVideo;
+      if (!video?.videoWidth || this.capturingPhoto) return;
+      this.capturingPhoto = true;
+      const request = this.cameraRequest;
+      const tag = this.activeCameraTag;
+      try {
+        const canvas = document.createElement('canvas');
+        const scale = Math.min(1, 1800 / Math.max(video.videoWidth, video.videoHeight));
+        canvas.width = Math.round(video.videoWidth * scale);
+        canvas.height = Math.round(video.videoHeight * scale);
+        canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.85));
+        if (!blob) throw new Error('Could not capture the photo.');
+        const file = new File([blob], `site-photo-${Date.now()}.jpg`, { type: blob.type });
+        const previewUrl = await this.readFileAsDataURL(file);
+        if (request !== this.cameraRequest) return;
+        this.capturedQueue.push({ name: file.name, file, previewUrl, dataUrl: previewUrl, tag });
+        this.shutterFlashed = true;
+        setTimeout(() => { this.shutterFlashed = false; }, 180);
+      } catch (error) {
+        this.showToast(error.message);
+      } finally {
+        this.capturingPhoto = false;
+      }
     },
     goToReview() {
       if (this.capturedQueue.length === 0) return;
@@ -2067,102 +2079,55 @@ export default {
       this.capturedQueue.splice(idx, 1);
       if (this.capturedQueue.length === 0) {
         this.modalStep = 'camera';
+        this.startCameraStream();
       }
     },
-    onNativeFilesSelected(e) {
-      const files = Array.from(e.target.files || []);
+    async onNativeFilesSelected(event) {
+      const files = Array.from(event.target.files || []);
+      event.target.value = '';
       if (!files.length) return;
-
-      files.forEach((file, i) => {
-        const reader = new FileReader();
-        reader.onload = (evt) => {
-          this.capturedQueue.push({
-            name: file.name,
-            previewUrl: evt.target.result,
-            dataUrl: evt.target.result,
-            tag: this.reviewCategory || 'Progress Photos',
-            file,
-          });
-          if (i === files.length - 1) {
-            this.modalStep = 'review';
-          }
-        };
-        reader.readAsDataURL(file);
-      });
+      try {
+        const items = await Promise.all(files.map(async file => {
+          const dataUrl = await this.readFileAsDataURL(file);
+          return { name: file.name, file, dataUrl, previewUrl: dataUrl, tag: this.reviewCategory };
+        }));
+        this.stopCameraStream();
+        this.capturedQueue.push(...items);
+        this.modalStep = 'review';
+      } catch {
+        this.showToast('Could not read the selected files.');
+      }
     },
     async startS3Upload() {
       if (this.capturedQueue.length === 0) return;
       this.modalStep = 'uploading';
-      this.uploadProgressPercent = 10;
+      this.uploadProgressPercent = 0;
       this.currentUploadDoneIndex = 0;
       this.uploadChecklist = this.capturedQueue.map(item => ({ name: item.name, status: 'pending' }));
-
-      const total = this.capturedQueue.length;
       const propertyId = this.selectedProperty.property_id;
+      const failed = [];
 
-      for (let i = 0; i < total; i++) {
-        const item = this.capturedQueue[i];
-
-        // Step 06: Request presigned S3 authorization
-        let presignedData = null;
+      for (const [index, item] of this.capturedQueue.entries()) {
         try {
-          const authRes = await fetch(`${API_BASE}/properties/${propertyId}/photos/upload-url`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              filename: item.name,
-              content_type: item.file ? item.file.type : 'image/jpeg',
-              file_size_bytes: item.file ? item.file.size : 2500000,
-            }),
-          });
-          if (authRes.ok) {
-            presignedData = await authRes.json();
-          }
-        } catch (authErr) {
-          console.warn('[S3 Presigned Error, proceeding with fallback]', authErr);
+          await this.savePropertyPhoto(propertyId, item.file, item.dataUrl, item.tag, this.reviewNote);
+          this.uploadChecklist[index].status = 'done';
+          this.currentUploadDoneIndex++;
+        } catch {
+          this.uploadChecklist[index].status = 'error';
+          failed.push(item);
         }
-
-        // Animate progress
-        await new Promise(r => setTimeout(r, 450));
-        this.uploadProgressPercent = Math.min(95, Math.round(((i + 0.6) / total) * 100));
-
-        // Step 07: Save metadata in RDS PostgreSQL
-        try {
-          const metaPayload = {
-            filename: item.name,
-            original_filename: item.name,
-            file_size_bytes: item.file ? item.file.size : 2500000,
-            mime_type: item.file ? item.file.type : 'image/jpeg',
-            tag: this.reviewCategory || 'Before Photos',
-            caption: this.reviewNote || item.name,
-            description: this.reviewNote || 'Field Walkthrough photo',
-            storage_provider: 'S3',
-            object_key: presignedData ? presignedData.object_key : `properties/${propertyId}/photos/${Date.now()}-${item.name}`,
-            uploaded_by: 'HushHawk Staff',
-            status: 'UPLOADED',
-            data_url: item.dataUrl || item.previewUrl,
-          };
-
-          await fetch(`${API_BASE}/properties/${propertyId}/photos`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(metaPayload),
-          });
-        } catch (dbErr) {
-          console.error('[Save Metadata Error]', dbErr);
-        }
-
-        this.uploadChecklist[i].status = 'done';
-        this.currentUploadDoneIndex = i + 1;
-        this.uploadProgressPercent = Math.round(((i + 1) / total) * 100);
+        this.uploadProgressPercent = Math.round((index + 1) / this.capturedQueue.length * 100);
       }
 
-      await new Promise(r => setTimeout(r, 500));
-      this.lastAddedCount = total;
-      this.closeAllModals();
       await this.loadPhotos(propertyId);
-
-      // Step 08: Show green toast pill
+      if (failed.length) {
+        this.capturedQueue = failed;
+        this.modalStep = 'review';
+        this.showToast(`${failed.length} file(s) could not be uploaded. Review the files and try again.`);
+        return;
+      }
+      this.lastAddedCount = this.currentUploadDoneIndex;
+      this.closeAllModals();
       this.showPhotoAddedToast = true;
       setTimeout(() => { this.showPhotoAddedToast = false; }, 4000);
     },
@@ -2495,9 +2460,10 @@ export default {
       this.pendingFiles = items;
     },
     readFileAsDataURL(file) {
-      return new Promise(resolve => {
+      return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = e => resolve(e.target.result);
+        reader.onerror = () => reject(reader.error);
         reader.readAsDataURL(file);
       });
     },
@@ -2505,6 +2471,23 @@ export default {
       this.pendingFiles = [];
       this.showAddPhotosModal = false;
       this.globalNote = '';
+    },
+    async savePropertyPhoto(propertyId, file, dataUrl, tag, caption) {
+      const response = await fetch(`${API_BASE}/properties/${propertyId}/photos`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          filename: file.name,
+          file_size_bytes: file.size,
+          mime_type: file.type || 'application/octet-stream',
+          tag: tag || 'General',
+          caption: caption || null,
+          data_url: dataUrl
+        })
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'Photo upload failed.');
+      return result;
     },
     async uploadPhotos() {
       if (!this.pendingFiles.length || !this.selectedProperty) return;
@@ -2523,28 +2506,11 @@ export default {
         this.uploadResults.items[i].status = 'uploading';
         try {
           const dataUrl = pf.preview || await this.readFileAsDataURL(pf.file);
-          const body = {
-            filename: pf.file.name,
-            original_filename: pf.file.name,
-            file_size_bytes: pf.file.size,
-            mime_type: pf.file.type || 'image/jpeg',
-            tag: pf.tag || 'General',
-            caption: pf.caption || this.globalNote || null,
-            photo_date: new Date().toISOString().split('T')[0],
-            data_url: dataUrl,
-          };
-          const r = await fetch(`${API_BASE}/properties/${this.selectedProperty.property_id}/photos`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(body),
-          });
-          const saved = await r.json();
-          if (r.ok) {
-            this.photos.unshift(saved);
-            this.uploadResults.items[i].status = 'done';
-          } else {
-            this.uploadResults.items[i].status = 'error';
-          }
+          const saved = await this.savePropertyPhoto(
+            this.selectedProperty.property_id, pf.file, dataUrl, pf.tag, pf.caption || this.globalNote
+          );
+          this.photos.unshift(saved);
+          this.uploadResults.items[i].status = 'done';
         } catch {
           this.uploadResults.items[i].status = 'error';
         }
@@ -2555,7 +2521,8 @@ export default {
       this.isUploading = false;
       this.pendingFiles = [];
       this.globalNote = '';
-      this.showToast('Photos uploaded successfully!');
+      const failed = this.uploadResults.items.filter(item => item.status === 'error').length;
+      this.showToast(failed ? `${failed} file(s) could not be uploaded.` : 'Photos uploaded successfully!');
       this.loadTimeline(this.selectedProperty.property_id);
     },
     finishUpload() {
@@ -4571,26 +4538,14 @@ export default {
   height: 100%;
   object-fit: cover;
 }
-.viewfinder-simulated {
-  width: 100%;
-  height: 100%;
-  background-size: cover;
-  background-position: center;
-  position: relative;
-}
-.simulated-view-badge {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  background: rgba(0, 0, 0, 0.65);
-  backdrop-filter: blur(4px);
-  color: #94a3b8;
-  font-size: 11px;
-  font-weight: 600;
-  padding: 3px 8px;
-  border-radius: 4px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+.camera-unavailable {
+  min-height: 220px;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 12px;
+  padding: 20px;
+  text-align: center;
 }
 .shutter-flash-overlay {
   position: absolute;

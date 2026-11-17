@@ -24,15 +24,16 @@ fi
 echo "=== [4/7] Installing dependencies ==="
 npm install
 
-echo "=== [5/7] Creating production .env file ==="
-cat << 'EOF' > .env
-PORT=3001
-NODE_ENV=production
-DATABASE_URL=***REMOVED***@hushhawk-postgres.cxsqkk2qulh9.us-east-2.rds.amazonaws.com:5432/hushhawk
-EOF
+echo "=== [5/7] Checking production database configuration ==="
+if [ -z "${DATABASE_URL:-}" ] && ! grep -qE '^DATABASE_URL=.+$' .env 2>/dev/null; then
+  echo "Configure DATABASE_URL through the instance secret environment or its existing .env before deploying." >&2
+  exit 1
+fi
+export NODE_ENV=production
+export PORT=3001
 
 echo "=== [6/7] Building Frontend Production Dist ==="
-npm run build || true
+npm run build
 chmod 755 /home/ec2-user
 chmod -R 755 /home/ec2-user/hushhawk/dist
 
