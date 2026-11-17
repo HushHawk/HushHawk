@@ -272,13 +272,13 @@ export default {
           records.value = data.records.map(r => ({
             ...r,
             isAbsentee: r.isAbsentee !== undefined ? r.isAbsentee : (r.ownerType === 'Absentee Owner' || (r.tags && r.tags.includes('Absentee'))),
-            equityPercent: r.equityPercent !== undefined ? r.equityPercent : (r.assessedValue && r.equity ? Math.round((r.equity / r.assessedValue) * 100) : 56),
+            equityPercent: r.equityPercent !== undefined ? r.equityPercent : (r.assessedValue && r.equity ? Math.round((r.equity / r.assessedValue) * 100) : null),
             distressClass: r.distressClass || 'distress-tax',
-            lastFiling: r.lastFiling || '2026-10-14',
-            skipStatus: r.skipStatus || 'Enriched',
-            mailingAddress: r.mailingAddress || r.address || 'Jacksonville, FL',
-            delinquentAmount: r.delinquentAmount || (r.assessedValue ? Math.round(r.assessedValue * 0.025) : 3450),
-            legalDescription: r.legalDescription || `Lot ${Math.floor(Math.random() * 20) + 1}, Block 4, CrownKey Real Estate Plat, ${r.county || 'Duval County'}, FL`
+            lastFiling: r.lastFiling || r.last_filing || null,
+            skipStatus: r.skipStatus || r.skip_status || 'Enriched',
+            mailingAddress: r.mailingAddress || r.mailing_address || r.address || '',
+            delinquentAmount: r.delinquentAmount || r.delinquent_amount || (r.assessedValue ? Math.round(r.assessedValue * 0.025) : null),
+            legalDescription: r.legalDescription || r.legal_description || ''
           }));
           activeRecord.value = null;
         }

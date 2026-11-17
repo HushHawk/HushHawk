@@ -357,7 +357,7 @@ export default {
               const dueDate = t.dueDate || t.due_date || t.due_time || 'Today 5:00 PM';
               const dueStatus = t.dueStatus || (dueDate.toLowerCase().includes('today') ? 'today' : (dueDate.toLowerCase().includes('overdue') ? 'overdue' : 'normal'));
               return {
-                id: t.id || t.task_id || ('tsk-' + Math.random().toString(36).substr(2, 9)),
+                id: t.id || t.task_id || (typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `tsk-${Date.now()}-${Math.floor(performance.now())}`),
                 task_id: t.task_id || t.id,
                 title: t.title || 'Untitled Task',
                 description: t.description || '',

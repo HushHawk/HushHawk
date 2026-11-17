@@ -4743,39 +4743,64 @@ apiRouter.get('/county-records', async (req, res) => {
         let records = [];
         try {
             const { rows } = await pool.query(`
-                SELECT p.property_id, p.parcel_raw, p.parcel_match, p.address_line1, p.city, p.state_code, p.postal_code,
-                       p.assessed_value, p.legal_description, p.property_type, p.created_at,
-                       c.county_code, c.county_name
+                SELECT
+                    p.property_id, p.parcel_raw, p.parcel_match, p.address_line1, p.city, p.state_code, p.postal_code,
+                    p.assessed_value, p.legal_description, p.property_type, p.created_at,
+                    c.county_code, c.county_name,
+                    per.full_name AS owner_name,
+                    per.phone_primary AS owner_phone,
+                    per.email_primary AS owner_email,
+                    per.owner_type,
+                    l.distress_pillar, l.delinquent_amount, l.last_filing_date, l.skip_status
                 FROM core.properties p
                 LEFT JOIN ref.counties c ON p.county_id = c.county_id
+                LEFT JOIN core.leads l ON l.property_id = p.property_id
+                LEFT JOIN core.people per ON l.seller_id = per.person_id
                 ORDER BY p.created_at DESC
             `);
             if (rows && rows.length > 0) {
-                records = rows.map((r, idx) => {
-                    const assessed = Number(r.assessed_value) || 120000;
-                    const estValue = Math.round(assessed * 1.25);
-                    const equity = Math.round(estValue * 0.45);
-                    const countyName = r.county_name || (r.county_code === 'POL' ? 'Polk' : (r.county_code === 'CLA' ? 'Clay' : 'Duval'));
-                    return {
-                        id: r.property_id || `rec-${idx}`,
-                        crownKey: `${r.county_code || 'DUV'}-${r.parcel_raw || 'PARCEL-' + idx}`,
-                        parcel: r.parcel_raw || r.parcel_match,
-                        address: r.address_line1 || 'Jacksonville, FL',
-                        city: r.city || 'Jacksonville',
-                        county: countyName,
-                        zip: r.postal_code || '32204',
-                        owner: 'Owner of Record',
-                        ownerType: 'Absentee Owner',
-                        assessedValue: assessed,
-                        estimatedValue: estValue,
-                        equity,
-                        distress: 'Tax Delinquent',
-                        status: 'Active Record',
-                        tags: ['Absentee', 'High Equity'],
-                        phone: '—',
-                        email: '—'
-                    };
-                });
+                const seen = new Set();
+                records = rows
+                    .filter(r => {
+                        if (seen.has(r.property_id)) return false;
+                        seen.add(r.property_id);
+                        return true;
+                    })
+                    .map((r, idx) => {
+                        const assessed = Number(r.assessed_value) || 0;
+                        const estValue = assessed > 0 ? Math.round(assessed * 1.25) : 0;
+                        const equity = assessed > 0 ? Math.round(estValue * 0.45) : 0;
+                        const countyName = r.county_name || (r.county_code === 'POL' ? 'Polk' : (r.county_code === 'CLA' ? 'Clay' : 'Duval'));
+                        const ownerName = r.owner_name || null;
+                        const ownerType = r.owner_type || (ownerName ? 'Owner of Record' : null);
+                        const PILLAR_LABELS = { FC: 'Foreclosure', PFC: 'Pre-Foreclosure', TAX: 'Tax Delinquent', CODE: 'Code Violation', PRB: 'Probate / Estate', VAC: 'Vacant Property', ML: 'Municipal Lien', EVICT: 'Eviction / Landlord', ABS: 'Absentee High Equity' };
+                        const distressLabel = r.distress_pillar ? (PILLAR_LABELS[r.distress_pillar] || r.distress_pillar) : null;
+                        return {
+                            id: r.property_id || `rec-${idx}`,
+                            crownKey: `${r.county_code || 'DUV'}-${r.parcel_raw || 'PARCEL-' + idx}`,
+                            parcel: r.parcel_raw || r.parcel_match,
+                            address: r.address_line1 || '',
+                            city: r.city || '',
+                            county: countyName,
+                            zip: r.postal_code || '',
+                            owner: ownerName,
+                            ownerType: ownerType,
+                            assessedValue: assessed || null,
+                            estimatedValue: estValue || null,
+                            equity: equity || null,
+                            equityPercent: (assessed > 0 && equity > 0) ? Math.round((equity / assessed) * 100) : null,
+                            legalDescription: r.legal_description || null,
+                            distress: distressLabel,
+                            distressClass: r.distress_pillar ? `distress-${r.distress_pillar.toLowerCase()}` : 'distress-tax',
+                            delinquentAmount: r.delinquent_amount ? Number(r.delinquent_amount) : null,
+                            lastFiling: r.last_filing_date ? new Date(r.last_filing_date).toISOString().split('T')[0] : null,
+                            skipStatus: r.skip_status || null,
+                            status: 'Active Record',
+                            tags: [ownerType, distressLabel].filter(Boolean),
+                            phone: r.owner_phone || null,
+                            email: r.owner_email || null
+                        };
+                    });
             }
         } catch (dbErr) {
             console.warn('[County Records RDS Fallback]:', dbErr.message);
