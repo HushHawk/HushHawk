@@ -351,6 +351,30 @@ import { useNotifications } from '@/_common/use/useNotifications.js';
 
 const notifStore = useNotifications();
 
+const SECTION_TITLES = {
+  'home': 'HushHawk | Executive Command Center',
+  'properties': 'Properties & Media Vault | HushHawk',
+  'contacts': 'Contacts & Lead Intelligence | HushHawk',
+  'communications': 'Omnichannel Communications | HushHawk',
+  'deal-analyzer': 'Wholesale Underwriting & MAO Engine | HushHawk',
+  'direct-mail': 'CrownKey Direct Mail Tracking | HushHawk',
+  'automations': 'Event Automations & Webhooks | HushHawk',
+  'county-data': 'Duval County Data Intelligence | HushHawk',
+  'cash-buyers': 'VIP Cash Buyers Matrix | HushHawk',
+  'dispositions': 'Dispositions & Whiteboard | HushHawk',
+  'tasks': 'Task Management & Escrow | HushHawk',
+  'follow-ups': 'Seller Follow-Up Cadence | HushHawk',
+  'contracts': 'PSA Contracts & Title Escrow | HushHawk',
+  'marketing': 'Marketing Command Center | HushHawk',
+  'analytics': 'Market Analytics & Reports | HushHawk',
+  'facebook-leads': 'Facebook Lead Desk | HushHawk',
+  'skip-tracing': 'Tiered Skip Tracing Engine | HushHawk',
+  'calendar': 'Field Walkthrough Calendar | HushHawk',
+  'vault': 'Media & Asset Vault | HushHawk',
+  'team': 'Team & Access Control (RBAC) | HushHawk',
+  'settings': 'System Settings & Integrations | HushHawk'
+};
+
 export default {
   name: 'HushHawkMasterShell',
   components: {
@@ -646,7 +670,15 @@ export default {
     }
   },
   mounted() {
+    this.updateDocumentTitle(this.selectedSection);
     if (typeof window !== 'undefined') {
+      window.addEventListener('popstate', () => {
+        const pathSec = window.location.pathname.replace(/^\//, '');
+        if (pathSec) {
+          this.selectedSection = pathSec;
+          this.updateDocumentTitle(pathSec);
+        }
+      });
       if ('scrollRestoration' in window.history) {
         window.history.scrollRestoration = 'manual';
       }
@@ -726,6 +758,12 @@ export default {
     }
   },
   methods: {
+    updateDocumentTitle(section) {
+      if (typeof document !== 'undefined') {
+        const sec = (section || this.selectedSection || 'home').toLowerCase();
+        document.title = SECTION_TITLES[sec] || 'HushHawk | Property Intelligence & CrownKey';
+      }
+    },
     updateClock() {
       const now = new Date();
       this.currentTime = now.toLocaleTimeString('en-US', {
@@ -787,6 +825,7 @@ export default {
       if (validSections.includes(section)) {
         if (e) e.preventDefault();
         this.selectedSection = section;
+        this.updateDocumentTitle(section);
         if (typeof window !== 'undefined' && window.history && window.history.pushState) {
           window.history.pushState({ section }, '', path);
         }
