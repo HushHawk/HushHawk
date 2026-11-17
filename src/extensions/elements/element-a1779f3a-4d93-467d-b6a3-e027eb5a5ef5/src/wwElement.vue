@@ -525,7 +525,8 @@
               <div class="donut" :style="{ background: donutGradient }">
                 <div><strong>{{ leads.length }}</strong><small>Loaded leads</small></div>
               </div>
-              <ul class="sources-list">
+              <p v-if="!sources.length" class="hh-panel-empty">No lead sources recorded.</p>
+              <ul v-else class="sources-list">
                 <li v-for="s in sources.slice(0, 5)" :key="s.name">
                   <i :style="{background:s.color}"></i>
                   <span>{{s.name}}</span>
@@ -607,7 +608,7 @@
       </div>
 
       <aside class="dashboard-context" aria-label="Market and communications">
-        <article class="panel map-panel">
+        <article id="market-intel" class="panel map-panel" tabindex="-1">
           <CountyMap :uid="uid+'-market-map'" :content="{}" @trigger-event="onZip"/>
         </article>
 
@@ -767,7 +768,7 @@
     <section class="jax-market-movement-bar">
       <div class="jmm-left">
         <span class="jmm-bar-icon" v-html="icons.chart"></span>
-        <strong>Jacksonville Market Movement (30 Days)</strong>
+        <strong>Jacksonville Market Snapshot (Illustrative)</strong>
       </div>
       <div class="jmm-stats">
         <div class="jmm-stat-item">
@@ -791,7 +792,7 @@
           <span class="jmm-down">▼-4 days</span>
         </div>
       </div>
-      <a href="/market-intel" @click="guard" class="btn-market-intel">View Market Intel →</a>
+      <a href="#market-intel" @click="guard" class="btn-market-intel">View Market Intel →</a>
     </section>
   <section class="pulse"><div class="pulse-heading"><strong><i></i> CAPITAL DESK</strong><div class="feed-tabs"><button :class="{active:feedMode==='deals'}" @click="!isEditing&&(feedMode='deals')">Deal Pulse</button><button :class="{active:feedMode==='markets'}" @click="!isEditing&&(feedMode='markets')">Market Watch</button></div><span v-if="feedMode==='deals'">LIVE CRM SIGNALS</span><button v-if="feedMode==='deals'" @click="!isEditing&&(paused=!paused)" :aria-pressed="paused">{{paused?'Resume':'Pause'}}</button></div><div class="tape-window" v-show="feedMode==='deals'"><div class="tape" :class="{paused}"><span v-for="(item,i) in signalTape" :key="i" :aria-hidden="i>=signalsCount"><b>{{item.code}}</b> {{item.label}} <strong>{{item.value}}</strong><em>▲ {{item.change}}</em></span></div></div></section>
   <section class="market-tape" v-show="feedMode==='markets'"><div class="market-label"><b>MARKET WATCH</b><span>External quotes · timing varies by exchange</span><a href="https://www.tradingview.com/markets/" target="_blank" rel="noopener noreferrer">TradingView ↗</a></div><div ref="marketHost" class="tradingview-widget-container"><div class="market-placeholder">{{marketError?'Market feed unavailable. Open TradingView ↗':'Loading market quotes…'}}</div></div></section>
@@ -1322,7 +1323,7 @@ async function refreshAllData() {
             address: l.address && l.address !== 'No Property Address on File' ? l.address : (l.email || 'Jacksonville, FL'),
             zip: l.zip || '32208',
             status: l.status || 'New',
-            source: l.source || 'Direct Mail'
+            source: l.source || 'Unknown'
           }));
         }
       }
@@ -1516,19 +1517,11 @@ async function submitNewDeal() {
 }
 const sources=computed(()=>{
   const allLeads = leads.value || [];
-  const total = allLeads.length || Number(metrics.value[0]?.value) || 0;
-  if (!total) {
-    return [
-      { name: 'Direct Mail', value: 0, color: '#f64a68' },
-      { name: 'County Data', value: 0, color: '#16c798' },
-      { name: 'Driving for $', value: 0, color: '#f3c34e' },
-      { name: 'Website', value: 0, color: '#a273ed' },
-      { name: 'Other', value: 0, color: '#8199b3' }
-    ];
-  }
+  const total = allLeads.length;
+  if (!total) return [];
   const counts = {};
   allLeads.forEach(l => {
-    const s = l.source || 'Direct Mail';
+    const s = l.source || 'Unknown';
     counts[s] = (counts[s] || 0) + 1;
   });
   const colorMap = {
@@ -1543,13 +1536,7 @@ const sources=computed(()=>{
     'SMS Campaign': '#bc7770',
     'Other': '#8199b3'
   };
-  const entries = Object.entries(counts);
-  if (!entries.length) {
-    return [
-      { name: 'Direct Mail', value: 100, color: '#f64a68' }
-    ];
-  }
-  return entries.map(([name, count]) => ({
+  return Object.entries(counts).map(([name, count]) => ({
     name,
     value: Math.round((count / total) * 100),
     color: colorMap[name] || '#dfbb61'
@@ -1733,7 +1720,7 @@ async function loadDashboardData() {
           address: l.address && l.address !== 'No Property Address on File' ? l.address : (l.email || 'Jacksonville, FL'),
           zip: l.zip || '32208',
           status: l.status || 'New',
-          source: l.source || 'Direct Mail'
+          source: l.source || 'Unknown'
         }));
       }
     } else {
@@ -1746,7 +1733,7 @@ async function loadDashboardData() {
             address: l.propertyAddress || l.address || 'Jacksonville, FL',
             zip: l.zip || '32208',
             status: l.status || 'New',
-            source: l.source || 'Direct Mail'
+            source: l.source || 'Unknown'
           }));
         }
       }
@@ -1916,8 +1903,8 @@ return{icons,uid,feedMode,isEditing,metrics,query,zip,checked,tasks,imports,filt
 
 .brand {
   flex-shrink: 0 !important;
-  height: var(--hh-brand-height, 145px) !important;
-  min-height: var(--hh-brand-height, 145px) !important;
+  height: auto !important;
+  min-height: 0 !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -2059,7 +2046,7 @@ return{icons,uid,feedMode,isEditing,metrics,query,zip,checked,tasks,imports,filt
 
 .sidebar-logout-section {
   flex-shrink: 0 !important;
-  padding: 12px 10px 14px !important;
+  padding: var(--hh-sidebar-logout-padding) !important;
   border-top: 1px solid rgba(212, 175, 55, 0.15) !important;
   margin-top: auto !important;
   position: relative !important;
@@ -4142,7 +4129,8 @@ td a { color: var(--hh-link, #f5cf72) !important; }
 .sources li { display: flex; align-items: center; gap: 5px; font-size: 7.5px; margin: 7px 0; color: #cbd5e1; }
 .sources li i { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
 .sources li b { margin-left: auto; color: #ffffff; }
-.sources li span { white-space: nowrap; }
+.sources li span { min-width: 0; overflow-wrap: anywhere; }
+.sources li b { flex-shrink: 0; }
 
 /* Deal Snapshot */
 .panel.analyzer {

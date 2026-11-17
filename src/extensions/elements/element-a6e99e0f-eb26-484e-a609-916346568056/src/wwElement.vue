@@ -604,8 +604,8 @@ export default {
 
 .brand {
   flex-shrink: 0 !important;
-  height: var(--hh-brand-height, 145px) !important;
-  min-height: var(--hh-brand-height, 145px) !important;
+  height: auto !important;
+  min-height: 0 !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -762,7 +762,7 @@ export default {
 
 .sidebar-logout-section {
   flex-shrink: 0 !important;
-  padding: 12px 10px 14px !important;
+  padding: var(--hh-sidebar-logout-padding) !important;
   border-top: 1px solid rgba(212, 175, 55, 0.15) !important;
   margin-top: auto !important;
   position: relative !important;
@@ -830,7 +830,7 @@ export default {
   border-left: 5px solid #0066cc;
   padding: 0 1.5rem;
   background: #04182d;
-  margin: 0 -9px 0 -9px;
+  margin: 0 -8px;
   box-sizing: border-box;
 }
 
@@ -1291,7 +1291,7 @@ export default {
   font-size: 11px;
   margin-left: 2px;
 }
-.hero{margin:0 -9px;min-height:139px;padding:13px 24px 12px;display:flex;align-items:center;position:relative;background-size:cover;background-position:center 56%;overflow:hidden}.hero-copy{position:relative;z-index:1}.hero h1{font-size:42px;line-height:1.1;font-weight:800;letter-spacing:-.8px;margin:0 0 6px}.hero-copy>p{font-size:17px;margin:0;color:#e3eaf3}.principles{display:flex;align-items:center;gap:30px;margin-top:17px}.principles>span{display:flex;align-items:center;gap:12px;letter-spacing:1.5px;font-size:8px;color:#f1ead6}.principles .icon{width:26px;height:26px;color:#edc868}.jacksonville{position:absolute;left:41%;top:20px;text-align:center;transform:rotate(-5deg);text-shadow:0 3px 12px #001225}.jacksonville strong{display:block;font:italic 51px Georgia,serif;line-height:1.2;color:#f2d482}.jacksonville span{font-size:9px;letter-spacing:1px;color:#fff}.motto{margin-left:auto;align-self:flex-end;border-top:2px solid #dec675;padding-top:8px;font-size:8px;letter-spacing:2px;line-height:1.7;color:#edf1f5}
+.hero{margin:0 -8px;min-height:139px;padding:13px 24px 12px;display:flex;align-items:center;position:relative;background-size:cover;background-position:center 56%;overflow:hidden}.hero-copy{position:relative;z-index:1}.hero h1{font-size:42px;line-height:1.1;font-weight:800;letter-spacing:-.8px;margin:0 0 6px}.hero-copy>p{font-size:17px;margin:0;color:#e3eaf3}.principles{display:flex;align-items:center;gap:30px;margin-top:17px}.principles>span{display:flex;align-items:center;gap:12px;letter-spacing:1.5px;font-size:8px;color:#f1ead6}.principles .icon{width:26px;height:26px;color:#edc868}.jacksonville{position:absolute;left:41%;top:20px;text-align:center;transform:rotate(-5deg);text-shadow:0 3px 12px #001225}.jacksonville strong{display:block;font:italic 51px Georgia,serif;line-height:1.2;color:#f2d482}.jacksonville span{font-size:9px;letter-spacing:1px;color:#fff}.motto{margin-left:auto;align-self:flex-end;border-top:2px solid #dec675;padding-top:8px;font-size:8px;letter-spacing:2px;line-height:1.7;color:#edf1f5}
 
 .hero h1 em{font-style:normal;color:#efd17b}.hero-copy>p{font-size:21px;font-weight:700}.principles{font-size:8px;letter-spacing:1.5px;gap:0;margin-top:10px;color:#d1dbea}.hero{min-height:137px}.hero h1{font-size:40px}.sidebar nav a{min-height:40px;padding:9px 12px}.brand{height:179px;min-height:179px}.brand-bottom{margin-top:auto}.workspace{padding:0 8px 0}.acquisition-layout{display:grid;grid-template-columns:minmax(0,2.53fr) minmax(320px,1fr);gap:7px;align-items:start}.pipeline-side{min-width:0}.kpi-row{display:grid;grid-template-columns:1.14fr 1fr 1.04fr 1.04fr 1fr 1.16fr;gap:5px}.kpi{min-width:0;min-height:76px;display:flex;align-items:center;gap:12px;padding:9px;background:linear-gradient(130deg,#103557,#061b36);border:1px solid #205789;border-radius:5px;box-shadow:inset 0 1px 5px #2d689725}.kpi-icon{display:block;width:32px;height:32px;color:#64cff5;flex-shrink:0}.kpi:nth-child(5) .kpi-icon{color:#efd071}.kpi>div>span{display:block;font-size:8px;color:#c3d1e0;white-space:nowrap}.kpi strong{display:block;font-size:23px;line-height:1.4;white-space:nowrap;letter-spacing:-.8px}.kpi:last-child strong{font-size:20px}.kpi small{font-size:11px;color:#0de791;font-weight:800}.preview-line{display:flex;justify-content:space-between;gap:4px;align-items:center;height:17px;font-size:7px;color:#b6c7da;letter-spacing:.15px}.preview-line button{background:transparent;color:#6ed6ff;border:0;padding:0;font-size:8px}
 .board-scroll{overflow-x:auto;scrollbar-color:#3c6e9c #05223e;padding-bottom:3px}.board{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:4px;min-width:870px}.stage{min-width:0;border-radius:4px;background:#06264455}.stage h2{height:36px;font-size:10px;font-weight:750;letter-spacing:-.35px;display:flex;align-items:center;justify-content:space-between;gap:2px;margin:0 0 5px;padding:5px 6px;background:linear-gradient(110deg,color-mix(in srgb,var(--stage) 45%,#061a2e),#091d31);border:1px solid color-mix(in srgb,var(--stage) 65%,#102c48);border-radius:4px;box-shadow:inset 0 1px 4px #ffffff25}.stage h2 b{background:#ffffff16;border-radius:2px;padding:2px 4px;font-size:10px}.stage-cards{display:flex;flex-direction:column;gap:5px}.deal-card{display:block;width:100%;padding:3px;text-align:left;min-width:0;background:linear-gradient(145deg,#11324c,#051c33);border:1px solid #1c4364;border-radius:5px;box-shadow:0 2px 5px #0005;transition:border-color .15s,box-shadow .15s}.deal-card:hover{border-color:#78bff0;box-shadow:0 0 9px #3c9def44}.deal-card.selected{border:2px solid #ddc55d;padding:2px;box-shadow:0 0 9px #ebc44944}.deal-card>img{display:block;width:100%;height:56px;object-fit:cover;border-radius:2px;background:#144360}

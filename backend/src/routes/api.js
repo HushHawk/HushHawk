@@ -2837,24 +2837,37 @@ function formatRelativeTime(date) {
     return `${diffDays} day${diffDays === 1 ? '' : 's'} ago`;
 }
 
-apiRouter.get('/notifications', async (req, res) => {
-    try {
-        const { unread_only } = req.query;
-        let query = `SELECT * FROM ops.notifications`;
-        const params = [];
-        if (unread_only === 'true') {
-            query += ` WHERE is_read = false`;
-        }
-        query += ` ORDER BY created_at DESC LIMIT 50`;
+// Exclude the five demonstration alerts shipped by the original seed.
+const demoNotificationIds = [
+    'a1000000-0000-0000-0000-000000000001',
+    'a2000000-0000-0000-0000-000000000002',
+    'a3000000-0000-0000-0000-000000000003',
+    'a4000000-0000-0000-0000-000000000004',
+    'a5000000-0000-0000-0000-000000000005'
+];
 
-        const pgRes = await pool.query(query, params);
-        const unreadCountRes = await pool.query(`SELECT count(*) FROM ops.notifications WHERE is_read = false`);
-        const unread_count = Number(unreadCountRes.rows[0]?.count || 0);
+apiRouter.get('/notifications', async (req, res) => {
+    res.set('Cache-Control', 'no-store');
+    try {
+        const { rows: [result] } = await pool.query(`
+            WITH live_notifications AS (
+                SELECT * FROM ops.notifications WHERE notification_id <> ALL($1::uuid[])
+            ), latest AS (
+                SELECT * FROM live_notifications
+                WHERE NOT $2::boolean OR is_read = false
+                ORDER BY created_at DESC, notification_id DESC
+                LIMIT 50
+            )
+            SELECT
+                (SELECT count(*)::int FROM live_notifications WHERE is_read = false) AS unread_count,
+                coalesce(json_agg(latest ORDER BY latest.created_at DESC, latest.notification_id DESC), '[]') AS notifications
+            FROM latest
+        `, [demoNotificationIds, req.query.unread_only === 'true']);
 
         res.json({
-            total: pgRes.rows.length,
-            unread_count,
-            notifications: pgRes.rows.map(n => ({
+            total: result.notifications.length,
+            unread_count: result.unread_count,
+            notifications: result.notifications.map(n => ({
                 id: n.notification_id,
                 notification_id: n.notification_id,
                 title: n.title,
@@ -6399,9 +6412,7 @@ apiRouter.get('/analytics', async (req, res) => {
                 { label: 'Assigned to Cash Buyers', value: 0 },
                 { label: 'Closed & Escrow Wire Disbursed', value: totalClosed }
             ],
-            leaderboard: [
-                { rank: 1, name: 'Main Administrator', deals: 0, revenue: 0, conversionRate: '0%' }
-            ],
+            leaderboard: [],
             submarkets
         });
     } catch (err) {

@@ -16,6 +16,7 @@
             :key="t"
             class="pill-btn"
             :class="{ active: timeRange === t }"
+            :aria-pressed="timeRange === t"
             @click="timeRange = t"
           >
             {{ t }}
@@ -85,7 +86,7 @@
         </div>
         <div class="leaderboard-list">
           <div v-if="!reps.length" class="empty-state-notice" style="text-align: center; color: #64748b; padding: 32px;">
-            No team transactions recorded yet. Closed deals will rank here.
+            No sales activity has been attributed to a team member.
           </div>
           <div v-for="(rep, idx) in reps" :key="rep.name" class="rep-card">
             <div class="rep-rank" :class="{ gold: idx === 0, silver: idx === 1 }">
@@ -94,12 +95,12 @@
             <div class="rep-details">
               <div class="rep-top">
                 <strong class="rep-name">{{ rep.name }}</strong>
-                <span class="rep-role">{{ rep.role }}</span>
+                <span v-if="rep.role" class="rep-role">{{ rep.role }}</span>
               </div>
               <div class="rep-stats-row">
                 <span>Contracts: <strong>{{ rep.contracts }}</strong></span>
                 <span>Assigned: <strong>{{ rep.assigned }}</strong></span>
-                <span>Avg Spread: <strong class="text-gold">${{ formatNumber(rep.avgSpread) }}</strong></span>
+                <span>Avg Spread: <strong class="text-gold">{{ rep.avgSpread == null ? '—' : '$' + formatNumber(rep.avgSpread) }}</strong></span>
               </div>
             </div>
             <div class="rep-volume">
@@ -309,10 +310,10 @@ export default {
           if (repsSource.length) {
             this.reps = repsSource.map(r => ({
               name: r.name || 'Acquisitions Specialist',
-              role: r.role || 'Senior Wholesale Specialist',
+              role: r.role || '',
               contracts: Number(r.contracts || r.deals || 0),
-              assigned: Number(r.assigned || Math.max(1, (r.deals || 1) - 1)),
-              avgSpread: Number(r.avgSpread || (r.revenue && r.deals ? Math.round(r.revenue / r.deals) : 31500)),
+              assigned: r.assigned ?? '—',
+              avgSpread: r.avgSpread ?? (r.revenue != null && r.deals > 0 ? Math.round(r.revenue / r.deals) : null),
               grossVolume: Number(r.grossVolume || r.revenue || 0)
             }));
           }
@@ -422,19 +423,10 @@ export default {
   gap: 0.75rem;
 }
 
-.time-pills {
-  display: flex;
-  background: rgba(0, 0, 0, 0.3);
-  padding: 0.25rem;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-}
-
 .pill-btn {
   background: transparent;
   border: none;
   color: #94a3b8;
-  padding: 0.35rem 0.75rem;
   border-radius: 6px;
   font-size: 0.75rem;
   font-weight: 600;
@@ -654,6 +646,7 @@ export default {
 }
 
 .rep-rank {
+  flex-shrink: 0;
   width: 30px;
   height: 30px;
   border-radius: 6px;
@@ -686,6 +679,7 @@ export default {
 
 .rep-top {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 0.5rem;
 }
@@ -702,6 +696,7 @@ export default {
 
 .rep-stats-row {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.85rem;
   font-size: 0.75rem;
   color: #94a3b8;

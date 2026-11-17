@@ -960,8 +960,8 @@ export default {
 
 .brand {
   flex-shrink: 0 !important;
-  height: var(--hh-brand-height, 145px) !important;
-  min-height: var(--hh-brand-height, 145px) !important;
+  height: auto !important;
+  min-height: 0 !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -1116,12 +1116,14 @@ export default {
 
 .sidebar-logout-section {
   flex-shrink: 0 !important;
-  padding: 12px 10px 14px !important;
+  padding: var(--hh-sidebar-logout-padding) !important;
   border-top: 1px solid rgba(212, 175, 55, 0.15) !important;
   margin-top: auto !important;
   position: relative !important;
   z-index: 3 !important;
-  
+}
+
+.sidebar-logout-btn {
   display: flex;
   align-items: center;
   justify-content: center;

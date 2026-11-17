@@ -15,6 +15,7 @@
             :key="v"
             class="pill-btn"
             :class="{ active: currentView === v }"
+            :aria-pressed="currentView === v"
             @click="currentView = v"
           >
             {{ v }}
@@ -476,14 +477,6 @@ export default {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-}
-
-.view-switcher {
-  display: flex;
-  background: rgba(0, 0, 0, 0.3);
-  padding: 0.25rem;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .pill-btn {

@@ -171,7 +171,6 @@
     linear-gradient(153deg, transparent 55%, #e1a55454 64%, #ffd082e0 66%, #9c5e3642 68%, transparent 76%);
 }
 .dashboard-gold.hushhawk-command-center .sidebar-foil img { width: 105px; opacity: .12; }
-.dashboard-gold.hushhawk-command-center .sidebar-logout-section { padding: 6px !important; }
 .dashboard-gold.hushhawk-command-center .command {
   width: 100%;
   min-width: 0;
@@ -320,9 +319,9 @@
   from { box-shadow: 0 0 4px rgba(245, 158, 11, 0.2); }
   to { box-shadow: 0 0 10px rgba(245, 158, 11, 0.6); }
 }
-.dashboard-gold.hushhawk-command-center .metrics { gap: 6px; margin: 0; }
+.dashboard-gold.hushhawk-command-center .metrics { gap: var(--hh-action-gap); margin: 0; }
 .dashboard-gold.hushhawk-command-center .metric {
-  min-height: 52px !important; padding: 6px 8px !important; gap: 7px;
+  min-height: 56px !important; padding: 8px 10px !important; gap: var(--hh-action-gap);
 }
 .dashboard-gold.hushhawk-command-center .metric-label { font-size: 10px; color: #d4dbe6; white-space: normal; line-height: 1.15; }
 .dashboard-gold.hushhawk-command-center .metric strong { font: 600 21px/1.12 Georgia, serif; color: #fff5e2; }
@@ -339,9 +338,9 @@
   background: linear-gradient(90deg, transparent, #e4a95930 20%, #ffd590c0 49%, #e4a95925 67%, transparent);
   box-shadow: 0 1px 5px #e4a95946;
 }
-.dashboard-gold.hushhawk-command-center .panel-title { min-height: 33px; padding: 6px 9px; height: auto; }
+.dashboard-gold.hushhawk-command-center .panel-title { min-height: 36px; padding: 8px 12px; height: auto; flex-wrap: wrap; gap: var(--hh-action-gap); }
 .dashboard-gold.hushhawk-command-center .panel-title h3 { font-size: 13px; font-weight: 650; }
-.dashboard-gold.hushhawk-command-center .stage-grid { gap: 6px; padding: 8px 10px; }
+.dashboard-gold.hushhawk-command-center .stage-grid { gap: var(--hh-action-gap); padding: 10px 12px; }
 .dashboard-gold.hushhawk-command-center .stage-grid .stage-box {
   min-height: 58px; padding: 6px 7px;
 }
@@ -401,6 +400,7 @@
 }
 .dashboard-gold.hushhawk-command-center .dashboard-secondary .panel.sources .source-body {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: flex-start;
   gap: 14px;
@@ -1093,3 +1093,5 @@
 }
 .dashboard-gold.hushhawk-command-center .hh-action-highlight { color: var(--hh-gold-light); }
 .dashboard-gold.hushhawk-command-center .hh-action-primary { color: #241807; }
+
+#market-intel { scroll-margin-top: calc(var(--dashboard-masthead, 78px) + 12px); }

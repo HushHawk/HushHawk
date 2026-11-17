@@ -629,8 +629,8 @@ return{uid,isEditing,icons,navigation,navOpen,heroStyle,mode,metrics,tabs,column
 
 .brand {
   flex-shrink: 0 !important;
-  height: var(--hh-brand-height, 145px) !important;
-  min-height: var(--hh-brand-height, 145px) !important;
+  height: auto !important;
+  min-height: 0 !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -787,7 +787,7 @@ return{uid,isEditing,icons,navigation,navOpen,heroStyle,mode,metrics,tabs,column
 
 .sidebar-logout-section {
   flex-shrink: 0 !important;
-  padding: 12px 10px 14px !important;
+  padding: var(--hh-sidebar-logout-padding) !important;
   border-top: 1px solid rgba(212, 175, 55, 0.15) !important;
   margin-top: auto !important;
   position: relative !important;

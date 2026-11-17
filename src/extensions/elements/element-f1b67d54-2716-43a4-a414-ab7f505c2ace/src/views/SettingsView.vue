@@ -241,54 +241,6 @@
       </div>
     </div>
 
-    <!-- Tab 4: Team Roles & Access -->
-    <div v-if="currentTab === 'team'" class="settings-card">
-      <div class="card-header-flex">
-        <div>
-          <h3>HushHawk Team Members &amp; RBAC Access</h3>
-          <p class="card-desc">Manage system roles, deal assignment limits, and commission structures.</p>
-        </div>
-        <button class="btn btn-primary btn-sm" @click="inviteMember">
-          <span v-html="icons.plus"></span>
-          Invite Team Member
-        </button>
-      </div>
-      <div class="table-container">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Member Name</th>
-              <th>Email</th>
-              <th>Assigned Role</th>
-              <th>Permission Level</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="user in teamMembers" :key="user.email">
-              <td>
-                <div class="user-cell">
-                  <span class="user-avatar">{{ user.initials }}</span>
-                  <strong>{{ user.name }}</strong>
-                </div>
-              </td>
-              <td class="font-mono text-muted">{{ user.email }}</td>
-              <td>{{ user.role }}</td>
-              <td><span class="perm-chip">{{ user.perm }}</span></td>
-              <td><span class="status-chip active">Active</span></td>
-              <td>
-                <button class="btn btn-subtle btn-sm" @click="editMember(user)">
-                  <span v-html="icons.edit"></span>
-                  Edit
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
     <!-- Success Toast Notification -->
     <div v-if="toastMessage" class="toast-popup">
       <span v-html="icons.check"></span>
@@ -313,8 +265,7 @@ export default {
       tabs: [
         { id: 'general', label: 'Organization & Underwriting', icon: 'settings' },
         { id: 'integrations', label: 'Integrations & APIs', icon: 'zap' },
-        { id: 'security', label: 'Security & Database', icon: 'shield' },
-        { id: 'team', label: 'Team Roles & Access', icon: 'users' }
+        { id: 'security', label: 'Security & Database', icon: 'shield' }
       ],
       general: {
         entityName: 'HushHawk Capital & Acquisitions LLC',
@@ -418,7 +369,6 @@ export default {
           enabled: true
         }
       ],
-      teamMembers: []
     };
   },
   mounted() {
@@ -488,49 +438,6 @@ export default {
         this.showToast(`Handshake Live (${data.latencyMs}ms)`, data.message, data.ok ? 'success' : 'error');
       } catch (e) {
         this.showToast('Test Error', e.message, 'error');
-      }
-    },
-    async inviteMember() {
-      const name = prompt('Enter new team member full name:');
-      if (!name || !name.trim()) return;
-      const email = prompt('Enter team member email address:') || `${name.toLowerCase().replace(/\s+/g, '.')}@hushhawk.com`;
-      const title = prompt('Enter role (e.g. Acquisitions Specialist, Dispo Manager, Title Escrow):') || 'Acquisitions Specialist';
-      
-      try {
-        const res = await fetch('/api/v1/team', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name: name.trim(), email: email.trim(), title: title.trim(), department: 'Acquisitions' })
-        });
-        if (res.ok) {
-          const newMem = await res.json();
-          this.users.unshift({ id: newMem.id, name: newMem.name, email: newMem.email, role: newMem.title, status: 'Active' });
-          this.showToast('Member Onboarded', `${newMem.name} added to team roster in database.`, 'success');
-        } else {
-          this.showToast('Save Failed', 'Could not onboard member.', 'error');
-        }
-      } catch (e) {
-        this.showToast('Error', e.message, 'error');
-      }
-    },
-    async editMember(user) {
-      const newRole = prompt(`Update role for ${user.name}:`, user.role || 'Acquisitions Specialist');
-      if (!newRole || !newRole.trim() || newRole === user.role) return;
-      
-      try {
-        const res = await fetch('/api/v1/team/' + user.id, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ title: newRole.trim(), accessLevel: newRole.trim() })
-        });
-        if (res.ok) {
-          user.role = newRole.trim();
-          this.showToast('Permissions Updated', `${user.name} role updated to "${newRole}".`, 'success');
-        } else {
-          this.showToast('Update Failed', 'Could not update user.', 'error');
-        }
-      } catch (e) {
-        this.showToast('Error', e.message, 'error');
       }
     },
     showToast(title, msg, type = 'info') {

@@ -32,12 +32,20 @@ const SECTION_PATHS = ALL_SECTIONS.map(section => section.path);
 const ROLE_PATHS = SECTION_PATHS.filter(path => path !== '/team');
 const AUDIT_CATEGORIES = ['SECURITY', 'DELETION', 'CREATION', 'MODIFICATION', 'OUTREACH', 'GENERAL'];
 const auditCategorySql = `CASE
-    WHEN a.action ~* 'LOGIN|LOGOUT|AUTH|PASSWORD|ROLE' THEN 'SECURITY'
+    WHEN a.action ~* 'LOGIN|LOGOUT|AUTH|PASSWORD' THEN 'SECURITY'
     WHEN a.action ~* 'DELETE|DROP|REMOVE' THEN 'DELETION'
-    WHEN a.action ~* 'CREATE|INSERT|ADD' THEN 'CREATION'
+    WHEN a.action ~* 'CREATE|INSERT|ADD|INGEST' THEN 'CREATION'
     WHEN a.action ~* 'UPDATE|EDIT|CHANGE|SUSPEND' THEN 'MODIFICATION'
     WHEN a.action ~* 'MAIL|SMS|CALL|DISPATCH' THEN 'OUTREACH'
     ELSE 'GENERAL' END`;
+const auditBadgeClasses = {
+    SECURITY: 'badge-purple',
+    DELETION: 'badge-danger',
+    CREATION: 'badge-success',
+    MODIFICATION: 'badge-warning',
+    OUTREACH: 'badge-cyan',
+    GENERAL: 'badge-info'
+};
 
 const roleJoin = 'LEFT JOIN core.roles r ON r.role_key = u.role';
 const memberColumns = 'u.user_id, u.email, u.full_name, u.phone, u.role, u.status, u.last_login_at, u.created_at, r.name AS role_name, r.permissions AS role_permissions';
@@ -250,7 +258,7 @@ export class RbacService {
             );
             if (after.status === 'SUSPENDED') await client.query('DELETE FROM core.user_sessions WHERE user_id = $1', [userId]);
             await recordAudit(client, { actor: current, action: 'USER_UPDATED', entityType: 'USER', entityId: userId,
-                diff: { before: { name: before.name, email: before.email, role: before.role, status: before.status }, after } });
+                diff: { before: { name: before.name, email: before.email, phone: before.phone, role: before.role, status: before.status }, after } });
             return lookupMember(client, userId);
         });
     }
@@ -323,6 +331,7 @@ export class RbacService {
         actor = '',
         role = '',
         action = '',
+        category = '',
         entityType = '',
         startDate = '',
         endDate = '',
@@ -357,6 +366,12 @@ export class RbacService {
                 pIdx++;
             }
 
+            if (AUDIT_CATEGORIES.includes(category)) {
+                conditions.push(`(${auditCategorySql}) = $${pIdx}`);
+                values.push(category);
+                pIdx++;
+            }
+
             if (entityType && entityType.trim()) {
                 conditions.push(`a.entity_type = $${pIdx}`);
                 values.push(entityType.trim().toUpperCase());
@@ -364,13 +379,13 @@ export class RbacService {
             }
 
             if (startDate && startDate.trim()) {
-                conditions.push(`a.created_at >= $${pIdx}::timestamptz`);
+                conditions.push(`a.created_at >= ($${pIdx}::date::timestamp AT TIME ZONE 'America/New_York')`);
                 values.push(startDate.trim());
                 pIdx++;
             }
 
             if (endDate && endDate.trim()) {
-                conditions.push(`a.created_at <= ($${pIdx}::timestamptz + INTERVAL '1 day')`);
+                conditions.push(`a.created_at < (($${pIdx}::date + 1)::timestamp AT TIME ZONE 'America/New_York')`);
                 values.push(endDate.trim());
                 pIdx++;
             }
@@ -388,6 +403,7 @@ export class RbacService {
                     a.audit_id,
                     a.actor,
                     a.action,
+                    ${auditCategorySql} AS category,
                     a.entity_type,
                     a.entity_id,
                     a.request_id,
@@ -395,13 +411,13 @@ export class RbacService {
                     a.created_at
                 FROM audit.audit_events a
                 ${whereClause}
-                ORDER BY a.created_at DESC
+                ORDER BY a.created_at DESC, a.audit_id DESC
                 LIMIT $${pIdx} OFFSET $${pIdx + 1}
             `, queryValues);
 
             // Compute summary metrics
             const [todayRes, actorsRes, criticalRes, securityRes] = await Promise.all([
-                pool.query(`SELECT COUNT(*)::int as count FROM audit.audit_events WHERE created_at >= CURRENT_DATE`),
+                pool.query(`SELECT COUNT(*)::int as count FROM audit.audit_events WHERE created_at >= (date_trunc('day', now() AT TIME ZONE 'America/New_York') AT TIME ZONE 'America/New_York')`),
                 pool.query(`SELECT COUNT(DISTINCT actor)::int as count FROM audit.audit_events`),
                 pool.query(`SELECT COUNT(*)::int as count FROM audit.audit_events WHERE action ILIKE '%DELETE%' OR action ILIKE '%DROP%' OR action ILIKE '%OVERRIDE%'`),
                 pool.query(`SELECT COUNT(*)::int as count FROM audit.audit_events WHERE action ILIKE '%AUTH%' OR action ILIKE '%LOGIN%' OR action ILIKE '%PASS%' OR action ILIKE '%ROLE%'`)
@@ -419,38 +435,17 @@ export class RbacService {
                 },
                 logs: rows.map(r => {
                     const dateObj = new Date(r.created_at);
-                    const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-                    const formattedTime = dateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+                    const formattedDate = dateObj.toLocaleDateString('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric', year: 'numeric' });
+                    const formattedTime = dateObj.toLocaleTimeString('en-US', { timeZone: 'America/New_York', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
                     
-                    const act = r.action || 'ACTION';
-                    let category = 'GENERAL';
-                    let badgeClass = 'badge-info';
-
-                    if (act.includes('DELETE') || act.includes('DROP') || act.includes('REMOVE')) {
-                        category = 'DELETION';
-                        badgeClass = 'badge-danger';
-                    } else if (act.includes('CREATE') || act.includes('INSERT') || act.includes('ADD')) {
-                        category = 'CREATION';
-                        badgeClass = 'badge-success';
-                    } else if (act.includes('UPDATE') || act.includes('EDIT') || act.includes('CHANGE')) {
-                        category = 'MODIFICATION';
-                        badgeClass = 'badge-warning';
-                    } else if (act.includes('AUTH') || act.includes('LOGIN') || act.includes('PASSWORD') || act.includes('ROLE')) {
-                        category = 'SECURITY';
-                        badgeClass = 'badge-purple';
-                    } else if (act.includes('MAIL') || act.includes('SMS') || act.includes('CALL') || act.includes('DISPATCH')) {
-                        category = 'OUTREACH';
-                        badgeClass = 'badge-cyan';
-                    }
-
                     return {
                         id: r.audit_id,
                         auditId: r.audit_id,
                         actor: r.actor || 'System Automation',
                         action: r.action,
                         actionLabel: r.action.replace(/_/g, ' '),
-                        category,
-                        badgeClass,
+                        category: r.category,
+                        badgeClass: auditBadgeClasses[r.category],
                         entityType: r.entity_type || 'SYSTEM',
                         entityId: r.entity_id,
                         details: r.redacted_diff || {},

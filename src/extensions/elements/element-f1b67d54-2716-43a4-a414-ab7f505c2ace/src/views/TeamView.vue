@@ -152,7 +152,7 @@
           </div>
 
           <!-- Members Table -->
-          <div class="table-container">
+          <div class="table-container" tabindex="0" aria-label="Team roster table">
             <table class="data-table team-roster-table">
               <colgroup>
                 <col style="width: 170px;">
@@ -183,13 +183,15 @@
                   :class="{ 'row-selected': selectedMember?.id === member.id }"
                   @click="selectMember(member)"
                 >
-                  <td class="col-member member-cell">
-                    <div class="avatar-badge" :style="{ background: member.avatarBg || '#1e3a5f' }">
-                      {{ member.initials || 'TM' }}
-                    </div>
-                    <div class="member-meta">
-                      <strong>{{ member.name }}</strong>
-                      <small>{{ member.title || member.roleName || 'Specialist' }}</small>
+                  <td class="col-member">
+                    <div class="member-cell">
+                      <div class="avatar-badge" :style="{ background: member.avatarBg || '#1e3a5f' }">
+                        {{ member.initials || 'TM' }}
+                      </div>
+                      <div class="member-meta">
+                        <strong>{{ member.name }}</strong>
+                        <small>{{ member.title || member.roleName || 'Specialist' }}</small>
+                      </div>
                     </div>
                   </td>
 
@@ -681,7 +683,7 @@
           </div>
 
           <!-- Audit Log Table -->
-          <div class="table-container">
+          <div class="table-container" tabindex="0" aria-label="Activity history table">
             <table class="data-table audit-table">
               <thead>
                 <tr>
@@ -689,7 +691,7 @@
                   <th style="width: 170px;">Operator / Actor</th>
                   <th style="width: 170px;">Action Category</th>
                   <th style="width: 140px;">Target Entity</th>
-                  <th>Audit Diff / Modifications Summary</th>
+                  <th>What Changed</th>
                   <th class="actions-col" style="width: 110px;">Details</th>
                 </tr>
               </thead>
@@ -734,7 +736,7 @@
                       type="button" 
                       class="btn btn-secondary btn-xs" 
                       @click="inspectAuditDetail(log)"
-                      title="Inspect full JSON diff"
+                      title="View activity details"
                     >
                       Inspect JSON
                     </button>
@@ -1135,17 +1137,21 @@
               <div><strong>Request ID:</strong> {{ selectedAuditItem?.requestId }}</div>
             </div>
 
-            <label class="json-label">Redacted Diff &amp; Payload:</label>
-            <pre class="json-viewer font-mono">{{ JSON.stringify(selectedAuditItem?.details, null, 2) }}</pre>
-
+            <p class="audit-explanation">{{ formatDiffSummary(selectedAuditItem) }}</p>
+            <dl v-if="auditDetailFields(selectedAuditItem).length" class="audit-field-list">
+              <div v-for="field in auditDetailFields(selectedAuditItem)" :key="field.label">
+                <dt>{{ field.label }}</dt>
+                <dd>{{ field.value }}</dd>
+              </div>
+            </dl>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" @click="closeModal">Close</button>
-              <button 
-                type="button" 
-                class="btn btn-primary" 
-                @click="copyText(JSON.stringify(selectedAuditItem, null, 2), 'Audit event copied!')"
+              <button
+                type="button"
+                class="btn btn-primary"
+                @click="copyText(formatDiffSummary(selectedAuditItem), 'Activity summary copied!')"
               >
-                Copy Event JSON
+                Copy Summary
               </button>
             </div>
           </div>
@@ -1169,6 +1175,8 @@
 </template>
 
 <script>
+import { formatDiffSummary, auditDetailFields } from './teamAuditSummary.js';
+
 import { icons } from '../icons.js';
 
 export const DEFAULT_SECTIONS = [
@@ -1483,22 +1491,22 @@ export default {
         params.set('offset', String(this.auditOffset));
 
         if (this.auditSearch.trim()) params.set('search', this.auditSearch.trim());
-        if (this.auditCategoryFilter) params.set('action', this.auditCategoryFilter);
+        if (this.auditCategoryFilter) params.set('category', this.auditCategoryFilter);
 
-        // Date calculation
+        const auditDate = new Intl.DateTimeFormat('sv-SE', { timeZone: 'America/New_York' });
         if (this.auditDatePreset === 'today') {
-          const d = new Date().toISOString().slice(0, 10);
+          const d = auditDate.format(new Date());
           params.set('startDate', d);
           params.set('endDate', d);
         } else if (this.auditDatePreset === 'yesterday') {
-          const y = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+          const y = auditDate.format(new Date(Date.now() - 86400000));
           params.set('startDate', y);
           params.set('endDate', y);
         } else if (this.auditDatePreset === 'last7') {
-          const s = new Date(Date.now() - 7 * 86400000).toISOString().slice(0, 10);
+          const s = auditDate.format(new Date(Date.now() - 7 * 86400000));
           params.set('startDate', s);
         } else if (this.auditDatePreset === 'last30') {
-          const s = new Date(Date.now() - 30 * 86400000).toISOString().slice(0, 10);
+          const s = auditDate.format(new Date(Date.now() - 30 * 86400000));
           params.set('startDate', s);
         } else if (this.auditDatePreset === 'custom') {
           if (this.auditStartDate) params.set('startDate', this.auditStartDate);
@@ -1852,16 +1860,8 @@ export default {
       this.activeModal = 'inspectDiff';
     },
 
-    formatDiffSummary(log) {
-      if (!log.details || typeof log.details !== 'object') return 'Standard operation executed.';
-      const d = log.details;
-      if (d.name && d.role) return `User ${d.name} (${d.role}) registered.`;
-      if (d.targetUser && d.mode) return `Password reset executed for ${d.targetName || d.targetUser} (${d.mode}).`;
-      if (d.permissionsCount !== undefined) return `Role permissions updated (${d.permissionsCount} sections).`;
-      if (d.email && d.client) return `Authenticated successfully from ${d.client}.`;
-      if (d.action) return `Execution completed: ${d.action}`;
-      return JSON.stringify(d).slice(0, 85) + '...';
-    },
+    formatDiffSummary,
+    auditDetailFields,
 
     resetAuditFilters() {
       this.auditSearch = '';
@@ -1878,14 +1878,14 @@ export default {
         this.showToast('Export', 'No audit logs to export.', 'info');
         return;
       }
-      const headers = ['Timestamp', 'Actor', 'Action', 'Entity Type', 'Entity ID', 'Details'];
+      const headers = ['Timestamp', 'Actor', 'Action', 'Entity Type', 'Entity ID', 'Summary'];
       const rows = this.auditLogs.map(l => [
         `"${l.fullTimestamp || l.createdAt}"`,
         `"${l.actor || ''}"`,
         `"${l.action || ''}"`,
         `"${l.entityType || ''}"`,
         `"${l.entityId || ''}"`,
-        `"${JSON.stringify(l.details || {}).replace(/"/g, '""')}"`
+        `"${formatDiffSummary(l).replace(/"/g, '""')}"`
       ]);
       const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
       const blob = new Blob([csv], { type: 'text/csv' });
@@ -2459,6 +2459,10 @@ export default {
   white-space: nowrap;
 }
 
+.team-roster-table .col-email {
+  overflow-wrap: anywhere;
+}
+
 .data-table td {
   padding: 10px 12px;
   border-bottom: 1px solid rgba(26, 60, 99, 0.5);
@@ -2478,7 +2482,7 @@ export default {
 .team-roster-table {
   table-layout: fixed;
   width: 100%;
-  min-width: 1130px;
+  min-width: 1155px;
 }
 
 /* Column Sizing & Formatting */
@@ -2526,28 +2530,12 @@ export default {
 
 .actions-col {
   white-space: nowrap;
-  width: 220px;
-  min-width: 220px;
   text-align: right;
   padding-right: 14px;
-  position: sticky;
-  right: 0;
-  background: rgba(8, 28, 54, 0.98);
-  box-shadow: -4px 0 10px rgba(0, 0, 0, 0.4);
-  z-index: 2;
 }
 
-.data-table th.actions-col {
-  z-index: 3;
-  background: rgba(8, 28, 54, 0.98);
-}
-
-.data-table tr:hover td.actions-col {
-  background: rgba(14, 38, 70, 0.98);
-}
-
-.data-table tr.row-selected td.actions-col {
-  background: rgba(28, 48, 76, 0.98);
+.audit-table .actions-col {
+  min-width: 105px;
 }
 
 .member-cell {
@@ -3257,9 +3245,8 @@ export default {
 /* ========================================================================== */
 /* Tab 3: Activity Log & Audit Trail */
 /* ========================================================================== */
-.audit-table .timestamp-cell {
-  display: flex;
-  flex-direction: column;
+.audit-table .timestamp-cell :is(.log-date, .log-time) {
+  display: block;
 }
 
 .log-date {
@@ -3364,6 +3351,7 @@ export default {
 }
 
 .diff-summary-cell {
+  min-width: 220px;
   max-width: 380px;
 }
 
@@ -3371,9 +3359,7 @@ export default {
   font-size: 12px;
   color: #cbd5e1;
   line-height: 1.4;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
 }
 
 .audit-pagination {
@@ -3740,16 +3726,22 @@ export default {
   text-transform: uppercase;
 }
 
-.json-viewer {
-  background: #020b17;
-  border: 1px solid #1a3c63;
-  border-radius: 6px;
-  padding: 12px;
-  color: #38bdf8;
-  font-size: 11.5px;
-  max-height: 260px;
-  overflow: auto;
-  line-height: 1.4;
+.audit-field-list {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 16px;
+}
+.audit-field-list div {
+  display: grid;
+  grid-template-columns: minmax(90px, 1fr) 2fr;
+  gap: 12px;
+}
+.audit-field-list dt {
+  font-weight: 600;
+}
+.audit-field-list dd {
+  margin: 0;
+  overflow-wrap: anywhere;
 }
 
 /* ========================================================================== */

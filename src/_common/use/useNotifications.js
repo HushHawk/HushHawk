@@ -1,75 +1,56 @@
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 
-// Global singleton state shared across all components
+// Singleton state shared by the workspace headers and alert dropdown.
 const notifications = ref([]);
 const unreadCount = ref(0);
 const loading = ref(false);
+const error = ref('');
 const isNotifOpen = ref(false);
 const toasts = ref([]);
+const endpoint = '/api/v1/notifications';
+const refreshInterval = 5000;
 
-let pollingInterval = null;
+let pollingInterval;
+let pendingRefresh;
 
-async function fetchNotifications() {
-    try {
-        loading.value = true;
-        const res = await fetch('/api/v1/notifications');
-        if (res.ok) {
-            const data = await res.json();
-            notifications.value = data.notifications || [];
-            unreadCount.value = Number(data.unread_count ?? (notifications.value.filter(n => !n.is_read).length));
+function fetchNotifications() {
+    if (pendingRefresh) return pendingRefresh;
+    loading.value = true;
+    pendingRefresh = (async () => {
+        try {
+            const response = await fetch(endpoint, { cache: 'no-store' });
+            if (!response.ok) throw new Error('Notification fetch failed');
+            const data = await response.json();
+            if (!Array.isArray(data.notifications)) throw new Error('Invalid notification response');
+            notifications.value = data.notifications;
+            unreadCount.value = Number(data.unread_count ?? 0);
+            error.value = '';
+        } catch {
+            error.value = 'Could not refresh notifications.';
+        } finally {
+            loading.value = false;
+            pendingRefresh = undefined;
         }
-    } catch (err) {
-        console.warn('[useNotifications] Failed to fetch:', err);
-    } finally {
-        loading.value = false;
+    })();
+    return pendingRefresh;
+}
+
+async function updateNotifications(path, method) {
+    try {
+        const response = await fetch(endpoint + path, { method, keepalive: true });
+        if (!response.ok) throw new Error('Notification update failed');
+        // A refresh started before this write may still contain the old values.
+        await pendingRefresh;
+        await fetchNotifications();
+    } catch {
+        error.value = 'Could not update notifications.';
     }
 }
 
-async function markAsRead(notificationId) {
-    const target = notifications.value.find(n => n.id === notificationId || n.notification_id === notificationId);
-    if (target && !target.is_read) {
-        target.is_read = true;
-        unreadCount.value = Math.max(0, unreadCount.value - 1);
-    }
-    try {
-        await fetch(`/api/v1/notifications/${encodeURIComponent(notificationId)}/read`, { method: 'PATCH' });
-    } catch (err) {
-        console.warn('[useNotifications] Mark as read error:', err);
-    }
-}
-
-async function markAllAsRead() {
-    notifications.value.forEach(n => { n.is_read = true; });
-    unreadCount.value = 0;
-    try {
-        await fetch('/api/v1/notifications/mark-all-read', { method: 'POST' });
-    } catch (err) {
-        console.warn('[useNotifications] Mark all read error:', err);
-    }
-}
-
-async function deleteNotification(notificationId) {
-    const wasUnread = notifications.value.some(n => (n.id === notificationId || n.notification_id === notificationId) && !n.is_read);
-    notifications.value = notifications.value.filter(n => n.id !== notificationId && n.notification_id !== notificationId);
-    if (wasUnread) {
-        unreadCount.value = Math.max(0, unreadCount.value - 1);
-    }
-    try {
-        await fetch(`/api/v1/notifications/${encodeURIComponent(notificationId)}`, { method: 'DELETE' });
-    } catch (err) {
-        console.warn('[useNotifications] Delete notification error:', err);
-    }
-}
-
-async function clearAll() {
-    notifications.value = [];
-    unreadCount.value = 0;
-    try {
-        await fetch('/api/v1/notifications/clear-all', { method: 'POST' });
-    } catch (err) {
-        console.warn('[useNotifications] Clear all error:', err);
-    }
-}
+const markAsRead = id => updateNotifications(`/${encodeURIComponent(id)}/read`, 'PATCH');
+const markAllAsRead = () => updateNotifications('/mark-all-read', 'POST');
+const deleteNotification = id => updateNotifications(`/${encodeURIComponent(id)}`, 'DELETE');
+const clearAll = () => updateNotifications('/clear-all', 'POST');
 
 function showToast(message, type = 'info', durationMs = 4000) {
     const id = typeof crypto !== 'undefined' && crypto.randomUUID 
@@ -81,11 +62,16 @@ function showToast(message, type = 'info', durationMs = 4000) {
     }, durationMs);
 }
 
-function initNotificationPolling(intervalMs = 30000) {
+function refreshVisiblePage() {
+    if (!document.hidden) fetchNotifications();
+}
+
+function initNotificationPolling() {
+    if (typeof window === 'undefined' || pollingInterval !== undefined) return;
+    pollingInterval = window.setInterval(refreshVisiblePage, refreshInterval);
+    document.addEventListener('visibilitychange', refreshVisiblePage);
+    window.addEventListener('focus', refreshVisiblePage);
     fetchNotifications();
-    if (!pollingInterval && typeof window !== 'undefined') {
-        pollingInterval = setInterval(fetchNotifications, intervalMs);
-    }
 }
 
 export function useNotifications() {
@@ -93,6 +79,7 @@ export function useNotifications() {
         notifications,
         unreadCount,
         loading,
+        error,
         isNotifOpen,
         toasts,
         fetchNotifications,

@@ -20,6 +20,8 @@
       </button>
     </div>
 
+    <p v-if="error" class="notif-feedback" role="status">{{ error }}</p>
+
     <!-- Dropdown Body / Scroll List -->
     <div v-if="notifications.length" class="hushhawk-notif-list">
       <div 
@@ -58,8 +60,8 @@
     <!-- Empty State -->
     <div v-else class="hushhawk-notif-empty">
       <span class="empty-icon" v-html="icons.bell"></span>
-      <p class="empty-title">All caught up!</p>
-      <small>No unread alerts. Real-time updates from Podio, Qualia escrow, and county data ingestion will stream here.</small>
+      <p v-if="loading" class="empty-title">Loading alerts…</p>
+      <p v-else-if="!error" class="empty-title">No alerts</p>
     </div>
 
     <!-- Dropdown Footer -->
@@ -72,7 +74,7 @@
 </template>
 
 <script>
-import { computed } from 'vue';
+import { onMounted } from 'vue';
 import { useNotifications } from '@/_common/use/useNotifications.js';
 
 export default {
@@ -89,11 +91,15 @@ export default {
       notifications,
       unreadCount,
       loading,
+      error,
+      fetchNotifications,
       markAsRead,
       markAllAsRead,
       deleteNotification,
       clearAll
     } = useNotifications();
+
+    onMounted(fetchNotifications);
 
     function getIcon(iconName) {
       if (props.icons && props.icons[iconName]) {
@@ -120,6 +126,7 @@ export default {
       notifications,
       unreadCount,
       loading,
+      error,
       getIcon,
       handleCardClick,
       handleMarkAllAsRead,
@@ -402,6 +409,12 @@ export default {
 
 .clear-btn:hover {
   color: #f87171;
+}
+.notif-feedback {
+  padding: 8px 12px;
+  margin: 0;
+  color: var(--hh-danger, #fca5a5);
+  font-size: 12px;
 }
 </style>
 
