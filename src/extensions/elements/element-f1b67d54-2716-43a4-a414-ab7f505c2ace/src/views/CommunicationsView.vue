@@ -913,13 +913,14 @@ export default {
 
 .template-label {
   font-size: 0.7rem;
-  color: #64748b;
+  color: var(--hh-muted, #64748b);
+  font-weight: 600;
 }
 
 .tpl-btn {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: #cbd5e1;
+  background: var(--hh-control, rgba(255, 255, 255, 0.06));
+  border: 1px solid var(--hh-border, rgba(255, 255, 255, 0.08));
+  color: var(--hh-text, #cbd5e1);
   padding: 0.2rem 0.5rem;
   border-radius: 4px;
   font-size: 0.7rem;
@@ -928,8 +929,8 @@ export default {
 }
 
 .tpl-btn:hover {
-  background: rgba(237, 207, 124, 0.15);
-  color: #edcf7c;
+  background: var(--hh-hover, rgba(237, 207, 124, 0.15));
+  color: var(--hh-gold, #edcf7c);
 }
 
 .input-row {
@@ -939,11 +940,11 @@ export default {
 
 .input-row textarea {
   flex: 1;
-  background: #04182d;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--hh-control, #04182d);
+  border: 1px solid var(--hh-border, rgba(255, 255, 255, 0.12));
   border-radius: 8px;
   padding: 0.5rem 0.75rem;
-  color: #f8fafc;
+  color: var(--hh-text, #f8fafc);
   font-size: 0.85rem;
   outline: none;
   resize: none;
@@ -956,8 +957,8 @@ export default {
 /* Right: Intel Panel */
 .intel-panel {
   width: 280px;
-  border-left: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(0, 0, 0, 0.2);
+  border-left: 1px solid var(--hh-border, rgba(255, 255, 255, 0.08));
+  background: var(--hh-panel, rgba(0, 0, 0, 0.2));
   padding: 1rem;
   display: flex;
   flex-direction: column;
@@ -968,28 +969,29 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid var(--hh-border, rgba(255, 255, 255, 0.06));
   padding-bottom: 0.5rem;
 }
 
 .intel-header h4 {
   font-size: 0.85rem;
-  color: #edcf7c;
+  color: var(--hh-gold, #edcf7c);
   margin: 0;
   text-transform: uppercase;
   letter-spacing: 0.04em;
+  font-weight: 700;
 }
 
 .prop-highlight {
   display: flex;
   flex-direction: column;
   font-size: 0.85rem;
-  color: #f8fafc;
+  color: var(--hh-text, #f8fafc);
 }
 
 .info-card {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--hh-control, rgba(255, 255, 255, 0.03));
+  border: 1px solid var(--hh-border, rgba(255, 255, 255, 0.05));
   border-radius: 6px;
   padding: 0.65rem;
   display: flex;
@@ -999,8 +1001,9 @@ export default {
 
 .info-card .k {
   font-size: 0.7rem;
-  color: #94a3b8;
+  color: var(--hh-muted, #94a3b8);
   text-transform: uppercase;
+  font-weight: 600;
 }
 
 .status-pill {
@@ -1018,7 +1021,7 @@ export default {
 .sub-k {
   display: block;
   font-size: 0.65rem;
-  color: #64748b;
+  color: var(--hh-muted, #64748b);
 }
 
 .intel-btn-grid {
@@ -1032,20 +1035,21 @@ export default {
   align-items: center;
   gap: 0.4rem;
   font-size: 0.8rem;
-  color: #f8fafc;
+  color: var(--hh-text, #f8fafc);
 }
 
 .rep-avatar {
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: rgba(237, 207, 124, 0.2);
-  color: #edcf7c;
+  background: var(--hh-inset, rgba(237, 207, 124, 0.2));
+  color: var(--hh-gold, #edcf7c);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 0.65rem;
   font-weight: 700;
+  border: 1px solid var(--hh-accent-border, rgba(212, 175, 55, 0.3));
 }
 
 .font-mono {
@@ -1053,7 +1057,7 @@ export default {
 }
 
 .text-gold {
-  color: #edcf7c;
+  color: var(--hh-gold, #edcf7c);
 }
 
 .tiny-icon {
@@ -1080,20 +1084,24 @@ export default {
 }
 
 .btn-secondary {
-  background: rgba(255, 255, 255, 0.08);
-  color: #f8fafc;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--hh-control, rgba(255, 255, 255, 0.08));
+  color: var(--hh-text, #f8fafc);
+  border: 1px solid var(--hh-border, rgba(255, 255, 255, 0.12));
+}
+
+.btn-secondary:hover {
+  background: var(--hh-hover, rgba(255, 255, 255, 0.15));
 }
 
 .btn-subtle {
   background: transparent;
-  color: #94a3b8;
+  color: var(--hh-muted, #94a3b8);
 }
 
 .close-btn {
   background: none;
   border: none;
-  color: #94a3b8;
+  color: var(--hh-muted, #94a3b8);
   cursor: pointer;
 }
 @media (max-width: 1050px) {

@@ -1059,15 +1059,15 @@ export default {
 .data-table th {
   text-align: left;
   padding: 10px 12px;
-  color: #8da9c2;
+  color: var(--hh-muted, #8da9c2);
   font-weight: 600;
-  border-bottom: 1px solid #1c4266;
+  border-bottom: 1px solid var(--hh-border, #1c4266);
   white-space: nowrap;
 }
 .data-table td {
   padding: 12px;
-  border-bottom: 1px solid #143554;
-  color: #f1f6ff;
+  border-bottom: 1px solid var(--hh-border, #143554);
+  color: var(--hh-text, #f1f6ff);
   vertical-align: middle;
 }
 .data-table tbody tr {
@@ -1075,19 +1075,20 @@ export default {
   transition: background 0.15s ease;
 }
 .data-table tbody tr:hover {
-  background: #0c2642;
+  background: var(--hh-hover, #0c2642);
 }
 .data-table tbody tr.active {
-  background: #103254;
-  border-left: 3px solid #edcf7c;
+  background: var(--hh-selected, #103254);
+  border-left: 3px solid var(--hh-gold, #edcf7c);
 }
 .buyer-cell strong {
   display: block;
   font-size: 13px;
-  color: #ffffff;
+  color: var(--hh-text, #ffffff);
+  font-weight: 700;
 }
 .buyer-cell small {
-  color: #8faec7;
+  color: var(--hh-muted, #8faec7);
   font-size: 11px;
 }
 .zip-tags {
@@ -1098,17 +1099,17 @@ export default {
 .zip-chip {
   padding: 2px 6px;
   border-radius: 3px;
-  background: #113454;
+  background: var(--hh-inset, #113454);
   font-size: 11px;
-  color: #7dcaf4;
+  color: var(--hh-text, #7dcaf4);
 }
 .zip-chip.extra {
-  background: #1a4266;
-  color: #bed7ec;
+  background: var(--hh-subtle, #1a4266);
+  color: var(--hh-muted, #bed7ec);
 }
 .budget-tag {
-  color: #edcf7c;
-  font-weight: 600;
+  color: var(--hh-gold, #edcf7c);
+  font-weight: 700;
 }
 .pof-chip {
   display: inline-flex;
@@ -1117,8 +1118,8 @@ export default {
   padding: 2px 7px;
   border-radius: 12px;
   font-size: 11px;
-  background: #2a2c26;
-  color: #e5c365;
+  background: var(--hh-inset, #2a2c26);
+  color: var(--hh-gold, #e5c365);
 }
 .pof-chip.verified {
   background: #0e3d29;
@@ -1126,7 +1127,7 @@ export default {
 }
 .response-rate {
   font-weight: 600;
-  color: #9ab4cc;
+  color: var(--hh-muted, #9ab4cc);
 }
 .response-rate.high {
   color: #35e6a2;
@@ -1138,9 +1139,9 @@ export default {
   font-weight: 600;
 }
 .tier-gold {
-  background: #383116;
-  color: #edcf7c;
-  border: 1px solid #755f1f;
+  background: var(--hh-inset, #383116);
+  color: var(--hh-gold, #edcf7c);
+  border: 1px solid var(--hh-border, #755f1f);
 }
 .tier-blue {
   background: #123d61;
@@ -1150,12 +1151,12 @@ export default {
 .empty-row {
   text-align: center;
   padding: 24px;
-  color: #8faec7;
+  color: var(--hh-muted, #8faec7);
 }
 
 .detail-drawer {
-  background: #07192d;
-  border: 1px solid #1c4266;
+  background: var(--hh-panel, #07192d);
+  border: 1px solid var(--hh-border, #1c4266);
   border-radius: 8px;
   padding: 16px;
   display: flex;
@@ -1170,7 +1171,7 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  border-bottom: 1px solid #1c4266;
+  border-bottom: 1px solid var(--hh-border, #1c4266);
   padding-bottom: 12px;
   min-width: 0;
 }
@@ -1184,11 +1185,11 @@ export default {
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #1d4ed8, #0a1128);
-  border: 2px solid #edcf7c;
+  background: var(--hh-inset, linear-gradient(135deg, #1d4ed8, #0a1128));
+  border: 2px solid var(--hh-accent-border, #edcf7c);
   display: grid;
   place-items: center;
-  color: #ffffff;
+  color: var(--hh-gold, #ffffff);
   font-weight: 700;
   font-size: 14px;
   flex-shrink: 0;
@@ -1196,33 +1197,34 @@ export default {
 .buyer-profile-top h3 {
   margin: 0 0 2px;
   font-size: 15px;
-  color: #ffffff;
+  color: var(--hh-text, #ffffff);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-weight: 700;
 }
 .buyer-profile-top p {
   margin: 0;
   font-size: 11px;
-  color: #8faec7;
+  color: var(--hh-muted, #8faec7);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .tier-tag {
-  color: #edcf7c;
-  font-weight: 600;
+  color: var(--hh-gold, #edcf7c);
+  font-weight: 700;
 }
 .contact-details-box {
-  background: #051424;
-  border: 1px solid #1c4266;
+  background: var(--hh-control, #051424);
+  border: 1px solid var(--hh-border, #1c4266);
   border-radius: 6px;
   padding: 10px;
   display: flex;
   flex-direction: column;
   gap: 6px;
   font-size: 12px;
-  color: #d1e2f2;
+  color: var(--hh-text, #d1e2f2);
   min-width: 0;
   overflow: hidden;
 }
@@ -1246,8 +1248,9 @@ export default {
   display: flex;
   align-items: center;
   gap: 6px;
-  color: #edcf7c;
+  color: var(--hh-gold, #edcf7c);
   min-width: 0;
+  font-weight: 700;
 }
 .section-title h4 {
   font-size: 12px;

@@ -649,55 +649,58 @@ export default {
 .data-table th {
   text-align: left;
   padding: 10px 12px;
-  color: #8da9c2;
+  color: var(--hh-muted, #8da9c2);
   font-weight: 600;
-  border-bottom: 1px solid #1c4266;
+  border-bottom: 1px solid var(--hh-border, #1c4266);
   white-space: nowrap;
 }
 .data-table td {
   padding: 12px;
-  border-bottom: 1px solid #143554;
-  color: #f1f6ff;
+  border-bottom: 1px solid var(--hh-border, #143554);
+  color: var(--hh-text, #f1f6ff);
   vertical-align: middle;
 }
 .data-table tbody tr.selected {
-  background: #103254;
+  background: var(--hh-selected, #103254);
 }
 .data-table tbody tr:hover {
-  background: #0c2642;
+  background: var(--hh-hover, #0c2642);
 }
 
 .crownkey-code {
   font-family: monospace;
   font-size: 12px;
-  color: #edcf7c;
-  background: #112a45;
+  color: var(--hh-gold, #edcf7c);
+  background: var(--hh-inset, #112a45);
   padding: 2px 6px;
   border-radius: 4px;
 }
 .property-cell strong {
   display: block;
   font-size: 13px;
-  color: #ffffff;
+  color: var(--hh-text, #ffffff);
+  font-weight: 700;
 }
 .property-cell small {
-  color: #8faec7;
+  color: var(--hh-muted, #8faec7);
   font-size: 11px;
 }
 .owner-cell span {
   display: block;
   font-weight: 600;
+  color: var(--hh-text, #f1f6ff);
 }
 .owner-cell small {
   display: block;
   font-size: 10px;
-  color: #8faec7;
+  color: var(--hh-muted, #8faec7);
 }
 .owner-cell small.absentee {
-  color: #ff9e79;
+  color: var(--hh-danger, #ff9e79);
+  font-weight: 600;
 }
 .equity-tag {
-  color: #35e6a2;
+  color: var(--hh-success, #35e6a2);
   font-weight: 700;
   font-size: 12px;
 }

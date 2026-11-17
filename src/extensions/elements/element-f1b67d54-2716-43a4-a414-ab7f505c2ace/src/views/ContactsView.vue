@@ -904,8 +904,8 @@ export default {
   min-width: 0;
   box-sizing: border-box;
   overflow: hidden;
-  background: #07192d;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--hh-panel, #07192d);
+  border: 1px solid var(--hh-border, rgba(255, 255, 255, 0.1));
   border-radius: 12px;
   padding: 1.25rem;
   display: flex;
@@ -917,19 +917,20 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid var(--hh-border, rgba(255, 255, 255, 0.08));
   padding-bottom: 0.75rem;
 }
 
 .drawer-title h3 {
   font-size: 1.1rem;
-  color: #f8fafc;
+  color: var(--hh-text, #f8fafc);
   margin: 0.35rem 0 0.15rem 0;
+  font-weight: 700;
 }
 
 .drawer-sub {
   font-size: 0.75rem;
-  color: #94a3b8;
+  color: var(--hh-muted, #94a3b8);
 }
 
 .drawer-action-strip {
@@ -938,8 +939,8 @@ export default {
 }
 
 .info-card {
-  background: rgba(0, 0, 0, 0.25);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--hh-control, rgba(0, 0, 0, 0.25));
+  border: 1px solid var(--hh-border, rgba(255, 255, 255, 0.05));
   border-radius: 8px;
   padding: 0.85rem;
   display: flex;
@@ -949,10 +950,11 @@ export default {
 
 .info-card h4 {
   font-size: 0.8rem;
-  color: #edcf7c;
+  color: var(--hh-gold, #edcf7c);
   margin: 0 0 0.4rem 0;
   text-transform: uppercase;
   letter-spacing: 0.04em;
+  font-weight: 700;
 }
 
 .info-row {
@@ -962,16 +964,16 @@ export default {
 }
 
 .info-row .k {
-  color: #94a3b8;
+  color: var(--hh-muted, #94a3b8);
 }
 
 .info-row .v {
-  color: #f8fafc;
+  color: var(--hh-text, #f8fafc);
 }
 
 .notes-text {
   font-size: 0.8rem;
-  color: #cbd5e1;
+  color: var(--hh-text, #cbd5e1);
   line-height: 1.4;
   margin: 0;
 }

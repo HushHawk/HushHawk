@@ -1714,26 +1714,44 @@
   color: var(--hh-muted, #46566b) !important;
 }
 
-:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.templates-bar, .templates-label) {
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.templates-bar, .templates-label, .quick-templates, .template-label) {
   color: var(--hh-muted, #46566b) !important;
 }
 
-:root:not(.ww-app-theme-dark) .hushhawk-gold .template-btn {
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.template-btn, .tpl-btn) {
   background: var(--hh-control, #fffdfa) !important;
   color: var(--hh-text, #18273c) !important;
   border: 1px solid var(--hh-border, #cfc2ab) !important;
+  font-weight: 600 !important;
 }
 
-:root:not(.ww-app-theme-dark) .hushhawk-gold .template-btn:hover {
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.template-btn:hover, .tpl-btn:hover) {
   background: var(--hh-hover, #e7d7b8) !important;
-}
-
-:root:not(.ww-app-theme-dark) .hushhawk-gold .lead-details-panel :is(h3, h4, strong, .d-val) {
   color: var(--hh-text, #18273c) !important;
 }
 
-:root:not(.ww-app-theme-dark) .hushhawk-gold .lead-details-panel :is(.d-lbl, small, p) {
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.lead-details-panel, .intel-panel) {
+  background: var(--hh-panel, #fffefa) !important;
+  border-color: var(--hh-border, #cfc2ab) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.lead-details-panel, .intel-panel) :is(h3, h4, strong, .d-val, .intel-header h4, .prop-highlight strong, .rep-row) {
+  color: var(--hh-text, #18273c) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.lead-details-panel, .intel-panel) :is(.d-lbl, small, p, .k, .sub-k, .close-btn) {
   color: var(--hh-muted, #46566b) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.lead-details-panel, .intel-panel) .info-card {
+  background: var(--hh-control, #fffdfa) !important;
+  border-color: var(--hh-border, #cfc2ab) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .intel-panel .rep-avatar {
+  background: var(--hh-subtle, #f5ead6) !important;
+  color: var(--hh-gold, #765018) !important;
+  border: 1px solid #d4af37 !important;
 }
 
 /* 6. Automations View Light Mode Fixes */
@@ -1774,7 +1792,123 @@
   color: var(--hh-text, #18273c) !important;
 }
 
-/* 7. General Views (Tasks, Calendar, Facebook Leads, Skip Tracing, Marketing, Settings, Vault) */
+/* 7. Cash Buyers, County Data, Marketing & Dispositions Light Mode Fixes */
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.buyer-cell strong, .property-cell strong, .campaign-cell strong) {
+  color: var(--hh-text, #18273c) !important;
+  font-weight: 700 !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.buyer-cell small, .property-cell small, .campaign-cell small, .owner-cell small, .title-cell small) {
+  color: var(--hh-muted, #46566b) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.owner-cell span, .title-cell span) {
+  color: var(--hh-text, #18273c) !important;
+  font-weight: 600 !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .owner-cell small.absentee {
+  color: #c2410c !important;
+  font-weight: 600 !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.budget-tag, .roi-tag, .tier-tag, .section-title) {
+  color: var(--hh-gold, #765018) !important;
+  font-weight: 700 !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.equity-tag, .spread-tag) {
+  color: #15803d !important;
+  font-weight: 700 !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.detail-drawer, .dossier-drawer) {
+  background: var(--hh-panel, #fffefa) !important;
+  border-color: var(--hh-border, #cfc2ab) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.detail-drawer, .dossier-drawer) :is(h3, h4, .drawer-title h3, .buyer-profile-top h3) {
+  color: var(--hh-text, #18273c) !important;
+  font-weight: 700 !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.detail-drawer, .dossier-drawer) :is(.drawer-sub, .buyer-profile-top p, .info-row .k) {
+  color: var(--hh-muted, #46566b) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.detail-drawer, .dossier-drawer) :is(.info-row .v, .contact-details-box div, .notes-text) {
+  color: var(--hh-text, #18273c) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.detail-drawer, .dossier-drawer) :is(.info-card, .contact-details-box) {
+  background: var(--hh-control, #fffdfa) !important;
+  border-color: var(--hh-border, #cfc2ab) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .avatar {
+  background: linear-gradient(135deg, #e7d7b8, #faeac4) !important;
+  color: var(--hh-gold, #765018) !important;
+  border-color: #d4af37 !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.zip-chip, .channel-chip, .days-pill) {
+  background: var(--hh-inset, #ede7da) !important;
+  color: var(--hh-text, #18273c) !important;
+  border: 1px solid var(--hh-border, #cfc2ab) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .lead-pill {
+  background: #dcfce7 !important;
+  color: #166534 !important;
+  border: 1px solid #86efac !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .pof-chip {
+  background: #fef3c7 !important;
+  color: #92400e !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .pof-chip.verified {
+  background: #dcfce7 !important;
+  color: #166534 !important;
+  border: 1px solid #86efac !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .tier-gold {
+  background: #fef3c7 !important;
+  color: #92400e !important;
+  border-color: #fcd34d !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold .crownkey-code {
+  background: var(--hh-inset, #ede7da) !important;
+  color: var(--hh-gold, #765018) !important;
+  border: 1px solid var(--hh-border, #cfc2ab) !important;
+}
+
+/* 8. Text Utilities & Universal Values */
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.text-gold, .font-mono.text-gold, strong.text-gold, span.text-gold) {
+  color: var(--hh-gold, #765018) !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.text-cyan, .font-mono.text-cyan, strong.text-cyan, span.text-cyan) {
+  color: #0284c7 !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.text-green, .font-mono.text-green, strong.text-green, span.text-green) {
+  color: #15803d !important;
+}
+
+:root:not(.ww-app-theme-dark) .hushhawk-gold :is(.text-red, .font-mono.text-red, strong.text-red, span.text-red) {
+  color: #b91c1c !important;
+}
+
+/* 9. Sidebar Brand Subtitle & Section Headers */
+:root:not(.ww-app-theme-dark) .hushhawk-gold .sidebar :is(.brand small, .more-workspaces summary, nav summary) {
+  color: var(--hh-gold, #765018) !important;
+}
+
+/* 10. General Views (Tasks, Calendar, Facebook Leads, Skip Tracing, Marketing, Settings, Vault) */
 :root:not(.ww-app-theme-dark) .hushhawk-gold :is(.task-item, .task-card, .calendar-event, .fb-lead-card, .lead-row) {
   background: var(--hh-control, #fffdfa) !important;
   border-color: var(--hh-border, #cfc2ab) !important;

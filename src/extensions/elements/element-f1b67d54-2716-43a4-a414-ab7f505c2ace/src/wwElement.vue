@@ -996,7 +996,7 @@ export default {
   font-size: 6.5px !important;
   letter-spacing: 1.2px !important;
   margin-top: 5px !important;
-  color: #d4af37 !important;
+  color: var(--hh-gold, #d4af37) !important;
   font-weight: 600 !important;
 }
 
@@ -1107,7 +1107,7 @@ export default {
   font-weight: 850 !important;
   text-transform: uppercase !important;
   letter-spacing: 0.1em !important;
-  color: #eac16a !important;
+  color: var(--hh-gold, #eac16a) !important;
   padding: 8px 12px !important;
   display: flex !important;
   align-items: center !important;

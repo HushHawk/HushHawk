@@ -970,15 +970,15 @@ export default {
 .data-table th {
   text-align: left;
   padding: 10px 12px;
-  color: #8da9c2;
+  color: var(--hh-muted, #8da9c2);
   font-weight: 600;
-  border-bottom: 1px solid #1c4266;
+  border-bottom: 1px solid var(--hh-border, #1c4266);
   white-space: nowrap;
 }
 .data-table td {
   padding: 12px;
-  border-bottom: 1px solid #143554;
-  color: #f1f6ff;
+  border-bottom: 1px solid var(--hh-border, #143554);
+  color: var(--hh-text, #f1f6ff);
   vertical-align: middle;
 }
 .data-table tbody tr {
@@ -986,40 +986,42 @@ export default {
   transition: background 0.15s ease;
 }
 .data-table tbody tr:hover {
-  background: #0c2642;
+  background: var(--hh-hover, #0c2642);
 }
 .data-table tbody tr.active {
-  background: #103254;
-  border-left: 3px solid #edcf7c;
+  background: var(--hh-selected, #103254);
+  border-left: 3px solid var(--hh-gold, #edcf7c);
 }
 .property-cell strong {
   display: block;
   font-size: 13px;
-  color: #ffffff;
+  color: var(--hh-text, #ffffff);
+  font-weight: 700;
 }
 .property-cell small {
-  color: #8faec7;
+  color: var(--hh-muted, #8faec7);
   font-size: 11px;
 }
 .spread-tag {
-  color: #35e6a2;
+  color: var(--hh-success, #35e6a2);
   font-weight: 700;
   font-size: 13px;
 }
 .title-cell span {
   display: block;
   font-weight: 600;
+  color: var(--hh-text, #f1f6ff);
 }
 .title-cell small {
-  color: #8faec7;
+  color: var(--hh-muted, #8faec7);
   font-size: 10px;
 }
 .days-pill {
   padding: 2px 7px;
   border-radius: 4px;
-  background: #113454;
+  background: var(--hh-inset, #113454);
   font-size: 11px;
-  color: #7dcaf4;
+  color: var(--hh-text, #7dcaf4);
 }
 .days-pill.urgent {
   background: #4a1c1d;

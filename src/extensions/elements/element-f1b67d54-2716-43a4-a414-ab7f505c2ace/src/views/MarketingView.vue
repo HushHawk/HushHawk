@@ -797,42 +797,43 @@ export default {
 .data-table th {
   text-align: left;
   padding: 10px 12px;
-  color: #8da9c2;
+  color: var(--hh-muted, #8da9c2);
   font-weight: 600;
-  border-bottom: 1px solid #1c4266;
+  border-bottom: 1px solid var(--hh-border, #1c4266);
   white-space: nowrap;
 }
 .data-table td {
   padding: 12px;
-  border-bottom: 1px solid #143554;
-  color: #f1f6ff;
+  border-bottom: 1px solid var(--hh-border, #143554);
+  color: var(--hh-text, #f1f6ff);
   vertical-align: middle;
 }
 .campaign-cell strong {
   display: block;
   font-size: 13px;
-  color: #ffffff;
+  color: var(--hh-text, #ffffff);
+  font-weight: 700;
 }
 .campaign-cell small {
-  color: #8faec7;
+  color: var(--hh-muted, #8faec7);
   font-size: 11px;
 }
 .channel-chip {
   padding: 2px 7px;
-  background: #113454;
-  color: #7dcaf4;
+  background: var(--hh-inset, #113454);
+  color: var(--hh-text, #7dcaf4);
   border-radius: 4px;
   font-size: 11px;
 }
 .lead-pill {
   padding: 2px 7px;
-  background: #163625;
-  color: #35e6a2;
+  background: var(--hh-inset, #163625);
+  color: var(--hh-success, #35e6a2);
   border-radius: 4px;
   font-weight: 600;
 }
 .roi-tag {
-  color: #edcf7c;
+  color: var(--hh-gold, #edcf7c);
   font-weight: 700;
 }
 .status-chip {
