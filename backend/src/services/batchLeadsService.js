@@ -10,6 +10,7 @@
  * - Real-time in-app executive notification and live audit trail recording
  */
 
+import { AutomationService } from './automationService.js';
 import crypto from 'crypto';
 import { pool } from '../store/pgClient.js';
 import { db } from '../store/database.js';
@@ -448,6 +449,10 @@ export class BatchLeadsService {
         if (Array.isArray(db.data.crm.notifications)) {
             db.data.crm.notifications.unshift(notification);
         }
+
+        await AutomationService.onLeadSaved('batchleads_lead', {
+            leadId, eventId: root.property_id || root.id, target: rawAddress
+        });
 
         // 6. Optional Outbound Sync to Podio (App 30087410 - Seller Leads)
         let podioItemId = null;

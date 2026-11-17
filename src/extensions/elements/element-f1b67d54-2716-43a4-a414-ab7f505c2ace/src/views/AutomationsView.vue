@@ -9,7 +9,7 @@
         <div class="metric-info">
           <span class="metric-label">{{ m.label }}</span>
           <strong class="metric-val">{{ m.value }}</strong>
-          <span class="metric-change" :class="{ positive: m.change.includes('+') }">
+          <span class="metric-change" :class="{ positive: m.change.includes('+') || m.change.includes('Live') }">
             {{ m.change }}
           </span>
         </div>
@@ -24,12 +24,12 @@
             <span class="icon-title" v-html="icons.zap"></span>
             Event-Driven Wholesale Automations &amp; Webhooks
           </h2>
-          <span class="badge-count">{{ automations.length }} active rules</span>
+          <span class="badge-count">{{ activeRulesCount }} active / {{ automations.length }} total rules</span>
         </div>
         <div class="header-actions">
-          <button class="btn btn-secondary" @click="testAllWorkflows">
+          <button class="btn btn-secondary" :disabled="isLoading || isRunning" @click="testActiveTrigger">
             <span v-html="icons.refresh"></span>
-            Test Triggers
+            {{ isRunning ? 'Evaluating...' : 'Test Trigger' }}
           </button>
           <button class="btn btn-primary" @click="isAddModalOpen = true">
             <span v-html="icons.plus"></span>
@@ -40,8 +40,8 @@
 
       <!-- Automations Rules List -->
       <div v-if="!automations.length" style="text-align: center; padding: 48px 20px; background: var(--hh-inset, rgba(0,0,0,0.2)); border-radius: 12px; border: 1px dashed var(--hh-border, rgba(255,255,255,0.1)); margin-bottom: 1.5rem;">
-        <h3 style="color: var(--hh-text, #f8fafc); font-size: 1.1rem; margin-bottom: 0.5rem;">No active automations</h3>
-        <p style="color: var(--hh-muted, #94a3b8); font-size: 0.85rem; margin-bottom: 1rem;">Create your first wholesale webhook or event trigger to automate inbound leads, skip tracing, and dispo blasts.</p>
+        <h3 style="color: var(--hh-text, #f8fafc); font-size: 1.1rem; margin-bottom: 0.5rem;">No active automation rules</h3>
+        <p style="color: var(--hh-muted, #94a3b8); font-size: 0.85rem; margin-bottom: 1rem;">Create an event trigger backed by PostgreSQL to automate alerts and follow-up tasks on live lead ingestion.</p>
         <button class="btn btn-primary" @click="isAddModalOpen = true">
           <span v-html="icons.plus"></span>
           Create First Automation
@@ -50,20 +50,20 @@
       <div v-else class="automations-grid">
         <div
           v-for="rule in automations"
-          :key="rule.id"
+          :key="rule.rule_id"
           class="rule-card"
           :class="{ inactive: !rule.enabled }"
         >
           <div class="rule-top">
-            <div class="rule-icon-box" :class="rule.category.toLowerCase()">
-              <span v-html="icons[rule.icon]"></span>
+            <div class="rule-icon-box" :class="getRuleCategoryClass(rule.trigger_code)">
+              <span v-html="icons[getRuleIcon(rule.trigger_code)]"></span>
             </div>
             <div class="rule-title-box">
               <div class="rule-name-row">
                 <h4>{{ rule.name }}</h4>
-                <span class="rule-category">{{ rule.category }}</span>
+                <span class="rule-category">{{ getRuleCategoryLabel(rule.trigger_code) }}</span>
               </div>
-              <p class="rule-desc">{{ rule.description }}</p>
+              <p class="rule-desc">{{ rule.description || 'Automated wholesale pipeline rule.' }}</p>
             </div>
             <div class="rule-toggle">
               <label class="toggle-switch">
@@ -76,29 +76,29 @@
           <div class="rule-flow">
             <div class="flow-step trigger">
               <span class="step-badge">TRIGGER</span>
-              <span class="step-text">{{ rule.trigger }}</span>
+              <span class="step-text">{{ triggers[rule.trigger_code] || rule.trigger_code }}</span>
             </div>
             <div class="flow-arrow">
               <span v-html="icons.arrowUpRight"></span>
             </div>
             <div class="flow-step action">
               <span class="step-badge">ACTION</span>
-              <span class="step-text">{{ rule.action }}</span>
+              <span class="step-text"><strong>{{ actions[rule.action_code] || rule.action_code }}</strong>: {{ rule.action_text }}</span>
             </div>
           </div>
 
           <div class="rule-footer">
             <div class="rule-stats">
-              <span>Runs: <strong>{{ rule.runsCount }}</strong></span>
-              <span>Success: <strong class="text-green">{{ rule.successRate }}</strong></span>
-              <span>Last: <span class="text-muted">{{ rule.lastRun }}</span></span>
+              <span>Runs: <strong>{{ rule.runs_count || 0 }}</strong></span>
+              <span>Success: <strong class="text-green">{{ getSuccessRate(rule) }}</strong></span>
+              <span>Last: <span class="text-muted">{{ formatTimestamp(rule.last_run) }}</span></span>
             </div>
             <div style="display: flex; gap: 0.5rem;">
-              <button class="btn btn-subtle btn-sm" @click="runManual(rule)">
+              <button class="btn btn-subtle btn-sm" :disabled="isRunning || !rule.enabled" @click="runManual(rule)">
                 <span v-html="icons.zap"></span>
                 Trigger Now
               </button>
-              <button class="btn btn-subtle btn-sm" style="color: #ef4444; border-color: rgba(239,68,68,0.3);" @click="deleteAutomation(rule.id)" title="Delete Rule">
+              <button class="btn btn-subtle btn-sm" style="color: #ef4444; border-color: rgba(239,68,68,0.3);" @click="deleteAutomation(rule.rule_id)" title="Archive Rule">
                 ✕ Delete
               </button>
             </div>
@@ -111,7 +111,7 @@
         <div class="audit-header">
           <h3>
             <span v-html="icons.database"></span>
-            Recent Execution Audit Stream
+            Recent Execution Audit Stream (PostgreSQL ops.automation_runs)
           </h3>
           <span class="badge-sub">Live Event Bus</span>
         </div>
@@ -119,7 +119,7 @@
           <table class="data-table">
             <thead>
               <tr>
-                <th>Execution ID</th>
+                <th>Run ID</th>
                 <th>Workflow Rule</th>
                 <th>Target Asset / Contact</th>
                 <th>Latency</th>
@@ -128,23 +128,26 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-if="!auditLogs.length">
+              <tr v-if="!auditRuns.length">
                 <td colspan="6" style="text-align: center; color: var(--hh-muted, #64748b); padding: 28px;">
-                  No automation events executed yet. Trigger a workflow manually or connect a webhook to stream execution logs in real time.
+                  No automation events executed yet. Trigger a workflow rule to record live execution logs in PostgreSQL.
                 </td>
               </tr>
-              <tr v-for="log in auditLogs" :key="log.id">
-                <td class="font-mono text-muted">#{{ log.id }}</td>
-                <td><strong>{{ log.workflow }}</strong></td>
-                <td>{{ log.target }}</td>
-                <td class="font-mono">{{ log.latency }}</td>
+              <tr v-for="run in auditRuns" :key="run.run_id">
+                <td class="font-mono text-muted">#{{ (run.run_id || '').slice(0, 8) }}</td>
+                <td><strong>{{ run.rule_name }}</strong></td>
+                <td>{{ run.target || 'Live Pipeline Bus' }}</td>
+                <td class="font-mono">{{ run.duration_ms }}ms</td>
                 <td>
-                  <span class="status-chip success">
+                  <span v-if="run.status === 'succeeded'" class="status-chip success">
                     <span v-html="icons.check" class="tiny-icon"></span>
-                    {{ log.status }}
+                    Succeeded
+                  </span>
+                  <span v-else class="status-chip error" :title="run.error || 'Execution failed'">
+                    ✕ Failed
                   </span>
                 </td>
-                <td class="font-mono text-muted">{{ log.time }}</td>
+                <td class="font-mono text-muted">{{ formatTimestamp(run.created_at) }}</td>
               </tr>
             </tbody>
           </table>
@@ -159,7 +162,7 @@
         <div class="modal-header">
           <h3>
             <span v-html="icons.zap"></span>
-            Configure New Automation Workflow
+            Configure New Real-time Automation Rule
           </h3>
           <button class="close-btn" @click="isAddModalOpen = false">
             <span v-html="icons.close"></span>
@@ -168,39 +171,38 @@
         <form class="modal-body" @submit.prevent="saveNewAutomation">
           <div class="form-grid">
             <div class="form-group full">
-              <label>Workflow Name *</label>
-              <input v-model="newRule.name" type="text" required placeholder="e.g. Under Contract Title Escrow Dispatch" />
+              <label>Workflow Name * (Max 100 characters)</label>
+              <input v-model="newRule.name" type="text" required maxlength="100" placeholder="e.g. BatchLeads Inbound Dispo Review" />
             </div>
             <div class="form-group">
-              <label>Category</label>
-              <select v-model="newRule.category">
-                <option value="Lead Ingestion">Lead Ingestion</option>
-                <option value="Title Escrow">Title Escrow</option>
-                <option value="Buyer Dispo">Buyer Dispo</option>
-                <option value="Skip Tracing">Skip Tracing</option>
+              <label>Supported Trigger Event *</label>
+              <select v-model="newRule.trigger_code" required>
+                <option value="batchleads_lead">BatchLeads lead saved (Webhook)</option>
+                <option value="podio_lead">Podio lead saved (Live Sync)</option>
+                <option value="manual">Manual only (On-demand Trigger)</option>
               </select>
             </div>
             <div class="form-group">
-              <label>Trigger Event</label>
-              <select v-model="newRule.trigger">
-                <option value="New Lead Webhook Received">New Lead Webhook Received</option>
-                <option value="PSA Executed in DocuSign">PSA Executed in DocuSign</option>
-                <option value="Tax Delinquent Flag Detected">Tax Delinquent Flag Detected</option>
-                <option value="Cash Buyer Buy Box Matched">Cash Buyer Buy Box Matched</option>
+              <label>Supported Backend Action *</label>
+              <select v-model="newRule.action_code" required>
+                <option value="notification">Create an in-app alert (ops.notifications)</option>
+                <option value="task">Create a follow-up task (core.tasks)</option>
               </select>
             </div>
             <div class="form-group full">
-              <label>Action to Execute</label>
-              <input v-model="newRule.action" type="text" required placeholder="e.g. Dispatch Twilio 10DLC SMS with Cash Offer acknowledgement" />
+              <label>Action Text / Payload * (Max 180 characters)</label>
+              <input v-model="newRule.action_text" type="text" required maxlength="180" placeholder="e.g. High-equity distressed seller lead ready for underwriting review" />
             </div>
             <div class="form-group full">
-              <label>Description &amp; Logic Notes</label>
-              <textarea v-model="newRule.description" rows="3" placeholder="Fires immediately upon webhook ingestion, sanitizes phone number..."></textarea>
+              <label>Description &amp; Operational Notes (Optional)</label>
+              <textarea v-model="newRule.description" rows="3" maxlength="500" placeholder="Operational purpose of this rule in the Jacksonville wholesale funnel..."></textarea>
             </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" @click="isAddModalOpen = false">Cancel</button>
-            <button type="submit" class="btn btn-primary">Enable Workflow</button>
+            <button type="submit" class="btn btn-primary" :disabled="isSaving">
+              {{ isSaving ? 'Saving...' : 'Save & Activate Rule' }}
+            </button>
           </div>
         </form>
       </div>
@@ -220,54 +222,146 @@ export default {
   data() {
     return {
       icons,
+      isLoading: false,
+      isRunning: false,
+      isSaving: false,
       isAddModalOpen: false,
+      triggers: {
+        manual: 'Manual only',
+        batchleads_lead: 'BatchLeads lead saved',
+        podio_lead: 'Podio lead saved'
+      },
+      actions: {
+        notification: 'Create an in-app alert',
+        task: 'Create a follow-up task'
+      },
       metrics: [
-        { label: 'Automations Active', value: '0 Rules', change: 'Live', icon: 'zap' },
-        { label: 'Executions (24h)', value: '0', change: 'Live', icon: 'trendingUp' },
-        { label: 'Success Rate', value: '100%', change: 'Live', icon: 'check' },
-        { label: 'Avg Latency', value: '0 ms', change: 'Realtime', icon: 'clock' }
+        { label: 'Active Rules', value: '0 Rules', change: 'Live PostgreSQL', icon: 'zap' },
+        { label: 'Executions (24h)', value: '0', change: 'Realtime', icon: 'trendingUp' },
+        { label: 'Success Rate', value: '100%', change: 'Live Event Bus', icon: 'check' },
+        { label: 'Avg Latency', value: '0 ms', change: 'Zero Drift', icon: 'clock' }
       ],
       newRule: {
         name: '',
-        category: 'Lead Ingestion',
-        trigger: 'New Lead Webhook Received',
-        action: '',
-        description: ''
+        description: '',
+        trigger_code: 'batchleads_lead',
+        action_code: 'notification',
+        action_text: '',
+        enabled: true
       },
       automations: [],
-      auditLogs: []
+      auditRuns: []
     };
+  },
+  computed: {
+    activeRulesCount() {
+      return this.automations.filter(r => r.enabled).length;
+    }
   },
   mounted() {
     this.loadAutomations();
   },
   methods: {
+    getAuthHeaders() {
+      const headers = { 'Content-Type': 'application/json' };
+      if (typeof window !== 'undefined') {
+        const token = window.localStorage.getItem('hushhawk_auth_token');
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+        const session = window.sessionStorage.getItem('hushhawk_session') || window.localStorage.getItem('hushhawk_session');
+        if (session) headers['x-hushhawk-session'] = encodeURIComponent(session);
+      }
+      return headers;
+    },
     async loadAutomations() {
+      this.isLoading = true;
       try {
-        const res = await fetch('/api/v1/automations');
+        const res = await fetch('/api/v1/automations', {
+          headers: this.getAuthHeaders()
+        });
         if (res.ok) {
           const data = await res.json();
           this.automations = data.automations || [];
-          this.updateMetrics();
+          this.auditRuns = data.runs || [];
+          if (data.triggers) this.triggers = data.triggers;
+          if (data.actions) this.actions = data.actions;
+          this.updateMetrics(data.metrics);
+        } else {
+          const errData = await res.json().catch(() => ({}));
+          console.warn('[Automations API Error]:', errData.error || res.statusText);
         }
       } catch (err) {
-        console.warn('[Automations] Using fallback:', err.message);
+        console.warn('[Automations Load Exception]:', err.message);
+      } finally {
+        this.isLoading = false;
       }
     },
-    updateMetrics() {
-      const totalRuns = this.automations.reduce((acc, a) => acc + (a.runsCount || 0), 0);
-      this.metrics[0].value = this.automations.length + ' Rules';
-      this.metrics[1].value = String(totalRuns);
-      this.metrics[2].value = this.automations.length ? '100%' : '100%';
-      this.metrics[3].value = this.automations.length ? '62 ms' : '0 ms';
+    updateMetrics(summary) {
+      const totalRules = this.automations.length;
+      const activeRules = this.automations.filter(a => a.enabled).length;
+      const totalExecutions = summary?.executions ?? this.auditRuns.length;
+      const succeeded = summary?.succeeded ?? this.auditRuns.filter(r => r.status === 'succeeded').length;
+      const avgDuration = summary?.avg_duration ?? (this.auditRuns.length ? Math.round(this.auditRuns.reduce((acc, r) => acc + (r.duration_ms || 0), 0) / this.auditRuns.length) : 0);
+      const successRate = totalExecutions > 0 ? Math.round((succeeded / totalExecutions) * 100) + '%' : '100%';
+
+      this.metrics[0].value = `${activeRules} of ${totalRules}`;
+      this.metrics[0].change = `${totalRules} Registered`;
+      this.metrics[1].value = String(totalExecutions);
+      this.metrics[1].change = `${succeeded} Succeeded`;
+      this.metrics[2].value = successRate;
+      this.metrics[3].value = `${avgDuration || 0} ms`;
     },
-    async deleteAutomation(id) {
+    getSuccessRate(rule) {
+      if (!rule.runs_count || rule.runs_count === 0) return '100%';
+      const rate = Math.round(((rule.succeeded_count || 0) / rule.runs_count) * 100);
+      return `${rate}%`;
+    },
+    getRuleCategoryLabel(triggerCode) {
+      switch (triggerCode) {
+        case 'batchleads_lead': return 'BatchLeads Webhook';
+        case 'podio_lead': return 'Podio Sync';
+        case 'manual': return 'On-Demand Manual';
+        default: return 'System Event';
+      }
+    },
+    getRuleCategoryClass(triggerCode) {
+      switch (triggerCode) {
+        case 'batchleads_lead': return 'cyan';
+        case 'podio_lead': return 'green';
+        case 'manual': return 'gold';
+        default: return 'purple';
+      }
+    },
+    getRuleIcon(triggerCode) {
+      switch (triggerCode) {
+        case 'batchleads_lead': return 'database';
+        case 'podio_lead': return 'handshake';
+        case 'manual': return 'zap';
+        default: return 'zap';
+      }
+    },
+    formatTimestamp(iso) {
+      if (!iso) return 'Never';
       try {
-        const res = await fetch('/api/v1/automations/' + id, { method: 'DELETE' });
+        const d = new Date(iso);
+        return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' ' +
+               d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+      } catch (_) {
+        return String(iso);
+      }
+    },
+    async deleteAutomation(ruleId) {
+      if (!confirm('Archive this automation rule?')) return;
+      try {
+        const res = await fetch(`/api/v1/automations/${ruleId}`, {
+          method: 'DELETE',
+          headers: this.getAuthHeaders()
+        });
         if (res.ok) {
-          this.automations = this.automations.filter(a => a.id !== id);
-          this.updateMetrics();
-          this.showToast('Rule Deleted', 'Automation removed from live bus.', 'info');
+          this.showToast('Rule Archived', 'Automation rule removed from active pipeline.', 'info');
+          await this.loadAutomations();
+        } else {
+          const errData = await res.json().catch(() => ({}));
+          this.showToast('Archive Failed', errData.error || 'Could not archive rule.', 'error');
         }
       } catch (e) {
         this.showToast('Error', e.message, 'error');
@@ -275,18 +369,96 @@ export default {
     },
     async toggleAutomation(rule) {
       try {
-        const res = await fetch('/api/v1/automations/' + rule.id, {
+        const res = await fetch(`/api/v1/automations/${rule.rule_id}`, {
           method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
+          headers: this.getAuthHeaders(),
           body: JSON.stringify({ enabled: rule.enabled })
         });
         if (res.ok) {
-          this.showToast('Rule Updated', 'Rule is now ' + (rule.enabled ? 'Active' : 'Disabled'), 'info');
+          this.showToast('Rule Updated', `Rule "${rule.name}" is now ${rule.enabled ? 'Active' : 'Disabled'}.`, 'info');
+          this.updateMetrics();
         } else {
+          const errData = await res.json().catch(() => ({}));
           rule.enabled = !rule.enabled;
+          this.showToast('Update Failed', errData.error || 'Could not update rule status.', 'error');
         }
       } catch (err) {
         rule.enabled = !rule.enabled;
+        this.showToast('Network Error', err.message, 'error');
+      }
+    },
+    async runManual(rule) {
+      this.isRunning = true;
+      try {
+        const res = await fetch(`/api/v1/automations/${rule.rule_id}/execute`, {
+          method: 'POST',
+          headers: this.getAuthHeaders()
+        });
+        const result = await res.json().catch(() => ({}));
+
+        if (res.ok && result.status === 'succeeded') {
+          this.showToast('Automation Succeeded', `Triggered "${rule.name}" (${result.duration_ms}ms). Action executed live in PostgreSQL.`, 'success');
+        } else {
+          const errMsg = result.error || (result.status === 'failed' ? 'Recorded as failed in PostgreSQL ops.automation_runs' : 'Execution failed.');
+          this.showToast('Execution Failed', errMsg, 'error');
+        }
+        await this.loadAutomations();
+      } catch (err) {
+        this.showToast('Execution Error', err.message, 'error');
+      } finally {
+        this.isRunning = false;
+      }
+    },
+    async testActiveTrigger() {
+      const active = this.automations.find(a => a.enabled && a.trigger_code === 'manual') || this.automations.find(a => a.enabled);
+      if (!active) {
+        this.showToast('No Active Rules', 'Enable at least one automation rule before testing.', 'info');
+        return;
+      }
+      await this.runManual(active);
+    },
+    async saveNewAutomation() {
+      if (!this.newRule.name || !this.newRule.name.trim()) return;
+      if (!this.newRule.action_text || !this.newRule.action_text.trim()) return;
+
+      this.isSaving = true;
+      try {
+        const payload = {
+          name: this.newRule.name.trim(),
+          description: (this.newRule.description || '').trim(),
+          trigger_code: this.newRule.trigger_code,
+          action_code: this.newRule.action_code,
+          action_text: this.newRule.action_text.trim(),
+          enabled: true
+        };
+
+        const res = await fetch('/api/v1/automations', {
+          method: 'POST',
+          headers: this.getAuthHeaders(),
+          body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+          const created = await res.json();
+          this.showToast('Automation Rule Created', `Rule "${created.name}" is now live and evaluating events.`, 'success');
+          this.isAddModalOpen = false;
+          this.newRule = {
+            name: '',
+            description: '',
+            trigger_code: 'batchleads_lead',
+            action_code: 'notification',
+            action_text: '',
+            enabled: true
+          };
+          await this.loadAutomations();
+        } else {
+          const errData = await res.json().catch(() => ({}));
+          this.showToast('Creation Failed', errData.error || 'Failed to create automation rule in PostgreSQL.', 'error');
+        }
+      } catch (err) {
+        this.showToast('Error', err.message, 'error');
+      } finally {
+        this.isSaving = false;
       }
     },
     showToast(title, message, type = 'info') {
@@ -297,89 +469,6 @@ export default {
           window.dispatchEvent(new CustomEvent('hushhawk-toast', { detail: { title, message, type } }));
         }
       }
-    },
-    async testAllWorkflows() {
-      this.showToast('Evaluating Rules', 'Evaluating and health-checking all active automation triggers...', 'info');
-      try {
-        const activeRules = this.automations.filter(a => a.enabled);
-        for (const r of activeRules.slice(0, 3)) {
-          await fetch('/api/v1/automations/' + r.id + '/execute', { method: 'POST' });
-        }
-        await this.loadAutomations();
-        this.showToast('Workflows Evaluated', `Evaluated active automations. Database event bus operating with zero drift.`, 'success');
-      } catch (e) {
-        this.showToast('Evaluation Complete', 'Active automation rules checked.', 'info');
-      }
-    },
-    async runManual(rule) {
-      try {
-        const res = await fetch('/api/v1/automations/' + rule.id + '/execute', { method: 'POST' });
-        if (res.ok) {
-          const result = await res.json();
-          rule.runsCount = result.runsCount;
-          rule.lastRun = result.lastRun;
-          this.updateMetrics();
-          this.auditLogs.unshift({
-            id: 'log-' + Date.now(),
-            workflow: rule.name,
-            target: rule.category || 'Event Bus',
-            latency: result.latencyMs + 'ms',
-            status: result.status || 'Delivered',
-            time: 'Just now'
-          });
-          this.showToast('Automation Fired Live', `Triggered "${rule.name}". Operational notification created in database (${result.latencyMs}ms).`, 'success');
-          return;
-        }
-      } catch (e) {}
-
-      rule.runsCount = (rule.runsCount || 0) + 1;
-      rule.lastRun = 'Just now';
-      this.updateMetrics();
-      this.showToast('Workflow Executed', 'Executed ' + rule.name, 'success');
-    },
-    async saveNewAutomation() {
-      if (!this.newRule.name || !this.newRule.name.trim()) return;
-      try {
-        const payload = {
-          name: this.newRule.name.trim(),
-          category: this.newRule.category,
-          icon: 'zap',
-          description: this.newRule.description,
-          trigger: this.newRule.trigger,
-          action: this.newRule.action
-        };
-        const res = await fetch('/api/v1/automations', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        if (res.ok) {
-          const created = await res.json();
-          this.automations.unshift(created);
-          this.updateMetrics();
-          this.auditLogs.unshift({
-            id: 'log-' + Date.now(),
-            workflow: created.name,
-            target: created.category,
-            latency: '45ms',
-            status: 'Initialized',
-            time: 'Just now'
-          });
-          this.showToast('Automation Created', 'Rule ' + created.name + ' activated.', 'success');
-        } else {
-          this.showToast('Creation Failed', 'Could not save automation rule.', 'error');
-        }
-      } catch (err) {
-        this.showToast('Error', err.message, 'error');
-      }
-      this.isAddModalOpen = false;
-      this.newRule = {
-        name: '',
-        category: 'Lead Ingestion',
-        trigger: 'New Lead Webhook Received',
-        action: '',
-        description: ''
-      };
     }
   }
 };
@@ -567,6 +656,26 @@ export default {
   background: rgba(237, 207, 124, 0.15);
   color: #edcf7c;
   flex-shrink: 0;
+}
+
+.rule-icon-box.cyan {
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+}
+
+.rule-icon-box.green {
+  background: rgba(74, 222, 128, 0.15);
+  color: #4ade80;
+}
+
+.rule-icon-box.gold {
+  background: rgba(237, 207, 124, 0.15);
+  color: #edcf7c;
+}
+
+.rule-icon-box.purple {
+  background: rgba(192, 132, 252, 0.15);
+  color: #c084fc;
 }
 
 .rule-title-box {
@@ -776,6 +885,17 @@ input:checked + .toggle-slider:before {
   gap: 0.25rem;
 }
 
+.status-chip.error {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
 .font-mono {
   font-family: monospace;
 }
@@ -796,11 +916,21 @@ input:checked + .toggle-slider:before {
   font-weight: 600;
   cursor: pointer;
   border: none;
+  transition: all 0.2s ease;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .btn-primary {
   background: #edcf7c;
   color: #04182d;
+}
+
+.btn-primary:hover:not(:disabled) {
+  filter: brightness(1.1);
 }
 
 .btn-secondary {
@@ -809,13 +939,19 @@ input:checked + .toggle-slider:before {
   border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
+.btn-secondary:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.14);
+}
+
 .btn-subtle {
   background: transparent;
   color: #94a3b8;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.btn-subtle:hover {
+.btn-subtle:hover:not(:disabled) {
   color: #f8fafc;
+  border-color: rgba(255, 255, 255, 0.25);
 }
 
 .btn-sm {
@@ -840,7 +976,7 @@ input:checked + .toggle-slider:before {
   border: 1px solid rgba(237, 207, 124, 0.3);
   border-radius: 12px;
   width: 100%;
-  max-width: 540px;
+  max-width: 560px;
 }
 
 .modal-header {
@@ -898,6 +1034,12 @@ input:checked + .toggle-slider:before {
   color: #f8fafc;
   font-size: 0.825rem;
   outline: none;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: #edcf7c;
 }
 
 .modal-footer {

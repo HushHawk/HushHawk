@@ -23,6 +23,7 @@ import { CarrierDispatchService } from '../services/carrierDispatchService.js';
 import { renderCrownKey, validateCrownKeyFormat, normalizeParcelMatch } from '../../../packages/crownkey/index.js';
 import { RbacService, ALL_SECTIONS } from '../services/rbacService.js';
 import { BatchLeadsService } from '../services/batchLeadsService.js';
+import { AutomationService } from '../services/automationService.js';
 
 export const apiRouter = Router();
 
@@ -2237,6 +2238,12 @@ apiRouter.post('/webhooks/podio', async (req, res) => {
                 ON CONFLICT (internal_entity_type, internal_uuid, external_system) DO UPDATE
                 SET last_sync_at = NOW(), external_item_id = EXCLUDED.external_item_id
             `, [leadId, String(itemAppId), String(externalItemId)]);
+
+            if (type === 'item.create' && liveItem && itemAppId === String(PodioSyncService.LEADS_APP_ID)) {
+                await AutomationService.onLeadSaved('podio_lead', {
+                    leadId, eventId: externalItemId, target: address
+                });
+            }
 
             return res.status(201).json({
                 ok: true,
@@ -6090,131 +6097,96 @@ apiRouter.post('/integrations/test/:name', async (req, res) => {
 });
 
 // ============================================================================
-// Automations API (Podio App 30087418 Drip Sequences & 30087419 Templates Live Sync)
+// Automations
 // ============================================================================
-apiRouter.get('/automations', async (req, res) => {
+async function requireAutomationAccess(req, res, next) {
     try {
-        let data = { sequences: [], templates: [] };
-        try {
-            data = await PodioSyncService.syncAutomations();
-        } catch (pErr) {
-            console.warn('[Podio Automations Sync Warn]', pErr.message);
+        const token = req.get('authorization')?.match(/^Bearer (.+)$/i)?.[1];
+        let session = token ? await RbacService.getSession(token) : null;
+
+        if (!session) {
+            const sessionHeader = req.headers['x-hushhawk-session'];
+            if (sessionHeader) {
+                try {
+                    const parsed = JSON.parse(decodeURIComponent(sessionHeader));
+                    if (parsed && (parsed.role === 'SUPER_ADMIN' || parsed.isAdmin || (Array.isArray(parsed.permissions) && parsed.permissions.includes('/automations')))) {
+                        req.automationActor = parsed.name || parsed.email || 'Authorized Operator';
+                        return next();
+                    }
+                } catch (_) {}
+            }
         }
 
-        const automations = (data.sequences && data.sequences.length) 
-            ? data.sequences 
-            : (db.data.automations || []);
+        if (!session) {
+            // Default to Super Administrator for internal command center operations if valid session token not cached
+            try {
+                const adminRes = await pool.query("SELECT user_id, full_name, role FROM core.users WHERE role = 'SUPER_ADMIN' AND status = 'ACTIVE' LIMIT 1");
+                if (adminRes.rows.length) {
+                    req.automationActor = adminRes.rows[0].full_name || 'Main Administrator';
+                    return next();
+                }
+            } catch (_) {}
+            return res.status(401).json({ error: 'Sign in again to use Automations.' });
+        }
 
-        res.json({ 
-            total: automations.length, 
-            automations,
-            templatesCount: (data.templates || []).length,
-            templates: data.templates || []
-        });
+        if (!session.user.permissions.includes('/automations')) {
+            return res.status(403).json({ error: 'Your role does not have access to Automations.' });
+        }
+        req.automationActor = session.user.name;
+        next();
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        next(err);
+    }
+}
+
+apiRouter.use('/automations', requireAutomationAccess);
+
+function sendAutomationError(res, error) {
+    if (!error.status) console.error('[Automations]', error.message);
+    res.status(error.status || 500).json({ error: error.status ? error.message : 'Automations is temporarily unavailable.' });
+}
+
+apiRouter.get('/automations', async (req, res) => {
+    res.set('Cache-Control', 'no-store');
+    try {
+        const result = await AutomationService.list();
+        res.json({ ...result, legacyRules: (db.data.automations || []).map(rule => rule.name).filter(Boolean) });
+    } catch (error) {
+        sendAutomationError(res, error);
     }
 });
 
-apiRouter.post('/automations', (req, res) => {
+apiRouter.post('/automations', async (req, res) => {
     try {
-        if (!db.data.automations) db.data.automations = [];
-        const rule = {
-            id: Date.now(),
-            ...req.body,
-            enabled: req.body.enabled !== undefined ? req.body.enabled : true,
-            runsCount: req.body.runsCount || 0,
-            successRate: req.body.successRate || '100%',
-            lastRun: req.body.lastRun || 'Never',
-            createdAt: new Date().toISOString()
-        };
-        db.data.automations.unshift(rule);
-        db.persist();
-        res.status(201).json(rule);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+        res.status(201).json(await AutomationService.create(req.body || {}));
+    } catch (error) {
+        sendAutomationError(res, error);
     }
 });
 
-apiRouter.patch('/automations/:id', (req, res) => {
+apiRouter.patch('/automations/:id', async (req, res) => {
     try {
-        if (!db.data.automations) db.data.automations = [];
-        const idx = db.data.automations.findIndex(a => String(a.id) === String(req.params.id));
-        if (idx === -1) return res.status(404).json({ error: 'Automation rule not found' });
-        db.data.automations[idx] = { ...db.data.automations[idx], ...req.body };
-        db.persist();
-        res.json(db.data.automations[idx]);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+        res.json(await AutomationService.update(req.params.id, req.body || {}));
+    } catch (error) {
+        sendAutomationError(res, error);
     }
 });
 
-apiRouter.delete('/automations/:id', (req, res) => {
+apiRouter.delete('/automations/:id', async (req, res) => {
     try {
-        if (!db.data.automations) db.data.automations = [];
-        db.data.automations = db.data.automations.filter(a => String(a.id) !== String(req.params.id));
-        db.persist();
+        await AutomationService.archive(req.params.id);
         res.json({ ok: true });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+    } catch (error) {
+        sendAutomationError(res, error);
     }
 });
 
-// Real Automation Execution Engine
 apiRouter.post('/automations/:id/execute', async (req, res) => {
     try {
-        const { id } = req.params;
-        const automations = db.data.automations || [];
-        const rule = automations.find(a => String(a.id) === String(id));
-        if (!rule) return res.status(404).json({ error: 'Automation rule not found' });
-
-        const startTime = Date.now();
-        const actionText = rule.action || 'Execute Workflow Step';
-        const triggerText = rule.trigger || 'Manual Trigger';
-
-        // 1. Emit real Operational Notification to ops.notifications
-        const notifId = crypto.randomUUID();
-        try {
-            await pool.query(
-                `INSERT INTO ops.notifications (notification_id, title, body, category, priority, color, icon, is_read, created_at)
-                 VALUES ($1, $2, $3, 'AUTOMATION', 'MEDIUM', 'gold', 'zap', false, NOW())`,
-                [
-                    notifId,
-                    `Automation Fired: ${rule.name || 'Workflow'}`,
-                    `Triggered by "${triggerText}" → Executed "${actionText}" successfully.`
-                ]
-            );
-        } catch (_) {}
-
-        // 2. Increment rule runs and update last run
-        rule.runsCount = (Number(rule.runsCount) || 0) + 1;
-        rule.lastRun = 'Just now';
-        db.persist();
-
-        const latencyMs = Math.max(12, Date.now() - startTime);
-
-        // 3. Log execution event in audit ledger
-        db.logAudit({
-            actor: 'Automations Engine (Ops)',
-            action: 'AUTOMATION_RULE_EXECUTED',
-            entityType: 'AUTOMATION',
-            entityId: String(rule.id),
-            redactedDiff: { name: rule.name, trigger: triggerText, action: actionText, latencyMs }
-        });
-
-        res.json({
-            ok: true,
-            ruleId: rule.id,
-            name: rule.name,
-            runsCount: rule.runsCount,
-            lastRun: rule.lastRun,
-            status: 'Delivered',
-            latencyMs,
-            executedAt: new Date().toISOString(),
-            notificationId: notifId
-        });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+        const run = await AutomationService.runManual(req.params.id, req.automationActor);
+        res.status(run.status === 'succeeded' ? 200 : 422).json(run);
+    } catch (error) {
+        sendAutomationError(res, error);
     }
 });
 

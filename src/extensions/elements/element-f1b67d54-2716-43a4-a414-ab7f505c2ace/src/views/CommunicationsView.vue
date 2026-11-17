@@ -9,7 +9,7 @@
               <span v-html="icons.mail"></span>
               Omnichannel Comms
             </h3>
-            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <div class="thread-header-controls">
               <button class="sync-crm-btn" @click="syncPodioAndSmrtPhone" :disabled="isSyncing" title="Sync Podio & smrtPhone">
                 <span v-html="icons.refresh" :class="{ 'spin-anim': isSyncing }"></span>
                 <span>{{ isSyncing ? 'Syncing...' : 'Sync Podio' }}</span>
@@ -71,22 +71,25 @@
             <div class="chat-avatar" :class="activeThread.type.toLowerCase()">
               <span v-html="getChannelIcon(activeThread.type)"></span>
             </div>
-            <div>
+            <div class="chat-contact-details">
               <div class="name-phone-row">
                 <h3>{{ activeThread.contact }}</h3>
                 <span class="contact-badge" :class="activeThread.role.toLowerCase()">{{ activeThread.role }}</span>
               </div>
-              <span class="contact-phone font-mono">{{ activeThread.phone }} • {{ activeThread.address }}</span>
+              <div class="contact-meta">
+                <span v-if="activeThread.phone" class="contact-phone font-mono">{{ activeThread.phone }}</span>
+                <span v-if="activeThread.address" class="contact-address">{{ activeThread.address }}</span>
+              </div>
             </div>
           </div>
           <div class="chat-actions">
             <button class="btn btn-secondary btn-sm" @click="makeCall(activeThread)">
               <span v-html="icons.phone"></span>
-              Call Now
+              <span>Call Now</span>
             </button>
             <button class="btn btn-subtle btn-sm" @click="toggleContextDrawer">
               <span v-html="icons.info"></span>
-              Property Intel
+              <span>Property Intel</span>
             </button>
           </div>
         </div>
@@ -442,10 +445,17 @@ export default {
 }
 
 .top-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  display: grid;
+  gap: var(--hh-action-gap, 8px);
 }
+.thread-header-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--hh-action-gap, 8px);
+}
+
+.top-header h3 > span { flex-shrink: 0; }
 
 .top-header h3 {
   font-size: 1.05rem;
@@ -623,7 +633,9 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.85rem 1.25rem;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 14px 16px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(0, 0, 0, 0.1);
 }
@@ -631,10 +643,14 @@ export default {
 .chat-contact-info {
   display: flex;
   align-items: center;
+  flex: 1 1 245px;
+  min-width: 0;
   gap: 0.75rem;
 }
 
+.chat-contact-details { min-width: 0; }
 .chat-avatar {
+  flex-shrink: 0;
   width: 38px;
   height: 38px;
   border-radius: 8px;
@@ -647,6 +663,7 @@ export default {
 
 .name-phone-row {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 0.5rem;
 }
@@ -670,10 +687,25 @@ export default {
   color: #94a3b8;
 }
 
+.contact-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px 12px;
+  margin-top: 4px;
+  font-size: 0.75rem;
+  color: var(--hh-muted, #94a3b8);
+  overflow-wrap: anywhere;
+}
+
 .chat-actions {
   display: flex;
-  gap: 0.5rem;
+  flex-wrap: wrap;
+  gap: var(--hh-action-gap, 8px);
 }
+
+.chat-actions .btn { white-space: nowrap; }
+.chat-actions .btn > span:first-child { display: inline-flex; flex-shrink: 0; }
+.chat-actions .btn :deep(svg) { width: 16px; height: 16px; }
 
 .chat-messages {
   flex: 1;
@@ -1055,5 +1087,18 @@ export default {
   border: none;
   color: #94a3b8;
   cursor: pointer;
+}
+@media (max-width: 1050px) {
+  .view-container { height: auto; min-height: 0; }
+  .comms-layout { flex-wrap: wrap; }
+  .threads-panel { width: min(290px, 100%); }
+  .chat-panel { min-height: 420px; }
+  .intel-panel { width: 100%; border-left: 0; border-top: 1px solid var(--hh-border); }
+}
+@media (max-width: 700px) {
+  .comms-layout { flex-direction: column; }
+  .threads-panel { width: 100%; border-right: 0; border-bottom: 1px solid var(--hh-border); }
+  .thread-list { max-height: 240px; }
+  .chat-contact-info { flex-basis: 100%; }
 }
 </style>
