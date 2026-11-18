@@ -3025,6 +3025,8 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  row-gap: 10px;
   border-bottom: 1px solid #0d2845;
 }
 .prop-count-card {
@@ -3061,13 +3063,16 @@ export default {
 .btn-add-prop {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
+  flex: 1 0 100%;
+  justify-content: center;
+  white-space: nowrap;
   background: transparent;
   border: 1px solid #edcf7c;
   color: #edcf7c;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
-  padding: 4px 8px;
+  padding: 7px 10px;
   border-radius: 4px;
   cursor: pointer;
   transition: all .2s;
