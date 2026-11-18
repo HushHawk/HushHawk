@@ -197,8 +197,11 @@ export class PodioSyncService {
                 }
                 let propertyId = null;
                 if (propertyItemId) {
+                    // Link only to a property that still exists and has a genuine parcel (older syncs registered invented PODIO-/FL- parcels).
                     const { rows: [link] } = await client.query(
-                        `SELECT internal_uuid FROM crm.external_sync_map WHERE internal_entity_type = 'PROPERTY' AND external_system = 'PODIO' AND external_item_id = $1`, [propertyItemId]);
+                        `SELECT m.internal_uuid FROM crm.external_sync_map m JOIN core.properties pr ON pr.property_id = m.internal_uuid
+                         WHERE m.internal_entity_type = 'PROPERTY' AND m.external_system = 'PODIO' AND m.external_item_id = $1
+                           AND pr.parcel_raw !~ '^PODIO-' AND pr.parcel_raw !~ '^FL-[0-9]{5}-[0-9]+$'`, [propertyItemId]);
                     propertyId = link?.internal_uuid || null;
                 }
                 await client.query(
@@ -479,7 +482,7 @@ export class PodioSyncService {
     /**
      * Dispatch an outbound communication live into Podio Feeds app (30087421)
      */
-    static async sendOutboundCommunication({ type = 'TEXT', to, body, subject, propertyAddress, leadName }) {
+    static async sendOutboundCommunication({ type = 'TEXT', to, body, subject, propertyAddress, leadName, recordLocally = true }) {
         try {
             console.log(`[PodioSync] Dispatching outbound ${type} to ${to} via Podio Feeds...`);
             const auth = await PodioService.authenticateApp(this.LEADS_APP_ID, this.APP_TOKEN);
@@ -522,9 +525,9 @@ export class PodioSyncService {
             const podioItem = await PodioService.createItem(token, this.FEEDS_APP_ID, fields);
             console.log(`[PodioSync] Outbound ${type} created successfully in Podio Feeds item:`, podioItem.item_id);
 
-            // Also record locally in PostgreSQL
+            // Also record locally in PostgreSQL (callers that write their own interaction pass recordLocally: false)
             const interactionUuid = crypto.randomUUID();
-            await pool.query(`
+            if (recordLocally) await pool.query(`
                 INSERT INTO core.interactions
                 (interaction_id, method, direction, actor_id, result, notes, occurred_at)
                 VALUES ($1, $2, 'OUTBOUND', 'Podio user', 'SUCCESS', $3, NOW())

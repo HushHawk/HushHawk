@@ -19,6 +19,7 @@ import { DealFunnelService } from '../services/dealFunnelService.js';
 import { LeadDeskService } from '../services/leadDeskService.js';
 import { OutreachActionsService } from '../services/outreachActionsService.js';
 import { PodioSyncService } from '../services/podioSyncService.js';
+import { DeliveryService } from '../services/deliveryService.js';
 import { CarrierDispatchService } from '../services/carrierDispatchService.js';
 import { renderCrownKey, validateCrownKeyFormat, normalizeParcelMatch } from '../../../packages/crownkey/index.js';
 import { RbacService, ALL_SECTIONS } from '../services/rbacService.js';
@@ -2017,7 +2018,7 @@ apiRouter.post('/calls/dispatch', async (req, res) => {
             method: 'CALL',
             direction: 'OUTBOUND',
             actor,
-            result: carrierResult.liveCarrier ? 'CALL_BRIDGED' : 'CALL_DISPATCHED',
+            result: carrierResult.liveCarrier ? 'CALL_BRIDGED' : 'CLICK_TO_DIAL',
             notes: notes || `Outbound phone call initiated to ${recipientPhone} [${carrierResult.provider.toUpperCase()} Status: ${carrierResult.status}]`
         });
 
@@ -3177,7 +3178,7 @@ apiRouter.post('/dispositions/blast', async (req, res) => {
                 results.push({ buyerId: buyer.id, email: buyer.email, outcome: 'BLOCKED', reason: gate.checks.find(c => !c.passed)?.reason });
                 continue;
             }
-            const sent = await CarrierDispatchService.dispatchEmail({ to: buyer.email, subject: `Off-market deal: ${address}`, text });
+            const sent = await DeliveryService.email({ to: buyer.email, subject: `Off-market deal: ${address}`, text, leadName: buyer.company || buyer.full_name, propertyAddress: address });
             if (!sent.success) {
                 results.push({ buyerId: buyer.id, email: buyer.email, outcome: 'FAILED', reason: sent.error });
                 continue;
@@ -3902,7 +3903,7 @@ apiRouter.post('/communications/messages', async (req, res, next) => {
             return res.status(400).json({ error: 'Enter a message of 1 to 10,000 characters.' });
         }
         const { rows: [thread] } = await pool.query(
-            'SELECT property_id, contact_phone, contact_email, platform_id FROM core.conversation_desk_threads WHERE id = $1',
+            'SELECT property_id, contact_name, property_address, contact_phone, contact_email, platform_id FROM core.conversation_desk_threads WHERE id = $1',
             [threadId]
         );
         if (!thread) return res.status(404).json({ error: 'Conversation not found.' });
@@ -3912,9 +3913,9 @@ apiRouter.post('/communications/messages', async (req, res, next) => {
 
         const subject = 'Property update from HushHawk';
         const carrier = await (isEmail
-            ? CarrierDispatchService.dispatchEmail({ to, subject, text: message })
-            : CarrierDispatchService.dispatchSms({ to, message }));
-        if (!carrier?.liveCarrier || !carrier.success) {
+            ? DeliveryService.email({ to, subject, text: message, leadName: thread.contact_name, propertyAddress: thread.property_address })
+            : DeliveryService.text({ to, message, leadName: thread.contact_name, propertyAddress: thread.property_address }));
+        if (!carrier?.success) {
             return res.status(503).json({ error: 'The delivery provider could not accept this message. Your draft was kept.' });
         }
 

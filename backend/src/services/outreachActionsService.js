@@ -1,3 +1,4 @@
+import { DeliveryService } from './deliveryService.js';
 /**
  * @file backend/src/services/outreachActionsService.js
  * Canonical PostgreSQL Service for Executive Outreach Action Boxes:
@@ -297,7 +298,7 @@ export class OutreachActionsService {
         const targetPhone = record?.phone || phone || recipientPhone;
         if (!targetPhone) throw Object.assign(new Error('A recipient phone number is required.'), { status: 400 });
 
-        const carrierResult = await CarrierDispatchService.dispatchSms({ to: targetPhone, message });
+        const carrierResult = await DeliveryService.text({ to: targetPhone, message, leadName: record?.contact_name || contactName, propertyAddress: record?.property_address });
         if (!carrierResult.success) {
             throw Object.assign(new Error(carrierResult.error || 'The text could not be sent.'), { status: 503, carrier: carrierResult });
         }
@@ -317,15 +318,8 @@ export class OutreachActionsService {
         await pool.query(
             `INSERT INTO core.interactions (interaction_id, property_id, method, direction, actor_id, result, notes, occurred_at)
              VALUES (gen_random_uuid(), $1, 'TEXT', 'OUTBOUND', $3, 'SENT', $2, now())`,
-            [record.property_id, `SMS to ${record.contact_name || record.phone} (${record.phone}): "${message}" [${carrierResult.provider} ${carrierResult.messageSid || ''}]`, actor]);
+            [record.property_id, `SMS to ${record.contact_name || record.phone} (${record.phone}): "${message}" [${carrierResult.provider} ${carrierResult.messageSid || carrierResult.itemId || ''}]`, actor]);
 
-        if (process.env.PODIO_CLIENT_ID && process.env.PODIO_APP_TOKEN) {
-            try {
-                await PodioSyncService.sendOutboundCommunication({ type: 'TEXT', to: record.phone, body: message, propertyAddress: record.property_address, leadName: record.contact_name });
-            } catch (pErr) {
-                console.error('[OutreachActions] Podio text sync failed:', pErr.message);
-            }
-        }
         return { ...record, carrier: carrierResult };
     }
 
@@ -356,7 +350,7 @@ export class OutreachActionsService {
         if (!to) throw Object.assign(new Error('A recipient email address is required.'), { status: 400 });
         if (!finalSubject || !finalBody) throw Object.assign(new Error('A subject and body are required.'), { status: 400 });
 
-        const carrierResult = await CarrierDispatchService.dispatchEmail({ to, subject: finalSubject, text: finalBody });
+        const carrierResult = await DeliveryService.email({ to, subject: finalSubject, text: finalBody, leadName: record?.recipient_name || recipientName, propertyAddress: record?.property_address || propertyAddress });
         if (!carrierResult.success) {
             throw Object.assign(new Error(carrierResult.error || 'The email could not be sent.'), { status: 503, carrier: carrierResult });
         }
@@ -378,13 +372,6 @@ export class OutreachActionsService {
              VALUES (gen_random_uuid(), $1, 'EMAIL', 'OUTBOUND', $3, 'SENT', $2, now())`,
             [record.property_id, `Email to ${record.recipient_name || to} (${to}) - Subject: ${finalSubject} [${carrierResult.provider}]`, actor]);
 
-        if (process.env.PODIO_CLIENT_ID && process.env.PODIO_APP_TOKEN) {
-            try {
-                await PodioSyncService.sendOutboundCommunication({ type: 'EMAIL', to, subject: finalSubject, body: finalBody, propertyAddress: record.property_address, leadName: record.recipient_name });
-            } catch (pErr) {
-                console.error('[OutreachActions] Podio email sync failed:', pErr.message);
-            }
-        }
         return { ...record, carrier: carrierResult };
     }
 
