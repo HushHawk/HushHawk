@@ -171,12 +171,18 @@ async function runTests() {
 
         // Test 8: Verify Audit Trail
         console.log('\n[Test 8] Verifying immutable audit trail in audit.audit_events...');
-        const auditRes = await pool.query(
-            `SELECT action, entity_type, entity_id FROM audit.audit_events
-             WHERE entity_id IN ($1, $2)
-             ORDER BY created_at DESC`,
-            [testPhotoId, testDocId]
-        );
+        // The audit rows are written by the server around the response; allow a moment for them to land before judging.
+        let auditRes;
+        for (let attempt = 0; attempt < 15; attempt++) {
+            auditRes = await pool.query(
+                `SELECT action, entity_type, entity_id FROM audit.audit_events
+                 WHERE entity_id IN ($1, $2)
+                 ORDER BY created_at DESC`,
+                [testPhotoId, testDocId]
+            );
+            if (auditRes.rows.length >= 2) break;
+            await new Promise(resolve => setTimeout(resolve, 200));
+        }
         assert.ok(auditRes.rows.length >= 2, 'Both S3 upload actions should be recorded in audit log');
         const actions = auditRes.rows.map(r => r.action);
         assert.ok(actions.includes('PHOTO_UPLOADED_S3'), 'Audit log must record PHOTO_UPLOADED_S3');

@@ -136,19 +136,6 @@
               </select>
             </div>
 
-            <div class="filter-group">
-              <label>Show Passwords:</label>
-              <button 
-                type="button" 
-                class="btn-toggle-all-passwords" 
-                :class="{ active: showAllPasswords }"
-                @click="showAllPasswords = !showAllPasswords"
-                title="Toggle plain-text passwords for all roster members"
-              >
-                <span v-html="showAllPasswords ? icons.eyeOff : icons.eye"></span>
-                <span>{{ showAllPasswords ? 'Hide All' : 'Reveal All' }}</span>
-              </button>
-            </div>
           </div>
 
           <!-- Members Table -->
@@ -219,33 +206,6 @@
                     <span class="permission-count-pill" :class="{ 'full-access': (member.allowedCount >= 20 || member.role === 'SUPER_ADMIN') }">
                       {{ (member.role === 'SUPER_ADMIN' || member.allowedCount >= 23) ? 'All 23 Sections' : `${member.allowedCount || member.permissions?.length || 1} Sections` }}
                     </span>
-                  </td>
-
-                  <td class="col-password password-cell" @click.stop>
-                    <div class="password-box">
-                      <span v-if="showAllPasswords || visiblePasswords[member.id]" class="password-text font-mono">
-                        {{ member.password || '••••••••' }}
-                      </span>
-                      <span v-else class="password-hidden font-mono">••••••••</span>
-
-                      <button 
-                        type="button" 
-                        class="btn-icon-subtle" 
-                        @click="togglePasswordVisibility(member.id)"
-                        :title="visiblePasswords[member.id] ? 'Hide password' : 'Show password'"
-                      >
-                        <span v-html="visiblePasswords[member.id] ? icons.eyeOff : icons.eye"></span>
-                      </button>
-
-                      <button 
-                        type="button" 
-                        class="btn-icon-subtle" 
-                        @click="copyText(member.password || '', 'Password copied to clipboard!')"
-                        title="Copy password to clipboard"
-                      >
-                        <span v-html="icons.file"></span>
-                      </button>
-                    </div>
                   </td>
 
                   <td class="col-status">
@@ -358,33 +318,7 @@
               <div class="card-head">
                 <span class="mini-badge"><span v-html="icons.key"></span> Credential Management</span>
               </div>
-              <div class="credential-row">
-                <label>Current Access Password:</label>
-                <div class="password-display-box">
-                  <span v-if="visiblePasswords[selectedMember.id]" class="pass-val font-mono">
-                    {{ selectedMember.password || '••••••••' }}
-                  </span>
-                  <span v-else class="pass-val font-mono">••••••••</span>
-
-                  <button 
-                    type="button" 
-                    class="btn-icon-subtle" 
-                    @click="togglePasswordVisibility(selectedMember.id)"
-                    :title="visiblePasswords[selectedMember.id] ? 'Hide password' : 'Show password'"
-                  >
-                    <span v-html="visiblePasswords[selectedMember.id] ? icons.eyeOff : icons.eye"></span>
-                  </button>
-
-                  <button 
-                    type="button" 
-                    class="btn-icon-subtle" 
-                    @click="copyText(selectedMember.password || '', 'Password copied!')"
-                    title="Copy password"
-                  >
-                    <span v-html="icons.file"></span>
-                  </button>
-                </div>
-              </div>
+              <p class="muted-note">Passwords are stored encrypted and cannot be viewed. Use Change Password to set a new one.</p>
 
               <div class="credential-actions">
                 <button class="btn btn-secondary btn-sm" @click="openChangePasswordModal(selectedMember)">
