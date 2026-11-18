@@ -511,7 +511,7 @@ export default {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             recipientPhone: phone,
-            actor: 'Alex Richard (HushHawk)',
+            
             notes: `Outbound call from Skip Trace Directory to ${phone}`
           })
         });

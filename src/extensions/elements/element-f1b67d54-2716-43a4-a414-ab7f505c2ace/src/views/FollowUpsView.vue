@@ -166,7 +166,7 @@
                 <td>
                   <div class="rep-chip">
                     <span class="rep-avatar">{{ item.repInitials || 'AR' }}</span>
-                    <span>{{ item.rep || item.assignedRep || 'Alex Richard' }}</span>
+                    <span>{{ item.rep || item.assignedRep || 'Unassigned' }}</span>
                   </div>
                 </td>
                 <td @click.stop>
@@ -505,10 +505,10 @@ export default {
             phone: item.phone || '',
             notes: item.notes || '',
             lastOffer: item.lastOffer ?? null,
-            arv: item.arv || 240000,
+            arv: item.arv ?? null,
             stage: item.stage || 'Negotiation',
-            rep: item.rep || item.assignedRep || 'Alex Richard',
-            repInitials: item.repInitials || 'AR'
+            rep: item.rep || item.assignedRep || 'Unassigned',
+            repInitials: item.repInitials || ''
           }));
           if (!this.selectedFollowUp && this.followUps.length) this.selectedFollowUp = this.followUps[0];
         }
@@ -641,8 +641,8 @@ export default {
         motivation: this.newForm.motivation,
         channel: this.newForm.channel,
         lastOffer: this.newForm.lastOffer,
-        arv: this.newForm.arv || 220000,
-        notes: this.newForm.notes || 'Newly scheduled touch.'
+        arv: this.newForm.arv ?? null,
+        notes: this.newForm.notes || ''
       };
 
       try {
@@ -664,7 +664,7 @@ export default {
             dueStatus: 'Today',
             dueText: 'Due today',
             stage: 'Active Follow-up',
-            rep: 'Alex Richard',
+            rep: '',
             repInitials: 'AR',
             done: false
           });
@@ -679,7 +679,7 @@ export default {
           dueStatus: 'Today',
           dueText: 'Due today',
           stage: 'Active Follow-up',
-          rep: 'Alex Richard',
+          rep: '',
           repInitials: 'AR',
           done: false
         });

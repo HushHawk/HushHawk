@@ -9,7 +9,7 @@
       <div class="desk-meta-group">
         <span class="meta-label">Real Estate Leads</span>
         <span class="meta-separator">•</span>
-        <span class="meta-label">16 Platforms</span>
+        <span class="meta-label">{{ platforms.length }} Platforms</span>
         <span class="meta-separator">•</span>
         <div class="live-sync-indicator" :class="{ syncing: isSyncing }">
           <span class="sync-dot"></span>
@@ -287,6 +287,8 @@ const platforms = ref([
 ]);
 
 const activePlatformId = ref('facebook');
+// The signed-in person: assignments and notes are theirs, never an invented name.
+const deskUserName = ref('me');
 const selectedPriority = ref('All');
 const threads = ref([]);
 const activeThreadId = ref(null);
@@ -442,7 +444,7 @@ async function sendMessage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         content,
-        senderName: 'Alex Richard (HushHawk)',
+        
         senderType: 'rep'
       })
     });
@@ -537,7 +539,7 @@ async function handleAction(action) {
             body: JSON.stringify({
               recipientPhone: lead.contactPhone,
               propertyId: lead.propertyId || null,
-              actor: 'Alex Richard (HushHawk)',
+              
               notes: `Outbound call to ${lead.contactName} on ${lead.propertyAddress || 'Duval County'}`
             })
           });
@@ -575,14 +577,16 @@ async function handleAction(action) {
         const res = await fetch(`/api/v1/lead-desk/threads/${encodeURIComponent(lead.id)}/assign`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ assignedTo: 'Alex Richard (Acquisitions)' })
+          body: JSON.stringify({ assignedTo: deskUserName.value })
         });
         if (res.ok) {
-          lead.status = 'Assigned to Alex Richard';
-          showDeskToast('Lead Assigned', `${lead.contactName} assigned to Alex Richard. Saved to PostgreSQL.`, 'success');
+          lead.status = 'Assigned to ' + deskUserName.value;
+          showDeskToast('Lead Assigned', `${lead.contactName} assigned to ${deskUserName.value}.`, 'success');
+        } else {
+          showDeskToast('Not Assigned', 'The assignment could not be saved.', 'error');
         }
       } catch (e) {
-        showDeskToast('Assignment Saved', `Lead ${lead.contactName} assigned to acquisitions team.`, 'success');
+        showDeskToast('Not Assigned', 'The assignment could not be saved. Check your connection and try again.', 'error');
       }
       break;
     case 'schedule':
@@ -608,6 +612,10 @@ async function handleAction(action) {
 let onGlobalRefreshHandler = null;
 
 onMounted(async () => {
+  try {
+    const session = await fetch('/api/auth/get-session');
+    if (session.ok) deskUserName.value = (await session.json()).user?.name || 'me';
+  } catch (e) { /* the label stays generic */ }
   await fetchPlatforms();
   await fetchThreads();
   // Start real-time sync every 5 seconds

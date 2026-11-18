@@ -541,10 +541,11 @@ export default {
           const propData = await propRes.json();
           if (propData && propData.properties) {
             propertyInventory.value = propData.properties.slice(0, 10).map(p => ({
-              address: p.address_line1 || 'Jacksonville Property',
-              zip: p.postal_code || '32204',
-              price: Math.round(Number(p.assessed_value || 180000) * 0.75),
-              arv: Math.round(Number(p.assessed_value || 180000) * 1.25)
+              address: p.address_line1 || '',
+              zip: p.postal_code || '',
+              // No asking price or ARV exists for these properties until someone underwrites them, so none is shown.
+              price: null,
+              arv: null
             }));
           }
         } catch (_) {}
@@ -606,14 +607,14 @@ export default {
     const matchedDeals = computed(() => {
       if (!selectedBuyer.value) return propertyInventory.value;
       const bZips = Array.isArray(selectedBuyer.value.zips) ? selectedBuyer.value.zips : [];
-      return propertyInventory.value.filter(d => bZips.includes(d.zip) || d.price <= (selectedBuyer.value.max || 99999999));
+      return propertyInventory.value.filter(d => bZips.includes(d.zip) || (d.price !== null && d.price <= (selectedBuyer.value.max || 99999999)));
     });
 
     const matchedDealsForActive = computed(() => {
       const b = activeBuyerDossier.value || selectedBuyer.value;
       if (!b) return propertyInventory.value;
       const bZips = Array.isArray(b.zips) ? b.zips : [];
-      return propertyInventory.value.filter(d => bZips.includes(d.zip) || d.price <= (b.max || 99999999));
+      return propertyInventory.value.filter(d => bZips.includes(d.zip) || (d.price !== null && d.price <= (b.max || 99999999)));
     });
 
     function selectBuyer(b) {
@@ -775,7 +776,8 @@ export default {
     }
 
     function formatCurrency(val) {
-      return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(val || 0);
+      if (val === null || val === undefined || val === '') return '—';
+      return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(val);
     }
 
     function getInitials(name) {

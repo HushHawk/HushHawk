@@ -551,17 +551,14 @@
                 <p class="analyzer-prop-sub">{{activeSnapshot.cityStateZip}}</p>
               </div>
               <dl class="analyzer-dl">
-                <div><dt>After-repair value</dt><dd>{{money(activeSnapshot.arv)}}</dd></div>
-                <div><dt>Estimated repairs</dt><dd>{{money(activeSnapshot.repairs)}}</dd></div>
-                <div><dt>Purchase price</dt><dd>{{money(activeSnapshot.purchase)}}</dd></div>
+                <div><dt>County value</dt><dd>{{money(activeSnapshot.countyValue)}}</dd></div>
+                <div><dt>Living area</dt><dd>{{activeSnapshot.livingArea ? activeSnapshot.livingArea.toLocaleString() + ' sqft' : '—'}}</dd></div>
+                <div><dt>Year built</dt><dd>{{activeSnapshot.yearBuilt || '—'}}</dd></div>
+                <div><dt>Owner of record</dt><dd>{{activeSnapshot.owner || '—'}}</dd></div>
               </dl>
-              <div class="profit">
-                <span>Illustrative spread*</span>
-                <strong>{{money(activeSnapshot.spread)}}</strong>
-              </div>
             </div>
             <div v-if="activeSnapshot" class="analyzer-footer">
-              <small class="profit-sub">*ARV − purchase − repairs; before fees &amp; costs.</small>
+              <small class="profit-sub">From the county property appraiser roll. Open the Deal Analyzer for an ARV estimate from nearby sales.</small>
             </div>
             <div v-else style="padding: 16px; text-align: center; color: #64748b; font-size: 11px;">
               No deals currently underwritten. Use the Deal Analyzer to calculate MAO, repair budgets, and spreads.
@@ -1294,18 +1291,14 @@ async function refreshAllData() {
         const propsList = pData.properties || [];
         const validProp = propsList.find(p => p.address_line1 && p.assessed_value && Number(p.assessed_value) > 0);
         if (validProp) {
-          const assessed = Number(validProp.assessed_value);
-          const arv = Math.round(assessed * 1.35);
-          const repairs = Math.round(arv * 0.12);
-          const purchase = Math.round(arv * 0.65);
-          const spread = arv - purchase - repairs;
+          const meta = validProp.metadata || {};
           activeSnapshot.value = {
             address: validProp.address_line1,
-            cityStateZip: [validProp.city, validProp.state_code].filter(Boolean).join(', ') + ' ' + (validProp.postal_code || '') + ' · ' + (validProp.property_type || 'Single Family'),
-            arv: arv,
-            repairs: repairs,
-            purchase: purchase,
-            spread: spread
+            cityStateZip: [validProp.city, validProp.state_code].filter(Boolean).join(', ') + ' ' + (validProp.postal_code || '') + (validProp.property_type ? ' · ' + validProp.property_type : ''),
+            countyValue: Number(validProp.assessed_value),
+            livingArea: Number(meta.living_area_sqft) || null,
+            yearBuilt: Number(meta.year_built) || null,
+            owner: meta.county_owner_of_record || ''
           };
         }
       }
@@ -1319,7 +1312,7 @@ async function refreshAllData() {
       if (resLeads.ok) {
         const lData = await resLeads.json();
         if (lData.leads && lData.leads.length) {
-          leads.value = lData.leads.map(l => ({
+          leads.value = lData.leads.filter(l => !l.leadKind || l.leadKind === 'SELLER' || l.leadKind === 'NEEDS_REVIEW').map(l => ({
             name: l.name || 'Seller Lead',
             address: l.address && l.address !== 'No Property Address on File' ? l.address : '',
             zip: l.zip || '',
@@ -1694,18 +1687,14 @@ async function loadDashboardData() {
       const propsList = pData.properties || [];
       const validProp = propsList.find(p => p.address_line1 && p.assessed_value && Number(p.assessed_value) > 0);
       if (validProp) {
-        const assessed = Number(validProp.assessed_value);
-        const arv = Math.round(assessed * 1.35);
-        const repairs = Math.round(arv * 0.12);
-        const purchase = Math.round(arv * 0.65);
-        const spread = arv - purchase - repairs;
+        const meta = validProp.metadata || {};
         activeSnapshot.value = {
           address: validProp.address_line1,
-          cityStateZip: [validProp.city, validProp.state_code].filter(Boolean).join(', ') + ' ' + (validProp.postal_code || '') + ' · ' + (validProp.property_type || 'Single Family'),
-          arv: arv,
-          repairs: repairs,
-          purchase: purchase,
-          spread: spread
+          cityStateZip: [validProp.city, validProp.state_code].filter(Boolean).join(', ') + ' ' + (validProp.postal_code || '') + (validProp.property_type ? ' · ' + validProp.property_type : ''),
+          countyValue: Number(validProp.assessed_value),
+          livingArea: Number(meta.living_area_sqft) || null,
+          yearBuilt: Number(meta.year_built) || null,
+          owner: meta.county_owner_of_record || ''
         };
       }
     }

@@ -265,7 +265,7 @@ export default {
         category: 'Title & Escrow',
         priority: 'High',
         dueDate: 'Today 5:00 PM',
-        assignee: 'Alex Richard',
+        assignee: '',
         description: ''
       },
       tasks: []
@@ -352,7 +352,7 @@ export default {
           const data = await res.json();
           if (data && Array.isArray(data.tasks)) {
             this.tasks = data.tasks.map(t => {
-              const assignee = t.assignee || t.owner_id || 'Alex Richard';
+              const assignee = t.assignee || t.owner_id || 'Unassigned';
               const repInitials = t.repInitials || assignee.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'AR';
               const dueDate = t.dueDate || t.due_date || t.due_time || 'Today 5:00 PM';
               const dueStatus = t.dueStatus || (dueDate.toLowerCase().includes('today') ? 'today' : (dueDate.toLowerCase().includes('overdue') ? 'overdue' : 'normal'));
@@ -467,7 +467,7 @@ export default {
         category: 'Title & Escrow',
         priority: 'High',
         dueDate: 'Today 5:00 PM',
-        assignee: 'Alex Richard',
+        assignee: '',
         description: ''
       };
     }
