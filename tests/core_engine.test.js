@@ -612,3 +612,22 @@ test('comparable sales estimate an ARV only from enough similar recent qualified
         assert.equal((await ParcelLookupService.fetchComps({ ...base, countyCode: 'XXX' })).estimate, null);
     } finally { globalThis.fetch = realFetch; }
 });
+
+test('desk threads carry no invented score or place, and the property card shows only recorded facts', async () => {
+    const { LeadDeskService } = await import('../backend/src/services/leadDeskService.js');
+    await pool.query("INSERT INTO core.conversation_desk_platforms (platform_id, name, color) VALUES ('podio', 'Podio', '#2686cc') ON CONFLICT (platform_id) DO NOTHING");
+    const id = `thr-nodefault-${run}`;
+    await pool.query("INSERT INTO core.conversation_desk_threads (id, platform_id, contact_name, property_address) VALUES ($1, 'podio', 'No Defaults', '')", [id]);
+    const { rows: [t] } = await pool.query('SELECT lead_score, property_city, property_zip, status FROM core.conversation_desk_threads WHERE id = $1', [id]);
+    assert.deepEqual([t.lead_score, t.property_city, t.property_zip, t.status].map(v => v ?? null), [null, null, null, 'Open']);
+    const unlinked = await LeadDeskService.getThreadDetail(id);
+    assert.equal(unlinked.propertyFacts, ''); assert.equal(unlinked.leadScore, null);
+
+    const { rows: [county] } = await pool.query("SELECT county_id FROM ref.counties WHERE county_code = 'DUV'");
+    const { rows: [prop] } = await pool.query(
+        `INSERT INTO core.properties (county_id, parcel_raw, parcel_match, address_line1, state_code, property_type, assessed_value, metadata) VALUES ($1, $2, $2, '5 Facts St', 'FL', 'Single Family', 91234, '{"living_area_sqft":1063,"year_built":1950}'::jsonb) RETURNING property_id`, [county.county_id, `FACTS${run}`]);
+    await pool.query('UPDATE core.conversation_desk_threads SET property_id = $2 WHERE id = $1', [id, prop.property_id]);
+    const linked = await LeadDeskService.getThreadDetail(id);
+    assert.equal(linked.propertyFacts, 'Single Family • 1,063 sqft • Built 1950 • County value $91,234');
+    assert.equal(linked.propertyImage, null, 'no photo is invented');
+});

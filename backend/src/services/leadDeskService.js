@@ -114,10 +114,22 @@ export class LeadDeskService {
     /**
      * Get complete thread details including full message history
      */
+    /** Facts about the linked property that are really on record (county roll), joined with dots. Empty when the thread has no linked property. */
+    static propertyFacts(row) {
+        if (!row.property_id) return '';
+        const meta = row.linked_meta || {};
+        const parts = [];
+        if (row.linked_type) parts.push(row.linked_type);
+        if (Number(meta.living_area_sqft) > 0) parts.push(`${Number(meta.living_area_sqft).toLocaleString('en-US')} sqft`);
+        if (Number(meta.year_built) > 0) parts.push(`Built ${meta.year_built}`);
+        if (Number(row.assessed_value) > 0) parts.push(`County value $${Math.round(Number(row.assessed_value)).toLocaleString('en-US')}`);
+        return parts.join(' • ');
+    }
+
     static async getThreadDetail(threadId) {
         try {
             const threadRes = await pool.query(`
-                SELECT t.*, p.assessed_value, p.legal_description
+                SELECT t.*, p.assessed_value, p.legal_description, p.property_type AS linked_type, p.metadata AS linked_meta
                 FROM core.conversation_desk_threads t
                 LEFT JOIN core.properties p ON t.property_id = p.property_id
                 WHERE t.id = $1
@@ -165,6 +177,7 @@ export class LeadDeskService {
                 propertyState: thread.property_state,
                 propertyZip: thread.property_zip,
                 propertySpecs: thread.property_specs,
+                propertyFacts: this.propertyFacts(thread),
                 propertyImage: thread.property_image,
                 leadScore: thread.lead_score,
                 priority: thread.priority,

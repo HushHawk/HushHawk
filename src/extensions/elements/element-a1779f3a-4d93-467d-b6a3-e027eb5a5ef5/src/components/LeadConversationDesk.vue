@@ -88,7 +88,7 @@
           <span class="contact-title">{{ activeThread.contactName }} ({{ currentPlatform?.name }})</span>
           <span class="contact-separator">•</span>
           <span class="matched-badge">
-            <span class="mini-green-dot"></span> {{ activeThread.status || 'Matched Contact' }}
+            <span class="mini-green-dot"></span> {{ activeThread.status || '' }}
           </span>
           <span class="contact-separator">•</span>
           <span class="last-resp-time">Last response: {{ formatShortTime(activeThread.lastMessageAt) }}</span>
@@ -131,7 +131,7 @@
               </div>
 
               <div class="thread-score-wrap">
-                <span class="score-pill" :class="getScoreClass(thread.leadScore)">
+                <span v-if="thread.leadScore !== null && thread.leadScore !== undefined" class="score-pill" :class="getScoreClass(thread.leadScore)">
                   Score <strong>{{ thread.leadScore }}</strong>
                 </span>
               </div>
@@ -153,18 +153,19 @@
         <template v-else-if="activeThread">
           <!-- Property Context Card Banner -->
           <div class="property-context-card">
-            <div class="prop-thumb-wrap">
+            <div v-if="activeThread.propertyImage" class="prop-thumb-wrap">
               <img
-                :src="activeThread.propertyImage || 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=400&q=80'"
+                :src="activeThread.propertyImage"
                 :alt="activeThread.propertyAddress"
                 class="prop-thumb-img"
               />
             </div>
             <div class="prop-details-wrap">
               <h4 class="prop-address-heading">{{ activeThread.propertyAddress }}</h4>
-              <p class="prop-specs-subtext">
-                {{ activeThread.propertySpecs || 'Single-Family • 3 Bed / 2 Bath • Est. Equity: $98,000' }}
+              <p v-if="activeThread.propertyFacts || activeThread.propertySpecs" class="prop-specs-subtext">
+                {{ activeThread.propertyFacts || activeThread.propertySpecs }}
               </p>
+              <p v-else class="prop-specs-subtext">No property is linked to this conversation yet.</p>
             </div>
             <div class="prop-action-wrap">
               <a :href="activeThread.propertyId ? `/properties?id=${activeThread.propertyId}` : '/properties'" class="btn-prop-context">Property Context &gt;</a>
