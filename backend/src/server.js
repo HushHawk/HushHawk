@@ -8,6 +8,7 @@ import { pool } from './store/pgClient.js';
 import { PodioSyncService } from './services/podioSyncService.js';
 import { LeadLinkService } from './services/leadLinkService.js';
 import { LeadClassifierService } from './services/leadClassifierService.js';
+import { CountyRollService } from './services/countyRollService.js';
 import { ConnectorService } from './services/connectorService.js';
 import { GraphService } from './services/graphService.js';
 import { requireSession, bearerToken, loginRateLimit } from './middleware/auth.js';
@@ -103,6 +104,11 @@ function startScheduler() {
             console.log(`[Scheduler:lead-link] ${JSON.stringify({ ...linked, notFound: linked.notFound?.length })}`);
         });
     }
+    // The county roll changes slowly; check the registered properties twice a day.
+    schedule('county-roll', 12 * 60 * 60_000, async () => {
+        const result = await CountyRollService.refreshAll();
+        console.log(`[Scheduler:county-roll] ${JSON.stringify({ ...result, failed: result.failed.length })}`);
+    });
     schedule('connectors', 5 * 60_000, async () => {
         const results = await ConnectorService.runDue();
         if (results.length) console.log(`[Scheduler:connectors] ran ${results.length} connector(s)`);

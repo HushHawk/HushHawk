@@ -421,3 +421,36 @@ test('leads are classified from evidence, a person\'s choice sticks, and non-sel
     const row = sellerLeads.find(l => l.id === robot);
     assert.equal(row.leadKind, 'AUTOMATED', 'non-sellers are marked, not silently dropped');
 });
+
+test('county roll events: Absentee and Out-of-State follow the approved rules, link to the roll as evidence, and resolve when the roll changes', async () => {
+    const { CountyRollService, rollConditions } = await import('../backend/src/services/countyRollService.js');
+    const { ParcelLookupService } = await import('../backend/src/services/parcelLookupService.js');
+    assert.deepEqual([rollConditions({ PHY_ZIPCD: 32209, OWN_ZIPCD: 32209, OWN_STATE: 'FL' }).ABS, rollConditions({ PHY_ZIPCD: 32209, OWN_ZIPCD: 32209, OWN_STATE: 'FL' }).OOS], [false, false]);
+    assert.deepEqual([rollConditions({ PHY_ZIPCD: 32209, OWN_ZIPCD: 33101, OWN_STATE: 'FL' }).ABS, rollConditions({ PHY_ZIPCD: 32209, OWN_ZIPCD: 33101, OWN_STATE: 'FL' }).OOS], [true, false]);
+    assert.deepEqual([rollConditions({ PHY_ZIPCD: 32209, OWN_ZIPCD: 10003, OWN_STATE: 'NY' }).ABS, rollConditions({ PHY_ZIPCD: 32209, OWN_ZIPCD: 10003, OWN_STATE: 'NY' }).OOS], [true, true]);
+    assert.deepEqual([rollConditions({ PHY_ZIPCD: 32209 }).ABS, rollConditions({ PHY_ZIPCD: 32209 }).OOS], [false, false], 'a missing owner address proves nothing');
+
+    const parcel = `ROLL${run}`;
+    const { rows: [county] } = await pool.query("SELECT county_id FROM ref.counties WHERE county_code = 'DUV'");
+    const { rows: [prop] } = await pool.query(
+        `INSERT INTO core.properties (county_id, parcel_raw, parcel_match, address_line1, state_code, metadata) VALUES ($1, $2, $2, '1 Roll Test St', 'FL', '{"parcel_source":"test"}'::jsonb) RETURNING property_id`, [county.county_id, parcel]);
+    const original = ParcelLookupService.fetchRollRecord;
+    const status = async code => (await pool.query('SELECT event_status, verification_status FROM core.pillar_events WHERE property_id = $1 AND pillar_code = $2', [prop.property_id, code])).rows;
+    try {
+        ParcelLookupService.fetchRollRecord = async () => ({ PARCEL_ID: parcel, PHY_ZIPCD: 32209, OWN_NAME: 'ROLL OWNER', OWN_ADDR1: '25 UNION SQ', OWN_CITY: 'NEW YORK', OWN_STATE: 'NY', OWN_ZIPCD: 10003, JV: 50000, ASMNT_YR: 2026 });
+        const first = await CountyRollService.refreshAll();
+        assert.equal(first.eventsCreated >= 2, true);
+        assert.deepEqual(await status('ABS'), [{ event_status: 'OPEN', verification_status: 'CONFIRMED' }]);
+        assert.deepEqual(await status('OOS'), [{ event_status: 'OPEN', verification_status: 'CONFIRMED' }]);
+        const { rows: [ev] } = await pool.query("SELECT count(*)::int n FROM rel.event_evidence ee JOIN core.pillar_events e USING (event_id) WHERE e.property_id = $1", [prop.property_id]);
+        assert.ok(ev.n >= 2, 'each event links to the roll record');
+        const again = await CountyRollService.refreshAll();
+        assert.equal(again.eventsCreated, 0, 'running again creates nothing new');
+        ParcelLookupService.fetchRollRecord = async () => ({ PARCEL_ID: parcel, PHY_ZIPCD: 32209, OWN_NAME: 'ROLL OWNER', OWN_ADDR1: '1 ROLL TEST ST', OWN_CITY: 'JACKSONVILLE', OWN_STATE: 'FL', OWN_ZIPCD: 32209, JV: 50000, ASMNT_YR: 2026 });
+        const resolved = await CountyRollService.refreshAll();
+        assert.equal(resolved.eventsResolved >= 2, true);
+        assert.deepEqual(await status('ABS'), [{ event_status: 'RESOLVED', verification_status: 'CONFIRMED' }], 'the event is resolved, not deleted');
+        const { rows: [numbers] } = await pool.query("SELECT count(*)::int n FROM core.pillar_events WHERE property_id = $1", [prop.property_id]);
+        assert.equal(numbers.n, 2);
+    } finally { ParcelLookupService.fetchRollRecord = original; }
+});
