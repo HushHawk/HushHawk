@@ -504,6 +504,7 @@
 <script>
 import { ref, computed, onMounted } from 'vue';
 import { icons } from '../icons.js';
+import { toCsv, downloadCsv as saveCsv } from '../csv.js';
 
 export default {
   name: 'CashBuyersView',
@@ -754,18 +755,11 @@ export default {
         b.email,
         b.min,
         b.max,
-        b.zips.join('; '),
+        (b.zips || []).join('; '),
         b.dealsClosed,
         b.tier
       ]);
-      const csv = [headers.join(','), ...rows.map(r => r.map(c => `"${c}"`).join(','))].join('\n');
-      const blob = new Blob([csv], { type: 'text/csv' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `cash_buyers_jacksonville_${new Date().toISOString().slice(0, 10)}.csv`;
-      a.click();
-      URL.revokeObjectURL(url);
+      saveCsv(`cash_buyers_jacksonville_${new Date().toISOString().slice(0, 10)}.csv`, toCsv(headers, rows));
       exportNotice.value = 'Export generated: cash_buyers_jacksonville.csv downloaded successfully.';
       if (typeof window.showHushHawkToast === 'function') {
         window.showHushHawkToast('Buyer List Exported', `Downloaded CSV roster for ${buyers.value.length} cash buyers.`, 'success');

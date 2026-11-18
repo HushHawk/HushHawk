@@ -13,6 +13,10 @@
     <aside class="prop-sidebar" :class="{ 'mobile-hidden': !mobileShowList }">
       <div class="prop-sidebar-header">
         <h2>Properties</h2>
+        <div class="prop-count-card" :title="properties.length + (properties.length === 1 ? ' property is' : ' properties are') + ' registered'">
+          <strong>{{ loadingProperties ? '…' : properties.length }}</strong>
+          <span>{{ propSearch && !loadingProperties ? filteredProperties.length + ' shown' : (properties.length === 1 ? 'property' : 'properties') }}</span>
+        </div>
         <button class="btn-add-prop" @click="showAddModal = true">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           Add Property
@@ -3022,6 +3026,30 @@ export default {
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid #0d2845;
+}
+.prop-count-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 0 10px;
+  padding: 3px 9px;
+  min-width: 52px;
+  border: 1px solid #1c4468;
+  border-radius: 8px;
+  background: #0b2038;
+  line-height: 1.1;
+}
+.prop-count-card strong {
+  font-size: 15px;
+  color: #edcf7c;
+  font-weight: 700;
+}
+.prop-count-card span {
+  font-size: 8px;
+  color: #8fa7c2;
+  text-transform: uppercase;
+  letter-spacing: .06em;
 }
 .prop-sidebar-header h2 {
   font-size: 14px;

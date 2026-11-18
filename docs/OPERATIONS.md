@@ -38,6 +38,12 @@ the code no longer falls back to built-in app IDs or tokens, so a missing variab
 - In production an unexpected server error returns a short reference instead of the raw message; the real message is in the server log with that reference. Webhook secrets in query strings are redacted from the request log.
 - Still open: put HTTPS in front of the server (Vercel reaches it over plain HTTP), rotate every credential that was shared in chat, and restrict the server's firewall.
 
+## File uploads from the browser
+Photos and documents go straight from the browser to the private S3 bucket using a short-lived signed address, so the bucket must allow the site's own address in its CORS settings. If uploads fail with "Failed to fetch", check the bucket's CORS rules include the site address (`https://hushhawk-kohl.vercel.app`). `node backend/scripts/setup_s3_bucket.js` sets them (add other addresses with `PUBLIC_APP_ORIGIN`, comma separated).
+
+## Exports
+CSV exports (cash buyers, team roster, audit log, analytics, mail batches) use one shared writer: missing values are empty, quotes are escaped, and values that start with = or @ are neutralised so a spreadsheet cannot run them as formulas.
+
 ## Do-not-contact list
 - Replies that ask to stop (STOP, QUIT, UNSUBSCRIBE and plain phrases such as "stop texting me") are detected in Podio conversations and the sender is added to the list automatically. Newsletter footers that merely contain the word "unsubscribe" are ignored. The outbound gate matches on the last 10 digits, so +1 and local formats both match.
 - To load a list (for example the national Do Not Call registry download for your area codes, or your own list): `POST /api/v1/compliance/suppression/import` with `{ "text": "<one number or email per line>", "reason": "National Do Not Call registry, downloaded <date>" }`. It reports how many were added, already listed or rejected. Registering for the national registry and downloading the file needs your own account at telemarketing.donotcall.gov.

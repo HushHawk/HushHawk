@@ -270,9 +270,8 @@
           <div class="form-group">
             <label>Target Audience</label>
             <select v-model="blastAudience">
-              <option value="matching">VIP Buyers matching this ZIP code ({{ topBuyerMatches.length }} buyers)</option>
-              <option value="all">Entire Jacksonville Cash Buyer Network (142 buyers)</option>
-              <option value="tier1">Tier 1 Fast-Close VIPs Only (24 buyers)</option>
+              <option value="matching">Buyers matching this deal's ZIP or price ({{ blastMatchCount }} buyers)</option>
+              <option value="all">Every buyer with an email address ({{ buyersWithEmail }} buyers)</option>
             </select>
           </div>
           <div class="form-group">
@@ -455,11 +454,27 @@ export default {
       }
     }
 
+    const buyers = ref([]);
+    async function loadBuyers() {
+      try {
+        const res = await fetch('/api/v1/buyers');
+        if (res.ok) buyers.value = (await res.json()).buyers || [];
+      } catch (e) { /* the audience simply shows no buyers */ }
+    }
+
     onMounted(() => {
       loadDispoContracts();
+      loadBuyers();
     });
 
-    const topBuyerMatches = ref([]);
+    // A buyer matches a deal when they have an email and either target its ZIP or their price range covers the asking price.
+    const matchesFor = contract => (contract ? buyers.value.filter(b => b.email && b.email !== 'n/a' && (
+      (Array.isArray(b.zips) && b.zips.includes(contract.zip)) ||
+      (Number(b.max) > 0 && contract.askingPrice >= (Number(b.min) || 0) && contract.askingPrice <= Number(b.max)))) : []);
+    const topBuyerMatches = computed(() => matchesFor(selectedContract.value).slice(0, 50));
+    const blastContract = computed(() => contracts.value.find(c => c.id === blastPropertyId.value) || selectedContract.value);
+    const blastMatchCount = computed(() => matchesFor(blastContract.value).length);
+    const buyersWithEmail = computed(() => buyers.value.filter(b => b.email && b.email !== 'n/a').length);
 
     const searchQuery = ref('');
     const statusFilter = ref('');
@@ -514,6 +529,7 @@ export default {
     function openModal(type) {
       modalType.value = type;
       blastNotice.value = '';
+      if (type === 'blast' && !blastPropertyId.value && selectedContract.value) blastPropertyId.value = selectedContract.value.id;
     }
 
     function closeModal() {
@@ -521,19 +537,31 @@ export default {
     }
 
     async function executeBlast() {
-      const contract = selectedContract.value;
+      const contract = blastContract.value;
       if (!contract) { blastNotice.value = 'Select a contract first.'; return; }
+      let buyerIds = null;
+      let count;
+      if (blastAudience.value === 'matching') {
+        const matched = matchesFor(contract);
+        if (!matched.length) { blastNotice.value = 'No buyer matches this ZIP or price. Choose every buyer, or add buyers with their target ZIPs or price range.'; return; }
+        buyerIds = matched.map(b => b.id);
+        count = matched.length;
+      } else {
+        count = buyersWithEmail.value;
+        if (!count) { blastNotice.value = 'No buyer has an email address.'; return; }
+      }
+      if (!window.confirm(`Email this deal to ${count} buyer${count === 1 ? '' : 's'}? This sends real emails and cannot be undone.`)) return;
       try {
         const res = await fetch('/api/v1/dispositions/blast', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ address: contract.address, price: contract.askingPrice, fee: contract.askingPrice - contract.contractPrice })
+          body: JSON.stringify({ address: contract.address, price: contract.askingPrice, fee: contract.askingPrice - contract.contractPrice, message: blastMessage.value, buyerIds })
         });
         const data = await res.json().catch(() => ({}));
         if (!res.ok && !data.results) throw new Error(data.error || `HTTP ${res.status}`);
         const blocked = (data.results || []).filter(r => r.outcome === 'BLOCKED').length;
         const failed = (data.results || []).filter(r => r.outcome === 'FAILED').length;
-        blastNotice.value = `Sent to ${data.sent} of ${data.attempted} buyers` + (blocked ? `, ${blocked} blocked by compliance` : '') + (failed ? `, ${failed} failed (${(data.results.find(r => r.outcome === 'FAILED') || {}).reason || 'email not configured'})` : '') + '.';
+        blastNotice.value = `Sent to ${data.sent} of ${data.attempted} buyers` + (blocked ? `, ${blocked} blocked by compliance` : '') + (failed ? `, ${failed} failed (${(data.results.find(r => r.outcome === 'FAILED') || {}).reason || 'see log'})` : '') + '.';
         if (typeof window.showHushHawkToast === 'function') window.showHushHawkToast('Deal blast', blastNotice.value, data.sent ? 'success' : 'error');
       } catch (err) {
         blastNotice.value = 'The blast was not sent: ' + err.message;
@@ -627,6 +655,8 @@ export default {
       metrics,
       contracts,
       topBuyerMatches,
+      blastMatchCount,
+      buyersWithEmail,
       searchQuery,
       statusFilter,
       zipFilter,

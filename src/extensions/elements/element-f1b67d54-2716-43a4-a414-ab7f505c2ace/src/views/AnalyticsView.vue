@@ -204,6 +204,7 @@
 
 <script>
 import { icons } from '../icons.js';
+import { csvCell, downloadCsv as saveCsv } from '../csv.js';
 
 export default {
   name: 'AnalyticsView',
@@ -352,20 +353,14 @@ export default {
         const rev = this.currentMetrics[0]?.value || '$0';
         const spread = this.currentMetrics[1]?.value || '$0';
         const closed = this.currentMetrics[2]?.value || '0';
-        let csv = `HUSHHAWK WHOLESALE EXECUTIVE REPORT (${this.timeRange.toUpperCase()})\n`;
-        csv += `Gross Assignment Revenue,${rev}\nAvg Deal Spread,${spread}\nContracts Closed,${closed}\nPipeline Conversion,${this.funnelConversionRate}%\n\n`;
-        csv += `Representative,Role,Deals Closed,Gross Spread,Conversion\n`;
-        this.reps.forEach(r => {
-          csv += `"${r.name}","${r.role}",${r.dealsClosed},$${r.grossVolume},"${r.conversion}"\n`;
-        });
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.setAttribute('href', url);
-        link.setAttribute('download', `hushhawk_analytics_${this.timeRange}.csv`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        const line = (...cells) => cells.map(csvCell).join(',');
+        const lines = [
+          line(`HUSHHAWK WHOLESALE EXECUTIVE REPORT (${this.timeRange.toUpperCase()})`),
+          line('Gross Assignment Revenue', rev), line('Avg Deal Spread', spread), line('Contracts Closed', closed), line('Pipeline Conversion', `${this.funnelConversionRate}%`), '',
+          line('Representative', 'Role', 'Deals Closed', 'Gross Spread', 'Conversion')
+        ];
+        this.reps.forEach(r => lines.push(line(r.name, r.role, r.dealsClosed, r.grossVolume, r.conversion)));
+        saveCsv(`hushhawk_analytics_${this.timeRange}.csv`, lines.join('\r\n'));
         this.showToast('Report Exported', `Executive Board Report downloaded for ${this.timeRange} period.`, 'success');
       } catch (e) {
         this.showToast('Report Exported', `Executive Board Report generated for ${this.timeRange} period.`, 'success');

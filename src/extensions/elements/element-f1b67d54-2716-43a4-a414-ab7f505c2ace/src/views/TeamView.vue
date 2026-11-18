@@ -1118,6 +1118,7 @@ function randomPassword(length = 20) {
 import { formatDiffSummary, auditDetailFields } from './teamAuditSummary.js';
 
 import { icons } from '../icons.js';
+import { toCsv, downloadCsv as saveCsv } from '../csv.js';
 
 export const DEFAULT_SECTIONS = [
   { key: 'dashboard', path: '/home', name: 'Dashboard', category: 'Executive & Core', icon: 'house' },
@@ -1812,44 +1813,16 @@ export default {
         return;
       }
       const headers = ['Timestamp', 'Actor', 'Action', 'Entity Type', 'Entity ID', 'Summary'];
-      const rows = this.auditLogs.map(l => [
-        `"${l.fullTimestamp || l.createdAt}"`,
-        `"${l.actor || ''}"`,
-        `"${l.action || ''}"`,
-        `"${l.entityType || ''}"`,
-        `"${l.entityId || ''}"`,
-        `"${formatDiffSummary(l).replace(/"/g, '""')}"`
-      ]);
-      const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
-      const blob = new Blob([csv], { type: 'text/csv' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `HushHawk_Audit_Log_${new Date().toISOString().slice(0, 10)}.csv`;
-      a.click();
-      URL.revokeObjectURL(url);
+      const rows = this.auditLogs.map(l => [l.fullTimestamp || l.createdAt, l.actor, l.action, l.entityType, l.entityId, formatDiffSummary(l)]);
+      saveCsv(`HushHawk_Audit_Log_${new Date().toISOString().slice(0, 10)}.csv`, toCsv(headers, rows));
       this.showToast('Export Complete', 'Audit ledger exported to CSV.', 'success');
     },
 
     exportRoster() {
       if (!this.members.length) return;
       const headers = ['Name', 'Phone', 'Email', 'Role', 'Status', 'Workspaces Allowed'];
-      const rows = this.members.map(m => [
-        `"${m.name}"`,
-        `"${m.phone}"`,
-        `"${m.email}"`,
-        `"${m.roleName || m.role}"`,
-        `"${m.status}"`,
-        `"${m.allowedCount || (m.permissions || []).length}"`
-      ]);
-      const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
-      const blob = new Blob([csv], { type: 'text/csv' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `HushHawk_Team_Roster_${new Date().toISOString().slice(0, 10)}.csv`;
-      a.click();
-      URL.revokeObjectURL(url);
+      const rows = this.members.map(m => [m.name, m.phone, m.email, m.roleName || m.role, m.status, m.allowedCount || (m.permissions || []).length]);
+      saveCsv(`HushHawk_Team_Roster_${new Date().toISOString().slice(0, 10)}.csv`, toCsv(headers, rows));
       this.showToast('Export Complete', 'Team roster exported to CSV.', 'success');
     },
 
