@@ -14,8 +14,9 @@ echo "=== [3/7] Setting up HushHawk codebase ==="
 cd /home/ec2-user
 if [ -d "hushhawk" ]; then
   cd hushhawk
-  git reset --hard
-  git pull origin main
+  # History was rewritten to remove secrets, so a plain `git pull` cannot merge. Always match origin/main exactly.
+  git fetch origin main
+  git reset --hard origin/main
 else
   git clone https://github.com/HushHawk/HushHawk.git hushhawk
   cd hushhawk

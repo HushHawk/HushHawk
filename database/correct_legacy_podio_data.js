@@ -9,6 +9,10 @@
  *   1. Re-derives first_source_code from the Podio "Source" text kept in source_detail (an audited correction:
  *      the immutability guard is opened for this transaction only, and every change is written to the audit log).
  *   2. Clears property links that point at properties with invented parcels (PODIO-<id> or FL-<zip>-<digits>).
+ *   3. Rejects events that came from the old demo feeds and test runs (masked case numbers such as ...-XXXX-MA, TEST-CASE...,
+ *      CASE-<timestamp>-..., or any event on a property with an invented parcel). They stay on record as REJECTED.
+ *   4. Events marked CONFIRMED without any evidence are returned to NEEDS_REVIEW (BatchLeads list signals become POSSIBLE),
+ *      because the system only confirms what has supporting evidence.
  * Properties with invented parcels are only listed, never deleted. Review them and re-enter real parcels in Podio;
  * the next sync registers them correctly.
  */
@@ -49,6 +53,18 @@ try {
     const { rows: [invented] } = await client.query(
         `SELECT count(*)::int AS properties FROM core.properties WHERE parcel_raw ~ '^PODIO-' OR parcel_raw ~ '^FL-[0-9]{5}-[0-9]+$'`);
 
+    const { rows: fakeEvents } = await client.query(`
+        SELECT e.event_id, e.pillar_code, coalesce(e.case_reference, e.external_event_id) AS ref, p.parcel_raw
+        FROM core.pillar_events e JOIN core.properties p USING (property_id)
+        WHERE e.verification_status <> 'REJECTED' AND (e.case_reference ~ 'XXXX' OR e.case_reference ~* '^TEST-' OR e.case_reference ~ '^CASE-[0-9]{10,}-' OR e.external_event_id ~ 'XXXX'
+              OR p.parcel_raw ~ '^PODIO-' OR p.parcel_raw ~ '^FL-[0-9]{5}-[0-9]+$')`);
+    const { rows: [unproven] } = await client.query(`
+        SELECT count(*)::int AS events FROM core.pillar_events e
+        WHERE e.verification_status = 'CONFIRMED' AND NOT EXISTS (SELECT 1 FROM rel.event_evidence ee WHERE ee.event_id = e.event_id)`);
+    console.log(`Events from old demo feeds / tests to reject: ${fakeEvents.length}`);
+    for (const f of fakeEvents) console.log(`  ${f.pillar_code} ${f.ref} (${f.parcel_raw})`);
+    console.log(`Events marked CONFIRMED with no evidence (to return to review, after the rejections above): ${unproven.events}`);
+
     console.log('First-source corrections (Podio leads currently labelled MAIL):');
     console.table(sourceChanges);
     console.log(`Leads linked to properties with invented parcels: ${links.leads}`);
@@ -65,6 +81,23 @@ try {
             WHERE p.property_id = l.property_id AND l.source_detail ILIKE 'Podio%'
               AND (p.parcel_raw ~ '^PODIO-' OR p.parcel_raw ~ '^FL-[0-9]{5}-[0-9]+$')
               AND NOT EXISTS (SELECT 1 FROM core.lead_property_links lp WHERE lp.lead_id = l.lead_id AND lp.property_id = l.property_id)`);
+        const rejected = await client.query(`
+            UPDATE core.pillar_events e SET verification_status = 'REJECTED'
+            FROM core.properties p
+            WHERE p.property_id = e.property_id AND e.verification_status <> 'REJECTED' AND (e.case_reference ~ 'XXXX' OR e.case_reference ~* '^TEST-' OR e.case_reference ~ '^CASE-[0-9]{10,}-' OR e.external_event_id ~ 'XXXX'
+              OR p.parcel_raw ~ '^PODIO-' OR p.parcel_raw ~ '^FL-[0-9]{5}-[0-9]+$')`);
+        const downgradedSignals = await client.query(`
+            UPDATE core.pillar_events e SET verification_status = 'POSSIBLE'
+            WHERE e.verification_status = 'CONFIRMED' AND e.case_reference ~ 'BATCHLEADS'
+              AND NOT EXISTS (SELECT 1 FROM rel.event_evidence ee WHERE ee.event_id = e.event_id)`);
+        const downgraded = await client.query(`
+            UPDATE core.pillar_events e SET verification_status = 'NEEDS_REVIEW'
+            WHERE e.verification_status = 'CONFIRMED' AND NOT EXISTS (SELECT 1 FROM rel.event_evidence ee WHERE ee.event_id = e.event_id)`);
+        console.log(`Events rejected: ${rejected.rowCount}; BatchLeads signals set to POSSIBLE: ${downgradedSignals.rowCount}; unproven events returned to review: ${downgraded.rowCount}`);
+        await client.query(
+            `INSERT INTO audit.audit_events (actor, action, entity_type, entity_id, redacted_diff)
+             VALUES ('correct_legacy_podio_data script', 'LEGACY_EVENTS_CORRECTED', 'MAINTENANCE', gen_random_uuid(), $1)`,
+            [JSON.stringify({ rejected: rejected.rowCount, possible: downgradedSignals.rowCount, returnedToReview: downgraded.rowCount, rejectedEvents: fakeEvents })]);
         await client.query(
             `INSERT INTO audit.audit_events (actor, action, entity_type, entity_id, redacted_diff)
              VALUES ('correct_legacy_podio_data script', 'LEGACY_PODIO_DATA_CORRECTED', 'MAINTENANCE', gen_random_uuid(), $1)`,
