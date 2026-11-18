@@ -38,3 +38,8 @@ Thumbs.db
 *.swo
 
 .weweb/
+
+# Runtime data and backups (may contain personal information)
+backend/data/
+database/backups/
+*.backup.json

@@ -142,7 +142,7 @@
               </td>
               <td>{{ formatCurrency(r.assessedValue) }}</td>
               <td>
-                <span class="equity-tag">{{ r.equityPercent }}%</span>
+                <span class="equity-tag">{{ r.equityPercent === null || r.equityPercent === undefined ? '—' : r.equityPercent + '%' }}</span>
               </td>
               <td>
                 <span class="distress-chip" :class="r.distressClass">{{ r.distress }}</span>
@@ -275,9 +275,9 @@ export default {
             equityPercent: r.equityPercent !== undefined ? r.equityPercent : (r.assessedValue && r.equity ? Math.round((r.equity / r.assessedValue) * 100) : null),
             distressClass: r.distressClass || 'distress-tax',
             lastFiling: r.lastFiling || r.last_filing || null,
-            skipStatus: r.skipStatus || r.skip_status || 'Enriched',
+            skipStatus: r.skipStatus || r.skip_status || '',
             mailingAddress: r.mailingAddress || r.mailing_address || r.address || '',
-            delinquentAmount: r.delinquentAmount || r.delinquent_amount || (r.assessedValue ? Math.round(r.assessedValue * 0.025) : null),
+            delinquentAmount: r.delinquentAmount || r.delinquent_amount || null,
             legalDescription: r.legalDescription || r.legal_description || ''
           }));
           activeRecord.value = null;
@@ -315,7 +315,7 @@ export default {
       });
 
       if (sortBy.value === 'equityDesc') {
-        list.sort((a, b) => b.equityPercent - a.equityPercent);
+        list.sort((a, b) => (b.equityPercent ?? -1) - (a.equityPercent ?? -1));
       } else if (sortBy.value === 'delinquentDesc') {
         list.sort((a, b) => b.delinquentAmount - a.delinquentAmount);
       } else if (sortBy.value === 'valueAsc') {

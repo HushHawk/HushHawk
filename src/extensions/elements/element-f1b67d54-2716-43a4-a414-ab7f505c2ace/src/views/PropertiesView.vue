@@ -100,7 +100,7 @@
           </div>
         </div>
         <div class="prop-header-actions">
-          <button class="btn-partner-chat-head" @click="openPartnerChatModal(selectedProperty)" title="Open iMessage Partner Chat (Alex & Waldo)">
+          <button class="btn-partner-chat-head" @click="openPartnerChatModal(selectedProperty)" title="Open team chat for this property">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
             <span>Partner Chat</span>
             <span class="partner-pulse-dot"></span>
@@ -118,7 +118,7 @@
             <div v-if="actionsOpen" class="actions-menu">
               <button @click="openPartnerChatModal(selectedProperty); actionsOpen=false">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                Partner Chat (Alex &amp; Waldo)
+                Team Chat
               </button>
               <button @click="triggerCamera(); actionsOpen=false">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
@@ -695,7 +695,7 @@
         <div class="tab-panel-header">
           <div>
             <h3 class="tab-panel-title">Internal Partner Chat Log</h3>
-            <p class="tab-panel-subtitle">Dedicated confidential dialogue between Alex Richard &amp; Waldo Ellis tagged to this parcel.</p>
+            <p class="tab-panel-subtitle">Team conversation tagged to this parcel.</p>
           </div>
           <div class="partner-chat-tab-actions">
             <button class="btn-primary-gold" @click="openPartnerChatModal(selectedProperty)" title="Open in Floating iMessage Window">
@@ -716,7 +716,7 @@
         <div v-else-if="propertyChatMessages.length === 0" class="panel-empty">
           <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#2a4a6a" stroke-width="1"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
           <p>No partner chat records for this property yet.</p>
-          <button class="btn-primary-gold" @click="openPartnerChatModal(selectedProperty)">Start Discussion with Waldo Ellis</button>
+          <button class="btn-primary-gold" @click="openPartnerChatModal(selectedProperty)">Start a team discussion</button>
         </div>
 
         <div v-else class="property-chat-stream-card">
@@ -742,7 +742,7 @@
               v-model="inlinePartnerChatText"
               type="text"
               class="inline-chat-input"
-              placeholder="Quick partner reply on this property (Alex & Waldo)..."
+              placeholder="Quick reply on this property..."
               @keydown.enter="sendInlinePropertyChat"
             />
             <button class="btn-inline-send" :disabled="!inlinePartnerChatText.trim()" @click="sendInlinePropertyChat">
@@ -2311,8 +2311,7 @@ export default {
           body: JSON.stringify({
             title: `${this.selectedProperty.address_line1}, ${this.selectedProperty.city}`,
             thread_type: 'property',
-            property_id: this.selectedProperty.property_id,
-            created_by: 'Alex Richard'
+            property_id: this.selectedProperty.property_id
           })
         });
         const tData = await tRes.json();
@@ -2322,8 +2321,6 @@ export default {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              sender_name: 'Alex Richard',
-              sender_role: 'Acquisitions Lead (Admin)',
               message_text: text,
               tag: 'Dossier Note'
             })

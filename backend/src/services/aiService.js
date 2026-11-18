@@ -18,7 +18,7 @@
  */
 
 import { pool } from '../store/pgClient.js';
-import { db } from '../store/database.js';
+import { CrmService } from './crmService.js';
 
 // Section Taxonomy for Precise Citations
 export const SYSTEM_SECTIONS = {
@@ -42,11 +42,8 @@ const sessionContext = {
 /**
  * Clean & Format CrownKey Display
  */
-function formatCrownKey(rawCrownKey, county = 'CLY', source = 'PODIO') {
-    if (!rawCrownKey) return `${county}-UNKNOWN · ${source}`;
-    if (rawCrownKey.includes(' · ')) return rawCrownKey;
-    const clean = rawCrownKey.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
-    return `${county}-${clean} · ${source}`;
+function formatCrownKey(rawCrownKey) {
+    return rawCrownKey || 'Property pending';
 }
 
 /**
@@ -105,21 +102,7 @@ export async function getPortfolioFinancials() {
             topProperties: topProperties.rows
         };
     } catch (e) {
-        // Fallback to in-memory store
-        const props = db?.data?.core?.properties || [];
-        const assessed = props.filter(p => p.assessed_value && Number(p.assessed_value) > 0);
-        const total = assessed.reduce((acc, p) => acc + Number(p.assessed_value), 0);
-        return {
-            stats: {
-                total_properties: props.length,
-                assessed_count: assessed.length,
-                total_assessed_value: total,
-                avg_assessed_value: assessed.length > 0 ? total / assessed.length : 0,
-                max_assessed_value: assessed.length > 0 ? Math.max(...assessed.map(p => Number(p.assessed_value))) : 0,
-                min_assessed_value: assessed.length > 0 ? Math.min(...assessed.map(p => Number(p.assessed_value))) : 0
-            },
-            topProperties: assessed.sort((a, b) => Number(b.assessed_value) - Number(a.assessed_value)).slice(0, 5)
-        };
+        throw e;
     }
 }
 
@@ -132,7 +115,7 @@ export async function matchCashBuyersForProperty(propertyOrQuery) {
         const bRes = await pool.query(`SELECT id, full_name, company, phone, email, status, buy_box FROM crm.cash_buyers`);
         buyers = bRes.rows || [];
     } catch (e) {
-        buyers = db?.data?.crm?.cash_buyers || [];
+        throw e;
     }
 
     // Match criteria based on county, property price, or buy_box keywords
@@ -164,14 +147,30 @@ export async function matchCashBuyersForProperty(propertyOrQuery) {
     return matches.sort((a, b) => b.matchScore - a.matchScore);
 }
 
+
+/** Live Postgres snapshot used by the copilot. Nothing is cached between questions. */
+async function dataset() {
+    const [leadRows, { rows: people }, { rows: properties }, { rows: contacts }, { rows: tasks }, { rows: buyers }, { rows: audits }] = await Promise.all([
+        CrmService.getLeads({ limit: 2000 }),
+        pool.query('SELECT * FROM core.people ORDER BY created_at DESC LIMIT 5000'),
+        pool.query('SELECT * FROM core.properties ORDER BY created_at DESC LIMIT 5000'),
+        pool.query('SELECT * FROM crm.seller_contacts ORDER BY created_at DESC LIMIT 5000'),
+        pool.query('SELECT * FROM core.tasks ORDER BY created_at DESC LIMIT 2000'),
+        pool.query('SELECT * FROM crm.cash_buyers ORDER BY created_at DESC LIMIT 2000'),
+        pool.query('SELECT * FROM audit.audit_events ORDER BY created_at DESC LIMIT 500')
+    ]);
+    const leads = leadRows.map(l => ({ ...l, crownkey: l.crownKey }));
+    return { core: { leads, people, properties, tasks }, crm: { seller_contacts: contacts, cash_buyers: buyers }, audit: { audit_events: audits } };
+}
+
 /**
  * Missing Data & Completeness Auditor
  */
 export async function getMissingDataAudit() {
-    const leads = db?.data?.core?.leads || [];
-    const people = db?.data?.core?.people || [];
-    const properties = db?.data?.core?.properties || [];
-    const contacts = db?.data?.crm?.seller_contacts || [];
+    const data = await dataset();
+    const leads = data.core.leads;
+    const people = data.core.people;
+    const contacts = data.crm.seller_contacts;
 
     const missingPhone = [];
     const missingEmail = [];
@@ -238,10 +237,11 @@ export async function queryDatabaseEntities(term) {
     const cleanTerm = (term || '').trim().toLowerCase();
 
     // 1. Search in canonical store
-    if (db && db.data) {
-        const core = db.data.core || {};
-        const crm = db.data.crm || {};
-        const audit = db.data.audit || {};
+    {
+        const data = await dataset();
+        const core = data.core;
+        const crm = data.crm;
+        const audit = data.audit;
 
         const allLeads = core.leads || [];
         const allPeople = core.people || [];
@@ -445,6 +445,7 @@ function getTimeGreeting(hour) {
 }
 
 export async function processAdminAIQuery(userQuery, optionsOrHistory = {}) {
+    const data = await dataset();
     const options = Array.isArray(optionsOrHistory) ? { history: optionsOrHistory } : (optionsOrHistory || {});
     const clientHour = typeof options.clientHour === 'number' ? options.clientHour : new Date().getHours();
     const timeGreeting = getTimeGreeting(clientHour);
@@ -457,7 +458,7 @@ export async function processAdminAIQuery(userQuery, optionsOrHistory = {}) {
             records: [],
             actions: [
                 { label: 'Portfolio Valuation', action: 'PROMPT', query: 'What is our total assessed property value and top properties?' },
-                { label: 'Match Cash Buyers', action: 'PROMPT', query: 'Find cash buyers in Duval County for deals' },
+                { label: 'Match Cash Buyers', action: 'PROMPT', query: 'Find cash buyers for deals' },
                 { label: 'Missing Data Audit', action: 'PROMPT', query: 'Which leads are missing phone or email addresses?' }
             ]
         };
@@ -495,7 +496,7 @@ export async function processAdminAIQuery(userQuery, optionsOrHistory = {}) {
             records: [],
             actions: [
                 { label: 'Review Today\'s Tasks', action: 'NAVIGATE', path: '#tasks' },
-                { label: 'Match Cash Buyers', action: 'PROMPT', query: 'Find cash buyers in Duval County for deals' },
+                { label: 'Match Cash Buyers', action: 'PROMPT', query: 'Find cash buyers for deals' },
                 { label: 'View Seller Leads', action: 'NAVIGATE', path: '#leads' }
             ],
             intent: 'GREETING_AFTERNOON'
@@ -534,7 +535,7 @@ export async function processAdminAIQuery(userQuery, optionsOrHistory = {}) {
             records: [],
             actions: [
                 { label: 'Portfolio Valuation', action: 'PROMPT', query: 'What is our total assessed property value and top properties?' },
-                { label: 'Match Cash Buyers', action: 'PROMPT', query: 'Find cash buyers in Duval County for deals' },
+                { label: 'Match Cash Buyers', action: 'PROMPT', query: 'Find cash buyers for deals' },
                 { label: 'Missing Data Audit', action: 'PROMPT', query: 'Which leads are missing phone or email addresses?' }
             ],
             intent: 'GREETING_GENERAL'
@@ -563,7 +564,7 @@ export async function processAdminAIQuery(userQuery, optionsOrHistory = {}) {
             records: [],
             actions: [
                 { label: 'Portfolio Valuation', action: 'PROMPT', query: 'What is our total assessed property value and top properties?' },
-                { label: 'Match Cash Buyers', action: 'PROMPT', query: 'Find cash buyers in Duval County for deals' }
+                { label: 'Match Cash Buyers', action: 'PROMPT', query: 'Find cash buyers for deals' }
             ],
             intent: 'SOCIAL_WHO_ARE_YOU'
         };
@@ -615,7 +616,7 @@ export async function processAdminAIQuery(userQuery, optionsOrHistory = {}) {
     if (lowerNormalized.includes('buyer') || lowerNormalized.includes('match') || lowerNormalized.includes('investor') || lowerNormalized.includes('buy box') || lowerNormalized.includes('disposition')) {
         let matchedProperty = null;
         // Check if query specifies a property address or city
-        const props = db?.data?.core?.properties || [];
+        const props = data?.core?.properties || [];
         for (const p of props) {
             if (p.address_line1 && lowerNormalized.includes(p.address_line1.toLowerCase())) {
                 matchedProperty = p;
@@ -632,7 +633,7 @@ export async function processAdminAIQuery(userQuery, optionsOrHistory = {}) {
         markdown += `**[Section: ${SYSTEM_SECTIONS.BUYERS.name}]**\n\n`;
 
         if (matchedProperty) {
-            markdown += `**Target Deal:** ${matchedProperty.address_line1}, ${matchedProperty.city || 'Jacksonville'}, FL (Assessed: ${formatCurrency(matchedProperty.assessed_value)})\n\n`;
+            markdown += `**Target Deal:** ${matchedProperty.address_line1}, ${matchedProperty.city || ''}, ${matchedProperty.state_code || ''} (Assessed: ${formatCurrency(matchedProperty.assessed_value)})\n\n`;
             markdown += `Found **${buyers.length} vetted cash investors** matching this deal criteria:\n\n`;
         } else {
             markdown += `Found **${buyers.length} vetted cash investors** in our private network:\n\n`;
@@ -754,13 +755,13 @@ export async function processAdminAIQuery(userQuery, optionsOrHistory = {}) {
     // INTENT D: Audit Trail & Historical Timestamps
     // ------------------------------------------------------------------------
     if (lowerNormalized.includes('audit') || lowerNormalized.includes('history') || lowerNormalized.includes('what happened') || lowerNormalized.includes('when was') || lowerNormalized.includes('timeline') || lowerNormalized.includes('changed') || lowerNormalized.includes('who did')) {
-        const canonicalAudits = db?.data?.audit?.audit_events || [];
+        const canonicalAudits = [];
         let pgAudits = [];
         try {
             const res = await pool.query(`SELECT audit_id, actor, action, entity_type, entity_id, request_id, redacted_diff, created_at FROM audit.audit_events ORDER BY created_at DESC LIMIT 15`);
             pgAudits = res.rows || [];
         } catch (e) {
-            // fallback
+            throw e;
         }
 
         const combined = [...canonicalAudits, ...pgAudits];
@@ -809,13 +810,13 @@ export async function processAdminAIQuery(userQuery, optionsOrHistory = {}) {
     // INTENT E: Tasks & Action Matrix
     // ------------------------------------------------------------------------
     if (lowerNormalized.includes('task') || lowerNormalized.includes('due') || lowerNormalized.includes('follow up') || lowerNormalized.includes('pending') || lowerNormalized.includes('action item')) {
-        let tasks = db?.data?.core?.tasks || [];
+        let tasks = data?.core?.tasks || [];
         if (tasks.length === 0) {
             try {
                 const res = await pool.query(`SELECT task_id, title, due_date, status, owner_id, category, priority, is_completed, created_at FROM core.tasks ORDER BY created_at DESC LIMIT 20`);
                 tasks = res.rows || [];
             } catch (e) {
-                // fallback
+                throw e;
             }
         }
         const pending = tasks.filter(t => !t.is_completed && t.status !== 'COMPLETED');
@@ -898,7 +899,7 @@ export async function processAdminAIQuery(userQuery, optionsOrHistory = {}) {
         if (entities.properties.length > 0) {
             markdown += `#### [Section: ${SYSTEM_SECTIONS.PROPERTIES.name}]\n`;
             entities.properties.slice(0, 3).forEach((p, idx) => {
-                markdown += `**Property #${idx + 1}: ${p.address_line1}, ${p.city || 'Jacksonville'}, FL ${p.postal_code || ''}**\n`;
+                markdown += `**Property #${idx + 1}: ${p.address_line1}, ${p.city || ''}, ${p.state_code || ''} ${p.postal_code || ''}**\n`;
                 markdown += `- **Raw APN / Parcel:** \`${p.parcel_raw || 'Unassigned'}\`\n`;
                 markdown += `- **Assessed Value:** [VALUATION] **${formatCurrency(p.assessed_value)}**\n`;
                 markdown += `- **Registered Date:** [DATE] **${formatDateTime(p.created_at)}**\n`;
@@ -916,9 +917,9 @@ export async function processAdminAIQuery(userQuery, optionsOrHistory = {}) {
         if (entities.leads.length > 0) {
             markdown += `#### [Section: ${SYSTEM_SECTIONS.LEADS.name}]\n`;
             entities.leads.slice(0, 3).forEach((l, idx) => {
-                const person = db?.data?.core?.people?.find(p => p.person_id === l.person_id) || {};
-                const contact = db?.data?.crm?.seller_contacts?.find(c => c.id === l.lead_id) || {};
-                const prop = db?.data?.core?.properties?.find(p => p.property_id === l.property_id) || {};
+                const person = data?.core?.people?.find(p => p.person_id === l.person_id) || {};
+                const contact = data?.crm?.seller_contacts?.find(c => c.id === l.lead_id) || {};
+                const prop = data?.core?.properties?.find(p => p.property_id === l.property_id) || {};
                 const name = person.full_name || contact.seller_name || 'Named Seller';
                 const phone = person.primary_phone || contact.phone || 'No phone recorded';
                 const email = person.primary_email || contact.email || 'No email recorded';
@@ -951,14 +952,14 @@ export async function processAdminAIQuery(userQuery, optionsOrHistory = {}) {
 
     if (isExplicitOverview) {
         const fin = await getPortfolioFinancials();
-        const leadsCount = db?.data?.core?.leads?.length || 59;
-        const propsCount = db?.data?.core?.properties?.length || 19;
-        const tasksCount = db?.data?.core?.tasks?.length || 11;
-        const buyersCount = db?.data?.crm?.cash_buyers?.length || 5;
+        const leadsCount = data?.core?.leads?.length || 0;
+        const propsCount = data?.core?.properties?.length || 0;
+        const tasksCount = data?.core?.tasks?.length || 0;
+        const buyersCount = data?.crm?.cash_buyers?.length || 0;
 
         let markdown = `### HushHawk Executive System Summary\n\n`;
         markdown += `Here is a live summary of our active system records across all sections:\n\n`;
-        markdown += `- **[Section: ${SYSTEM_SECTIONS.LEADS.name}]:** **${leadsCount} Verified Production Leads** (Source: Podio CRM)\n`;
+        markdown += `- **[Section: ${SYSTEM_SECTIONS.LEADS.name}]:** **${leadsCount} Leads**\n`;
         markdown += `- **[Section: ${SYSTEM_SECTIONS.PROPERTIES.name}]:** **${propsCount} Canonical Properties** with **${formatCurrency(fin.stats.total_assessed_value)}** in tracked assessed value\n`;
         markdown += `- **[Section: ${SYSTEM_SECTIONS.TASKS.name}]:** **${tasksCount} Active Tasks** in operational matrix\n`;
         markdown += `- **[Section: ${SYSTEM_SECTIONS.BUYERS.name}]:** **${buyersCount} Vetted Cash Investors** in disposition network\n`;
@@ -967,7 +968,7 @@ export async function processAdminAIQuery(userQuery, optionsOrHistory = {}) {
 
         const actions = [
             { label: 'Portfolio Valuation', action: 'PROMPT', query: 'What is our total assessed property value and top properties?' },
-            { label: 'Match Cash Buyers', action: 'PROMPT', query: 'Find cash buyers in Duval County for deals' },
+            { label: 'Match Cash Buyers', action: 'PROMPT', query: 'Find cash buyers for deals' },
             { label: 'Check Pending Tasks', action: 'NAVIGATE', path: '#tasks' }
         ];
 
@@ -995,7 +996,7 @@ export async function processAdminAIQuery(userQuery, optionsOrHistory = {}) {
     const actions = [
         { label: 'View All Properties', action: 'NAVIGATE', path: '#properties' },
         { label: 'Check Pending Tasks', action: 'NAVIGATE', path: '#tasks' },
-        { label: 'Match Cash Buyers', action: 'PROMPT', query: 'Find cash buyers in Duval County for deals' },
+        { label: 'Match Cash Buyers', action: 'PROMPT', query: 'Find cash buyers for deals' },
         { label: 'Missing Data Audit', action: 'PROMPT', query: 'Which leads are missing phone or email addresses?' }
     ];
 

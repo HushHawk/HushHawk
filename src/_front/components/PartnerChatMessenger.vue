@@ -6,21 +6,21 @@
         v-if="!isOpen"
         class="partner-launcher-btn"
         @click="toggleOpen"
-        title="Open Partner Messenger · Alex Richard & Waldo Ellis"
-        aria-label="Open Partner Messenger"
+        title="Open team chat"
+        aria-label="Open team chat"
       >
         <div class="launcher-avatars-cluster">
-          <div class="avatar-circle avatar-alex" title="Alex Richard (Online)">AR</div>
-          <div class="avatar-circle avatar-waldo" title="Waldo Ellis (Online)">WE</div>
+          <div class="avatar-circle avatar-alex" :title="activePersona">{{ getInitials(activePersona) }}</div>
+          <div v-if="teammates[0]" class="avatar-circle avatar-waldo" :title="teammates[0].full_name">{{ getInitials(teammates[0].full_name) }}</div>
           <span class="launcher-presence-dot"></span>
         </div>
 
         <div class="launcher-text-wrap">
           <div class="launcher-title">
-            <span>Partner Chat</span>
+            <span>Team Chat</span>
             <span v-if="totalUnread > 0" class="launcher-unread-badge">{{ totalUnread }}</span>
           </div>
-          <div class="launcher-sub">Alex &amp; Waldo</div>
+          <div class="launcher-sub">{{ teammates.length ? teammates.length + ' teammate' + (teammates.length === 1 ? '' : 's') : 'Just you' }}</div>
         </div>
 
         <!-- Animated pulse ring when unread messages exist -->
@@ -56,30 +56,6 @@
           </div>
 
           <div class="mac-bar-right">
-            <!-- Persona Switcher Segment -->
-            <div class="persona-segmented-control" title="Switch active perspective">
-              <button
-                type="button"
-                class="psc-btn"
-                :class="{ active: activePersona === 'Alex Richard' }"
-                @click="switchPersona('Alex Richard')"
-                title="Active User: Alex Richard (Me)"
-              >
-                <span class="psc-avatar alex">AR</span>
-                <span class="psc-label">Alex</span>
-              </button>
-              <button
-                type="button"
-                class="psc-btn"
-                :class="{ active: activePersona === 'Waldo Ellis' }"
-                @click="switchPersona('Waldo Ellis')"
-                title="Active User: Waldo Ellis (Partner)"
-              >
-                <span class="psc-avatar waldo">WE</span>
-                <span class="psc-label">Waldo</span>
-              </button>
-            </div>
-
             <!-- Property Search Toggle Button -->
             <button
               class="mac-icon-btn"
@@ -122,21 +98,19 @@
           <!-- 3. Online Status & Encryption Ribbon (Single Unbroken Line) -->
           <div class="partner-status-ribbon">
             <div class="psr-left">
-              <div class="psr-item" :class="{ 'is-me': activePersona === 'Alex Richard' }">
+              <div class="psr-item is-me">
                 <span class="psr-dot online"></span>
-                <strong class="psr-name">Alex Richard</strong>
-                <span class="psr-role">Acquisitions (Admin)</span>
-                <span class="psr-you" v-if="activePersona === 'Alex Richard'">YOU</span>
+                <strong class="psr-name">{{ activePersona }}</strong>
+                <span class="psr-you">YOU</span>
               </div>
-
-              <span class="psr-sep">·</span>
-
-              <div class="psr-item" :class="{ 'is-me': activePersona === 'Waldo Ellis' }">
-                <span class="psr-dot online"></span>
-                <strong class="psr-name">Waldo Ellis</strong>
-                <span class="psr-role">Dispositions (Partner)</span>
-                <span class="psr-you" v-if="activePersona === 'Waldo Ellis'">YOU</span>
-              </div>
+              <template v-for="member in teammates" :key="member.full_name">
+                <span class="psr-sep">·</span>
+                <div class="psr-item">
+                  <span class="psr-dot" :class="member.status === 'online' ? 'online' : 'offline'"></span>
+                  <strong class="psr-name">{{ member.full_name }}</strong>
+                  <span class="psr-role">{{ member.role }}</span>
+                </div>
+              </template>
             </div>
 
             <div class="psr-right">
@@ -291,7 +265,7 @@
               >
                 <!-- Partner Avatar (for incoming messages) -->
                 <div v-if="!isSenderMe(msg)" class="msg-avatar-col">
-                  <div class="msg-avatar" :class="msg.sender_name.includes('Alex') ? 'alex' : 'waldo'">
+                  <div class="msg-avatar waldo">
                     {{ getInitials(msg.sender_name) }}
                   </div>
                 </div>
@@ -441,6 +415,16 @@ const API_BASE = (typeof window !== 'undefined' && window.location.origin)
   ? (window.location.origin.includes('localhost') ? 'http://localhost:3001/api/v1' : `${window.location.origin}/api/v1`)
   : 'http://3.148.218.118/api/v1';
 
+function readSessionName() {
+  try {
+    const raw = window.sessionStorage.getItem('hushhawk_session') || window.localStorage.getItem('hushhawk_session');
+    const parsed = raw ? JSON.parse(raw) : {};
+    return (parsed.user || parsed).name || '';
+  } catch (e) {
+    return '';
+  }
+}
+
 export default {
   name: 'PartnerChatMessenger',
   data() {
@@ -453,7 +437,8 @@ export default {
       isLoadingThreads: false,
       isLoadingMessages: false,
       isSending: false,
-      activePersona: 'Alex Richard', // Default user "Me"
+      activePersona: readSessionName(),
+      teammates: [],
       threads: [],
       currentThread: null,
       messages: [],
@@ -514,7 +499,7 @@ export default {
       return this.threads.reduce((sum, t) => sum + (t.unread_count || 0), 0);
     },
     currentPartnerName() {
-      return this.activePersona === 'Alex Richard' ? 'Waldo Ellis' : 'Alex Richard';
+      return this.teammates[0]?.full_name || '';
     },
     currentLayerShortTitle() {
       if (!this.currentThread) return 'General';
@@ -559,15 +544,10 @@ export default {
     isMinimized() {
       this.syncPartnerChatActiveState();
     },
-    activePersona() {
-      this.refreshThreads();
-      if (this.currentThread) {
-        this.selectThread(this.currentThread);
-      }
-    }
   },
   mounted() {
     this.checkAuthStatus();
+    this.loadTeammates();
     if (this.isLoggedIn) {
       this.refreshThreads();
       this.fetchPropertiesForDropdown();
@@ -744,20 +724,25 @@ export default {
     toggleSound() {
       this.soundEnabled = !this.soundEnabled;
     },
-    switchPersona(name) {
-      this.activePersona = name;
-    },
     isSenderMe(msg) {
-      if (!msg || !msg.sender_name) return false;
-      return msg.sender_name.toLowerCase().includes(this.activePersona.toLowerCase().split(' ')[0]);
+      return Boolean(msg && msg.sender_name && msg.sender_name === this.activePersona);
     },
     isMessageSeenByPartner(msg) {
-      if (!msg) return false;
-      const isAlexMe = this.activePersona.toLowerCase().includes('alex');
-      return isAlexMe ? !!msg.is_read_waldo : !!msg.is_read_alex;
+      if (!msg || !Array.isArray(msg.read_by)) return false;
+      return msg.read_by.includes('*') || msg.read_by.some(name => name !== this.activePersona);
+    },
+    async loadTeammates() {
+      try {
+        const res = await fetch(`${API_BASE}/chat/presence`);
+        if (!res.ok) return;
+        const data = await res.json();
+        this.teammates = (data.presence || []).filter(p => p.full_name !== this.activePersona);
+      } catch (e) {
+        this.teammates = [];
+      }
     },
     getInitials(name) {
-      if (!name) return 'AR';
+      if (!name) return '';
       return name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
     },
     getShortTitle(title) {
@@ -827,7 +812,7 @@ export default {
     async refreshThreads() {
       this.isLoadingThreads = true;
       try {
-        const res = await fetch(`${API_BASE}/chat/threads?user=${encodeURIComponent(this.activePersona)}`);
+        const res = await fetch(`${API_BASE}/chat/threads`);
         const data = await res.json();
         if (data.ok && Array.isArray(data.threads)) {
           this.threads = data.threads;
@@ -846,7 +831,7 @@ export default {
     },
     async fetchThreadsSilently() {
       try {
-        const res = await fetch(`${API_BASE}/chat/threads?user=${encodeURIComponent(this.activePersona)}`);
+        const res = await fetch(`${API_BASE}/chat/threads`);
         const data = await res.json();
         if (data.ok && Array.isArray(data.threads)) {
           this.threads = data.threads;
@@ -859,7 +844,7 @@ export default {
       this.isLoadingMessages = true;
       this.cancelReply();
       try {
-        const res = await fetch(`${API_BASE}/chat/threads/${th.id}/messages?user=${encodeURIComponent(this.activePersona)}`);
+        const res = await fetch(`${API_BASE}/chat/threads/${th.id}/messages`);
         const data = await res.json();
         if (data.ok) {
           this.messages = data.messages || [];
@@ -877,7 +862,7 @@ export default {
     },
     async fetchMessagesSilently(threadId) {
       try {
-        const res = await fetch(`${API_BASE}/chat/threads/${threadId}/messages?user=${encodeURIComponent(this.activePersona)}`);
+        const res = await fetch(`${API_BASE}/chat/threads/${threadId}/messages`);
         const data = await res.json();
         if (data.ok && Array.isArray(data.messages)) {
           if (data.messages.length !== this.messages.length) {
@@ -898,8 +883,6 @@ export default {
       this.isSending = true;
 
       const payload = {
-        sender_name: this.activePersona,
-        sender_role: this.activePersona === 'Alex Richard' ? 'Acquisitions Lead (Admin)' : 'Dispositions Lead (Partner)',
         message_text: text,
         tag: this.activeTag,
         reply_to_id: this.replyingTo ? this.replyingTo.id : null,
@@ -992,7 +975,6 @@ export default {
             title: `${prop.address_line1}, ${prop.city}`,
             thread_type: 'property',
             property_id: prop.property_id,
-            created_by: this.activePersona
           })
         });
         const data = await res.json();

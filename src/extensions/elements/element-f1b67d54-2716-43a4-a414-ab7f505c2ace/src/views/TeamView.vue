@@ -1175,6 +1175,13 @@
 </template>
 
 <script>
+// Cryptographically random, 20 characters from a mixed alphabet (never derived from a fixed pattern).
+function randomPassword(length = 20) {
+  const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%^&*';
+  const bytes = new Uint32Array(length);
+  window.crypto.getRandomValues(bytes);
+  return Array.from(bytes, b => alphabet[b % alphabet.length]).join('');
+}
 import { formatDiffSummary, auditDetailFields } from './teamAuditSummary.js';
 
 import { icons } from '../icons.js';
@@ -1538,10 +1545,7 @@ export default {
     },
 
     generateRandomPassword(target) {
-      const parts = ['Hush', 'Eagle', 'Hawk', 'Prime', 'Apex', 'Titan', 'Vault'];
-      const prefix = parts[Math.floor(Math.random() * parts.length)];
-      const num = Math.floor(1000 + Math.random() * 9000);
-      const generated = `${prefix}Pass!${num}`;
+      const generated = randomPassword();
 
       if (target === 'newMember') {
         this.newMemberForm.password = generated;
@@ -1619,7 +1623,7 @@ export default {
         phone: '',
         email: '',
         role: this.roles.length > 0 ? (this.roles[0].role_id || this.roles[0].role_key) : 'ACQUISITIONS_REP',
-        password: `HushPass!${Math.floor(1000 + Math.random() * 9000)}`
+        password: ''
       };
       this.activeModal = 'addMember';
     },

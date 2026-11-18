@@ -1,7 +1,7 @@
 import { Router, urlencoded } from 'express';
 import crypto from 'crypto';
 import { db } from '../store/database.js';
-import { pool, checkDatabaseHealth } from '../store/pgClient.js';
+import { pool, checkDatabaseHealth, withTransaction, audit, emitOutbox } from '../store/pgClient.js';
 import { CrownKeyService } from '../services/crownkeyService.js';
 import { EventService } from '../services/eventService.js';
 import { IdentityService } from '../services/identityService.js';
@@ -24,6 +24,7 @@ import { renderCrownKey, validateCrownKeyFormat, normalizeParcelMatch } from '..
 import { RbacService, ALL_SECTIONS } from '../services/rbacService.js';
 import { BatchLeadsService } from '../services/batchLeadsService.js';
 import { AutomationService } from '../services/automationService.js';
+import { requireSession, loginRateLimit, webhookUrl as signedWebhookUrl, publicWebhookUrl, actorName } from '../middleware/auth.js';
 
 export const apiRouter = Router();
 
@@ -33,6 +34,10 @@ apiRouter.use((req, res, next) => {
     res.setHeader('X-Canonical-Truth', 'PostgreSQL-AWS-RDS');
     next();
 });
+
+// Every route below requires a valid session unless it is public (health, login, mailer QR pages)
+// or a webhook carrying the shared secret. See middleware/auth.js.
+apiRouter.use(requireSession);
 
 // ============================================================================
 // 1. Health & System Overview
@@ -50,83 +55,40 @@ apiRouter.get('/health', async (req, res) => {
 });
 
 // ============================================================================
-// 2. Universal Search (Omnisearch)
+// 2. Universal Search (Omnisearch): Postgres only
 // ============================================================================
-apiRouter.get('/search', (req, res) => {
-    const q = (req.query.q || '').trim().toLowerCase();
-    if (!q) {
-        return res.json({ results: [] });
+const likeTerm = q => `%${q.replace(/[\\%_]/g, m => `\\${m}`)}%`;
+
+apiRouter.get('/search', async (req, res) => {
+    try {
+        const q = String(req.query.q || '').trim();
+        if (q.length < 2) return res.json({ query: q, total: 0, results: [] });
+        const term = likeTerm(q);
+        const [props, people, businesses, events] = await Promise.all([
+            pool.query(
+                `SELECT DISTINCT p.*, c.county_code FROM core.properties p JOIN ref.counties c USING (county_id)
+                 LEFT JOIN core.property_aliases a ON a.property_id = p.property_id
+                 WHERE (c.county_code || '-' || p.parcel_raw) ILIKE $1 OR p.parcel_raw ILIKE $1 OR p.parcel_match ILIKE $1
+                    OR p.address_line1 ILIKE $1 OR a.alias_parcel ILIKE $1 LIMIT 25`, [term]),
+            pool.query(`SELECT person_id, full_name, primary_phone, primary_email, is_suppressed FROM core.people
+                        WHERE full_name ILIKE $1 OR primary_phone ILIKE $1 OR primary_email ILIKE $1 LIMIT 25`, [term]),
+            pool.query(`SELECT * FROM core.businesses WHERE legal_name ILIKE $1 OR registration_id ILIKE $1 LIMIT 25`, [term]),
+            pool.query(
+                `SELECT e.*, p.parcel_raw, c.county_code FROM core.pillar_events e JOIN core.properties p USING (property_id) JOIN ref.counties c ON c.county_id = p.county_id
+                 WHERE e.case_reference ILIKE $1 OR e.external_event_id ILIKE $1
+                    OR (c.county_code || '-' || p.parcel_raw || '-' || e.pillar_code || '-' || lpad(e.event_number::text, 3, '0')) ILIKE $1 LIMIT 25`, [term])
+        ]);
+        const enriched = await CrownKeyService.enrichProperties(props.rows);
+        const results = [
+            ...enriched.map(p => ({ type: 'PROPERTY', id: p.property_id, title: p.crownKeyBase, subtitle: [p.address_line1, p.city, p.postal_code].filter(Boolean).join(', '), data: p })),
+            ...people.rows.map(x => ({ type: 'PERSON', id: x.person_id, title: x.full_name, subtitle: `${x.primary_phone || 'No phone'} · ${x.primary_email || 'No email'}`, badge: x.is_suppressed ? 'SUPPRESSED' : null, data: x })),
+            ...businesses.rows.map(x => ({ type: 'BUSINESS', id: x.business_id, title: x.legal_name, subtitle: [x.registration_id && `Reg: ${x.registration_id}`, x.jurisdiction].filter(Boolean).join(' · '), data: x })),
+            ...events.rows.map(x => ({ type: 'EVENT', id: x.event_id, title: `${x.pillar_code} · ${x.case_reference || x.external_event_id || 'event'}`, subtitle: `${x.event_status} · ${x.verification_status} · Parcel ${x.parcel_raw}`, data: x }))
+        ];
+        res.json({ query: q, total: results.length, results });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
-
-    const results = [];
-
-    // Search Properties
-    for (const prop of db.data.core.properties) {
-        const enriched = CrownKeyService.enrichProperty(prop);
-        const matchCrown = enriched.crownKey.toLowerCase().includes(q);
-        const matchParcel = prop.parcel_raw.toLowerCase().includes(q) || prop.parcel_match.toLowerCase().includes(q);
-        const matchAddress = (prop.address_line1 || '').toLowerCase().includes(q);
-
-        if (matchCrown || matchParcel || matchAddress) {
-            results.push({
-                type: 'PROPERTY',
-                id: prop.property_id,
-                title: enriched.crownKey,
-                subtitle: `${prop.address_line1}, ${prop.city}, FL ${prop.postal_code}`,
-                badge: 'DUVAL_PARCEL',
-                data: enriched,
-            });
-        }
-    }
-
-    // Search People
-    for (const person of db.data.core.people) {
-        const matchName = person.full_name.toLowerCase().includes(q);
-        const matchPhone = (person.primary_phone || '').toLowerCase().includes(q);
-        const matchEmail = (person.primary_email || '').toLowerCase().includes(q);
-
-        if (matchName || matchPhone || matchEmail) {
-            results.push({
-                type: 'PERSON',
-                id: person.person_id,
-                title: person.full_name,
-                subtitle: `${person.primary_phone || 'No phone'} · ${person.primary_email || 'No email'}`,
-                badge: person.is_suppressed ? 'DNC_SUPPRESSED' : 'VERIFIED_OWNER',
-                data: person,
-            });
-        }
-    }
-
-    // Search Businesses
-    for (const biz of db.data.core.businesses) {
-        if (biz.legal_name.toLowerCase().includes(q) || (biz.registration_id || '').toLowerCase().includes(q)) {
-            results.push({
-                type: 'BUSINESS',
-                id: biz.business_id,
-                title: biz.legal_name,
-                subtitle: `Reg: ${biz.registration_id} · ${biz.jurisdiction} · Agent: ${biz.registered_agent}`,
-                badge: 'CORPORATE_ENTITY',
-                data: biz,
-            });
-        }
-    }
-
-    // Search Pillar Events
-    for (const ev of db.data.core.pillar_events) {
-        if ((ev.case_reference || '').toLowerCase().includes(q) || (ev.external_event_id || '').toLowerCase().includes(q)) {
-            const prop = db.data.core.properties.find(p => p.property_id === ev.property_id);
-            results.push({
-                type: 'EVENT',
-                id: ev.event_id,
-                title: `Case Docket: ${ev.case_reference}`,
-                subtitle: `Pillar: ${ev.pillar_code} · Status: ${ev.event_status} · Parcel: ${prop?.parcel_raw || 'Unknown'}`,
-                badge: `${ev.pillar_code}_EVENT`,
-                data: ev,
-            });
-        }
-    }
-
-    res.json({ query: q, total: results.length, results });
 });
 
 // ============================================================================
@@ -134,154 +96,83 @@ apiRouter.get('/search', (req, res) => {
 // ============================================================================
 apiRouter.post('/crownkey/render', (req, res) => {
     const { countyCode, parcelRaw, pillarCode, eventNumber, firstSourceCode } = req.body;
-    const crownKey = renderCrownKey({ countyCode, parcelRaw, pillarCode, eventNumber, firstSourceCode });
-    const validation = validateCrownKeyFormat(crownKey);
-    res.json({ crownKey, validation });
-});
-
-apiRouter.post('/crownkey/validate', (req, res) => {
-    const { crownKey } = req.body;
-    res.json(validateCrownKeyFormat(crownKey));
+    res.json({ crownKey: renderCrownKey({ countyCode, parcelRaw, pillarCode, eventNumber, firstSourceCode }) });
 });
 
 // ============================================================================
-// 4. Properties (Property 360)
+// 4. Properties (Property 360): Postgres only
 // ============================================================================
 apiRouter.get('/properties', async (req, res) => {
     try {
-        let list = [];
-        try {
-            const { rows } = await pool.query(`
-                SELECT p.*, c.county_code, c.county_name
-                FROM core.properties p
-                LEFT JOIN ref.counties c ON p.county_id = c.county_id
-                ORDER BY p.created_at DESC
-            `);
-            if (rows && rows.length > 0) {
-                list = rows;
-            }
-        } catch (dbErr) {
-            console.warn('[Properties RDS Query Fallback]:', dbErr.message);
-        }
-        if (!list.length) {
-            list = db.data.core?.properties || [];
-        }
-        const enriched = list.map(p => CrownKeyService.enrichProperty({
-            ...p,
-            county_code: p.county_code || 'DUV'
-        }));
-        res.json({ total: enriched.length, properties: enriched });
+        const { county, pillar, q } = req.query;
+        const limit = Math.min(Number(req.query.limit) || 500, 2000);
+        const offset = Number(req.query.offset) || 0;
+        const params = [county || null, pillar || null, q ? likeTerm(String(q)) : null];
+        const where = `WHERE ($1::text IS NULL OR c.county_code = $1)
+                         AND ($2::text IS NULL OR EXISTS (SELECT 1 FROM core.pillar_events e WHERE e.property_id = p.property_id AND e.pillar_code = $2))
+                         AND ($3::text IS NULL OR p.parcel_raw ILIKE $3 OR p.address_line1 ILIKE $3 OR (c.county_code || '-' || p.parcel_raw) ILIKE $3)`;
+        const [{ rows: [{ total }] }, { rows }] = await Promise.all([
+            pool.query(`SELECT count(*)::int AS total FROM core.properties p JOIN ref.counties c USING (county_id) ${where}`, params),
+            pool.query(`SELECT p.*, c.county_code, c.county_name FROM core.properties p JOIN ref.counties c USING (county_id) ${where}
+                        ORDER BY p.created_at DESC LIMIT ${limit} OFFSET ${offset}`, params)
+        ]);
+        res.json({ total, properties: await CrownKeyService.enrichProperties(rows) });
     } catch (err) {
-        res.json({ total: 0, properties: [] });
+        res.status(500).json({ error: err.message });
     }
 });
 
 apiRouter.get('/properties/:id', async (req, res) => {
     try {
-        const { rows } = await pool.query(
-            `SELECT p.*, c.county_code FROM core.properties p
-             LEFT JOIN ref.counties c ON p.county_id = c.county_id
-             WHERE p.property_id = $1`,
-            [req.params.id]
-        );
-        if (!rows.length) return res.status(404).json({ error: 'Property not found' });
-        const enriched = CrownKeyService.enrichProperty({ ...rows[0], county_code: rows[0].county_code || 'DUV' });
-        res.json({ property: enriched, ownership: [], events: [], source_records: [], tasks: [] });
-    } catch (err) {
-        console.error('[Property GET by ID Error]', err.message);
-        const prop = db.data.core.properties.find(p => p.property_id === req.params.id);
+        const [prop] = await CrownKeyService.loadProperties('WHERE p.property_id = $1', [req.params.id]);
         if (!prop) return res.status(404).json({ error: 'Property not found' });
-        res.json({ property: CrownKeyService.enrichProperty(prop), ownership: [], events: [], source_records: [], tasks: [] });
+        const [property, aliases, lineage, tasks] = await Promise.all([
+            CrownKeyService.enrichProperty(prop),
+            pool.query('SELECT * FROM core.property_aliases WHERE property_id = $1 ORDER BY created_at DESC', [prop.property_id]),
+            pool.query('SELECT * FROM core.property_lineage WHERE predecessor_id = $1 OR successor_id = $1', [prop.property_id]),
+            pool.query(`SELECT * FROM core.tasks WHERE linked_entity_type = 'PROPERTY' AND linked_entity_id = $1 ORDER BY created_at DESC`, [prop.property_id])
+        ]);
+        const evidence = await Promise.all(property.events.map(e => EventService.evidence(e.event_id).then(rows => rows.map(r => ({ ...r, event_id: e.event_id })))));
+        res.json({ property, aliases: aliases.rows, lineage: lineage.rows, source_records: evidence.flat(), tasks: tasks.rows });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
 });
 
+// County and permanent identity never change here. A corrected parcel keeps the old value as a searchable alias.
 apiRouter.put('/properties/:id', async (req, res) => {
     const { id } = req.params;
-    const {
-        address_line1,
-        city,
-        state_code,
-        postal_code,
-        county_code,
-        parcel_raw,
-        assessed_value,
-        property_type,
-        legal_description,
-    } = req.body;
-
-    const parcel_match = parcel_raw ? normalizeParcelMatch(parcel_raw) : undefined;
-
+    const { address_line1, city, state_code, postal_code, parcel_raw, assessed_value, property_type, legal_description, correction_reason } = req.body;
     try {
-        let updatedRow = null;
-        try {
-            const { rows } = await pool.query(
-                `UPDATE core.properties
-                 SET address_line1 = COALESCE($1, address_line1),
-                     city = COALESCE($2, city),
-                     state_code = COALESCE($3, state_code),
-                     postal_code = COALESCE($4, postal_code),
-                     property_type = COALESCE($5, property_type),
-                     legal_description = COALESCE($6, legal_description),
-                     assessed_value = COALESCE($7, assessed_value),
-                     parcel_raw = COALESCE($8, parcel_raw),
-                     parcel_match = COALESCE($9, parcel_match),
-                     updated_at = NOW()
-                 WHERE property_id = $10
-                 RETURNING *`,
-                [
-                    address_line1 || null,
-                    city || null,
-                    state_code || null,
-                    postal_code || null,
-                    property_type || null,
-                    legal_description || null,
-                    assessed_value ? Number(assessed_value) : null,
-                    parcel_raw || null,
-                    parcel_match || null,
-                    id
-                ]
-            );
-            if (rows.length) {
-                updatedRow = rows[0];
+        const updated = await withTransaction(async client => {
+            const { rows: [before] } = await client.query('SELECT * FROM core.properties WHERE property_id = $1 FOR UPDATE', [id]);
+            if (!before) return null;
+            let parcelRaw = null; let parcelMatch = null;
+            if (parcel_raw && parcel_raw !== before.parcel_raw) {
+                if (!correction_reason || !String(correction_reason).trim()) throw Object.assign(new Error('correction_reason is required when the parcel changes.'), { status: 400 });
+                parcelRaw = String(parcel_raw).trim();
+                parcelMatch = normalizeParcelMatch(parcelRaw);
+                await client.query(
+                    `INSERT INTO core.property_aliases (property_id, alias_parcel, alias_type, source, valid_to, correction_reason)
+                     VALUES ($1,$2,'PREVIOUS_PARCEL',$3, now(), $4)`, [id, before.parcel_raw, actorName(req), String(correction_reason).trim()]);
             }
-        } catch (dbErr) {
-            console.error('[PostgreSQL Property Update Error]', dbErr.message);
-        }
-
-        // Also update memory db
-        const memoryProp = db.data.core.properties.find(p => p.property_id === id);
-        if (memoryProp) {
-            if (address_line1 !== undefined) memoryProp.address_line1 = address_line1;
-            if (city !== undefined) memoryProp.city = city;
-            if (state_code !== undefined) memoryProp.state_code = state_code;
-            if (postal_code !== undefined) memoryProp.postal_code = postal_code;
-            if (county_code !== undefined) memoryProp.county_code = county_code;
-            if (property_type !== undefined) memoryProp.property_type = property_type;
-            if (legal_description !== undefined) memoryProp.legal_description = legal_description;
-            if (assessed_value !== undefined) memoryProp.assessed_value = Number(assessed_value);
-            if (parcel_raw !== undefined) {
-                memoryProp.parcel_raw = parcel_raw;
-                memoryProp.parcel_match = normalizeParcelMatch(parcel_raw);
-            }
-            memoryProp.updated_at = new Date().toISOString();
-            db.logAudit({
-                actor: req.body.actor || 'USER_WEB',
-                action: 'PROPERTY_UPDATED',
-                entityType: 'PROPERTY',
-                entityId: id,
-                redactedDiff: req.body,
-            });
-            db.persist();
-        }
-
-        const result = updatedRow || memoryProp;
-        if (!result) return res.status(404).json({ error: 'Property not found' });
-        res.json(CrownKeyService.enrichProperty({
-            ...result,
-            county_code: county_code || result.county_code || 'DUV'
-        }));
+            const { rows: [row] } = await client.query(
+                `UPDATE core.properties SET address_line1 = COALESCE($1, address_line1), city = COALESCE($2, city), state_code = COALESCE($3, state_code),
+                   postal_code = COALESCE($4, postal_code), property_type = COALESCE($5, property_type), legal_description = COALESCE($6, legal_description),
+                   assessed_value = COALESCE($7, assessed_value), parcel_raw = COALESCE($8, parcel_raw), parcel_match = COALESCE($9, parcel_match), updated_at = now()
+                 WHERE property_id = $10 RETURNING *`,
+                [address_line1 || null, city || null, state_code || null, postal_code || null, property_type || null, legal_description || null,
+                 assessed_value === undefined || assessed_value === null || assessed_value === '' ? null : Number(assessed_value), parcelRaw, parcelMatch, id]);
+            await audit(client, { actor: actorName(req), action: 'PROPERTY_UPDATED', entityType: 'PROPERTY', entityId: id, diff: { before: { parcel_raw: before.parcel_raw, address_line1: before.address_line1 }, after: { parcel_raw: row.parcel_raw, address_line1: row.address_line1 }, correction_reason } });
+            await emitOutbox(client, { aggregateType: 'PROPERTY', aggregateId: id, eventType: 'PROPERTY_UPDATED', payload: {} });
+            return row;
+        });
+        if (!updated) return res.status(404).json({ error: 'Property not found' });
+        const [prop] = await CrownKeyService.loadProperties('WHERE p.property_id = $1', [id]);
+        res.json(await CrownKeyService.enrichProperty(prop));
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        if (err.code === '23505') return res.status(409).json({ error: 'Another property in this county already has that parcel.' });
+        res.status(err.status || 500).json({ error: err.message });
     }
 });
 
@@ -1269,9 +1160,7 @@ apiRouter.get('/properties/:propertyId/tasks', async (req, res) => {
         );
         res.json({ total: rows.length, tasks: rows });
     } catch (err) {
-        console.error('[Property Tasks GET Error]', err.message);
-        const memTasks = db.data.core.tasks.filter(t => t.linked_entity_id === propertyId);
-        res.json({ total: memTasks.length, tasks: memTasks });
+        res.status(500).json({ error: err.message });
     }
 });
 
@@ -1280,51 +1169,14 @@ apiRouter.post('/properties/:propertyId/tasks', async (req, res) => {
     const { title, priority = 'Medium', due_date, due_time, category = 'General' } = req.body;
     if (!title) return res.status(400).json({ error: 'Title is required' });
     try {
-        const taskId = crypto.randomUUID();
-        let created = null;
-        try {
-            const { rows } = await pool.query(
-                `INSERT INTO core.tasks
-                  (task_id, title, priority, due_date, due_time, category, status, is_completed, linked_entity_id, linked_entity_type)
-                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-                 RETURNING *`,
-                [
-                    taskId,
-                    title,
-                    priority,
-                    due_date ? new Date(due_date) : new Date(),
-                    due_time || '05:00 PM',
-                    category,
-                    'PENDING',
-                    false,
-                    propertyId,
-                    'PROPERTY'
-                ]
-            );
-            created = rows[0];
-        } catch (dbErr) {
-            console.error('[Task RDS Insert Error]', dbErr.message);
-        }
-
-        const memTask = {
-            task_id: taskId,
-            title,
-            priority,
-            due_date: due_date || new Date().toISOString(),
-            due_time: due_time || '05:00 PM',
-            category,
-            status: 'PENDING',
-            is_completed: false,
-            linked_entity_id: propertyId,
-            linked_entity_type: 'PROPERTY',
-            created_at: new Date().toISOString(),
-        };
-        db.data.core.tasks.unshift(memTask);
-        db.persist();
-
-        res.status(201).json(created || memTask);
+        const { rows: [task] } = await pool.query(
+            `INSERT INTO core.tasks (title, priority, due_date, due_time, category, status, is_completed, linked_entity_id, linked_entity_type, owner_id)
+             VALUES ($1, $2, $3, $4, $5, 'PENDING', false, $6, 'PROPERTY', $7) RETURNING *`,
+            [title, priority, due_date ? new Date(due_date) : null, due_time || null, category, propertyId, actorName(req)]);
+        await audit(pool, { actor: actorName(req), action: 'TASK_CREATED', entityType: 'TASK', entityId: task.task_id, diff: { title, propertyId } });
+        res.status(201).json(task);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        res.status(err.code === '23503' || err.code === '22P02' ? 400 : 500).json({ error: err.message });
     }
 });
 
@@ -1404,575 +1256,300 @@ apiRouter.get('/properties/:propertyId/timeline', async (req, res) => {
 
 apiRouter.post('/properties', async (req, res) => {
     try {
-        const {
-            parcel_raw,
-            county_code = 'DUV',
-            address_line1,
-            city = 'Jacksonville',
-            state_code = 'FL',
-            postal_code = '32204',
-            assessed_value = 200000,
-            property_type = 'Single Family Residential',
-            legal_description = ''
-        } = req.body;
-        if (!parcel_raw && !address_line1) return res.status(400).json({ error: 'parcel_raw or address_line1 is required' });
-
-        const safeParcelRaw = parcel_raw || `PAR-${Date.now().toString().slice(-6)}`;
-        const parcel_match = normalizeParcelMatch(safeParcelRaw);
-        const property_id = crypto.randomUUID();
-        const county_id = 'c1111111-1111-1111-1111-111111111111';
-
-        try {
-            await pool.query(
-                `INSERT INTO core.properties
-                  (property_id, county_id, parcel_raw, parcel_match, address_line1, city, state_code, postal_code, property_type, legal_description, assessed_value, created_at, updated_at)
-                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW(), NOW())`,
-                [
-                    property_id,
-                    county_id,
-                    safeParcelRaw,
-                    parcel_match,
-                    address_line1 || 'Jacksonville, FL',
-                    city,
-                    state_code,
-                    postal_code,
-                    property_type,
-                    legal_description,
-                    Number(assessed_value) || 200000
-                ]
-            );
-        } catch (pgErr) {
-            console.error('[PostgreSQL Properties Insert Error]', pgErr.message);
+        const { parcel_raw, county_code, address_line1, city, state_code, postal_code, assessed_value, property_type, legal_description } = req.body || {};
+        if (!county_code || !parcel_raw || !String(parcel_raw).trim()) {
+            return res.status(400).json({ error: 'county_code and parcel_raw are required. Save the lead first if the parcel is not known yet.' });
         }
-
-        const newProp = {
-            property_id,
-            county_id,
-            county_code,
-            parcel_raw: safeParcelRaw,
-            parcel_match,
-            address_line1: address_line1 || 'Jacksonville, FL',
-            city,
-            state_code,
-            postal_code,
-            property_type,
-            legal_description,
-            assessed_value: Number(assessed_value) || 200000,
-            estimated_equity: Math.round((Number(assessed_value) || 200000) * 0.45),
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-        };
-
-        db.data.core.properties.unshift(newProp);
-        db.logAudit({
-            actor: req.body.actor || 'USER_WEB',
-            action: 'PROPERTY_CREATED',
-            entityType: 'PROPERTY',
-            entityId: newProp.property_id,
-            redactedDiff: { parcel_raw: safeParcelRaw, county_code },
+        const parcelRaw = String(parcel_raw).trim(); // stays text: leading zeros and punctuation preserved
+        const parcelMatch = normalizeParcelMatch(parcelRaw);
+        const result = await withTransaction(async client => {
+            const { rows: [county] } = await client.query('SELECT county_id FROM ref.counties WHERE county_code = $1', [String(county_code).toUpperCase()]);
+            if (!county) throw Object.assign(new Error(`County '${county_code}' is not in the county registry.`), { status: 400 });
+            const { rows: [existing] } = await client.query('SELECT property_id FROM core.properties WHERE county_id = $1 AND parcel_match = $2', [county.county_id, parcelMatch]);
+            if (existing) return { id: existing.property_id, created: false };
+            const { rows: [row] } = await client.query(
+                `INSERT INTO core.properties (county_id, parcel_raw, parcel_match, address_line1, city, state_code, postal_code, property_type, legal_description, assessed_value)
+                 VALUES ($1,$2,$3,$4,$5,coalesce($6,'FL'),$7,$8,$9,$10) RETURNING property_id`,
+                [county.county_id, parcelRaw, parcelMatch, address_line1 || null, city || null, state_code || null, postal_code || null,
+                 property_type || null, legal_description || null, assessed_value === undefined || assessed_value === '' ? null : Number(assessed_value)]);
+            await emitOutbox(client, { aggregateType: 'PROPERTY', aggregateId: row.property_id, eventType: 'PROPERTY_CREATED', payload: {} });
+            await audit(client, { actor: actorName(req), action: 'PROPERTY_CREATED', entityType: 'PROPERTY', entityId: row.property_id, diff: { parcel_raw: parcelRaw, county_code } });
+            return { id: row.property_id, created: true };
         });
-        db.persist();
-
-        res.status(201).json(CrownKeyService.enrichProperty(newProp));
+        const [prop] = await CrownKeyService.loadProperties('WHERE p.property_id = $1', [result.id]);
+        res.status(result.created ? 201 : 200).json({ ...(await CrownKeyService.enrichProperty(prop)), already_existed: !result.created });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        res.status(err.status || 500).json({ error: err.message });
     }
 });
 
 // ============================================================================
 // 5. People & Businesses (Person 360)
 // ============================================================================
-apiRouter.get('/people', (req, res) => {
-    const people = db.data.core.people.map(person => {
-        const properties = db.data.rel.entity_relationships
-            .filter(r => r.from_entity_id === person.person_id && r.relationship_type === 'OWNS')
-            .map(r => db.data.core.properties.find(p => p.property_id === r.to_entity_id))
-            .filter(Boolean);
-        return { ...person, owned_properties: properties };
-    });
-    res.json({ total: people.length, people });
+apiRouter.get('/people', async (req, res) => {
+    try {
+        const limit = Math.min(Number(req.query.limit) || 500, 2000);
+        const q = req.query.q ? likeTerm(String(req.query.q)) : null;
+        const { rows } = await pool.query(
+            `SELECT pe.*, coalesce((SELECT jsonb_agg(jsonb_build_object('property_id', pr.property_id, 'parcel_raw', pr.parcel_raw, 'address_line1', pr.address_line1))
+                                     FROM rel.entity_relationships r JOIN core.properties pr ON pr.property_id = r.to_entity_id
+                                     WHERE r.from_entity_id = pe.person_id AND r.relationship_type = 'OWNS' AND r.verification_status = 'CONFIRMED'), '[]'::jsonb) AS owned_properties
+             FROM core.people pe WHERE ($1::text IS NULL OR full_name ILIKE $1 OR primary_phone ILIKE $1 OR primary_email ILIKE $1)
+             ORDER BY created_at DESC LIMIT ${limit}`, [q]);
+        res.json({ total: rows.length, people: rows });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
-apiRouter.get('/people/:id', (req, res) => {
-    const person = db.data.core.people.find(p => p.person_id === req.params.id);
-    if (!person) return res.status(404).json({ error: 'Person not found' });
-
-    const properties = db.data.rel.entity_relationships
-        .filter(r => r.from_entity_id === person.person_id && r.relationship_type === 'OWNS')
-        .map(r => CrownKeyService.enrichProperty(db.data.core.properties.find(p => p.property_id === r.to_entity_id)))
-        .filter(Boolean);
-
-    const interactions = db.data.core.interactions.filter(i => i.person_id === person.person_id);
-
-    res.json({ person, properties, interactions });
+apiRouter.get('/people/:id', async (req, res) => {
+    try {
+        const { rows: [person] } = await pool.query('SELECT * FROM core.people WHERE person_id = $1', [req.params.id]);
+        if (!person) return res.status(404).json({ error: 'Person not found' });
+        const [{ rows: owned }, { rows: interactions }, { rows: roles }] = await Promise.all([
+            pool.query(`SELECT p.*, c.county_code FROM rel.entity_relationships r JOIN core.properties p ON p.property_id = r.to_entity_id JOIN ref.counties c ON c.county_id = p.county_id
+                        WHERE r.from_entity_id = $1 AND r.relationship_type = 'OWNS' AND r.verification_status = 'CONFIRMED'`, [person.person_id]),
+            pool.query('SELECT * FROM core.interactions WHERE person_id = $1 ORDER BY occurred_at DESC LIMIT 200', [person.person_id]),
+            pool.query('SELECT role_code FROM core.contact_roles WHERE person_id = $1', [person.person_id])
+        ]);
+        res.json({ person, roles: roles.map(r => r.role_code), properties: await CrownKeyService.enrichProperties(owned), interactions });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
-apiRouter.get('/businesses', (req, res) => {
-    res.json({ total: db.data.core.businesses.length, businesses: db.data.core.businesses });
+apiRouter.get('/businesses', async (req, res) => {
+    try {
+        const { rows } = await pool.query('SELECT * FROM core.businesses ORDER BY created_at DESC LIMIT 2000');
+        res.json({ total: rows.length, businesses: rows });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 apiRouter.post('/people', async (req, res) => {
     try {
-        const {
-            first_name,
-            last_name,
-            full_name,
-            primary_phone,
-            primary_email,
-            mailing_address,
-            is_suppressed = false,
-            verification_level = 'UNVERIFIED',
-            actor = 'USER_WEB'
-        } = req.body || {};
-
-        const resolvedName = full_name || `${first_name || ''} ${last_name || ''}`.trim() || 'Unnamed Person';
-        const person_id = crypto.randomUUID();
-
-        // 1. Insert into PostgreSQL RDS
-        try {
-            await pool.query(
-                `INSERT INTO core.people
-                  (person_id, full_name, first_name, last_name, primary_phone, primary_email, mailing_address, is_suppressed, verification_level, created_at, updated_at)
-                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), NOW())`,
-                [
-                    person_id,
-                    resolvedName,
-                    first_name || null,
-                    last_name || null,
-                    primary_phone || null,
-                    primary_email || null,
-                    mailing_address || null,
-                    Boolean(is_suppressed),
-                    verification_level
-                ]
-            );
-        } catch (pgErr) {
-            console.error('[PostgreSQL People Insert Error]', pgErr.message);
-        }
-
-        // 2. Insert into Canonical Store
-        const newPerson = {
-            person_id,
-            full_name: resolvedName,
-            first_name: first_name || null,
-            last_name: last_name || null,
-            primary_phone: primary_phone || null,
-            primary_email: primary_email || null,
-            mailing_address: mailing_address || null,
-            is_suppressed: Boolean(is_suppressed),
-            verification_level,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-        };
-        db.data.core.people.unshift(newPerson);
-
-        // 3. Log Audit Event
-        const auditEvent = db.logAudit({
-            actor,
-            action: 'PERSON_CREATED',
-            entityType: 'PERSON',
-            entityId: person_id,
-            redactedDiff: { full_name: resolvedName, primary_phone, primary_email }
+        const { first_name, last_name, full_name, primary_phone, primary_email, mailing_address, roles = [] } = req.body || {};
+        const name = (full_name || `${first_name || ''} ${last_name || ''}`).trim();
+        if (!name) return res.status(400).json({ error: 'A name is required.' });
+        const person = await withTransaction(async client => {
+            const { rows: [row] } = await client.query(
+                `INSERT INTO core.people (full_name, first_name, last_name, primary_phone, primary_email, mailing_address) VALUES ($1,$2,$3,$4,$5,$6) RETURNING *`,
+                [name, first_name || null, last_name || null, primary_phone || null, primary_email ? String(primary_email).trim().toLowerCase() : null, mailing_address || null]);
+            for (const role of roles) await client.query('INSERT INTO core.contact_roles (person_id, role_code) VALUES ($1,$2) ON CONFLICT DO NOTHING', [row.person_id, role]);
+            await audit(client, { actor: actorName(req), action: 'PERSON_CREATED', entityType: 'PERSON', entityId: row.person_id, diff: { roles } });
+            return row;
         });
-        db.persist();
-
-        res.status(201).json({ person: newPerson, audit: auditEvent });
+        res.status(201).json({ person });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        res.status(err.code === '23503' ? 400 : 500).json({ error: err.code === '23503' ? 'Unknown role code.' : err.message });
     }
 });
 
 apiRouter.post('/businesses', async (req, res) => {
     try {
-        const {
-            legal_name,
-            entity_type = 'LLC',
-            jurisdiction = 'FL',
-            registration_id,
-            registered_agent,
-            status = 'ACTIVE',
-            actor = 'USER_WEB'
-        } = req.body || {};
-
-        if (!legal_name) return res.status(400).json({ error: 'legal_name is required' });
-
-        const business_id = crypto.randomUUID();
-
-        // 1. Insert into PostgreSQL RDS
-        try {
-            await pool.query(
-                `INSERT INTO core.businesses
-                  (business_id, legal_name, entity_type, jurisdiction, registration_id, status, registered_agent, created_at)
-                 VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())`,
-                [business_id, legal_name, entity_type, jurisdiction, registration_id || null, status, registered_agent || null]
-            );
-        } catch (pgErr) {
-            console.error('[PostgreSQL Businesses Insert Error]', pgErr.message);
-        }
-
-        // 2. Insert into Canonical Store
-        const newBusiness = {
-            business_id,
-            legal_name,
-            entity_type,
-            jurisdiction,
-            registration_id: registration_id || null,
-            status,
-            registered_agent: registered_agent || null,
-            created_at: new Date().toISOString()
-        };
-        db.data.core.businesses.unshift(newBusiness);
-
-        // 3. Log Audit Event
-        const auditEvent = db.logAudit({
-            actor,
-            action: 'BUSINESS_CREATED',
-            entityType: 'BUSINESS',
-            entityId: business_id,
-            redactedDiff: { legal_name, entity_type, jurisdiction }
+        const { legal_name, entity_type, jurisdiction, registration_id, registered_agent, status } = req.body || {};
+        if (!legal_name || !jurisdiction) return res.status(400).json({ error: 'legal_name and jurisdiction are required.' });
+        const business = await withTransaction(async client => {
+            const { rows: [row] } = await client.query(
+                `INSERT INTO core.businesses (legal_name, entity_type, jurisdiction, registration_id, status, registered_agent)
+                 VALUES ($1, coalesce($2,'LLC'), $3, $4, coalesce($5,'ACTIVE'), $6) RETURNING *`,
+                [legal_name, entity_type || null, jurisdiction, registration_id || null, status || null, registered_agent || null]);
+            await audit(client, { actor: actorName(req), action: 'BUSINESS_CREATED', entityType: 'BUSINESS', entityId: row.business_id, diff: { legal_name } });
+            return row;
         });
-        db.persist();
-
-        res.status(201).json({ business: newBusiness, audit: auditEvent });
+        res.status(201).json({ business });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
 // ============================================================================
-// 6. Pillar Events (Atomic Counter & Evidence)
+// 6. Pillar Events (atomic numbering, evidence, verification)
 // ============================================================================
-apiRouter.get('/events', (req, res) => {
-    const events = db.data.core.pillar_events.map(ev => {
-        const prop = db.data.core.properties.find(p => p.property_id === ev.property_id);
-        const evidenceLinks = db.data.rel.event_evidence.filter(ee => ee.event_id === ev.event_id);
-        return {
-            ...ev,
-            property: prop ? CrownKeyService.enrichProperty(prop) : null,
-            evidence: evidenceLinks,
-        };
-    });
-    res.json({ total: events.length, events });
+apiRouter.get('/events', async (req, res) => {
+    try {
+        const events = await EventService.list({ propertyId: req.query.propertyId || null, pillarCode: req.query.pillar || null, limit: req.query.limit, offset: req.query.offset });
+        res.json({ total: events.length, events });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
-apiRouter.post('/events', (req, res) => {
+apiRouter.post('/events', async (req, res) => {
     try {
-        const result = EventService.recordPillarEvent(req.body);
-        res.status(201).json(result);
+        const b = req.body || {};
+        const result = await EventService.recordPillarEvent({
+            propertyId: b.propertyId || b.property_id, pillarCode: b.pillarCode || b.pillar_code,
+            caseReference: b.caseReference || b.case_reference, externalEventId: b.externalEventId || b.external_event_id,
+            eventStatus: b.eventStatus || b.event_status || 'OPEN', verificationStatus: b.verificationStatus || b.verification_status || 'NEEDS_REVIEW',
+            eventDate: b.eventDate || b.event_date || null, filingAmount: b.filingAmount ?? b.filing_amount ?? null,
+            sourceRecordId: b.sourceRecordId || b.source_record_id || null, evidenceNotes: b.evidenceNotes || b.notes || null, actor: actorName(req)
+        });
+        res.status(result.isNew ? 201 : 200).json(result);
     } catch (err) {
-        res.status(400).json({ error: err.message });
+        res.status(err.status || 500).json({ error: err.message });
+    }
+});
+
+apiRouter.patch('/events/:id/status', async (req, res) => {
+    try {
+        const { eventStatus, verificationStatus, reason } = req.body || {};
+        res.json(await EventService.updateStatus({ eventId: req.params.id, eventStatus, verificationStatus, reason, actor: actorName(req) }));
+    } catch (err) {
+        res.status(err.status || 500).json({ error: err.message });
+    }
+});
+
+apiRouter.get('/events/:id/evidence', async (req, res) => {
+    try {
+        res.json({ evidence: await EventService.evidence(req.params.id) });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
 });
 
 // ============================================================================
 // 7. Leads & CRM Pipeline
 // ============================================================================
-apiRouter.get('/leads', (req, res) => {
-    res.json({ leads: CrmService.getLeads() });
+apiRouter.get('/leads', async (req, res) => {
+    try {
+        res.json({ leads: await CrmService.getLeads({ limit: req.query.limit, offset: req.query.offset }) });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
+
+const SELLER_STATUS = {
+    NEW: 'New', CONTACTED: 'Contacted', QUALIFIED: 'Contacted', APPOINTMENT: 'Appointment', OFFER: 'Offer Made',
+    CONTRACT: 'Under Contract', CLOSED: 'Closed', FOLLOW_UP: 'Follow Up', LOST: 'Lost'
+};
+const numberOrNull = v => (v === undefined || v === null || v === '' || Number.isNaN(Number(v)) ? null : Number(v));
 
 apiRouter.get('/seller-leads', async (req, res) => {
     try {
-        let leads = [];
-        const statusMap = {
-            'NEW': 'New',
-            'QUALIFIED': 'Contacted',
-            'CONTACTED': 'Contacted',
-            'APPOINTMENT': 'Appointment',
-            'OFFER': 'Offer Made',
-            'OFFER_MADE': 'Offer Made',
-            'CONTRACT': 'Under Contract',
-            'UNDER_CONTRACT': 'Under Contract',
-            'CLOSED': 'Closed'
-        };
-
-        const sourceMap = {
-            'MAIL': 'Direct Mail',
-            'COUNTY': 'County Data',
-            'INBOUND_WEB': 'Website',
-            'FB_AD': 'Facebook Ad',
-            'SMS_CAMPAIGN': 'SMS Campaign',
-            'REFERRAL': 'Referral',
-            'D4D': 'Driving for Dollars',
-            'COLD_CALL': 'Cold Call',
-            'BANDIT_SIGN': 'Bandit Signs',
-            'BATCHLEADS': 'BatchLeads',
-            'BATCH': 'BatchLeads',
-            'OTHER': 'Direct Mail'
-        };
-
-        try {
-            const { rows } = await pool.query(`
-                SELECT l.lead_id, l.status, l.first_source_code, l.source_detail, l.priority_score,
-                       l.metadata, l.created_at, l.updated_at, l.lost_reason,
-                       p.person_id, p.full_name, p.primary_phone, p.primary_email,
-                       pr.property_id, pr.address_line1, pr.city, pr.state_code, pr.postal_code,
-                       pr.assessed_value, pr.property_type, pr.parcel_raw,
-                       c.county_code
-                FROM core.leads l
-                LEFT JOIN core.people p ON l.person_id = p.person_id
-                LEFT JOIN core.properties pr ON l.property_id = pr.property_id
-                LEFT JOIN ref.counties c ON pr.county_id = c.county_id
-                ORDER BY l.created_at DESC
-            `);
-            if (rows && rows.length > 0) {
-                leads = rows.map((r, idx) => {
-                    const countyCode = r.county_code || 'DUV';
-                    const parcel = r.parcel_raw || `PARCEL-${idx}`;
-                    const metaCrownKey = (r.metadata && (r.metadata.crown_key || r.metadata.crownKey)) ? (r.metadata.crown_key || r.metadata.crownKey) : null;
-                    const crownKey = metaCrownKey || (r.address_line1 ? `${countyCode}-${parcel} · ${r.first_source_code || 'MAIL'}` : 'Property pending');
-                    const leadStatus = statusMap[r.status] || 'New';
-                    const sourceText = (r.first_source_code === 'BATCHLEADS' || r.first_source_code === 'BATCH') 
-                        ? 'BatchLeads' 
-                        : (r.source_detail ? r.source_detail.replace(/^Podio:\s*/, '') : (sourceMap[r.first_source_code] || 'Direct Mail'));
-                    const arv = r.assessed_value ? Math.round(Number(r.assessed_value) * 1.25) : null;
-                    const mao = arv ? Math.round(arv * 0.70 - 25000) : null;
-                    const hasAddress = r.address_line1 && !/^Jacksonville Property #\d+$/.test(r.address_line1) && r.address_line1 !== 'No Property Address on File';
-                    const displayAddress = hasAddress ? r.address_line1 : (r.primary_email || 'No Property Address on File');
-
-                    return {
-                        id: r.lead_id,
-                        crownKey,
-                        name: r.full_name || 'Seller Lead',
-                        address: displayAddress,
-                        city: hasAddress ? (r.city || 'Jacksonville') : '',
-                        zip: hasAddress ? (r.postal_code || '') : '',
-                        phone: r.primary_phone || '',
-                        email: r.primary_email || '',
-                        source: sourceText,
-                        lead_source: r.first_source_code || (sourceText === 'BatchLeads' ? 'BATCHLEADS' : 'MAIL'),
-                        leadSourceBadge: (r.first_source_code === 'BATCHLEADS' || r.first_source_code === 'BATCH' || sourceText === 'BatchLeads') ? 'BatchLeads' : sourceText,
-                        status: leadStatus,
-                        date: r.created_at ? new Date(r.created_at).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
-                        arv,
-                        repairs: arv ? 25000 : null,
-                        mao,
-                        equity: arv ? Math.round(arv * 0.30) : null,
-                        tags: hasAddress ? [countyCode === 'DUV' ? 'Duval County' : 'Clay County', sourceText] : [sourceText],
-                        type: hasAddress ? (r.property_type || 'Single Family Residential') : '',
-                        photo: '',
-                        score: r.priority_score || 75,
-                        assignee: '',
-                        notes: ''
-                    };
-                });
-            }
-        } catch (dbErr) {
-            console.warn('[Seller Leads RDS Fallback]:', dbErr.message);
-        }
-
-        if (!leads.length) {
-            const enrichedLeads = CrmService.getLeads();
-            leads = (enrichedLeads || []).map((lead, idx) => {
-                const prop = lead.property || null;
-                const person = lead.person || null;
-                const crownKey = lead.crownKey || (prop ? prop.crownKey : 'Property pending');
-                const leadStatus = lead.status && statusMap[lead.status] ? statusMap[lead.status] : 'New';
-                const leadSource = sourceMap[lead.first_source_code] || lead.source || 'Direct Mail';
-                const hasRealProp = prop && prop.address_line1 && !/^Jacksonville Property #\d+$/.test(prop.address_line1) && prop.address_line1 !== 'No Property Address on File';
-                const arv = hasRealProp && prop?.assessed_value ? Math.round(prop.assessed_value * 1.25) : (lead.arv || null);
-                const repairs = lead.repairs || null;
-                const mao = lead.mao || (arv && repairs ? Math.round(arv * 0.70 - repairs) : null);
-                const equity = hasRealProp && prop?.estimated_equity ? prop.estimated_equity : (lead.equity || null);
-                const address = hasRealProp ? prop.address_line1 : (lead.address && !/^Jacksonville Property #\d+$/.test(lead.address) && lead.address !== 'No Property Address on File' ? lead.address : 'No Property Address on File');
-
-                return {
-                    id: lead.lead_id || `lead-${idx}`,
-                    crownKey,
-                    name: person?.full_name || lead.name || 'Unnamed Seller',
-                    address,
-                    city: hasRealProp ? (prop?.city || 'Jacksonville') : '',
-                    zip: hasRealProp ? (prop?.postal_code || '') : '',
-                    phone: person?.primary_phone || person?.phone_raw || lead.phone || '',
-                    email: person?.primary_email || person?.email_raw || lead.email || '',
-                    source: leadSource,
-                    status: leadStatus,
-                    date: lead.created_at ? lead.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
-                    arv,
-                    repairs,
-                    mao,
-                    equity,
-                    tags: hasRealProp ? [prop?.county_code === 'DUV' ? 'Duval County' : 'Clay County', leadSource] : [leadSource],
-                    type: hasRealProp ? (prop?.property_type || 'Single Family Residential') : '',
-                    photo: hasRealProp ? (prop?.photos?.[0]?.url || lead.photo || '') : '',
-                    score: lead.priority_score || 0,
-                    assignee: lead.assigned_to || '',
-                    notes: lead.notes || ''
-                };
-            });
-        }
-
-        res.json({
-            leads,
-            total: leads.length,
-            timestamp: new Date().toISOString()
+        const leads = await CrmService.getLeads({ limit: req.query.limit || 2000 });
+        const rows = leads.map(l => {
+            const meta = l.metadata || {};
+            const prop = l.property;
+            const sourceName = l.source_name || l.first_source_code || 'Unknown';
+            // Underwriting figures are shown only when a person entered them; nothing is estimated here.
+            return {
+                id: l.lead_id,
+                crownKey: l.crownKey,
+                name: l.person?.full_name || '',
+                address: prop?.address_line1 || meta.address || '',
+                city: prop?.city || meta.city || '',
+                zip: prop?.postal_code || meta.zip || '',
+                phone: l.person?.primary_phone || '',
+                email: l.person?.primary_email || '',
+                source: sourceName,
+                lead_source: l.first_source_code,
+                leadSourceBadge: sourceName,
+                status: SELLER_STATUS[l.status] || l.status,
+                date: l.created_at ? new Date(l.created_at).toISOString().split('T')[0] : '',
+                arv: numberOrNull(meta.arv),
+                repairs: numberOrNull(meta.repairs),
+                mao: numberOrNull(meta.mao),
+                equity: numberOrNull(meta.equity),
+                tags: [prop?.county_code, sourceName].filter(Boolean),
+                type: prop?.property_type || '',
+                photo: '',
+                score: l.priority_score,
+                assignee: l.assigned_user_id || '',
+                notes: meta.notes || '',
+                property_pending: !l.property_id
+            };
         });
+        res.json({ leads: rows, total: rows.length, timestamp: new Date().toISOString() });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
+
+async function resolveSourceCode(input) {
+    const value = String(input || '').trim();
+    if (!value) return null;
+    const { rows: [row] } = await pool.query(
+        `SELECT source_code FROM ref.lead_sources WHERE source_code = upper($1) OR lower(source_name) = lower($1) LIMIT 1`, [value]);
+    return row?.source_code || null;
+}
 
 apiRouter.post('/leads', async (req, res) => {
     try {
-        if (req.body.name || req.body.address) {
-            // Direct lead creation from frontend
-            const { name, address, zip, phone, email, source, arv, repairs, mao, equity, actor } = req.body;
-            const countyCode = 'DUV';
-            const countyId = 'c1111111-1111-1111-1111-111111111111';
-            const parcelRaw = `FL-${zip || '32202'}-${Date.now().toString().slice(-4)}`;
-            const parcelMatch = normalizeParcelMatch(parcelRaw);
-
-            const personId = crypto.randomUUID();
-            const propertyId = crypto.randomUUID();
-            const leadId = crypto.randomUUID();
-
-            const sourceCode = (source || 'MAIL').toUpperCase().includes('MAIL') ? 'MAIL' : 'OTHER';
-            const crownKey = renderCrownKey({
-                countyCode,
-                parcelRaw,
-                firstSourceCode: sourceCode
+        const b = req.body || {};
+        const actor = actorName(req);
+        if (b.name || b.address) {
+            // Quick-add from the Seller Leads screen. The property stays pending until a parcel is verified.
+            const sourceCode = await resolveSourceCode(b.sourceCode || b.source);
+            if (!sourceCode) return res.status(400).json({ error: 'Choose a valid lead source.' });
+            if (!b.name || !String(b.name).trim()) return res.status(400).json({ error: 'Seller name is required.' });
+            const lead = await CrmService.createLead({
+                sourceCode, sourceDetail: b.sourceDetail || null, contactMethod: b.contactMethod || null, platformCode: b.platformCode || null,
+                medium: b.medium || null, campaignId: b.campaignId || null, actor,
+                person: { name: b.name, phone: b.phone, email: b.email },
+                metadata: { address: b.address || null, zip: b.zip || null, city: b.city || null, arv: b.arv ?? null, repairs: b.repairs ?? null, mao: b.mao ?? null, equity: b.equity ?? null }
             });
-
-            // Write to PG
-            await pool.query(`
-                INSERT INTO core.people (person_id, full_name, primary_phone, primary_email, mailing_address, created_at, updated_at)
-                VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
-            `, [personId, name || 'Unnamed Seller', phone || null, email || null, address ? `${address}, Jacksonville, FL ${zip || ''}` : null]);
-
-            await pool.query(`
-                INSERT INTO core.properties (property_id, county_id, parcel_raw, parcel_match, address_line1, city, state_code, postal_code, property_type, assessed_value, created_at, updated_at)
-                VALUES ($1, $2, $3, $4, $5, 'Jacksonville', 'FL', $6, 'Single Family Residential', $7, NOW(), NOW())
-            `, [propertyId, countyId, parcelRaw, parcelMatch, address || 'No Address', zip || '32202', arv ? Number(arv) : 250000]);
-
-            await pool.query(`
-                INSERT INTO core.leads (lead_id, first_source_code, source_detail, property_id, person_id, status, priority_score, metadata, created_at, updated_at)
-                VALUES ($1, $2, $3, $4, $5, 'NEW', 60, $6, NOW(), NOW())
-            `, [leadId, sourceCode, 'Manual Web UI Entry', propertyId, personId, JSON.stringify({ arv, repairs, mao, equity, crownKey })]);
-
-            // Audit
-            await pool.query(`
-                INSERT INTO audit.audit_events (audit_id, actor, action, entity_type, entity_id, request_id, redacted_diff, created_at)
-                VALUES ($1, $2, 'LEAD_CREATED', 'LEAD', $3, $4, $5, NOW())
-            `, [crypto.randomUUID(), actor || 'Acquisitions Admin', leadId, crypto.randomUUID(), JSON.stringify({ name, address, crownKey })]);
-
-            // In-memory sync
-            const newLeadObj = {
-                lead_id: leadId,
-                first_source_code: sourceCode,
-                source_detail: 'Manual Web UI Entry',
-                property_id: propertyId,
-                person_id: personId,
-                status: 'NEW',
-                priority_score: 60,
-                created_at: new Date().toISOString(),
-                crownKey
-            };
-            db.data.core.leads.unshift(newLeadObj);
-            db.data.core.properties.unshift({
-                property_id: propertyId,
-                county_id: countyId,
-                parcel_raw: parcelRaw,
-                parcel_match: parcelMatch,
-                address_line1: address,
-                city: 'Jacksonville',
-                state_code: 'FL',
-                postal_code: zip,
-                assessed_value: arv || 250000,
-                crownKey
-            });
-            db.data.core.people.unshift({
-                person_id: personId,
-                full_name: name,
-                primary_phone: phone,
-                primary_email: email
-            });
-
-            // Also push to Podio Leads App 30087410
-            try {
-                await PodioSyncService.createLeadInPodio({
-                    fullName: name,
-                    phone,
-                    email,
-                    address,
-                    source: source || 'Website',
-                    notes: `Lead created from HushHawk UI. Address: ${address || 'Duval County'}`
-                });
-            } catch (pErr) {
-                console.warn('[Podio Lead Push Note]:', pErr.message);
+            let podio = { pushed: false };
+            if (configured('PODIO_CLIENT_ID', 'PODIO_APP_TOKEN')) {
+                try {
+                    await PodioSyncService.createLeadInPodio({ fullName: b.name, phone: b.phone, email: b.email, address: b.address, source: b.source || sourceCode, notes: 'Created in HushHawk' });
+                    podio = { pushed: true };
+                } catch (pErr) {
+                    podio = { pushed: false, error: pErr.message };
+                }
             }
-
-            return res.status(201).json({
-                success: true,
-                id: leadId,
-                lead_id: leadId,
-                crownKey,
-                name,
-                address,
-                city: 'Jacksonville',
-                zip,
-                phone,
-                email,
-                source: source || 'Direct Mail',
-                status: 'New',
-                date: new Date().toISOString().split('T')[0],
-                arv,
-                repairs,
-                mao,
-                equity
-            });
+            return res.status(201).json({ success: true, id: lead.lead_id, lead_id: lead.lead_id, crownKey: 'Property pending', status: 'New', source_code: sourceCode, podio });
         }
-
-        const newLead = CrmService.createLead(req.body);
-        res.status(201).json(newLead);
+        const lead = await CrmService.createLead({
+            ...b, sourceCode: b.sourceCode || b.first_source_code, contactMethod: b.contactMethod || b.contact_method,
+            propertyId: b.propertyId || b.property_id || null, eventIds: b.eventIds || [], actor
+        });
+        res.status(201).json(lead);
     } catch (err) {
-        res.status(400).json({ error: err.message });
+        res.status(err.status || (err.code === '23503' ? 400 : 500)).json({ error: err.message });
     }
 });
 
-// Bulk Lead Ingestion Endpoint (CSV, TSV, or JSON Array)
+// Bulk lead ingestion (CSV, TSV, or JSON array)
 apiRouter.post('/leads/import', async (req, res) => {
     try {
-        const { data, sourceCode, actor, listName } = req.body;
-        const result = await LeadImportService.processImport({
-            data,
-            sourceCode: sourceCode || 'MAIL',
-            actor: actor || 'Acquisitions Admin',
-            defaultListName: listName || 'Skip-Trace Batch'
-        });
+        const { data, sourceCode, listName } = req.body || {};
+        const result = await LeadImportService.processImport({ data, sourceCode, actor: actorName(req), defaultListName: listName || 'Skip-Trace Batch' });
         res.status(201).json(result);
     } catch (err) {
-        console.error('[Lead Import Error]', err);
-        res.status(400).json({ error: err.message });
+        res.status(err.status || 400).json({ error: err.message });
     }
 });
 
-// Purge test batch records safely (restoring canonical truth)
+// Administrator-only removal of a mistaken import
 apiRouter.post('/leads/purge-test-batch', async (req, res) => {
     try {
-        const { lead_ids, property_ids, person_ids } = req.body;
-        const result = await LeadImportService.purgeBatch({
-            leadIds: lead_ids || [],
-            propertyIds: property_ids || [],
-            personIds: person_ids || []
-        });
-        res.json(result);
+        if (!req.user?.isAdmin) return res.status(403).json({ error: 'Administrator access is required.' });
+        const { lead_ids, property_ids, person_ids } = req.body || {};
+        res.json(await LeadImportService.purgeBatch({ leadIds: lead_ids || [], propertyIds: property_ids || [], personIds: person_ids || [], actor: actorName(req) }));
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        res.status(err.status || 500).json({ error: err.message });
     }
 });
 
-apiRouter.patch('/leads/:id/stage', (req, res) => {
+apiRouter.patch('/leads/:id/stage', async (req, res) => {
     try {
-        const { stage, reason, actor } = req.body;
-        const updated = CrmService.updateLeadStage({
-            leadId: req.params.id,
-            newStage: stage,
-            reason,
-            actor,
-        });
-        res.json(updated);
+        const { stage, reason } = req.body || {};
+        res.json(await CrmService.updateLeadStage({ leadId: req.params.id, newStage: stage, reason, actor: actorName(req) }));
     } catch (err) {
-        res.status(400).json({ error: err.message });
+        res.status(err.status || 400).json({ error: err.message });
+    }
+});
+
+// Later responses are touchpoints on the same lead: first_source_code never changes.
+apiRouter.post('/leads/:id/touchpoints', async (req, res) => {
+    try {
+        const b = req.body || {};
+        res.status(201).json(await CrmService.addTouchpoint({ leadId: req.params.id, sourceCode: b.sourceCode || null, contactMethod: b.contactMethod, direction: b.direction,
+            platformCode: b.platformCode, medium: b.medium, campaignId: b.campaignId, evidence: b.evidence, notes: b.notes, actor: actorName(req) }));
+    } catch (err) {
+        res.status(err.status || 500).json({ error: err.message });
     }
 });
 
@@ -2033,241 +1610,95 @@ apiRouter.post('/webhooks/podio', async (req, res) => {
             return res.status(200).json({ ok: true, type: 'DELETE', item_id: externalItemId, status: 'PROCESSED' });
         }
 
-        // 3. Podio Item Ingestion / Sync (Fetch live fields directly from Podio API)
+        // 3. Item create/update: fetch the live item and apply the same rules as the scheduled sync.
         if (type === 'item.create' || type === 'item.update') {
-            const externalItemId = item_id || req.body.item?.item_id;
-            if (!externalItemId) {
-                return res.status(200).json({ ok: true, notice: 'No item_id in webhook payload' });
-            }
+            const externalItemId = String(item_id || req.body.item?.item_id || '');
+            if (!externalItemId) return res.status(200).json({ ok: true, notice: 'No item_id in webhook payload' });
 
-            console.log(`[Podio Webhook] Processing ${type} for Item #${externalItemId}...`);
-            let liveItem = null;
-            try {
-                const auth = await PodioService.authenticateApp(PodioSyncService.LEADS_APP_ID, PodioSyncService.APP_TOKEN);
-                liveItem = await PodioService.getItem(auth.access_token, externalItemId);
-            } catch (fErr) {
-                console.warn(`[Podio Webhook Fetch Warn for #${externalItemId}]:`, fErr.message);
-            }
-
-            const itemAppId = String(liveItem?.app?.app_id || app_id || '30087410');
-            const getF = (label) => liveItem?.fields?.find(f => f.label.toLowerCase() === label.toLowerCase())?.values?.[0];
-
-            // A. If Item is in FEEDS App (30087421) -> Ingest communication (SMS, Call, Email)
-            if (itemAppId === '30087421' || liveItem?.app?.url_label === 'feeds') {
-                const typeText = getF('Type')?.value?.text || 'Text Message';
-                const callerName = getF('Caller Name')?.value || liveItem?.title || 'Jacksonville Contact';
-                const fromPhone = getF('From Phone')?.value || '+13866273499';
-                const toPhone = getF('To Phone')?.value || '+19045790065';
-                const textMessage = getF('Text Message')?.value || '';
-                const callPrompt = getF('Call Prompt')?.value || '';
-                const emailSubject = getF('Email Subject')?.value || '';
-                const emailBody = getF('Email Body')?.value || '';
-                const messageBody = textMessage || callPrompt || emailBody || emailSubject || `Communication logged (#${externalItemId})`;
-
-                await pool.query(`
-                    INSERT INTO core.interactions (
-                        interaction_id, method, direction, actor_id, result, notes, occurred_at
-                    ) VALUES (
-                        gen_random_uuid(), $1, 'INBOUND', $2, 'RECEIVED', $3, NOW()
-                    )
-                `, [
-                    typeText.toUpperCase().includes('CALL') ? 'CALL' : (typeText.toUpperCase().includes('EMAIL') ? 'EMAIL' : 'TEXT'),
-                    callerName,
-                    `[Podio Feeds Inbound #${externalItemId}] From: ${fromPhone} | ${messageBody.slice(0, 200)}`
-                ]);
-
-                return res.status(200).json({
-                    ok: true,
-                    type: 'COMMUNICATION',
-                    item_id: externalItemId,
-                    caller: callerName,
-                    status: 'INGESTED_TO_INTERACTIONS'
-                });
-            }
-
-            // B. If Item is in CASH BUYERS App (30087423) -> Ingest / Update Cash Buyer
-            if (itemAppId === '30087423' || liveItem?.app?.url_label === 'cash-buyers') {
-                const entityName = getF('Entity Name')?.value || liveItem?.title || 'Cash Buyer';
-                const phone = getF('Phone #(s)')?.value || '+13866273499';
-                const email = getF('Email ID(s)')?.value || 'buyer@elitehomes1.com';
-                const criteria = getF('About Cash Buyer/Criteria')?.value?.replace(/<[^>]+>/g, ' ').trim() || '';
-                const propType = getF('Type Of Property Buyer is Looking For?')?.value?.text || 'Single Family';
-
-                await pool.query(`
-                    INSERT INTO crm.cash_buyers (id, full_name, company, phone, email, buy_box, status, created_at)
-                    VALUES ($1, $2, $3, $4, $5, $6, 'Active VIP Buyer', NOW())
-                    ON CONFLICT (id) DO UPDATE SET 
-                        full_name = EXCLUDED.full_name,
-                        company = EXCLUDED.company,
-                        phone = EXCLUDED.phone,
-                        email = EXCLUDED.email,
-                        buy_box = EXCLUDED.buy_box
-                `, ['b-' + externalItemId, entityName, entityName, phone, email, `${propType} · ${criteria}`]);
-
-                return res.status(200).json({ ok: true, type: 'BUYER', item_id: externalItemId, status: 'INGESTED' });
-            }
-
-            // C. If Item is in CONTACTS App (30087414) -> Ingest / Update Contact
-            if (itemAppId === '30087414' || liveItem?.app?.url_label === 'contacts') {
-                const contactName = liveItem?.title || 'Contact';
-                const phone = getF('Phone #(s)')?.value || '+13866273499';
-                const email = getF('Email ID(s)')?.value || 'contact@elitehomes1.com';
-
-                await pool.query(`
-                    INSERT INTO crm.seller_contacts (id, seller_name, phone, email, property_address, lead_status, lead_score, created_at)
-                    VALUES ($1, $2, $3, $4, 'Jacksonville, FL', 'Active', 75, NOW())
-                    ON CONFLICT (id) DO UPDATE SET 
-                        seller_name = EXCLUDED.seller_name, 
-                        phone = EXCLUDED.phone, 
-                        email = EXCLUDED.email
-                `, ['c-' + externalItemId, contactName, phone, email]);
-
-                return res.status(200).json({ ok: true, type: 'CONTACT', item_id: externalItemId, status: 'INGESTED' });
-            }
-
-            // D. If Item is in OFFERS App (30087411) -> Ingest / Update Offer
-            if (itemAppId === '30087411' || liveItem?.app?.url_label === 'offers') {
-                const price = parseFloat(getF('Purchase Price')?.value || 95000);
-                const emd = parseFloat(getF('EMD')?.value || 1000);
-                const status = getF('STATUS')?.value?.text || 'Determining Offer';
-                const legalDesc = getF('Legal Description')?.value || liveItem?.title || 'Jacksonville Subject Property';
-                const notes = getF('Notes')?.value || 'Podio Synced Offer';
-
-                await pool.query(`
-                    INSERT INTO crm.deal_funnel (
-                        id, code, milestone_index, address, city, state, zip, county, seller,
-                        buy_price, fee, days_in_stage, source, notes, created_at, updated_at
-                    ) VALUES (
-                        $1, $2, 3, $3, 'Jacksonville', 'FL', '32208', 'Duval', 'Motivated Seller',
-                        $4, 25000, 0, 'Podio Offers App', $5, NOW(), NOW()
-                    )
-                    ON CONFLICT (id) DO UPDATE SET
-                        buy_price = EXCLUDED.buy_price,
-                        notes = EXCLUDED.notes,
-                        updated_at = NOW()
-                `, ['off-' + externalItemId, `OFF-2026-0${externalItemId.slice(-3)}`, legalDesc, price, `Status: ${status} | ${notes}`]);
-
-                return res.status(200).json({ ok: true, type: 'OFFER', item_id: externalItemId, status: 'INGESTED' });
-            }
-
-            // E. If Item is in LEADS App (30087410) -> Ingest / Update Lead into PostgreSQL
-            const fName = getF('First Name')?.value || (liveItem?.title ? liveItem.title.split(' ')[0] : 'Lead');
-            const lName = getF('Last / Sur Name')?.value || (liveItem?.title ? liveItem.title.split(' ').slice(1).join(' ') : 'Contact');
-            const sellerName = getF('Full Name')?.value || liveItem?.title || `${fName} ${lName}`;
-            const phone = getF('Phone #(s) (+11234567890)')?.value || getF('Phone #(s)')?.value || '+13866273499';
-            const email = getF('Email ID(s)')?.value || 'team@elitehomes1.com';
-            const notes = getF('Notes')?.value || `Ingested via Podio Webhook (Item #${externalItemId})`;
-            const statusObj = getF('Status')?.value;
-            const rawStatus = (typeof statusObj === 'object' ? statusObj?.text : statusObj) || 'New Untouched';
-            let normalizedStatus = 'NEW';
-            const sUpper = String(rawStatus).toUpperCase();
-            if (sUpper.includes('CONTACT') || sUpper.includes('LEFT MESSAGE')) normalizedStatus = 'CONTACTED';
-            else if (sUpper.includes('APPOINTMENT') || sUpper.includes('QUALIF')) normalizedStatus = 'QUALIFIED';
-            else if (sUpper.includes('OFFER') || sUpper.includes('CONTRACT/OFFER')) normalizedStatus = 'OFFER';
-            else if (sUpper.includes('CONTRACT SIGNED') || sUpper.includes('WHITEBOARD')) normalizedStatus = 'CONTRACT';
-            else if (sUpper.includes('CLOSED') || sUpper.includes('DEPOSIT')) normalizedStatus = 'CLOSED';
-            else if (sUpper.includes('FOLLOW')) normalizedStatus = 'FOLLOW_UP';
-            else if (sUpper.includes('NO RESPONSE') || sUpper.includes('REALTOR') || sUpper.includes('LOST')) normalizedStatus = 'LOST';
-
-            // Check if this Podio item is already tracked in crm.external_sync_map
-            const existingSync = await pool.query(
-                `SELECT internal_uuid FROM crm.external_sync_map WHERE external_system = 'PODIO' AND external_item_id = $1 AND internal_entity_type = 'LEAD'`,
-                [String(externalItemId)]
-            );
-
-            if (existingSync.rows.length > 0) {
-                // UPDATE EXISTING RECORD (Prevents duplicate row creation on item.update)
-                const existingLeadId = existingSync.rows[0].internal_uuid;
-                const leadUpdate = await pool.query(
-                    `UPDATE core.leads SET status = $1, updated_at = NOW() WHERE lead_id = $2 RETURNING person_id, property_id`,
-                    [normalizedStatus, existingLeadId]
-                );
-                if (leadUpdate.rows[0]?.person_id) {
-                    await pool.query(
-                        `UPDATE core.people SET full_name = $1, primary_phone = COALESCE($2, primary_phone), primary_email = COALESCE($3, primary_email), updated_at = NOW() WHERE person_id = $4`,
-                        [sellerName, phone, email, leadUpdate.rows[0].person_id]
-                    );
+            const synced = await PodioSyncService.syncItem(app_id, externalItemId);
+            if (synced.type === 'LEAD') {
+                if (type === 'item.create' && synced.stored) {
+                    const { rows: [map] } = await pool.query(
+                        `SELECT internal_uuid FROM crm.external_sync_map WHERE external_system = 'PODIO' AND internal_entity_type = 'LEAD' AND external_item_id = $1`, [externalItemId]);
+                    if (map) await AutomationService.onLeadSaved('podio_lead', { leadId: map.internal_uuid, eventId: externalItemId, target: null });
                 }
+                return res.status(synced.stored ? 200 : 502).json({ ok: synced.stored, type: 'LEAD', item_id: externalItemId });
+            }
+            if (synced.type === 'PROPERTY') return res.status(200).json({ ok: synced.result !== 'failed', type: 'PROPERTY', item_id: externalItemId, result: synced.result });
+
+            const item = synced.item;
+            const appIdStr = synced.appId;
+            const field = label => item?.fields?.find(f => f.label.toLowerCase() === label.toLowerCase())?.values?.[0]?.value;
+            const textOf = v => (v && typeof v === 'object' ? v.text : v) || '';
+            const A = PodioSyncService.APPS;
+
+            if (appIdStr === A.CASH_BUYERS.id) {
+                const entityName = field('Entity Name') || item.title;
+                if (!entityName) return res.status(200).json({ ok: true, notice: 'Cash buyer has no name yet' });
+                const criteria = String(field('About Cash Buyer/Criteria') || '').replace(/<[^>]+>/g, ' ').trim();
+                const propType = textOf(field('Type Of Property Buyer is Looking For?'));
                 await pool.query(
-                    `UPDATE crm.external_sync_map SET last_sync_at = NOW(), status = 'SYNCED' WHERE external_system = 'PODIO' AND external_item_id = $1`,
-                    [String(externalItemId)]
-                );
-
-                return res.status(200).json({
-                    ok: true,
-                    type: 'UPDATE',
-                    lead_id: existingLeadId,
-                    external_item_id: externalItemId,
-                    status: 'UPDATED'
-                });
+                    `INSERT INTO crm.cash_buyers (id, full_name, company, phone, email, buy_box, status, created_at)
+                     VALUES ($1,$2,$2,$3,$4,$5,NULL,NOW())
+                     ON CONFLICT (id) DO UPDATE SET full_name = EXCLUDED.full_name, company = EXCLUDED.company, phone = EXCLUDED.phone, email = EXCLUDED.email, buy_box = EXCLUDED.buy_box`,
+                    ['b-' + externalItemId, entityName, field('Phone #(s)') || null, field('Email ID(s)') || null, [propType, criteria].filter(Boolean).join(' · ') || null]);
+                return res.status(200).json({ ok: true, type: 'BUYER', item_id: externalItemId });
             }
-
-            // INSERT NEW RECORD (First time ingestion)
-            const personId = crypto.randomUUID();
-            const leadId = crypto.randomUUID();
-            let propertyId = null;
-
-            const address = getF('Property Address')?.formatted || getF('Property Address')?.value || '';
-            if (address) {
-                propertyId = crypto.randomUUID();
-                const parcelRaw = `FL-32204-${Date.now().toString().slice(-4)}`;
-                const countyId = 'c1111111-1111-1111-1111-111111111111';
-                await pool.query(`
-                    INSERT INTO core.properties (property_id, county_id, parcel_raw, parcel_match, address_line1, city, state_code, postal_code, property_type, assessed_value, created_at, updated_at)
-                    VALUES ($1, $2, $3, $3, $4, 'Jacksonville', 'FL', '32204', 'Single Family', 250000, NOW(), NOW())
-                    ON CONFLICT DO NOTHING
-                `, [propertyId, countyId, parcelRaw, address]);
+            if (appIdStr === A.CONTACTS.id) {
+                if (!item.title) return res.status(200).json({ ok: true, notice: 'Contact has no name yet' });
+                await pool.query(
+                    `INSERT INTO crm.seller_contacts (id, seller_name, phone, email, property_address, lead_status, lead_score, created_at)
+                     VALUES ($1,$2,$3,$4,NULL,NULL,NULL,NOW())
+                     ON CONFLICT (id) DO UPDATE SET seller_name = EXCLUDED.seller_name, phone = EXCLUDED.phone, email = EXCLUDED.email`,
+                    ['c-' + externalItemId, item.title, field('Phone #(s)') || null, field('Email ID(s)') || null]);
+                return res.status(200).json({ ok: true, type: 'CONTACT', item_id: externalItemId });
             }
-
-            await pool.query(`
-                INSERT INTO core.people (person_id, full_name, primary_phone, primary_email, created_at, updated_at)
-                VALUES ($1, $2, $3, $4, NOW(), NOW())
-                ON CONFLICT DO NOTHING
-            `, [personId, sellerName, phone, email]);
-
-            await pool.query(`
-                INSERT INTO core.leads (lead_id, first_source_code, source_detail, property_id, person_id, status, priority_score, created_at, updated_at)
-                VALUES ($1, 'PODIO', $2, $3, $4, $5, 80, NOW(), NOW())
-                ON CONFLICT DO NOTHING
-            `, [leadId, `Podio Webhook Ingest (Item #${externalItemId})`, propertyId, personId, normalizedStatus]);
-
-            await pool.query(`
-                INSERT INTO crm.external_sync_map (internal_entity_type, internal_uuid, external_system, external_app_id, external_item_id, last_sync_at, status)
-                VALUES ('LEAD', $1, 'PODIO', $2, $3, NOW(), 'SYNCED')
-                ON CONFLICT (internal_entity_type, internal_uuid, external_system) DO UPDATE
-                SET last_sync_at = NOW(), external_item_id = EXCLUDED.external_item_id
-            `, [leadId, String(itemAppId), String(externalItemId)]);
-
-            if (type === 'item.create' && liveItem && itemAppId === String(PodioSyncService.LEADS_APP_ID)) {
-                await AutomationService.onLeadSaved('podio_lead', {
-                    leadId, eventId: externalItemId, target: address
-                });
+            if (appIdStr === A.OFFERS.id) {
+                const price = parseFloat(field('Purchase Price'));
+                const address = field('Legal Description') || item.title;
+                if (!address || !(price > 0)) return res.status(200).json({ ok: true, notice: 'Offer is missing an address or price; waiting for Podio to be completed' });
+                await pool.query(
+                    `INSERT INTO crm.deal_funnel (id, code, milestone_index, address, seller, buy_price, fee, days_in_stage, source, notes, created_at, updated_at)
+                     VALUES ($1,$2,3,$3,$4,$5,0,0,'Podio Offers',$6,NOW(),NOW())
+                     ON CONFLICT (id) DO UPDATE SET buy_price = EXCLUDED.buy_price, notes = EXCLUDED.notes, updated_at = NOW()`,
+                    ['off-' + externalItemId, `OFF-${externalItemId}`, address, item.title || address, price,
+                     [`Status: ${textOf(field('STATUS'))}`, field('Notes')].filter(Boolean).join(' | ')]);
+                return res.status(200).json({ ok: true, type: 'OFFER', item_id: externalItemId });
             }
-
-            return res.status(201).json({
-                ok: true,
-                message: `Podio item #${externalItemId} (${sellerName}) synchronized to HushHawk canonical lead ${leadId}`,
-                lead_id: leadId,
-                external_item_id: externalItemId,
-                status: 'SYNCED'
-            });
+            if (appIdStr === A.FEEDS.id) {
+                const typeText = textOf(field('Type'));
+                const mode = textOf(field('Mode')).toUpperCase();
+                const body = field('Text Message') || field('Call Prompt') || field('Email Body') || field('Email Subject') || '';
+                const method = typeText.toUpperCase().includes('CALL') ? 'CALL' : typeText.toUpperCase().includes('EMAIL') ? 'EMAIL' : 'TEXT';
+                const phone = String(field('From Phone') || '').replace(/\D/g, '').slice(-10);
+                const { rows: [person] } = phone.length === 10 ? await pool.query(
+                    `SELECT pe.person_id, l.lead_id, l.property_id FROM core.people pe
+                     LEFT JOIN LATERAL (SELECT lead_id, property_id FROM core.leads WHERE person_id = pe.person_id ORDER BY created_at DESC LIMIT 1) l ON TRUE
+                     WHERE right(regexp_replace(coalesce(pe.primary_phone,''), '\\D', '', 'g'), 10) = $1 LIMIT 1`, [phone]) : { rows: [] };
+                await pool.query(
+                    `INSERT INTO core.interactions (lead_id, person_id, property_id, method, direction, actor_id, result, notes, occurred_at)
+                     VALUES ($1,$2,$3,$4,$5,'Podio Feeds','RECEIVED',$6,coalesce($7::timestamptz, now()))`,
+                    [person?.lead_id || null, person?.person_id || null, person?.property_id || null, method, mode.includes('OUT') ? 'OUTBOUND' : 'INBOUND',
+                     `[Podio Feeds #${externalItemId}] ${String(body).replace(/<[^>]+>/g, ' ').trim().slice(0, 500)}`, item.created_on || null]);
+                return res.status(200).json({ ok: true, type: 'COMMUNICATION', item_id: externalItemId, matched: Boolean(person) });
+            }
+            return res.status(200).json({ ok: true, notice: `Podio app ${appIdStr} is not mapped to a HushHawk workspace.` });
         }
 
-        // 4. Podio Comment / Communication Ingestion (e.g. smrtPhone Call or Email logged into Podio)
+        // 4. Comments become notes on the lead they belong to; nothing is invented.
         if (type === 'comment.create') {
-            const commentValue = req.body.value || req.body.comment || '';
-            const itemId = String(item_id || req.body.item_id || 'podio-comment');
-            const isCall = commentValue.toLowerCase().includes('call') || commentValue.toLowerCase().includes('recording');
-            const isEmail = commentValue.toLowerCase().includes('email') || commentValue.toLowerCase().includes('subject:');
-
-            if (isCall || isEmail) {
-                await SmrtPhoneService.handleWebhook({
-                    event: isCall ? 'call.completed' : 'sms.received',
-                    body: commentValue,
-                    notes: `Ingested from Podio comment on item ${itemId}`,
-                    podio_item_id: itemId
-                });
-                return res.status(201).json({ ok: true, message: 'Podio communication logged into HushHawk interactions' });
+            const commentValue = String(req.body.value || req.body.comment || '').trim();
+            const itemId = String(item_id || req.body.item_id || '');
+            if (commentValue && itemId) {
+                const { rows: [map] } = await pool.query(
+                    `SELECT internal_uuid FROM crm.external_sync_map WHERE external_system = 'PODIO' AND internal_entity_type = 'LEAD' AND external_item_id = $1`, [itemId]);
+                if (map) {
+                    await pool.query(
+                        `INSERT INTO core.interactions (lead_id, person_id, property_id, method, direction, actor_id, result, notes)
+                         SELECT l.lead_id, l.person_id, l.property_id, 'OTHER', 'INBOUND', 'Podio comment', 'NOTE', $2 FROM core.leads l WHERE l.lead_id = $1`,
+                        [map.internal_uuid, `[Podio comment] ${commentValue.slice(0, 1000)}`]);
+                    return res.status(201).json({ ok: true, message: 'Podio comment recorded on the lead' });
+                }
             }
         }
 
@@ -2280,7 +1711,7 @@ apiRouter.post('/webhooks/podio', async (req, res) => {
 
 apiRouter.post('/integrations/podio/register-all-webhooks', async (req, res) => {
     try {
-        const webhookUrl = req.body?.webhookUrl || process.env.PODIO_WEBHOOK_URL || 'http://3.148.218.118/api/v1/webhooks/podio';
+        const webhookUrl = signedWebhookUrl('/api/v1/webhooks/podio');
         const results = await PodioSyncService.registerAllWebhooks(webhookUrl);
         res.json({ success: true, webhookUrl, results });
     } catch (err) {
@@ -2295,6 +1726,11 @@ apiRouter.post('/webhooks/smrtphone', async (req, res) => {
     try {
         console.log('[smrtPhone Webhook] Received payload:', JSON.stringify(req.body).slice(0, 200));
         const result = await SmrtPhoneService.handleWebhook(req.body);
+        await pool.query(
+            `INSERT INTO audit.audit_events (actor, action, entity_type, entity_id, request_id, redacted_diff)
+             VALUES ('smrtPhone', 'SMRTPHONE_WEBHOOK', 'INTEGRATION', gen_random_uuid(), $1, '{}'::jsonb)`,
+            [crypto.randomUUID()]
+        ).catch(() => {});
         res.status(201).json(result);
     } catch (err) {
         console.error('[smrtPhone Webhook Error]', err);
@@ -2302,16 +1738,19 @@ apiRouter.post('/webhooks/smrtphone', async (req, res) => {
     }
 });
 
-apiRouter.get('/integrations/smrtphone/status', (req, res) => {
+apiRouter.get('/integrations/smrtphone/status', async (req, res) => {
+    const ready = configured('PUBLIC_API_URL', 'WEBHOOK_SECRET');
+    let lastEventAt = null;
+    try {
+        const { rows: [row] } = await pool.query("SELECT max(created_at) AS at FROM audit.audit_events WHERE action = 'SMRTPHONE_WEBHOOK'");
+        lastEventAt = row?.at || null;
+    } catch { /* status stays null when the audit table is unavailable */ }
     res.json({
-        ok: true,
-        service: 'smrtPhone Cloud Telephony & SMS Gateway',
-        status: 'CONNECTED',
-        webhookUrl: process.env.SMRTPHONE_WEBHOOK_URL || 'http://3.148.218.118/api/v1/webhooks/smrtphone',
-        podioCoexistence: 'ACTIVE',
-        capabilities: ['Inbound Call Logging', 'Outbound Click-to-Call', 'Audio Recordings', 'Two-Way SMS', 'Podio Sync'],
-        phoneNumbers: ['+13866273499', '+19045790065'],
-        lastSync: new Date().toISOString()
+        ok: ready,
+        service: 'smrtPhone webhook receiver',
+        status: ready ? 'READY' : 'NOT_CONFIGURED',
+        webhookUrl: publicWebhookUrl('/api/v1/webhooks/smrtphone'),
+        lastEventAt
     });
 });
 
@@ -2361,23 +1800,20 @@ const handleBatchLeadsWebhook = async (req, res) => {
 apiRouter.all('/integrations/batchleads/webhook', handleBatchLeadsWebhook);
 apiRouter.all('/webhooks/batchleads', handleBatchLeadsWebhook);
 
-apiRouter.get('/integrations/batchleads/status', (req, res) => {
+apiRouter.get('/integrations/batchleads/status', async (req, res) => {
+    const ready = configured('PUBLIC_API_URL', 'WEBHOOK_SECRET');
+    let lastLeadAt = null;
+    try {
+        const { rows: [row] } = await pool.query("SELECT max(created_at) AS at FROM core.leads WHERE first_source_code = 'BATCHLEADS'");
+        lastLeadAt = row?.at || null;
+    } catch { /* leave null */ }
     res.json({
-        ok: true,
-        service: 'BatchLeads Automated Lead Ingestion Gateway',
-        status: 'CONNECTED',
-        webhookUrl: process.env.BATCHLEADS_WEBHOOK_URL || 'http://localhost:3001/api/v1/integrations/batchleads/webhook',
-        workspace: "Darren's Workspace",
+        ok: ready,
+        service: 'BatchLeads webhook receiver',
+        status: ready ? 'READY' : 'NOT_CONFIGURED',
+        webhookUrl: publicWebhookUrl('/api/v1/integrations/batchleads/webhook'),
         dedicatedSourceCode: 'BATCHLEADS',
-        crownKeyAttribution: 'DUV-[PARCEL]-[PILLAR]-NNN · BATCHLEADS',
-        capabilities: [
-            'Push Button Tag Sync ("Push to HushHawk", "Hot Lead")',
-            'Automated CrownKey Attribution',
-            'Canonical PostgreSQL Properties & People Storage',
-            'Urgent Acquisitions Task Creation',
-            'Podio Seller Leads 2-Way Coexistence'
-        ],
-        lastCheck: new Date().toISOString()
+        lastLeadAt
     });
 });
 
@@ -2410,8 +1846,12 @@ apiRouter.post('/integrations/podio/sync-all', async (req, res) => {
     }
 });
 
+const podioReady = () => configured('PODIO_CLIENT_ID', 'PODIO_APP_TOKEN', 'PODIO_APP_ID');
+const notConfigured = (res, key) => res.json({ total: 0, [key]: [], configured: false, notice: 'Podio is not configured, so there is nothing to read.' });
+
 apiRouter.get('/acquisitions/offers', async (req, res) => {
     try {
+        if (!podioReady()) return notConfigured(res, 'offers');
         const offers = await PodioSyncService.syncOffers();
         res.json({ total: offers.length, offers });
     } catch (err) {
@@ -2421,6 +1861,7 @@ apiRouter.get('/acquisitions/offers', async (req, res) => {
 
 apiRouter.get('/offers', async (req, res) => {
     try {
+        if (!podioReady()) return notConfigured(res, 'offers');
         const offers = await PodioSyncService.syncOffers();
         res.json({ total: offers.length, offers });
     } catch (err) {
@@ -2430,6 +1871,7 @@ apiRouter.get('/offers', async (req, res) => {
 
 apiRouter.get('/dispositions/whiteboard', async (req, res) => {
     try {
+        if (!podioReady()) return notConfigured(res, 'deals');
         const whiteboard = await PodioSyncService.syncWhiteboard();
         res.json({ total: whiteboard.length, deals: whiteboard });
     } catch (err) {
@@ -2487,7 +1929,7 @@ apiRouter.post('/integrations/podio/connect', async (req, res) => {
         }
 
         const accessToken = authResult.access_token;
-        const webhookUrl = process.env.PODIO_WEBHOOK_URL || 'http://3.148.218.118/api/v1/webhooks/podio';
+        const webhookUrl = signedWebhookUrl('/api/v1/webhooks/podio');
 
         let webhookRegistered = false;
         if (appId) {
@@ -2523,33 +1965,37 @@ apiRouter.post('/integrations/podio/connect', async (req, res) => {
 });
 
 // Interactions
-apiRouter.get('/interactions', (req, res) => {
-    res.json({ interactions: db.data.core.interactions });
+apiRouter.get('/interactions', async (req, res) => {
+    try {
+        res.json({ interactions: await CrmService.listInteractions({ leadId: req.query.leadId || null, limit: req.query.limit }) });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 apiRouter.post('/interactions', async (req, res) => {
     try {
-        const interaction = await CrmService.recordInteraction(req.body);
+        const interaction = await CrmService.recordInteraction({ ...req.body, actor: actorName(req) });
         res.status(201).json(interaction);
     } catch (err) {
-        res.status(400).json({ error: err.message });
+        res.status(err.status || 400).json({ error: err.message });
     }
 });
 
 // Outbound Call Dispatch with Section 14 Compliance Gate & Interaction Logging
 apiRouter.post('/calls/dispatch', async (req, res) => {
     try {
-        const { recipientPhone, leadId, personId, propertyId, actor = 'Elena Rostova', notes = '', templateId = 'tmpl-seller-outreach-v1' } = req.body;
+        const { recipientPhone, leadId, personId, propertyId, actor = actorName(req), notes = '', templateId = 'tmpl-seller-outreach-v1' } = req.body;
         if (!recipientPhone) {
             return res.status(400).json({ error: 'recipientPhone is required' });
         }
 
         // 1. Mandatory 6-Step Compliance Gate (Blueprint Section 14)
-        const compliance = ComplianceService.evaluateOutboundRequest({
+        const compliance = await ComplianceService.evaluateOutboundRequest({
             channel: 'CALL',
             recipientPhone,
-            actor,
-            templateId,
+            personId: personId || null,
+            user: req.user,
         });
 
         if (!compliance.allowed) {
@@ -2568,7 +2014,7 @@ apiRouter.post('/calls/dispatch', async (req, res) => {
             leadId,
             personId,
             propertyId,
-            method: 'PHONE',
+            method: 'CALL',
             direction: 'OUTBOUND',
             actor,
             result: carrierResult.liveCarrier ? 'CALL_BRIDGED' : 'CALL_DISPATCHED',
@@ -2630,7 +2076,7 @@ apiRouter.get('/tasks', async (req, res) => {
                         ? `${r.property_address}${r.property_city ? ', ' + r.property_city : ''}`
                         : '';
                     const parcelNumber = r.parcel_raw ? `DUV-${r.parcel_raw}` : '';
-                    const assignee = r.rep_name || r.owner_id || 'Alex Richard';
+                    const assignee = r.rep_name || r.owner_id || actorName(req);
                     const initials = assignee.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'AR';
                     return {
                         id: r.task_id,
@@ -2655,10 +2101,8 @@ apiRouter.get('/tasks', async (req, res) => {
             }
             return res.json({ total: 0, tasks: [] });
         } catch (dbErr) {
-            console.warn('[Tasks RDS Fallback]:', dbErr.message);
+            throw dbErr;
         }
-        const tasks = db.data.core?.tasks || [];
-        res.json({ total: tasks.length, tasks });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -2666,114 +2110,38 @@ apiRouter.get('/tasks', async (req, res) => {
 
 apiRouter.post('/tasks', async (req, res) => {
     try {
-        const { title, deal, description, category, dueDate, priority, assignee } = req.body;
-        if (!title) return res.status(400).json({ error: 'Task title is required' });
-
-        const taskId = crypto.randomUUID ? crypto.randomUUID() : ('tk-' + Date.now());
-        const rep = assignee || 'Alex Richard';
-
-        try {
-            const insertRes = await pool.query(`
-                INSERT INTO core.tasks (task_id, title, status, category, priority, is_completed, due_time, owner_id, created_at)
-                VALUES ($1, $2, 'PENDING', $3, $4, false, $5, $6, NOW())
-                RETURNING *
-            `, [taskId, title, category || 'Title & Escrow', priority || 'High', dueDate || 'Today 5:00 PM', rep]);
-
-            if (insertRes.rows.length) {
-                const row = insertRes.rows[0];
-                const dueDateStr = row.due_time || 'Today 5:00 PM';
-                const dueStatus = dueDateStr.toLowerCase().includes('today')
-                    ? 'today'
-                    : (dueDateStr.toLowerCase().includes('overdue') ? 'overdue' : 'normal');
-                const initials = rep.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'AR';
-                return res.status(201).json({
-                    id: row.task_id,
-                    task_id: row.task_id,
-                    title: row.title,
-                    description: description || '',
-                    deal: deal || '',
-                    parcel: '',
-                    status: row.status,
-                    done: false,
-                    is_completed: false,
-                    category: row.category,
-                    priority: row.priority,
-                    dueDate: dueDateStr,
-                    dueStatus: dueStatus,
-                    assignee: rep,
-                    repInitials: initials,
-                    created_at: row.created_at
-                });
-            }
-        } catch (dbErr) {
-            console.warn('[Create Task RDS Fallback]:', dbErr.message);
-        }
-
-        const newTask = {
-            task_id: taskId,
-            id: Date.now(),
-            title,
-            description: description || '',
-            deal: deal || '',
-            parcel: '',
-            category: category || 'Title & Escrow',
-            dueDate: dueDate || 'Today 5:00 PM',
-            dueStatus: 'today',
-            priority: priority || 'High',
-            assignee: rep,
-            repInitials: rep.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'AR',
-            done: false,
-            status: 'PENDING',
-            created_at: new Date().toISOString()
-        };
-        if (!db.data.core.tasks) db.data.core.tasks = [];
-        db.data.core.tasks.unshift(newTask);
-        res.status(201).json(newTask);
+        const { title, deal, description, category, dueDate, priority, assignee } = req.body || {};
+        if (!title || !String(title).trim()) return res.status(400).json({ error: 'Task title is required' });
+        const rep = assignee || actorName(req);
+        const { rows: [row] } = await pool.query(
+            `INSERT INTO core.tasks (title, status, category, priority, is_completed, due_time, owner_id)
+             VALUES ($1, 'PENDING', $2, $3, false, $4, $5) RETURNING *`,
+            [String(title).trim(), category || 'General', priority || 'Medium', dueDate || null, rep]);
+        await audit(pool, { actor: actorName(req), action: 'TASK_CREATED', entityType: 'TASK', entityId: row.task_id, diff: { title: row.title, assignee: rep } });
+        const due = row.due_time || '';
+        res.status(201).json({
+            id: row.task_id, task_id: row.task_id, title: row.title, description: description || '', deal: deal || '', parcel: '',
+            status: row.status, done: false, is_completed: false, category: row.category, priority: row.priority,
+            dueDate: due, dueStatus: due.toLowerCase().includes('overdue') ? 'overdue' : due.toLowerCase().includes('today') ? 'today' : 'normal',
+            assignee: rep, repInitials: rep.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase(), created_at: row.created_at
+        });
     } catch (err) {
-        res.status(400).json({ error: err.message });
+        res.status(500).json({ error: err.message });
     }
 });
 
 apiRouter.patch('/tasks/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const { done, status, is_completed } = req.body;
+        const { done, status, is_completed } = req.body || {};
         const isDone = done !== undefined ? Boolean(done) : (is_completed !== undefined ? Boolean(is_completed) : (status === 'COMPLETED' || status === 'Done'));
-        const newStatus = isDone ? 'COMPLETED' : (status || 'PENDING');
-
-        try {
-            const updateRes = await pool.query(`
-                UPDATE core.tasks
-                SET is_completed = $1, status = $2, completed_at = CASE WHEN $1 = true THEN NOW() ELSE NULL END
-                WHERE task_id::text = $3
-                RETURNING *
-            `, [isDone, newStatus, id]);
-
-            if (updateRes.rows.length) {
-                const r = updateRes.rows[0];
-                return res.json({
-                    id: r.task_id,
-                    task_id: r.task_id,
-                    title: r.title,
-                    status: r.status,
-                    is_completed: r.is_completed,
-                    done: r.is_completed
-                });
-            }
-        } catch (dbErr) {
-            console.warn('[Patch Task RDS Fallback]:', dbErr.message);
-        }
-
-        const tasks = db.data.core.tasks || [];
-        const task = tasks.find(t => t.task_id === id || t.id === id || t.id === Number(id));
-        if (task) {
-            task.done = isDone;
-            task.is_completed = isDone;
-            task.status = newStatus;
-            db.persist();
-            return res.json(task);
-        }
-        res.status(404).json({ error: 'Task not found' });
+        const newStatus = isDone ? 'COMPLETED' : (['PENDING', 'IN_PROGRESS', 'CANCELLED'].includes(status) ? status : 'PENDING');
+        const { rows: [r] } = await pool.query(
+            `UPDATE core.tasks SET is_completed = $1, status = $2, completed_at = CASE WHEN $1 THEN NOW() ELSE NULL END WHERE task_id::text = $3 RETURNING *`,
+            [isDone, newStatus, id]);
+        if (!r) return res.status(404).json({ error: 'Task not found' });
+        await audit(pool, { actor: actorName(req), action: 'TASK_STATUS_UPDATED', entityType: 'TASK', entityId: r.task_id, diff: { status: r.status } });
+        res.json({ id: r.task_id, task_id: r.task_id, title: r.title, status: r.status, is_completed: r.is_completed, done: r.is_completed });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -2781,15 +2149,9 @@ apiRouter.patch('/tasks/:id', async (req, res) => {
 
 apiRouter.delete('/tasks/:id', async (req, res) => {
     try {
-        const { id } = req.params;
-        try {
-            await pool.query(`DELETE FROM core.tasks WHERE task_id::text = $1`, [id]);
-        } catch (dbErr) {
-            console.warn('[Delete Task RDS Fallback]:', dbErr.message);
-        }
-        if (!db.data.core.tasks) db.data.core.tasks = [];
-        db.data.core.tasks = db.data.core.tasks.filter(t => t.task_id !== id && t.id !== id && t.id !== Number(id));
-        db.persist();
+        const { rows: [r] } = await pool.query('DELETE FROM core.tasks WHERE task_id::text = $1 RETURNING task_id, title', [req.params.id]);
+        if (!r) return res.status(404).json({ error: 'Task not found' });
+        await audit(pool, { actor: actorName(req), action: 'TASK_DELETED', entityType: 'TASK', entityId: r.task_id, diff: { title: r.title } });
         res.json({ success: true });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -2946,177 +2308,225 @@ apiRouter.post('/notifications/clear-all', async (req, res) => {
 });
 
 // ============================================================================
-// 8. Human Review Loop (Identity Candidates)
+// 8. Human Review Loop (identity candidates)
 // ============================================================================
-apiRouter.get('/review/queue', (req, res) => {
-    res.json({ queue: IdentityService.getReviewQueue() });
-});
-
-apiRouter.post('/review/decision', (req, res) => {
+apiRouter.get('/review/queue', async (req, res) => {
     try {
-        const result = IdentityService.submitDecision(req.body);
-        res.json(result);
+        res.json({ queue: await IdentityService.getReviewQueue({ status: req.query.status || null, limit: req.query.limit }) });
     } catch (err) {
-        res.status(400).json({ error: err.message });
+        res.status(500).json({ error: err.message });
     }
 });
 
-apiRouter.post('/review/reverse', (req, res) => {
+apiRouter.post('/review/decision', async (req, res) => {
     try {
-        const result = IdentityService.reverseDecision(req.body);
-        res.json(result);
+        const { candidateId, decision, reason } = req.body || {};
+        res.json(await IdentityService.submitDecision({ candidateId, decision, reason, actor: actorName(req) }));
     } catch (err) {
-        res.status(400).json({ error: err.message });
+        res.status(err.status || 500).json({ error: err.message });
     }
 });
 
-// ============================================================================
-// 9. Connectors & Ingestion Lifecycle
-// ============================================================================
-apiRouter.get('/connectors', (req, res) => {
-    res.json({ connectors: ConnectorService.getRegistry() });
-});
-
-apiRouter.post('/connectors/:id/run', (req, res) => {
+apiRouter.post('/review/reverse', async (req, res) => {
     try {
-        const runRecord = ConnectorService.runConnector(req.params.id, req.body);
-        res.json({ success: true, run: runRecord });
+        if (!req.user?.isAdmin) return res.status(403).json({ error: 'Administrator access is required to reverse a decision.' });
+        const { decisionId, reversalReason } = req.body || {};
+        res.json(await IdentityService.reverseDecision({ decisionId, reversalReason, actor: actorName(req) }));
     } catch (err) {
-        res.status(400).json({ error: err.message });
-    }
-});
-
-apiRouter.get('/connectors/runs', (req, res) => {
-    res.json({ runs: db.data.raw.connector_runs });
-});
-
-apiRouter.get('/raw/source-records', (req, res) => {
-    res.json({ records: db.data.raw.source_records });
-});
-
-// ============================================================================
-// 10. Neo4j Graph Projection & Reconciliation
-// ============================================================================
-apiRouter.get('/graph/projection', (req, res) => {
-    const filterId = req.query.entityId || null;
-    const projection = GraphService.getGraphProjection({ filterEntityId: filterId });
-    res.json(projection);
-});
-
-apiRouter.get('/graph/reconciliation', (req, res) => {
-    const report = GraphService.runReconciliation();
-    res.json(report);
-});
-
-// ============================================================================
-// 11. Compliance Gate & Suppression (Page 21)
-// ============================================================================
-apiRouter.post('/compliance/evaluate', (req, res) => {
-    const evaluation = ComplianceService.evaluateOutboundRequest(req.body);
-    res.json(evaluation);
-});
-
-apiRouter.get('/compliance/suppression', (req, res) => {
-    res.json({ records: db.data.crm.suppression_records });
-});
-
-apiRouter.post('/compliance/suppression', (req, res) => {
-    try {
-        const record = ComplianceService.addSuppression(req.body);
-        res.status(201).json(record);
-    } catch (err) {
-        res.status(400).json({ error: err.message });
+        res.status(err.status || 500).json({ error: err.message });
     }
 });
 
 // ============================================================================
-// 12. Reference Dictionaries & Audit Log (Admin)
+// 9. Connectors, imports and raw evidence
+// ============================================================================
+const sendError = (res, err) => res.status(err.status || 500).json({ error: err.message });
+
+apiRouter.get('/connectors', async (req, res) => {
+    try { res.json({ connectors: await ConnectorService.getRegistry() }); } catch (err) { sendError(res, err); }
+});
+
+apiRouter.post('/connectors', async (req, res) => {
+    try {
+        if (!req.user?.isAdmin) return res.status(403).json({ error: 'Administrator access is required.' });
+        res.status(201).json(await ConnectorService.upsertConnector(req.body, actorName(req)));
+    } catch (err) { sendError(res, err); }
+});
+
+apiRouter.post('/connectors/:id/approval', async (req, res) => {
+    try { res.json(await ConnectorService.setApproval(req.params.id, req.body || {}, actorName(req))); } catch (err) { sendError(res, err); }
+});
+
+apiRouter.post('/connectors/:id/run', async (req, res) => {
+    try { res.json({ success: true, run: await ConnectorService.runConnector(req.params.id, { actor: actorName(req) }) }); } catch (err) { sendError(res, err); }
+});
+
+apiRouter.get('/connectors/runs', async (req, res) => {
+    try { res.json({ runs: await ConnectorService.listRuns(req.query.limit) }); } catch (err) { sendError(res, err); }
+});
+
+apiRouter.get('/raw/source-records', async (req, res) => {
+    try {
+        const { rows } = await pool.query(
+            `SELECT source_record_id, source_system, jurisdiction, source_external_id, observed_at, source_url, payload_hash, parser_version
+             FROM raw.source_records ORDER BY observed_at DESC LIMIT $1 OFFSET $2`, [Math.min(Number(req.query.limit) || 200, 1000), Number(req.query.offset) || 0]);
+        res.json({ records: rows });
+    } catch (err) { sendError(res, err); }
+});
+
+// Manual / pushed imports: records are already in the canonical shape.
+apiRouter.post('/imports', async (req, res) => {
+    try {
+        const { records, countyCode, sourceSystem, importType } = req.body || {};
+        res.status(201).json(await ConnectorService.ingest({ records, countyCode, sourceSystem, importType: importType || 'EVENT', actor: actorName(req) }));
+    } catch (err) { sendError(res, err); }
+});
+
+apiRouter.get('/imports', async (req, res) => {
+    try { res.json({ imports: await ConnectorService.listImports(req.query.limit) }); } catch (err) { sendError(res, err); }
+});
+
+apiRouter.get('/imports/:id', async (req, res) => {
+    try { res.json(await ConnectorService.getImport(req.params.id)); } catch (err) { sendError(res, err); }
+});
+
+// ============================================================================
+// 10. Relationship graph (Postgres projection + Neo4j sync status)
+// ============================================================================
+apiRouter.get('/graph/projection', async (req, res) => {
+    try { res.json(await GraphService.getGraphProjection({ filterEntityId: req.query.entityId || null, limit: req.query.limit })); } catch (err) { sendError(res, err); }
+});
+
+apiRouter.get('/graph/reconciliation', async (req, res) => {
+    try { res.json(await GraphService.runReconciliation()); } catch (err) { sendError(res, err); }
+});
+
+apiRouter.post('/graph/sync', async (req, res) => {
+    try { res.json(await GraphService.syncOutbox()); } catch (err) { sendError(res, err); }
+});
+
+// ============================================================================
+// 11. Compliance gate and suppression
+// ============================================================================
+apiRouter.post('/compliance/evaluate', async (req, res) => {
+    try {
+        const b = req.body || {};
+        res.json(await ComplianceService.evaluateOutboundRequest({ channel: b.channel, recipientPhone: b.recipientPhone, recipientEmail: b.recipientEmail,
+            recipientAddress: b.recipientAddress, personId: b.personId, campaignId: b.campaignId, user: req.user }));
+    } catch (err) { sendError(res, err); }
+});
+
+apiRouter.get('/compliance/suppression', async (req, res) => {
+    try { res.json({ records: await ComplianceService.listSuppression() }); } catch (err) { sendError(res, err); }
+});
+
+apiRouter.post('/compliance/suppression', async (req, res) => {
+    try {
+        const b = req.body || {};
+        res.status(201).json(await ComplianceService.addSuppression({ type: b.type, value: b.value, reason: b.reason, source: b.source, actor: actorName(req) }));
+    } catch (err) { sendError(res, err); }
+});
+
+// ============================================================================
+// 12. Dictionaries, governance and audit (admin)
 // ============================================================================
 apiRouter.get('/admin/pillars', async (req, res) => {
     try {
-        const { rows } = await pool.query('SELECT * FROM ref.pillars ORDER BY pillar_code ASC;');
+        const { rows } = await pool.query('SELECT * FROM ref.pillars ORDER BY pillar_code');
         res.json({ total: rows.length, pillars: rows });
-    } catch (err) {
-        res.json({ pillars: db.data.ref.pillars });
-    }
+    } catch (err) { sendError(res, err); }
+});
+
+// Activation is a deliberate administrator action and is audited: nothing is enabled automatically.
+apiRouter.patch('/admin/pillars/:code', async (req, res) => {
+    try {
+        const { review_status, production_enabled } = req.body || {};
+        if (review_status && !['APPROVED', 'NEEDS_REVIEW', 'PROPOSED', 'RETIRED'].includes(review_status)) return res.status(400).json({ error: 'Invalid review_status.' });
+        const row = await withTransaction(async client => {
+            const { rows: [before] } = await client.query('SELECT * FROM ref.pillars WHERE pillar_code = $1 FOR UPDATE', [req.params.code]);
+            if (!before) throw Object.assign(new Error('Pillar not found.'), { status: 404 });
+            const status = review_status || before.review_status;
+            const enabled = production_enabled === undefined ? before.production_enabled : Boolean(production_enabled);
+            if (enabled && status !== 'APPROVED') throw Object.assign(new Error('Only an APPROVED pillar can be enabled in production.'), { status: 400 });
+            const { rows: [after] } = await client.query('UPDATE ref.pillars SET review_status = $2, production_enabled = $3 WHERE pillar_code = $1 RETURNING *', [req.params.code, status, enabled]);
+            await audit(client, { actor: actorName(req), action: 'PILLAR_GOVERNANCE_CHANGED', entityType: 'PILLAR', entityId: crypto.randomUUID(),
+                diff: { pillar: req.params.code, before: { review_status: before.review_status, production_enabled: before.production_enabled }, after: { review_status: status, production_enabled: enabled } } });
+            return after;
+        });
+        res.json(row);
+    } catch (err) { sendError(res, err); }
 });
 
 apiRouter.get('/admin/counties', async (req, res) => {
     try {
-        const { rows } = await pool.query('SELECT * FROM ref.counties ORDER BY county_code ASC;');
+        const { rows } = await pool.query('SELECT * FROM ref.counties ORDER BY county_code');
         res.json({ total: rows.length, counties: rows });
-    } catch (err) {
-        res.json({ counties: db.data.ref.counties });
-    }
+    } catch (err) { sendError(res, err); }
 });
 
 apiRouter.get('/admin/lead-sources', async (req, res) => {
     try {
-        const { rows } = await pool.query('SELECT * FROM ref.lead_sources ORDER BY source_code ASC;');
+        const { rows } = await pool.query('SELECT * FROM ref.lead_sources ORDER BY source_code');
         res.json({ total: rows.length, lead_sources: rows });
-    } catch (err) {
-        res.json({ lead_sources: db.data.ref.lead_sources });
-    }
+    } catch (err) { sendError(res, err); }
 });
 
-apiRouter.get('/admin/audit-log', (req, res) => {
-    res.json({ audit_events: db.data.audit.audit_events });
+apiRouter.get('/admin/dictionaries', async (req, res) => {
+    try {
+        const [methods, roles, platforms] = await Promise.all([
+            pool.query('SELECT * FROM ref.contact_methods ORDER BY method_code'),
+            pool.query('SELECT * FROM ref.person_roles ORDER BY role_code'),
+            pool.query('SELECT * FROM ref.platforms ORDER BY platform_code')
+        ]);
+        res.json({ contact_methods: methods.rows, person_roles: roles.rows, platforms: platforms.rows });
+    } catch (err) { sendError(res, err); }
 });
 
-apiRouter.get('/admin/outbox', (req, res) => {
-    res.json({ outbox_events: db.data.ops.outbox_events });
+apiRouter.get('/admin/audit-log', async (req, res) => {
+    try {
+        const { rows } = await pool.query(
+            `SELECT * FROM audit.audit_events WHERE ($1::text IS NULL OR entity_type = $1) ORDER BY created_at DESC LIMIT $2 OFFSET $3`,
+            [req.query.entityType || null, Math.min(Number(req.query.limit) || 200, 1000), Number(req.query.offset) || 0]);
+        res.json({ audit_events: rows });
+    } catch (err) { sendError(res, err); }
 });
 
-apiRouter.get('/admin/sync-map', (req, res) => {
-    res.json({ sync_map: db.data.crm.external_sync_map });
+apiRouter.get('/admin/outbox', async (req, res) => {
+    try {
+        const { rows } = await pool.query('SELECT * FROM ops.outbox_events ORDER BY created_at DESC LIMIT $1', [Math.min(Number(req.query.limit) || 200, 1000)]);
+        res.json({ outbox_events: rows });
+    } catch (err) { sendError(res, err); }
+});
+
+apiRouter.get('/admin/sync-map', async (req, res) => {
+    try {
+        const { rows } = await pool.query('SELECT * FROM crm.external_sync_map ORDER BY last_sync_at DESC NULLS LAST LIMIT 1000');
+        res.json({ sync_map: rows });
+    } catch (err) { sendError(res, err); }
 });
 
 // ============================================================================
-// 13. Reports & Attribution Observability (Page 20, 23)
+// 13. Reports: unique counts only (a lead linked to four pillars is still one lead)
 // ============================================================================
-apiRouter.get('/reports/overview', (req, res) => {
-    const totalProperties = db.data.core.properties.length;
-    const totalLeads = db.data.core.leads.length;
-    const totalEvents = db.data.core.pillar_events.length;
-    const totalSourceRecords = db.data.raw.source_records.length;
-    const pendingReviews = db.data.rel.identity_candidates.filter(c => c.status === 'PENDING').length;
-    const suppressionCount = db.data.crm.suppression_records.length;
-
-    // First Source Attribution breakdown (Rule: Count unique leads, NOT events!)
-    const attributionCounts = {};
-    for (const lead of db.data.core.leads) {
-        const src = lead.first_source_code || 'UNKNOWN';
-        attributionCounts[src] = (attributionCounts[src] || 0) + 1;
-    }
-
-    // Pillar breakdown
-    const pillarCounts = {};
-    for (const ev of db.data.core.pillar_events) {
-        pillarCounts[ev.pillar_code] = (pillarCounts[ev.pillar_code] || 0) + 1;
-    }
-
-    // Pipeline stages breakdown
-    const stageCounts = {};
-    for (const lead of db.data.core.leads) {
-        stageCounts[lead.status] = (stageCounts[lead.status] || 0) + 1;
-    }
-
-    res.json({
-        kpis: {
-            unique_leads: totalLeads,
-            total_properties: totalProperties,
-            total_pillar_events: totalEvents,
-            raw_source_evidence: totalSourceRecords,
-            pending_human_reviews: pendingReviews,
-            suppressed_contacts: suppressionCount,
-            graph_sync_lag_ms: 18,
-            outbox_pending: db.data.ops.outbox_events.filter(e => !e.published_at).length,
-        },
-        attribution_breakdown: attributionCounts,
-        pillar_event_breakdown: pillarCounts,
-        pipeline_stages_breakdown: stageCounts,
-        generated_at: new Date().toISOString(),
-    });
+apiRouter.get('/reports/overview', async (req, res) => {
+    try {
+        const [{ rows: [k] }, { rows: attribution }, { rows: pillars }, { rows: stages }] = await Promise.all([
+            pool.query(`SELECT (SELECT count(*) FROM core.leads)::int AS unique_leads,
+                               (SELECT count(*) FROM core.properties)::int AS total_properties,
+                               (SELECT count(*) FROM core.pillar_events)::int AS total_pillar_events,
+                               (SELECT count(*) FROM core.people)::int AS unique_contacts,
+                               (SELECT count(*) FROM raw.source_records)::int AS raw_source_evidence,
+                               (SELECT count(*) FROM rel.identity_candidates WHERE status = 'PENDING')::int AS pending_human_reviews,
+                               (SELECT count(*) FROM crm.suppression_records)::int AS suppressed_contacts,
+                               (SELECT count(*) FROM ops.outbox_events WHERE published_at IS NULL)::int AS outbox_pending,
+                               coalesce((SELECT extract(epoch FROM now() - min(created_at))::int FROM ops.outbox_events WHERE published_at IS NULL), 0) AS outbox_oldest_pending_seconds`),
+            pool.query('SELECT coalesce(first_source_code, \'UNKNOWN\') AS key, count(*)::int AS n FROM core.leads GROUP BY 1 ORDER BY n DESC'),
+            pool.query('SELECT pillar_code AS key, count(*)::int AS n FROM core.pillar_events GROUP BY 1 ORDER BY n DESC'),
+            pool.query('SELECT status AS key, count(*)::int AS n FROM core.leads GROUP BY 1 ORDER BY n DESC')
+        ]);
+        const toMap = rows => Object.fromEntries(rows.map(r => [r.key, r.n]));
+        res.json({ kpis: k, attribution_breakdown: toMap(attribution), pillar_event_breakdown: toMap(pillars), pipeline_stages_breakdown: toMap(stages), generated_at: new Date().toISOString() });
+    } catch (err) { sendError(res, err); }
 });
 
 // ============================================================================
@@ -3124,44 +2534,17 @@ apiRouter.get('/reports/overview', (req, res) => {
 // ============================================================================
 
 // --- Cash Buyers (PostgreSQL crm.cash_buyers) ---
+const buyerDto = r => ({
+    id: r.id, name: r.full_name, company: r.company || '', phone: r.phone || '', email: r.email || '', location: r.location || '',
+    zips: r.zips || [], min: r.price_min === null ? null : Number(r.price_min), max: r.price_max === null ? null : Number(r.price_max),
+    types: r.property_types || r.buy_box || '', pofVerified: r.pof_verified, notes: r.notes || '', status: r.status || '',
+    podioItemId: r.podio_item_id || null, created_at: r.created_at
+});
+
 const handleGetBuyers = async (req, res) => {
     try {
-        let buyers = [];
-        try {
-            buyers = await PodioSyncService.syncCashBuyers();
-        } catch (pErr) {
-            console.warn('[Podio Buyers Sync Warn]', pErr.message);
-        }
-
-        if (!buyers || !buyers.length) {
-            try {
-                const { rows } = await pool.query(`SELECT * FROM crm.cash_buyers ORDER BY created_at DESC`);
-                if (rows && rows.length > 0) {
-                    buyers = rows.map(r => ({
-                        id: r.id,
-                        name: r.full_name || 'Cash Buyer',
-                        company: r.company || 'Private Real Estate Investor',
-                        phone: r.phone || '(904) 579-0065',
-                        email: r.email || 'investor@elitehomes1.com',
-                        location: 'Jacksonville, FL',
-                        zips: ['32204', '32205', '32207', '32208', '32210', '32246'],
-                        min: 75000,
-                        max: 450000,
-                        types: r.buy_box || 'SFR / Duplex',
-                        pofVerified: true,
-                        response: 95,
-                        dealsClosed: 3,
-                        tier: 'VIP Tier 1',
-                        tierClass: 'tier-gold',
-                        notes: r.status || 'Active VIP Buyer in Jacksonville',
-                        created_at: r.created_at
-                    }));
-                }
-            } catch (dbErr) {
-                console.warn('[Buyers PG Warn]', dbErr.message);
-            }
-        }
-        res.json({ total: buyers.length, buyers });
+        const { rows } = await pool.query('SELECT * FROM crm.cash_buyers ORDER BY created_at DESC');
+        res.json({ total: rows.length, buyers: rows.map(buyerDto) });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -3174,75 +2557,31 @@ const handlePostBuyer = async (req, res) => {
     try {
         const name = req.body.name || req.body.full_name;
         const { company, phone, email, location, zips, min, max, types, notes, pofVerified } = req.body;
-        if (!name) return res.status(400).json({ error: 'Name is required' });
+        if (!name || !String(name).trim()) return res.status(400).json({ error: 'Name is required' });
+        if (!phone && !email) return res.status(400).json({ error: 'A phone number or email is required' });
+        const buyerId = 'b-' + crypto.randomUUID();
+        const zipList = Array.isArray(zips) ? zips : (typeof zips === 'string' ? zips.split(',').map(z => z.trim()).filter(Boolean) : []);
+        const num = v => (v === undefined || v === null || v === '' || Number.isNaN(Number(v)) ? null : Number(v));
 
-        const buyerId = 'b-' + Date.now();
-        const zipList = Array.isArray(zips) ? zips : (typeof zips === 'string' ? zips.split(',').map(s => s.trim()).filter(Boolean) : ['32204']);
+        const { rows: [row] } = await pool.query(
+            `INSERT INTO crm.cash_buyers (id, full_name, company, phone, email, location, zips, price_min, price_max, property_types, buy_box, pof_verified, notes)
+             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$10,$11,$12) RETURNING *`,
+            [buyerId, String(name).trim(), company || null, phone || null, email || null, location || null, zipList, num(min), num(max), types || null, Boolean(pofVerified), notes || null]);
+        await audit(pool, { actor: actorName(req), action: 'BUYER_CREATED', entityType: 'BUYER', entityId: crypto.randomUUID(), diff: { buyerId, name } });
 
-        const newBuyer = {
-            id: buyerId,
-            name,
-            company: company || 'Private Investor',
-            phone: phone || '+13866273499',
-            email: email || 'team@elitehomes1.com',
-            location: location || 'Jacksonville, FL',
-            zips: zipList,
-            min: Number(min) || 50000,
-            max: Number(max) || 350000,
-            types: types || 'SFR, Cash',
-            pofVerified: pofVerified !== undefined ? Boolean(pofVerified) : true,
-            response: 85,
-            dealsClosed: 0,
-            tier: 'VIP Tier 1',
-            tierClass: 'tier-gold',
-            notes: notes || 'Active cash buyer in Jacksonville area.',
-            created_at: new Date().toISOString()
-        };
-
-        // Insert into PostgreSQL crm.cash_buyers
-        try {
-            await pool.query(
-                `INSERT INTO crm.cash_buyers (id, full_name, phone, email, company, status, buy_box, created_at)
-                 VALUES ($1, $2, $3, $4, $5, 'Active VIP Buyer', $6, NOW())
-                 ON CONFLICT DO NOTHING`,
-                [buyerId, name, phone, email, company, types || 'SFR']
-            );
-        } catch (pgErr) {
-            console.warn('[Buyer Insert PG Warn]', pgErr.message);
-        }
-
-        // Also push to Podio Cash Buyers App 30087423
-        try {
-            const podioBuyer = await PodioSyncService.createCashBuyerInPodio({
-                name,
-                company,
-                phone,
-                email,
-                criteria: notes || types || 'SFR Buy Box',
-                min,
-                max,
-                propertyType: types,
-                notes: `Created via HushHawk Command Center (${buyerId})`
-            });
-            if (podioBuyer?.item_id) {
-                newBuyer.podioItemId = podioBuyer.item_id;
+        let podio = { pushed: false };
+        if (configured('PODIO_CLIENT_ID', 'PODIO_APP_TOKEN')) {
+            try {
+                const podioBuyer = await PodioSyncService.createCashBuyerInPodio({ name, company, phone, email, criteria: notes || types || '', min, max, propertyType: types, notes: `Created in HushHawk (${buyerId})` });
+                if (podioBuyer?.item_id) {
+                    await pool.query('UPDATE crm.cash_buyers SET podio_item_id = $2 WHERE id = $1', [buyerId, String(podioBuyer.item_id)]);
+                    podio = { pushed: true, podioItemId: podioBuyer.item_id };
+                }
+            } catch (pBuyerErr) {
+                podio = { pushed: false, error: pBuyerErr.message };
             }
-        } catch (pBuyerErr) {
-            console.warn('[Podio Cash Buyer Push Warn]:', pBuyerErr.message);
         }
-
-        if (!db.data.crm.buyers) db.data.crm.buyers = [];
-        db.data.crm.buyers.unshift(newBuyer);
-        db.logAudit({
-            actor: req.body.actor || 'USER_WEB',
-            action: 'BUYER_CREATED',
-            entityType: 'BUYER',
-            entityId: buyerId,
-            redactedDiff: { name, company, min, max }
-        });
-        db.persist();
-
-        res.status(201).json(newBuyer);
+        res.status(201).json({ ...buyerDto(row), podio });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -3253,16 +2592,10 @@ apiRouter.post('/cash-buyers', handlePostBuyer);
 
 const handleDeleteBuyer = async (req, res) => {
     try {
-        const { id } = req.params;
-        try {
-            await pool.query('DELETE FROM crm.cash_buyers WHERE id = $1', [id]);
-        } catch (dbErr) {
-            console.warn('[Buyer Delete PG Warn]', dbErr.message);
-        }
-        if (!db.data.crm.buyers) db.data.crm.buyers = [];
-        db.data.crm.buyers = db.data.crm.buyers.filter(b => b.id !== id);
-        db.persist();
-        res.json({ success: true, deleted: id });
+        const { rows: [row] } = await pool.query('DELETE FROM crm.cash_buyers WHERE id = $1 RETURNING id, full_name', [req.params.id]);
+        if (!row) return res.status(404).json({ error: 'Buyer not found' });
+        await audit(pool, { actor: actorName(req), action: 'BUYER_DELETED', entityType: 'BUYER', entityId: crypto.randomUUID(), diff: { buyerId: row.id, name: row.full_name } });
+        res.json({ success: true, deleted: row.id });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -3305,7 +2638,7 @@ apiRouter.post('/deal-funnel/advance', handleAdvanceDeal);
 
 apiRouter.post('/deal-funnel/deals', async (req, res) => {
     try {
-        const newDeal = await DealFunnelService.createDeal(req.body);
+        const newDeal = await DealFunnelService.createDeal(req.body, actorName(req));
         res.status(201).json(newDeal);
     } catch (err) {
         res.status(400).json({ error: err.message });
@@ -3314,7 +2647,7 @@ apiRouter.post('/deal-funnel/deals', async (req, res) => {
 
 apiRouter.post('/deal-funnel', async (req, res) => {
     try {
-        const newDeal = await DealFunnelService.createDeal(req.body);
+        const newDeal = await DealFunnelService.createDeal(req.body, actorName(req));
         res.status(201).json(newDeal);
     } catch (err) {
         res.status(400).json({ error: err.message });
@@ -3385,7 +2718,7 @@ apiRouter.post('/lead-desk/threads/:id/messages', async (req, res) => {
         const message = await LeadDeskService.sendMessage({
             threadId: req.params.id,
             content,
-            senderName: senderName || req.headers['x-actor'] || 'Alex Richard (HushHawk)',
+            senderName: senderName || req.headers['x-actor'] || actorName(req),
             senderType: senderType || 'rep'
         });
         res.status(201).json(message);
@@ -3404,7 +2737,7 @@ apiRouter.post('/lead-desk/send', async (req, res) => {
             const message = await LeadDeskService.sendMessage({
                 threadId,
                 content: msgText,
-                senderName: senderName || 'Alex Richard (HushHawk)',
+                senderName: senderName || actorName(req),
                 senderType: 'rep'
             });
             return res.status(201).json(message);
@@ -3412,16 +2745,16 @@ apiRouter.post('/lead-desk/send', async (req, res) => {
 
         if (channel === 'email' || req.body.email) {
             const sentEmail = await OutreachActionsService.sendEmail({
-                recipientName: req.body.recipientName || 'Lead',
+                recipientName: req.body.recipientName || null,
                 email: req.body.email || recipient,
-                subject: req.body.subject || 'Follow up from HushHawk',
+                subject: req.body.subject,
                 body: msgText
             });
             return res.status(201).json(sentEmail);
         } else {
             const sentText = await OutreachActionsService.sendText({
-                recipientPhone: recipientPhone || recipient || '+13866273499',
-                contactName: req.body.contactName || 'Lead',
+                recipientPhone: recipientPhone || recipient,
+                contactName: req.body.contactName || null,
                 message: msgText
             });
             return res.status(201).json(sentText);
@@ -3436,7 +2769,7 @@ apiRouter.post('/lead-desk/threads/:id/assign', async (req, res) => {
         const { assignedTo } = req.body;
         const result = await LeadDeskService.assignThread({
             threadId: req.params.id,
-            assignedTo: assignedTo || 'Alex Richard'
+            assignedTo: assignedTo || actorName(req)
         });
         res.json({ success: true, thread: result });
     } catch (err) {
@@ -3566,8 +2899,11 @@ apiRouter.post('/outreach-actions/texts/queue', async (req, res) => {
 
 apiRouter.post('/outreach-actions/texts/send', async (req, res) => {
     try {
-        const { textId, phone, recipientPhone, contactName, message, propertyId } = req.body;
+        const { textId, phone, recipientPhone, contactName, message, propertyId, personId } = req.body;
+        const gate = await ComplianceService.evaluateOutboundRequest({ channel: 'TEXT', recipientPhone: recipientPhone || phone, personId: personId || null, user: req.user });
+        if (!gate.allowed) return res.status(403).json({ error: 'OUTBOUND_TEXT_BLOCKED_BY_COMPLIANCE_GATE', details: gate.checks.find(c => !c.passed)?.reason, compliance: gate });
         const sentText = await OutreachActionsService.sendText({
+            actor: actorName(req),
             textId,
             phone,
             recipientPhone,
@@ -3577,7 +2913,7 @@ apiRouter.post('/outreach-actions/texts/send', async (req, res) => {
         });
         res.status(201).json(sentText);
     } catch (err) {
-        res.status(400).json({ error: err.message });
+        res.status(err.status || 400).json({ error: err.message, carrier: err.carrier });
     }
 });
 
@@ -3601,8 +2937,11 @@ apiRouter.post('/outreach-actions/emails/queue', async (req, res) => {
 
 apiRouter.post('/outreach-actions/emails/send', async (req, res) => {
     try {
-        const { emailId, recipientName, name, email, subject, body, propertyAddress, propertyId } = req.body;
+        const { emailId, recipientName, name, email, subject, body, propertyAddress, propertyId, personId } = req.body;
+        const gate = await ComplianceService.evaluateOutboundRequest({ channel: 'EMAIL', recipientEmail: email, personId: personId || null, user: req.user });
+        if (!gate.allowed) return res.status(403).json({ error: 'OUTBOUND_EMAIL_BLOCKED_BY_COMPLIANCE_GATE', details: gate.checks.find(c => !c.passed)?.reason, compliance: gate });
         const sentEmail = await OutreachActionsService.sendEmail({
+            actor: actorName(req),
             emailId,
             recipientName: recipientName || name,
             email,
@@ -3613,7 +2952,7 @@ apiRouter.post('/outreach-actions/emails/send', async (req, res) => {
         });
         res.status(201).json(sentEmail);
     } catch (err) {
-        res.status(400).json({ error: err.message });
+        res.status(err.status || 400).json({ error: err.message, carrier: err.carrier });
     }
 });
 
@@ -3663,10 +3002,6 @@ apiRouter.get('/contracts', async (req, res) => {
                 { name: 'Buyer EMD Received & Closing Funded', detail: 'Closed & fee disbursed', completed: c.milestoneIndex >= 11 }
             ]
         }));
-
-        if (!contracts.length) {
-            contracts = db.data.crm.contracts || [];
-        }
 
         res.json({ total: contracts.length, contracts });
     } catch (err) {
@@ -3725,94 +3060,29 @@ apiRouter.get('/dispositions', async (req, res) => {
 
 apiRouter.post('/contracts', async (req, res) => {
     try {
-        const { address, type, seller, buyer, buyPrice, fee, titleAgency, closingDate, fileNumber } = req.body;
-        if (!address) return res.status(400).json({ error: 'Property address is required' });
+        const { address, type, seller, buyer, buyPrice, fee, emd, titleAgency, closingDate, fileNumber, city, state, zip, county } = req.body || {};
+        if (!address || !String(address).trim()) return res.status(400).json({ error: 'Property address is required' });
+        if (!seller || !String(seller).trim()) return res.status(400).json({ error: 'Seller is required' });
+        if (!(Number(buyPrice) > 0)) return res.status(400).json({ error: 'A purchase price greater than zero is required' });
 
-        const contractId = 'c-' + Date.now();
-        const contractType = type || 'PSA';
-        const contractCount = (db.data.crm?.contracts || []).length + 1;
-        const code = `${contractType}-2026-0${contractCount}`;
+        // A signed contract is milestone 4 of the deal funnel; the funnel is the single source of truth.
+        const deal = await DealFunnelService.createDeal({
+            milestoneIndex: 4, address, seller, buyer, buyPrice, fee, titleAgency, fileNumber, closingDate, city, state, zip, county,
+            source: 'Contract Desk', notes: type ? `Contract type: ${type}` : null
+        }, actorName(req));
 
-        const newContract = {
-            id: contractId,
-            code,
-            address,
-            zip: '32208',
-            type: contractType,
-            seller: seller || 'Seller of Record',
-            buyer: buyer || '',
-            buyPrice: Number(buyPrice) || 95000,
-            fee: Number(fee) || 28000,
-            titleAgency: titleAgency || 'First American Title Jax',
-            fileNumber: fileNumber || `FAT-2026-0${contractCount + 100}`,
-            closingDate: closingDate || new Date(Date.now() + 14 * 86400000).toISOString().split('T')[0],
-            status: 'In Escrow',
-            statusClass: 'status-escrow',
-            milestones: [
-                { name: 'Purchase & Sale Executed', detail: 'Signed today', completed: true },
-                { name: 'Seller EMD Verified', detail: '$2,000 deposited in escrow', completed: true },
-                { name: 'Title Commitment & Municipal Lien Search', detail: 'Title exam in progress', completed: false },
-                { name: 'Assignment of Contract Executed', detail: 'Ready for assignment', completed: false },
-                { name: 'Buyer EMD Received', detail: 'Pending assignment', completed: false }
-            ],
-            docs: [
-                { name: `Executed_${contractType}_${address.replace(/[^a-zA-Z0-9]/g, '')}.pdf` }
-            ],
-            created_at: new Date().toISOString()
-        };
-
-        // Insert into PostgreSQL crm.deal_funnel at milestone_index = 4 (Signed Contract)
-        try {
-            await pool.query(
-                `INSERT INTO crm.deal_funnel (
-                    id, code, milestone_index, address, city, state, zip, county, seller, buyer,
-                    buy_price, fee, title_agency, file_number, closing_date, days_in_stage, source, notes, created_at, updated_at
-                ) VALUES ($1, $2, 4, $3, 'Jacksonville', 'FL', '32208', 'Duval', $4, $5, $6, $7, $8, $9, $10, 0, 'Wholesale Contract Desk', 'Executed PSA under contract', NOW(), NOW())
-                ON CONFLICT (id) DO NOTHING`,
-                [
-                    contractId,
-                    code,
-                    address,
-                    seller || 'Seller of Record',
-                    buyer || '',
-                    Number(buyPrice) || 95000,
-                    Number(fee) || 28000,
-                    titleAgency || 'First American Title Jax',
-                    fileNumber || `FAT-2026-0${contractCount + 100}`,
-                    closingDate || new Date(Date.now() + 14 * 86400000).toISOString().split('T')[0]
-                ]
-            );
-        } catch (pgErr) {
-            console.warn('[Contract Deal Funnel Sync Warn]', pgErr.message);
+        let podio = { pushed: false };
+        if (Number(emd) >= 0 && emd !== undefined && emd !== '' && configured('PODIO_CLIENT_ID', 'PODIO_APP_TOKEN')) {
+            try {
+                await PodioSyncService.createOfferInPodio({ address, buyPrice, emd, county: county || '', status: 'Contract Sent', notes: `Drafted from HushHawk (${deal.code})` });
+                podio = { pushed: true };
+            } catch (pOfferErr) {
+                podio = { pushed: false, error: pOfferErr.message };
+            }
         }
-
-        if (!db.data.crm.contracts) db.data.crm.contracts = [];
-        db.data.crm.contracts.unshift(newContract);
-        db.logAudit({
-            actor: req.body.actor || 'USER_WEB',
-            action: 'CONTRACT_CREATED',
-            entityType: 'CONTRACT',
-            entityId: contractId,
-            redactedDiff: { address, type: contractType, buyPrice }
-        });
-        db.persist();
-
-        // Also push to Podio Offers App 30087411
-        try {
-            await PodioSyncService.createOfferInPodio({
-                address,
-                buyPrice: Number(buyPrice) || 95000,
-                emd: 2000,
-                status: 'Contract Sent',
-                notes: `Drafted from HushHawk Contract Desk (${code})`
-            });
-        } catch (pOfferErr) {
-            console.warn('[Podio Offer Push Warn]:', pOfferErr.message);
-        }
-
-        res.status(201).json(newContract);
+        res.status(201).json({ ...deal, podio });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        res.status(400).json({ error: err.message });
     }
 });
 
@@ -3930,96 +3200,63 @@ apiRouter.delete('/contracts/:id', async (req, res) => {
     }
 });
 
+// Sends the deal packet to cash buyers. Each buyer passes the compliance gate and the email transport individually;
+// the response reports exactly who was sent, blocked or failed, and nothing is logged as sent unless it was.
 apiRouter.post('/dispositions/blast', async (req, res) => {
     try {
-        const { contractId, address, fee } = req.body;
-        const buyersRes = await pool.query(`SELECT * FROM crm.cash_buyers ORDER BY created_at ASC LIMIT 10`);
-        const buyers = buyersRes.rows || [];
-        const addr = address || 'Jacksonville Off-Market Wholesale Property';
-        const feeVal = Number(fee) || 25000;
+        const { address, fee, price, message, buyerIds } = req.body || {};
+        if (!address || !String(address).trim()) return res.status(400).json({ error: 'The property address is required.' });
+        const { rows: buyers } = await pool.query(
+            `SELECT * FROM crm.cash_buyers WHERE email IS NOT NULL AND email <> '' AND ($1::text[] IS NULL OR id = ANY($1)) ORDER BY created_at LIMIT 200`,
+            [Array.isArray(buyerIds) && buyerIds.length ? buyerIds : null]);
+        if (!buyers.length) return res.status(400).json({ error: 'No cash buyers with an email address were found.' });
 
-        // Queue VIP alert in ops.notifications
-        const notifId = crypto.randomUUID();
-        try {
-            await pool.query(
-                `INSERT INTO ops.notifications (notification_id, title, body, category, priority, color, icon, is_read, created_at)
-                 VALUES ($1, $2, $3, 'DISPOSITION', 'HIGH', '#D4AF37', 'dollar', false, NOW())`,
-                [
-                    notifId,
-                    'VIP Buyer Blast Dispatched',
-                    `Broadcasted deal packet for ${addr} (+$${feeVal.toLocaleString()} Spread) to ${buyers.length} institutional cash buyers.`
-                ]
-            );
-        } catch (notifErr) {
-            console.warn('[Notif PG Warn]', notifErr.message);
-        }
+        const lines = [`New off-market opportunity: ${address}`];
+        if (Number(price) > 0) lines.push(`Price: $${Number(price).toLocaleString('en-US')}`);
+        if (Number(fee) > 0) lines.push(`Assignment fee: $${Number(fee).toLocaleString('en-US')}`);
+        if (message) lines.push('', String(message));
+        const text = lines.join('\n');
 
-        // Log interactions for each buyer in PostgreSQL core.interactions
+        const results = [];
         for (const buyer of buyers) {
-            try {
-                await pool.query(
-                    `INSERT INTO core.interactions (interaction_id, method, direction, actor_id, result, notes, occurred_at)
-                     VALUES ($1, 'EMAIL', 'OUTBOUND', 'Alex Richard (HushHawk)', 'SENT', $2, NOW())`,
-                    [
-                        crypto.randomUUID(),
-                        `VIP Deal Blast for ${addr} sent to ${buyer.company || buyer.full_name} (${buyer.email || 'acquisitions@buyer.com'})`
-                    ]
-                );
-            } catch (e) {}
+            const gate = await ComplianceService.evaluateOutboundRequest({ channel: 'EMAIL', recipientEmail: buyer.email, user: req.user });
+            if (!gate.allowed) {
+                results.push({ buyerId: buyer.id, email: buyer.email, outcome: 'BLOCKED', reason: gate.checks.find(c => !c.passed)?.reason });
+                continue;
+            }
+            const sent = await CarrierDispatchService.dispatchEmail({ to: buyer.email, subject: `Off-market deal: ${address}`, text });
+            if (!sent.success) {
+                results.push({ buyerId: buyer.id, email: buyer.email, outcome: 'FAILED', reason: sent.error });
+                continue;
+            }
+            await pool.query(
+                `INSERT INTO core.interactions (method, direction, actor_id, result, notes) VALUES ('EMAIL','OUTBOUND',$1,'SENT',$2)`,
+                [actorName(req), `Deal blast for ${address} sent to ${buyer.company || buyer.full_name} (${buyer.email})`]);
+            results.push({ buyerId: buyer.id, email: buyer.email, outcome: 'SENT' });
         }
-
-        res.json({
-            success: true,
-            dispatchedBuyersCount: buyers.length,
-            buyers: buyers.map(b => b.company_name || b.contact_name),
-            contractAddress: addr,
-            assignmentFee: feeVal,
-            dispatchedAt: new Date().toISOString()
-        });
+        const sentCount = results.filter(r => r.outcome === 'SENT').length;
+        await audit(pool, { actor: actorName(req), action: 'DISPOSITION_BLAST', entityType: 'DISPOSITION', entityId: crypto.randomUUID(), diff: { address, attempted: buyers.length, sent: sentCount } });
+        res.status(sentCount ? 200 : 502).json({ success: sentCount > 0, attempted: buyers.length, sent: sentCount, results, dispatchedAt: new Date().toISOString() });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
 // --- Contacts Rolodex (Podio App 30087414 Live Sync with PostgreSQL) ---
+const contactDto = row => {
+    const name = row.seller_name || '';
+    return {
+        id: row.id, name, company: row.company || '', type: row.contact_type || '', phone: row.phone || '', email: row.email || '',
+        tags: row.tags || [], property: row.property_address || '', status: row.lead_status || '',
+        initials: name.split(' ').filter(Boolean).map(w => w[0]).join('').toUpperCase().slice(0, 2),
+        lastTouch: row.updated_at || row.created_at, notes: row.notes || '', created_at: row.created_at
+    };
+};
+
 apiRouter.get('/contacts', async (req, res) => {
     try {
-        let contacts = [];
-        try {
-            contacts = await PodioSyncService.syncContacts();
-        } catch (pErr) {
-            console.warn('[Podio Contacts Sync Warn]', pErr.message);
-        }
-
-        if (!contacts || !contacts.length) {
-            try {
-                const { rows } = await pool.query(`SELECT * FROM crm.seller_contacts ORDER BY created_at DESC`);
-                if (rows && rows.length > 0) {
-                    contacts = rows.map(r => {
-                        const name = r.seller_name || 'Seller Contact';
-                        const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-                        return {
-                            id: r.id,
-                            name,
-                            company: 'Property Owner',
-                            type: 'Distressed Seller',
-                            phone: r.phone || '(904) 579-0065',
-                            email: r.email || 'seller@elitehomes1.com',
-                            tags: [r.lead_status || 'Active', 'Score: ' + (r.lead_score || 85)],
-                            property: r.property_address || 'Jacksonville, FL',
-                            status: r.lead_status || 'Active',
-                            initials,
-                            lastTouch: 'Recent',
-                            notes: `Seller lead with motivation score ${r.lead_score || 85}%.`,
-                            created_at: r.created_at
-                        };
-                    });
-                }
-            } catch (dbErr) {
-                console.warn('[Contacts PG Warn]', dbErr.message);
-            }
-        }
-        res.json({ total: contacts.length, contacts });
+        const { rows } = await pool.query('SELECT * FROM crm.seller_contacts ORDER BY created_at DESC LIMIT 5000');
+        res.json({ total: rows.length, contacts: rows.map(contactDto) });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -4027,79 +3264,37 @@ apiRouter.get('/contacts', async (req, res) => {
 
 apiRouter.post('/contacts', async (req, res) => {
     try {
-        const { name, company, type, phone, email, tagsInput, notes, property } = req.body;
-        if (!name) return res.status(400).json({ error: 'Name is required' });
-
-        const contactId = 'sel-' + Date.now();
-        const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-        const tags = tagsInput
-            ? (Array.isArray(tagsInput) ? tagsInput : tagsInput.split(',').map(t => t.trim()).filter(Boolean))
-            : ['New Contact'];
-
-        const newContact = {
-            id: contactId,
-            name,
-            company: company || '',
-            type: type || 'Distressed Seller',
-            phone: phone || '+13866273499',
-            email: email || 'team@elitehomes1.com',
-            tags,
-            property: property || '',
-            status: 'Active',
-            initials,
-            lastTouch: 'Today ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            notes: notes || 'Contact added to HushHawk Rolodex.',
-            created_at: new Date().toISOString()
-        };
-
-        // Insert into PostgreSQL crm.seller_contacts
-        try {
-            await pool.query(
-                `INSERT INTO crm.seller_contacts (id, seller_name, phone, email, property_address, lead_status, lead_score, created_at)
-                 VALUES ($1, $2, $3, $4, $5, 'New', 90, NOW())
-                 ON CONFLICT DO NOTHING`,
-                [contactId, name, phone, email, property]
-            );
-        } catch (pgErr) {
-            console.warn('[Contact Insert PG Warn]', pgErr.message);
-        }
-
-        if (!db.data.crm.contacts) db.data.crm.contacts = [];
-        db.data.crm.contacts.unshift(newContact);
-        db.logAudit({
-            actor: req.body.actor || 'USER_WEB',
-            action: 'CONTACT_CREATED',
-            entityType: 'CONTACT',
-            entityId: contactId,
-            redactedDiff: { name, type, phone }
-        });
-        db.persist();
-
-        res.status(201).json(newContact);
+        const { name, company, type, phone, email, tagsInput, notes, property } = req.body || {};
+        if (!name || !String(name).trim()) return res.status(400).json({ error: 'Name is required' });
+        if (!phone && !email) return res.status(400).json({ error: 'A phone number or email is required' });
+        const tags = tagsInput ? (Array.isArray(tagsInput) ? tagsInput : String(tagsInput).split(',').map(t => t.trim()).filter(Boolean)) : [];
+        const { rows: [row] } = await pool.query(
+            `INSERT INTO crm.seller_contacts (id, seller_name, phone, email, property_address, company, contact_type, tags, notes)
+             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *`,
+            ['sel-' + crypto.randomUUID(), String(name).trim(), phone || null, email || null, property || null, company || null, type || null, tags, notes || null]);
+        await audit(pool, { actor: actorName(req), action: 'CONTACT_CREATED', entityType: 'CONTACT', entityId: crypto.randomUUID(), diff: { contactId: row.id, name } });
+        res.status(201).json(contactDto(row));
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
-apiRouter.delete('/contacts/:id', (req, res) => {
+apiRouter.delete('/contacts/:id', async (req, res) => {
     try {
-        const { id } = req.params;
-        if (!db.data.crm.contacts) db.data.crm.contacts = [];
-        db.data.crm.contacts = db.data.crm.contacts.filter(c => c.id !== id && c.id !== Number(id));
-        db.persist();
+        const { rows: [row] } = await pool.query('DELETE FROM crm.seller_contacts WHERE id = $1 RETURNING id, seller_name', [req.params.id]);
+        if (!row) return res.status(404).json({ error: 'Contact not found' });
+        await audit(pool, { actor: actorName(req), action: 'CONTACT_DELETED', entityType: 'CONTACT', entityId: crypto.randomUUID(), diff: { contactId: row.id, name: row.seller_name } });
         res.json({ success: true });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
-
-
 // --- Skip Tracing (Podio App 30087425 Cold Leads Live Sync) ---
 apiRouter.get('/skip-tracing', async (req, res, next) => {
     try {
         const [leads, queued] = await Promise.all([
-            PodioSyncService.syncColdLeads(),
+            podioReady() ? PodioSyncService.syncColdLeads() : Promise.resolve([]),
             pool.query(`SELECT lead.lead_id AS id, property.address_line1 AS address,
                     property.postal_code AS zip, person.full_name AS "ownerName"
                 FROM core.leads lead JOIN core.properties property USING (property_id)
@@ -4156,160 +3351,109 @@ apiRouter.post('/skip-tracing/batch', (req, res) => {
     res.status(503).json({ error: 'Batch contact verification requires a configured skip-tracing provider.' });
 });
 
-// --- Facebook Leads ---
-apiRouter.get('/facebook-leads', (req, res) => {
+// --- Facebook Leads: real leads whose first source is Facebook ---
+const FB_STAGE = { NEW: 'New Ingested', CONTACTED: 'Contacted', QUALIFIED: 'Qualified', OFFER: 'Offer Made', CONTRACT: 'Under Contract', CLOSED: 'Closed', FOLLOW_UP: 'Follow Up', LOST: 'Lost' };
+
+const fbLeadDto = l => {
+    const meta = l.metadata || {};
+    return {
+        id: l.lead_id, name: l.full_name || '', phone: l.primary_phone || '', email: l.primary_email || '',
+        address: l.address_line1 || meta.address || '', parcelId: l.parcel_raw || '', campaign: meta.campaign || l.source_detail || '',
+        motivationScore: l.priority_score, stage: meta.pushedToPipeline ? 'Pushed to Pipeline' : (FB_STAGE[l.status] || l.status),
+        submittedTime: l.created_at, askingPrice: meta.askingPrice ?? null, arv: meta.arv ?? null, timeframe: meta.timeframe || '',
+        reason: meta.reason || '', notes: meta.notes || '', created_at: l.created_at
+    };
+};
+
+apiRouter.get('/facebook-leads', async (req, res) => {
     try {
-        const leads = db.data.crm.facebook_leads || [];
-        res.json({ total: leads.length, leads });
+        const { rows } = await pool.query(
+            `SELECT l.*, pe.full_name, pe.primary_phone, pe.primary_email, pr.address_line1, pr.parcel_raw
+             FROM core.leads l LEFT JOIN core.people pe USING (person_id) LEFT JOIN core.properties pr ON pr.property_id = l.property_id
+             WHERE l.first_source_code IN ('FB','IG','SOCAD','SOCIAL') ORDER BY l.created_at DESC LIMIT 2000`);
+        res.json({ total: rows.length, leads: rows.map(fbLeadDto) });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
+// New Facebook leads arrive through the Podio sync / webhooks (source mapped from Podio) or are added by hand.
 apiRouter.post('/facebook-leads/sync', async (req, res) => {
     try {
-        const fbRes = await pool.query(`
-            SELECT count(*) as total 
-            FROM core.conversation_desk_threads 
-            WHERE platform_id = 'facebook'
-        `);
-        const total = parseInt(fbRes.rows[0]?.total || 5, 10);
-        res.json({
-            success: true,
-            polledCount: total,
-            newLeads: 0,
-            timestamp: new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })
-        });
+        if (!configured('PODIO_CLIENT_ID', 'PODIO_APP_TOKEN')) return res.status(503).json({ error: 'Podio is not configured, so there is nothing to sync.' });
+        const before = await pool.query(`SELECT count(*)::int AS n FROM core.leads WHERE first_source_code = 'FB'`);
+        const synced = await PodioSyncService.syncLeads();
+        const after = await pool.query(`SELECT count(*)::int AS n FROM core.leads WHERE first_source_code = 'FB'`);
+        res.json({ success: true, polledCount: synced, newLeads: Math.max(0, after.rows[0].n - before.rows[0].n), timestamp: new Date().toISOString() });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
-apiRouter.post('/facebook-leads', (req, res) => {
+apiRouter.post('/facebook-leads', async (req, res) => {
     try {
-        const { name, phone, email, address, campaign, timeframe, askingPrice, reason } = req.body;
-        if (!name) return res.status(400).json({ error: 'Name is required' });
-
-        const leadId = Date.now();
-        const newLead = {
-            id: leadId,
-            name,
-            phone: phone || '',
-            email: email || '',
-            address: address || 'Jacksonville, FL',
-            parcelId: '',
-            campaign: campaign || 'Duval Inherited & Probate',
-            motivationScore: 88,
-            motivationClass: 'score-hot',
-            stage: 'New Ingested',
-            submittedTime: 'Just now',
-            askingPrice: Number(askingPrice) || 120000,
-            arv: 240000,
-            timeframe: timeframe || 'Immediately (under 14 days)',
-            reason: reason || 'Inherited vacant house. Needs cosmetic updates.',
-            notes: 'Created from Facebook Leads Command Center.',
-            created_at: new Date().toISOString()
-        };
-
-        if (!db.data.crm.facebook_leads) db.data.crm.facebook_leads = [];
-        db.data.crm.facebook_leads.unshift(newLead);
-        db.persist();
-
-        res.status(201).json(newLead);
+        const { name, phone, email, address, campaign, timeframe, askingPrice, reason, notes } = req.body || {};
+        if (!name || !String(name).trim()) return res.status(400).json({ error: 'Name is required' });
+        const lead = await CrmService.createLead({
+            sourceCode: 'FB', sourceDetail: campaign || null, contactMethod: 'WEBFORM', platformCode: 'FB', medium: 'PAID', actor: actorName(req),
+            person: { name, phone, email },
+            metadata: { campaign: campaign || null, timeframe: timeframe || null, askingPrice: askingPrice === undefined || askingPrice === '' ? null : Number(askingPrice), reason: reason || null, notes: notes || null, address: address || null }
+        });
+        res.status(201).json({ id: lead.lead_id, name, phone: phone || '', email: email || '', address: address || '', campaign: campaign || '', stage: FB_STAGE.NEW, created_at: lead.created_at });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        res.status(err.status || 500).json({ error: err.message });
     }
 });
 
 apiRouter.patch('/facebook-leads/:id', async (req, res) => {
     try {
-        const { id } = req.params;
-        const updates = req.body || {};
-        const leads = db.data.crm.facebook_leads || [];
-        const lead = leads.find(l => l.id === id || l.id === Number(id));
+        const { stage, notes } = req.body || {};
+        const { rows: [lead] } = await pool.query(
+            `SELECT l.*, pe.full_name, pe.primary_phone, pe.primary_email, pr.address_line1 FROM core.leads l
+             LEFT JOIN core.people pe USING (person_id) LEFT JOIN core.properties pr ON pr.property_id = l.property_id WHERE l.lead_id = $1`, [req.params.id]);
         if (!lead) return res.status(404).json({ error: 'Lead not found' });
-
-        Object.assign(lead, updates);
-        db.persist();
-
-        // If pushed to pipeline, insert into crm.deal_funnel at milestone_index = 0
-        if (updates.stage === 'Pushed to Pipeline') {
-            try {
-                await pool.query(
-                    `INSERT INTO crm.deal_funnel (
-                        id, code, milestone_index, address, city, state, zip, county, seller, phone, email,
-                        buy_price, fee, days_in_stage, source, notes, created_at, updated_at
-                    ) VALUES ($1, $2, 0, $3, 'Jacksonville', 'FL', '32221', 'Duval', $4, $5, $6, $7, 25000, 0, 'Meta Facebook Ads', 'Auto-routed qualified hot seller lead', NOW(), NOW())
-                    ON CONFLICT (id) DO NOTHING`,
-                    [
-                        'funnel-fb-' + lead.id,
-                        'FB-' + lead.id,
-                        lead.address || 'Jacksonville, FL',
-                        lead.name,
-                        lead.phone,
-                        lead.email,
-                        Number(lead.askingPrice) || 120000
-                    ]
-                );
-            } catch (pgErr) {
-                console.warn('[FB Lead Funnel Sync Warn]', pgErr.message);
-            }
+        if (notes !== undefined) {
+            await pool.query(`UPDATE core.leads SET metadata = coalesce(metadata, '{}'::jsonb) || jsonb_build_object('notes', $2::text), updated_at = now() WHERE lead_id = $1`, [lead.lead_id, notes]);
         }
-
-        res.json(lead);
+        if (stage === 'Pushed to Pipeline') {
+            const meta = lead.metadata || {};
+            const address = lead.address_line1 || meta.address;
+            if (!address) return res.status(400).json({ error: 'The lead needs a property address before it can enter the deal pipeline.' });
+            await DealFunnelService.createDeal({
+                id: 'funnel-fb-' + lead.lead_id, milestoneIndex: 0, address, seller: lead.full_name || 'Unnamed seller', phone: lead.primary_phone, email: lead.primary_email,
+                buyPrice: meta.askingPrice, source: 'Facebook', notes: 'Pushed from Facebook Leads'
+            }, actorName(req));
+            await pool.query(`UPDATE core.leads SET metadata = coalesce(metadata, '{}'::jsonb) || '{"pushedToPipeline": true}'::jsonb, updated_at = now() WHERE lead_id = $1`, [lead.lead_id]);
+        }
+        const { rows: [fresh] } = await pool.query(
+            `SELECT l.*, pe.full_name, pe.primary_phone, pe.primary_email, pr.address_line1, pr.parcel_raw FROM core.leads l
+             LEFT JOIN core.people pe USING (person_id) LEFT JOIN core.properties pr ON pr.property_id = l.property_id WHERE l.lead_id = $1`, [req.params.id]);
+        res.json(fbLeadDto(fresh));
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
-// --- Follow Ups (PostgreSQL core.outreach_calls) ---
+// --- Follow Ups (core.outreach_calls) ---
+const followUpDto = r => {
+    const seller = r.contact_name || '';
+    return {
+        id: r.id, seller, address: r.property_address || '', parcelId: r.parcel_raw || '', phone: r.phone || '', email: '',
+        cadenceStage: r.cadence_stage || '', motivation: r.priority === 'High' || r.priority === 'Overdue' ? 'Hot' : '', channel: 'Call',
+        lastOffer: null, arv: null, dueDate: r.due_label || '', dueUrgency: r.priority === 'Overdue' ? 'urgent' : 'medium',
+        activityCount: r.activity_count || 0, assignedRep: '', repInitials: seller.split(' ').filter(Boolean).map(w => w[0]).join('').toUpperCase().slice(0, 2),
+        status: r.status, notes: r.notes || '', created_at: r.created_at
+    };
+};
+
 apiRouter.get('/follow-ups', async (req, res) => {
     try {
-        let followUps = [];
-        try {
-            const { rows } = await pool.query(`
-                SELECT c.id, c.contact_name, c.phone, c.property_address,
-                       c.cadence_stage, c.priority, c.notes, c.created_at,
-                       p.parcel_raw, p.assessed_value
-                FROM core.outreach_calls c
-                LEFT JOIN core.properties p ON c.property_id = p.property_id
-                ORDER BY 
-                    CASE c.priority WHEN 'Overdue' THEN 1 WHEN 'High' THEN 2 ELSE 3 END,
-                    c.created_at ASC
-            `);
-            if (rows && rows.length > 0) {
-                followUps = rows.map((r, idx) => {
-                    const seller = r.contact_name || 'Property Owner';
-                    const initials = seller.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-                    const arv = r.assessed_value ? Math.round(Number(r.assessed_value) * 1.3) : 240000;
-                    return {
-                        id: r.id || ('f-' + idx),
-                        seller,
-                        address: r.property_address || 'Jacksonville, FL',
-                        parcelId: r.parcel_raw ? `DUV-${r.parcel_raw}` : '',
-                        phone: r.phone || '',
-                        email: r.email || '',
-                        cadenceStage: r.cadence_stage || 'Day 1 Post-Offer',
-                        motivation: r.priority === 'High' || r.priority === 'Overdue' ? 'Hot' : 'Warm',
-                        channel: 'Call',
-                        lastOffer: Math.round(arv * 0.65),
-                        arv,
-                        dueDate: r.due_date || 'Today',
-                        dueUrgency: r.priority === 'Overdue' ? 'urgent' : 'medium',
-                        activityCount: 2,
-                        assignedRep: 'Alex Richard',
-                        repInitials: initials,
-                        notes: r.notes || 'Seller follow-up scheduled.',
-                        created_at: r.created_at
-                    };
-                });
-            }
-        } catch (dbErr) {
-            console.warn('[Follow-ups PG Warn]', dbErr.message);
-        }
-        if (!followUps.length) {
-            followUps = db.data.crm.follow_ups || [];
-        }
+        const { rows } = await pool.query(
+            `SELECT c.*, p.parcel_raw, (SELECT count(*)::int FROM core.interactions i WHERE c.property_id IS NOT NULL AND i.property_id = c.property_id) AS activity_count
+             FROM core.outreach_calls c LEFT JOIN core.properties p ON c.property_id = p.property_id
+             WHERE c.status <> 'COMPLETED'
+             ORDER BY CASE c.priority WHEN 'Overdue' THEN 1 WHEN 'High' THEN 2 ELSE 3 END, c.created_at ASC`);
+        const followUps = rows.map(followUpDto);
         res.json({ total: followUps.length, followUps });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -4318,65 +3462,30 @@ apiRouter.get('/follow-ups', async (req, res) => {
 
 apiRouter.post('/follow-ups', async (req, res) => {
     try {
-        const seller = req.body.seller || req.body.name || 'Property Owner';
-        const address = req.body.address || req.body.property_address || 'Jacksonville, FL';
-        const { phone, cadenceStage, motivation, channel, lastOffer, arv, notes } = req.body;
-
-        const followUpId = 'call-' + Date.now();
-        const newFollowUp = {
-            id: followUpId,
-            seller: seller || 'Property Owner',
-            address: address || 'Jacksonville, FL',
-            parcelId: '',
-            phone: phone || '',
-            email: '',
-            cadenceStage: cadenceStage || 'Day 1 Post-Offer',
-            motivation: motivation || 'Hot',
-            channel: channel || 'Call',
-            lastOffer: Number(lastOffer) || 110000,
-            arv: Number(arv) || 240000,
-            dueDate: 'Today',
-            dueUrgency: 'urgent',
-            activityCount: 1,
-            assignedRep: 'Alex Richard',
-            repInitials: 'AR',
-            notes: notes || 'Cadence follow-up established.',
-            created_at: new Date().toISOString()
-        };
-
-        // Insert into PostgreSQL core.outreach_calls
-        try {
-            await pool.query(
-                `INSERT INTO core.outreach_calls (id, contact_name, phone, property_address, cadence_stage, priority, notes, status, created_at)
-                 VALUES ($1, $2, $3, $4, $5, 'High', $6, 'PENDING', NOW())
-                 ON CONFLICT (id) DO NOTHING`,
-                [followUpId, seller, phone, address, cadenceStage || 'Day 1 Post-Offer', notes]
-            );
-        } catch (pgErr) {
-            console.warn('[Follow-up PG Warn]', pgErr.message);
-        }
-
-        if (!db.data.crm.follow_ups) db.data.crm.follow_ups = [];
-        db.data.crm.follow_ups.unshift(newFollowUp);
-        db.persist();
-
-        res.status(201).json(newFollowUp);
+        const seller = req.body.seller || req.body.name;
+        const address = req.body.address || req.body.property_address;
+        const { phone, cadenceStage, priority, notes, propertyId } = req.body || {};
+        if (!seller || !phone) return res.status(400).json({ error: 'A contact name and phone number are required.' });
+        const { rows: [row] } = await pool.query(
+            `INSERT INTO core.outreach_calls (id, contact_name, phone, property_address, property_id, cadence_stage, priority, notes, status, created_at)
+             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,'PENDING',NOW()) RETURNING *`,
+            ['call-' + crypto.randomUUID(), seller, phone, address || null, propertyId || null, cadenceStage || null, ['High', 'Overdue', 'Normal'].includes(priority) ? priority : 'Normal', notes || null]);
+        await audit(pool, { actor: actorName(req), action: 'FOLLOW_UP_CREATED', entityType: 'FOLLOW_UP', entityId: crypto.randomUUID(), diff: { followUpId: row.id } });
+        res.status(201).json(followUpDto(row));
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        res.status(err.code === '22P02' || err.code === '23503' ? 400 : 500).json({ error: err.message });
     }
 });
 
-apiRouter.patch('/follow-ups/:id', (req, res) => {
+apiRouter.patch('/follow-ups/:id', async (req, res) => {
     try {
-        const { id } = req.params;
-        const updates = req.body || {};
-        const followUps = db.data.crm.follow_ups || [];
-        const item = followUps.find(f => f.id === id || f.id === Number(id));
-        if (!item) return res.status(404).json({ error: 'Follow-up not found' });
-
-        Object.assign(item, updates);
-        db.persist();
-        res.json(item);
+        const { status, priority, notes, cadenceStage } = req.body || {};
+        const { rows: [row] } = await pool.query(
+            `UPDATE core.outreach_calls SET status = coalesce($2, status), priority = coalesce($3, priority), notes = coalesce($4, notes),
+               cadence_stage = coalesce($5, cadence_stage), updated_at = now() WHERE id = $1 RETURNING *`,
+            [req.params.id, ['PENDING', 'COMPLETED'].includes(status) ? status : null, ['High', 'Overdue', 'Normal'].includes(priority) ? priority : null, notes ?? null, cadenceStage ?? null]);
+        if (!row) return res.status(404).json({ error: 'Follow-up not found' });
+        res.json(followUpDto(row));
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -4402,40 +3511,36 @@ apiRouter.get('/direct-mail', async (req, res) => {
 
 apiRouter.post('/direct-mail', async (req, res) => {
     try {
-        const { name, audience, zips, format, quantity, dropDate, actor = 'Marcus Vance' } = req.body;
+        const { name, audience, zips, format, quantity, dropDate, costPerPiece } = req.body;
+        const actor = actorName(req);
         if (!name) return res.status(400).json({ error: 'Batch name is required' });
-
-        // Compliance check for Direct Mail (Blueprint Section 14)
-        const compliance = ComplianceService.evaluateOutboundRequest({
-            channel: 'MAIL',
-            recipientAddress: zips || 'Duval County',
-            actor,
-            templateId: 'tmpl-yellow-letter-v1',
-        });
+        if (!audience || !zips || !format) return res.status(400).json({ error: 'Audience, ZIP codes and format are required' });
 
         const batchId = Date.now();
         const batchUuid = crypto.randomUUID();
         const batchCode = `DM-${new Date().getUTCFullYear()}-${batchUuid.slice(0, 8).toUpperCase()}`;
         const qty = Number(quantity || req.body.count || 500);
         if (!Number.isSafeInteger(qty) || qty < 1) return res.status(400).json({ error: 'Quantity must be a positive whole number' });
-        const cost = Math.round(qty * 0.44);
+        // The per-piece price comes from the print vendor quote the user enters; it is never assumed.
+        const unitCost = costPerPiece === undefined || costPerPiece === '' ? null : Number(costPerPiece);
+        if (unitCost !== null && !(unitCost >= 0)) return res.status(400).json({ error: 'costPerPiece must be a non-negative number' });
+        const cost = unitCost === null ? null : Math.round(qty * unitCost * 100) / 100;
 
         const newBatch = {
             id: batchId,
             batch_uuid: batchUuid,
             batchCode,
             name,
-            audience: audience || 'Duval County High Equity Absentee',
-            zips: zips || '32208, 32209',
-            format: format || '4x6 Postcard',
+            audience,
+            zips,
+            format,
             quantity: qty,
             cost,
             calls: 0,
             responseRate: '0.00',
             status: 'Draft',
             statusClass: 'status-draft',
-            dropDate: dropDate || new Date().toISOString().split('T')[0],
-            compliance_status: compliance.status,
+            dropDate: dropDate || null,
             created_at: new Date().toISOString()
         };
 
@@ -4642,9 +3747,10 @@ apiRouter.get('/county-records', async (req, res) => {
                     })
                     .map((r, idx) => {
                         const assessed = Number(r.assessed_value) || 0;
-                        const estValue = assessed > 0 ? Math.round(assessed * 1.25) : 0;
-                        const equity = assessed > 0 ? Math.round(estValue * 0.45) : 0;
-                        const countyName = r.county_name || (r.county_code === 'POL' ? 'Polk County' : (r.county_code === 'CLA' ? 'Clay County' : 'Duval County'));
+                        // Market value and equity need an AVM and mortgage balance; neither is available, so they are not estimated.
+                        const estValue = null;
+                        const equity = null;
+                        const countyName = r.county_name || r.county_code || '';
                         const ownerName = r.owner_name || null;
                         const PILLAR_LABELS = {
                             FC: 'Foreclosure',
@@ -4730,7 +3836,7 @@ apiRouter.post('/county-records/push-to-skip-trace', async (req, res) => {
 
         // Audit log
         db.logAudit({
-            actor: 'Alex Richard (CEO)',
+            actor: actorName(req),
             action: 'COUNTY_RECORDS_PUSHED_TO_SKIP_TRACE',
             entityType: 'SKIP_TRACE_QUEUE',
             entityId: `BATCH-${Date.now()}`,
@@ -4888,14 +3994,12 @@ apiRouter.post('/communications/messages', async (req, res, next) => {
 });
 
 // ============================================================================
-// PARTNER MULTI-CHAT & PROPERTY LAYER MESSENGER (ALEX RICHARD & WALDO ELLIS)
+// TEAM CHAT & PROPERTY LAYER MESSENGER (every signed-in team member)
 // ============================================================================
 
 apiRouter.get('/chat/threads', async (req, res) => {
     try {
-        const activeUser = req.query.user || 'Alex Richard';
-        const isAlex = activeUser.toLowerCase().includes('alex');
-        
+        const activeUser = actorName(req);
         let threads = [];
         try {
             const query = `
@@ -4903,7 +4007,7 @@ apiRouter.get('/chat/threads', async (req, res) => {
                     t.id, t.title, t.thread_type, t.property_id, t.crownkey, t.created_by,
                     t.last_message_text, t.last_message_at, t.last_message_sender, t.created_at, t.updated_at,
                     p.address_line1, p.city, p.state_code, p.postal_code, p.parcel_raw,
-                    COUNT(m.id) FILTER (WHERE ${isAlex ? 'm.is_read_alex = false' : 'm.is_read_waldo = false'}) AS unread_count,
+                    COUNT(m.id) FILTER (WHERE m.sender_name <> $1 AND NOT ($1 = ANY(m.read_by)) AND NOT ('*' = ANY(m.read_by))) AS unread_count,
                     COUNT(m.id) AS total_messages
                 FROM core.partner_chat_threads t
                 LEFT JOIN core.properties p ON t.property_id = p.property_id
@@ -4911,7 +4015,7 @@ apiRouter.get('/chat/threads', async (req, res) => {
                 GROUP BY t.id, p.address_line1, p.city, p.state_code, p.postal_code, p.parcel_raw
                 ORDER BY t.last_message_at DESC NULLS LAST, t.updated_at DESC
             `;
-            const { rows } = await pool.query(query);
+            const { rows } = await pool.query(query, [activeUser]);
             threads = rows.map(r => ({
                 id: r.id,
                 title: r.title,
@@ -4934,16 +4038,17 @@ apiRouter.get('/chat/threads', async (req, res) => {
                 } : null
             }));
         } catch (dbErr) {
-            console.warn('[Chat Threads DB fallback]', dbErr.message);
-            threads = [];
+            throw dbErr;
         }
 
+        const { rows: team } = await pool.query(`SELECT full_name FROM core.users WHERE status = 'ACTIVE' AND full_name <> $1 ORDER BY full_name`, [activeUser]);
         const totalUnread = threads.reduce((acc, t) => acc + (t.unread_count || 0), 0);
 
         res.json({
             ok: true,
-            active_user: isAlex ? 'Alex Richard' : 'Waldo Ellis',
-            partner_user: isAlex ? 'Waldo Ellis' : 'Alex Richard',
+            active_user: activeUser,
+            partner_user: team[0]?.full_name || '',
+            participants: team.map(t => t.full_name),
             total_unread: totalUnread,
             threads
         });
@@ -4955,7 +4060,7 @@ apiRouter.get('/chat/threads', async (req, res) => {
 apiRouter.post('/chat/threads', async (req, res) => {
     try {
         const { title, thread_type, property_id, created_by } = req.body;
-        const sender = created_by || 'Alex Richard';
+        const sender = created_by || actorName(req);
 
         // If thread for property already exists, return existing
         if (property_id) {
@@ -5008,8 +4113,7 @@ apiRouter.post('/chat/threads', async (req, res) => {
 apiRouter.get('/chat/threads/:threadId/messages', async (req, res) => {
     try {
         const { threadId } = req.params;
-        const activeUser = req.query.user || 'Alex Richard';
-        const isAlex = activeUser.toLowerCase().includes('alex');
+        const activeUser = actorName(req);
 
         // Fetch thread
         const threadRes = await pool.query(`
@@ -5033,9 +4137,9 @@ apiRouter.get('/chat/threads/:threadId/messages', async (req, res) => {
         // Auto-mark as read for activeUser
         await pool.query(`
             UPDATE core.partner_chat_messages
-            SET ${isAlex ? 'is_read_alex = true' : 'is_read_waldo = true'}
-            WHERE thread_id = $1 AND ${isAlex ? 'is_read_alex = false' : 'is_read_waldo = false'}
-        `, [threadId]).catch(e => console.warn('[Mark read warn]', e.message));
+            SET read_by = array_append(read_by, $2)
+            WHERE thread_id = $1 AND NOT ($2 = ANY(read_by)) AND NOT ('*' = ANY(read_by))
+        `, [threadId, activeUser]);
 
         res.json({
             ok: true,
@@ -5064,9 +4168,8 @@ apiRouter.post('/chat/threads/:threadId/messages', async (req, res) => {
             return res.status(400).json({ error: 'Message text is required' });
         }
 
-        const sender = sender_name || 'Alex Richard';
-        const isAlex = sender.toLowerCase().includes('alex');
-        const role = sender_role || (isAlex ? 'Acquisitions Lead (Admin)' : 'Dispositions Lead (Partner)');
+        const sender = actorName(req);
+        const role = req.user?.roleName || req.user?.role || null;
 
         // Get thread for property_id & title
         const threadRes = await pool.query(`SELECT * FROM core.partner_chat_threads WHERE id = $1`, [threadId]);
@@ -5078,8 +4181,8 @@ apiRouter.post('/chat/threads/:threadId/messages', async (req, res) => {
         // Insert message
         const insertMsg = `
             INSERT INTO core.partner_chat_messages
-                (thread_id, sender_name, sender_role, message_text, property_id, tag, attachments, is_read_alex, is_read_waldo, reply_to_id, reply_to_sender, reply_to_text)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+                (thread_id, sender_id, sender_name, sender_role, message_text, property_id, tag, attachments, read_by, reply_to_id, reply_to_sender, reply_to_text)
+            VALUES ($1, $13, $2, $3, $4, $5, $6, $7, ARRAY[$8]::text[], $9, $10, $11)
             RETURNING *
         `;
         const { rows: msgRows } = await pool.query(insertMsg, [
@@ -5090,11 +4193,11 @@ apiRouter.post('/chat/threads/:threadId/messages', async (req, res) => {
             thread.property_id || null,
             tag || null,
             JSON.stringify(attachments || []),
-            isAlex,
-            !isAlex,
+            sender,
             reply_to_id || null,
             reply_to_sender || null,
-            reply_to_text || null
+            reply_to_text || null,
+            req.user?.id || null
         ]);
 
         // Update thread
@@ -5148,14 +4251,13 @@ apiRouter.post('/chat/threads/:threadId/messages', async (req, res) => {
 apiRouter.patch('/chat/threads/:threadId/read', async (req, res) => {
     try {
         const { threadId } = req.params;
-        const activeUser = req.body.user_name || 'Alex Richard';
-        const isAlex = activeUser.toLowerCase().includes('alex');
+        const activeUser = actorName(req);
 
         await pool.query(`
             UPDATE core.partner_chat_messages
-            SET ${isAlex ? 'is_read_alex = true' : 'is_read_waldo = true'}
-            WHERE thread_id = $1
-        `, [threadId]);
+            SET read_by = array_append(read_by, $2)
+            WHERE thread_id = $1 AND NOT ($2 = ANY(read_by)) AND NOT ('*' = ANY(read_by))
+        `, [threadId, activeUser]);
 
         res.json({ ok: true, threadId, user_name: activeUser });
     } catch (err) {
@@ -5207,33 +4309,26 @@ apiRouter.delete('/chat/messages/:messageId', async (req, res) => {
 apiRouter.get('/chat/presence', async (req, res) => {
     try {
         const { rows } = await pool.query(`
-            SELECT * FROM core.partner_presence ORDER BY user_name ASC
-        `);
+            SELECT u.full_name AS user_name, u.full_name, coalesce(r.name, u.role) AS role, pp.last_active_at, pp.current_device,
+                   CASE WHEN pp.last_active_at > now() - interval '5 minutes' THEN coalesce(pp.status, 'online') ELSE 'offline' END AS status
+            FROM core.users u
+            LEFT JOIN core.roles r ON r.role_key = u.role
+            LEFT JOIN core.partner_presence pp ON pp.user_name = u.full_name
+            WHERE u.status = 'ACTIVE' ORDER BY u.full_name`);
         res.json({ ok: true, presence: rows });
     } catch (err) {
-        res.json({
-            ok: true,
-            presence: [
-                { user_name: 'Alex Richard', full_name: 'Alex Richard', status: 'online', role: 'Acquisitions Lead (Admin)' },
-                { user_name: 'Waldo Ellis', full_name: 'Waldo Ellis', status: 'online', role: 'Dispositions Lead (Partner)' }
-            ]
-        });
+        res.status(500).json({ error: err.message });
     }
 });
 
 apiRouter.post('/chat/presence', async (req, res) => {
     try {
-        const { user_name, status, current_device } = req.body;
-        if (!user_name) return res.status(400).json({ error: 'user_name required' });
-
+        const { status, current_device } = req.body || {};
         await pool.query(`
-            UPDATE core.partner_presence
-            SET status = COALESCE($1, status),
-                last_active_at = now(),
-                current_device = COALESCE($2, current_device)
-            WHERE user_name = $3
-        `, [status || 'online', current_device, user_name]);
-
+            INSERT INTO core.partner_presence (user_name, full_name, status, role, last_active_at, current_device)
+            VALUES ($1, $1, $2, $3, now(), $4)
+            ON CONFLICT (user_name) DO UPDATE SET status = EXCLUDED.status, last_active_at = now(), current_device = coalesce(EXCLUDED.current_device, core.partner_presence.current_device)`,
+            [actorName(req), ['online', 'away', 'offline'].includes(status) ? status : 'online', req.user?.roleName || req.user?.role || null, current_device || null]);
         res.json({ ok: true });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -5289,50 +4384,64 @@ apiRouter.get('/properties/:propertyId/partner-chat', async (req, res) => {
 });
 
 // --- Calendar Events ---
+const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+// Dates are calendar days (YYYY-MM-DD) and are never converted through a timezone.
+function describeDay(isoDate) {
+    const [y, m, d] = isoDate.split('-').map(Number);
+    const weekday = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
+    return { dayNum: String(d), month: MONTH_NAMES[m - 1].toUpperCase(), dateString: `${DAY_NAMES[weekday]}, ${MONTH_NAMES[m - 1]} ${d}` };
+}
+
 apiRouter.get('/calendar', (req, res) => {
+    const events = [...db.data.crm.calendar_events].sort((a, b) => `${a.date} ${a.sortTime || ''}`.localeCompare(`${b.date} ${b.sortTime || ''}`));
+    res.json({ total: events.length, events });
+});
+
+apiRouter.post('/calendar', (req, res) => {
     try {
-        const events = db.data.crm.calendar_events || [];
-        res.json({ total: events.length, events });
+        const { title, type, date, time, address, rep, notes, contactName, phone, lockbox, parcelId } = req.body || {};
+        if (!title || !String(title).trim()) return res.status(400).json({ error: 'Title is required' });
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(String(date || ''))) return res.status(400).json({ error: 'A date in YYYY-MM-DD format is required' });
+        if (Number.isNaN(Date.parse(`${date}T00:00:00Z`))) return res.status(400).json({ error: 'That date is not valid' });
+        if (!time || !String(time).trim()) return res.status(400).json({ error: 'A time is required' });
+
+        const event = {
+            id: crypto.randomUUID(), date, ...describeDay(date), time: String(time).trim(), title: String(title).trim(),
+            address: address || '', parcelId: parcelId || '', type: type || '', rep: rep || actorName(req), contactName: contactName || '',
+            phone: phone || '', lockbox: lockbox || '', notes: notes || '', completed: false, created_by: actorName(req), created_at: new Date().toISOString()
+        };
+        db.data.crm.calendar_events.unshift(event);
+        db.persist();
+        db.logAudit({ actor: actorName(req), action: 'CALENDAR_EVENT_CREATED', entityType: 'CALENDAR_EVENT', entityId: event.id, redactedDiff: { title: event.title, date } });
+        res.status(201).json(event);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
-apiRouter.post('/calendar', (req, res) => {
-    try {
-        const { title, type, date, time, address, rep, notes } = req.body;
-        if (!title) return res.status(400).json({ error: 'Title is required' });
-
-        const eventId = Date.now();
-        const dateObj = new Date(date || Date.now());
-        const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        const dateString = dayNames[dateObj.getDay()] + ', ' + monthNames[dateObj.getMonth()] + ' ' + dateObj.getDate();
-
-        const newEvent = {
-            id: eventId,
-            date: date || new Date().toISOString().split('T')[0],
-            dayNum: String(dateObj.getDate()),
-            dateString,
-            time: time || '10:00 AM',
-            title,
-            address: address || 'Jacksonville, FL',
-            parcel: '',
-            type: type || 'Seller Walkthrough',
-            rep: rep || 'Alex Richard',
-            notes: notes || 'Scheduled inspection/walkthrough.',
-            completed: false,
-            created_at: new Date().toISOString()
-        };
-
-        if (!db.data.crm.calendar_events) db.data.crm.calendar_events = [];
-        db.data.crm.calendar_events.unshift(newEvent);
-        db.persist();
-
-        res.status(201).json(newEvent);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+apiRouter.patch('/calendar/events/:id', (req, res) => {
+    const event = db.data.crm.calendar_events.find(e => e.id === req.params.id);
+    if (!event) return res.status(404).json({ error: 'Appointment not found' });
+    for (const key of ['title', 'time', 'address', 'rep', 'notes', 'contactName', 'phone', 'lockbox', 'type', 'completed']) {
+        if (req.body && key in req.body) event[key] = req.body[key];
     }
+    if (req.body?.date) {
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(req.body.date)) return res.status(400).json({ error: 'A date in YYYY-MM-DD format is required' });
+        Object.assign(event, { date: req.body.date, ...describeDay(req.body.date) });
+    }
+    db.persist();
+    res.json(event);
+});
+
+apiRouter.delete('/calendar/events/:id', (req, res) => {
+    const index = db.data.crm.calendar_events.findIndex(e => e.id === req.params.id);
+    if (index < 0) return res.status(404).json({ error: 'Appointment not found' });
+    const [removed] = db.data.crm.calendar_events.splice(index, 1);
+    db.persist();
+    db.logAudit({ actor: actorName(req), action: 'CALENDAR_EVENT_DELETED', entityType: 'CALENDAR_EVENT', entityId: removed.id, redactedDiff: { title: removed.title } });
+    res.json({ success: true });
 });
 
 // ============================================================================
@@ -5490,7 +4599,7 @@ apiRouter.delete('/team/:id', async (req, res) => {
 });
 
 // 3. Authentication Endpoint
-apiRouter.post('/auth/login', async (req, res) => {
+apiRouter.post('/auth/login', loginRateLimit, async (req, res) => {
     try {
         const { email, password } = req.body;
         const result = await RbacService.authenticate({ email, password });
@@ -5523,107 +4632,43 @@ apiRouter.post('/auth/logout', async (req, res, next) => {
 // ============================================================================
 // Dashboard Live Metrics
 // ============================================================================
-apiRouter.get("/dashboard/metrics", async (req, res) => {
+apiRouter.get('/dashboard/metrics', async (req, res) => {
     try {
-        let totalLeads = 0;
-        let totalProperties = 0;
-        let duvalLeads = 0;
-        let clayLeads = 0;
-        let stjohnsLeads = 0;
-        let polkLeads = 0;
-        let totalTasks = 0;
-        let totalAppointments = 0;
-        let offersPending = 0;
-        let totalUnderContract = 0;
-        let totalAssignmentRevenue = 0;
-        let avgMAO = 0;
-        let avgARV = 0;
-        let totalBuyers = 0;
-        let dispoOpps = 0;
-        let contactRate = "100%";
-
-        try {
-            const leadsRes = await pool.query(`SELECT count(*) as total FROM core.leads`);
-            totalLeads = parseInt(leadsRes.rows[0]?.total || 0, 10);
-
-            const propsRes = await pool.query(`
-                SELECT count(*) as total,
-                       count(*) FILTER (WHERE c.county_code = 'DUV') as duval_count,
-                       count(*) FILTER (WHERE c.county_code = 'CLY') as clay_count,
-                       count(*) FILTER (WHERE c.county_code = 'STJ') as stjohns_count,
-                       count(*) FILTER (WHERE c.county_code = 'POL') as polk_count
-                FROM core.properties p
-                LEFT JOIN ref.counties c ON p.county_id = c.county_id
-            `);
-            totalProperties = parseInt(propsRes.rows[0]?.total || 0, 10);
-            duvalLeads = parseInt(propsRes.rows[0]?.duval_count || 0, 10);
-            clayLeads = parseInt(propsRes.rows[0]?.clay_count || 0, 10);
-            stjohnsLeads = parseInt(propsRes.rows[0]?.stjohns_count || 0, 10);
-            polkLeads = parseInt(propsRes.rows[0]?.polk_count || 0, 10);
-
-            const interRes = await pool.query(`SELECT count(*) as total FROM core.interactions`);
-            const totalInteractions = parseInt(interRes.rows[0]?.total || 0, 10);
-            contactRate = totalLeads ? Math.min(100, Math.round((totalInteractions / totalLeads) * 100)) + "%" : "100%";
-
-            const buyersRes = await pool.query(`SELECT count(*) as total FROM crm.cash_buyers`);
-            totalBuyers = parseInt(buyersRes.rows[0]?.total || 0, 10);
-
-            const funnelStatsRes = await pool.query(`
-                SELECT 
-                    count(*) FILTER (WHERE milestone_index = 2) as appointments_count,
-                    count(*) FILTER (WHERE milestone_index = 3) as offers_count,
-                    count(*) FILTER (WHERE milestone_index BETWEEN 4 AND 7) as contract_count,
-                    count(*) FILTER (WHERE milestone_index BETWEEN 8 AND 10) as dispo_count,
-                    coalesce(sum(fee) FILTER (WHERE milestone_index >= 4), 0) as contract_revenue,
-                    coalesce(round(avg(buy_price) FILTER (WHERE buy_price > 0)), 0) as avg_mao,
-                    coalesce(round(avg(arv) FILTER (WHERE arv > 0)), 0) as avg_arv
-                FROM crm.deal_funnel
-            `);
-            if (funnelStatsRes.rows.length) {
-                const fs = funnelStatsRes.rows[0];
-                totalAppointments = parseInt(fs.appointments_count || 0, 10);
-                offersPending = parseInt(fs.offers_count || 0, 10);
-                totalUnderContract = parseInt(fs.contract_count || 0, 10);
-                dispoOpps = parseInt(fs.dispo_count || 0, 10);
-                totalAssignmentRevenue = parseInt(fs.contract_revenue || 0, 10);
-                avgMAO = parseInt(fs.avg_mao || 0, 10);
-                avgARV = parseInt(fs.avg_arv || 0, 10);
-            }
-        } catch (dbErr) {
-            console.warn('[Dashboard Metrics RDS Fallback]:', dbErr.message);
-            totalLeads = (db.data.core?.leads || []).length;
-            totalProperties = (db.data.core?.properties || []).length;
-            totalTasks = (db.data.core?.tasks || []).length;
-        }
-
-        const countyIntelligence = [
-            { name: "Duval County", count: String(duvalLeads || 21) },
-            { name: "Clay County", count: String(clayLeads || 8) },
-            { name: "St. Johns County", count: String(stjohnsLeads || 6) },
-            { name: "Polk County", count: String(polkLeads || 1) }
-        ];
-
+        const money = n => '$' + Math.round(Number(n) || 0).toLocaleString('en-US');
+        const [{ rows: [lead] }, { rows: [contact] }, { rows: [buyers] }, { rows: [funnel] }, { rows: counties }] = await Promise.all([
+            pool.query('SELECT count(*)::int AS total FROM core.leads'),
+            pool.query(`SELECT count(DISTINCT lead_id) FILTER (WHERE direction = 'OUTBOUND')::int AS contacted FROM core.interactions WHERE lead_id IS NOT NULL`),
+            pool.query('SELECT count(*)::int AS total FROM crm.cash_buyers'),
+            pool.query(`SELECT count(*) FILTER (WHERE milestone_index = 2)::int AS appointments, count(*) FILTER (WHERE milestone_index = 3)::int AS offers,
+                               count(*) FILTER (WHERE milestone_index BETWEEN 4 AND 7)::int AS contracts, count(*) FILTER (WHERE milestone_index BETWEEN 8 AND 10)::int AS dispo,
+                               coalesce(sum(fee) FILTER (WHERE milestone_index >= 4), 0) AS revenue,
+                               round(avg(buy_price) FILTER (WHERE buy_price > 0)) AS avg_mao, round(avg(arv) FILTER (WHERE arv > 0)) AS avg_arv
+                        FROM crm.deal_funnel`),
+            pool.query(`SELECT c.county_name AS name, count(p.property_id)::int AS count FROM ref.counties c
+                        LEFT JOIN core.properties p ON p.county_id = c.county_id GROUP BY c.county_name ORDER BY count DESC, c.county_name`)
+        ]);
+        const contactRate = lead.total ? `${Math.round((contact.contacted / lead.total) * 100)}%` : '0%';
         res.json({
             metrics: [
-                { iconKey: "users", label: "Total Seller Leads", value: String(totalLeads), change: "Live", href: "/seller-leads" },
-                { iconKey: "phone", label: "Contact Rate", value: contactRate, change: "Active", href: "/communications" },
-                { iconKey: "calendar", label: "Appointments Set", value: String(totalAppointments), change: "Live", href: "/calendar" },
-                { iconKey: "file", label: "Offers Pending", value: String(offersPending), change: "Active", href: "/acquisitions" },
-                { iconKey: "handshake", label: "Under Contract", value: String(totalUnderContract), change: "Live", href: "/contracts" },
-                { iconKey: "badgeDollar", label: "Assignment Revenue", value: "$" + totalAssignmentRevenue.toLocaleString(), change: "Live", href: "/analytics" },
-                { iconKey: "calculator", label: "Avg. MAO", value: "$" + avgMAO.toLocaleString(), change: "Real", href: "/deal-analyzer" },
-                { iconKey: "house", label: "Avg. ARV", value: "$" + avgARV.toLocaleString(), change: "Real", href: "/deal-analyzer" },
-                { iconKey: "users", label: "Cash Buyer Matches", value: String(totalBuyers), change: "Live", href: "/cash-buyers" },
-                { iconKey: "dollar", label: "Dispo Opportunities", value: String(dispoOpps), change: "Live", href: "/dispositions" }
+                { iconKey: 'users', label: 'Total Seller Leads', value: String(lead.total), change: 'Live', href: '/seller-leads' },
+                { iconKey: 'phone', label: 'Contact Rate', value: contactRate, change: 'Live', href: '/communications' },
+                { iconKey: 'calendar', label: 'Appointments Set', value: String(funnel.appointments), change: 'Live', href: '/calendar' },
+                { iconKey: 'file', label: 'Offers Pending', value: String(funnel.offers), change: 'Live', href: '/acquisitions' },
+                { iconKey: 'handshake', label: 'Under Contract', value: String(funnel.contracts), change: 'Live', href: '/contracts' },
+                { iconKey: 'badgeDollar', label: 'Assignment Revenue', value: money(funnel.revenue), change: 'Live', href: '/analytics' },
+                { iconKey: 'calculator', label: 'Avg. MAO', value: funnel.avg_mao ? money(funnel.avg_mao) : '—', change: 'Live', href: '/deal-analyzer' },
+                { iconKey: 'house', label: 'Avg. ARV', value: funnel.avg_arv ? money(funnel.avg_arv) : '—', change: 'Live', href: '/deal-analyzer' },
+                { iconKey: 'users', label: 'Cash Buyer Matches', value: String(buyers.total), change: 'Live', href: '/cash-buyers' },
+                { iconKey: 'dollar', label: 'Dispo Opportunities', value: String(funnel.dispo), change: 'Live', href: '/dispositions' }
             ],
             signals: [
-                { code: "DUVAL", label: "Lead flow", value: String(totalLeads), change: "Live" },
-                { code: "BUYERS", label: "Cash buyers", value: String(totalBuyers), change: "Active" },
-                { code: "CONTRACT", label: "Under contract", value: String(totalUnderContract), change: "Live" },
-                { code: "YIELD", label: "Assignment rev", value: "$" + Math.round(totalAssignmentRevenue / 1000) + "K", change: "Locked" },
-                { code: "DEALS", label: "Dispo opportunities", value: String(dispoOpps), change: "Active" }
+                { code: 'LEADS', label: 'Lead flow', value: String(lead.total), change: 'Live' },
+                { code: 'BUYERS', label: 'Cash buyers', value: String(buyers.total), change: 'Live' },
+                { code: 'CONTRACT', label: 'Under contract', value: String(funnel.contracts), change: 'Live' },
+                { code: 'YIELD', label: 'Assignment revenue', value: money(funnel.revenue), change: 'Live' },
+                { code: 'DEALS', label: 'Dispo opportunities', value: String(funnel.dispo), change: 'Live' }
             ],
-            countyIntelligence
+            countyIntelligence: counties.map(c => ({ name: c.name, count: String(c.count) }))
         });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -5633,314 +4678,134 @@ apiRouter.get("/dashboard/metrics", async (req, res) => {
 // ============================================================================
 // System Settings API
 // ============================================================================
-apiRouter.get('/settings', (req, res) => {
-    try {
-        const s3Config = StorageService.getConfig();
-        const rdsHost = 'hushhawk-postgres.cxsqkk2qulh9.us-east-2.rds.amazonaws.com';
-        const rdsDb = 'hushhawk';
-        const maskedDbUri = `postgresql://hushhawk:••••••••@${rdsHost}:5432/${rdsDb}`;
+const SETTINGS_SECTIONS = ['general', 'underwriting'];
+const configured = (...names) => names.every(n => Boolean(process.env[n]));
 
-        const defaults = {
-            general: {
-                entityName: 'HushHawk Intelligence LLC',
-                titleCompany: 'First American Title',
-                titleEmail: 'closing@firstam.com',
-                primaryCounty: 'Duval County (Jacksonville)',
-                ein: '88-1234567'
-            },
-            underwriting: {
-                maoDiscount: 70,
-                minSpread: 10000,
-                defaultEmd: 500,
-                inspectionDays: 10,
-                requireProofOfFunds: true
-            },
-            security: {
-                databaseUri: maskedDbUri,
-                databaseHost: rdsHost,
-                databaseName: rdsDb,
-                databaseEngine: 'PostgreSQL 16 (AWS RDS Multi-AZ)',
-                s3Bucket: s3Config.bucket,
-                s3Region: s3Config.region,
-                s3Encryption: s3Config.encryption,
-                s3Status: s3Config.status,
-                autoMigrate: 'strict',
-                logRetention: '180',
-                dncScrub: true,
-                litigatorScrub: true,
-                smsOptOut: true
-            },
-            podio: {
-                applicationName: 'Hush Hawk Integration',
-                appId: process.env.PODIO_APP_ID || '30087410',
-                clientId: process.env.PODIO_CLIENT_ID || 'hushhawk',
-                status: 'CONNECTED',
-                webhookUrl: process.env.PODIO_WEBHOOK_URL || 'http://3.148.218.118/api/v1/webhooks/podio',
-                lastSync: new Date().toISOString()
-            },
-            storage: s3Config,
-            integrations: [
-                {
-                    name: 'PostgreSQL Core DB (AWS RDS)',
-                    icon: 'database',
-                    status: 'active',
-                    statusText: 'Connected (Live AWS RDS)',
-                    description: 'CrownKey parcel registry, transaction tracking, and relational data engine in AWS us-east-2.',
-                    endpoint: maskedDbUri,
-                    enabled: true
-                },
-                {
-                    name: 'Amazon S3 Private Vault',
-                    icon: 'database',
-                    status: s3Config.status === 'CONFIGURED' ? 'active' : 'warn',
-                    statusText: s3Config.status === 'CONFIGURED' ? 'Configured (AES-256 Encrypted)' : 'Development Preset',
-                    description: 'Private S3 bucket for inspection photos, deeds, title PDFs, and attachments (100% Block Public Access).',
-                    endpoint: `s3://${s3Config.bucket} (${s3Config.region})`,
-                    enabled: true
-                },
-                {
-                    name: 'Podio Wholesale CRM Sync',
-                    icon: 'refresh',
-                    status: 'active',
-                    statusText: 'Connected (App ID: ' + (process.env.PODIO_APP_ID || '30087410') + ')',
-                    description: 'Application: Hush Hawk Integration · Active 2-way webhook listener & coexistence sync.',
-                    endpoint: `https://api.podio.com/app/${process.env.PODIO_APP_ID || '30087410'} & Webhook: /api/v1/webhooks/podio`,
-                    enabled: true
-                },
-                {
-                    name: 'Twilio SMS & Voice Gateway',
-                    icon: 'phone',
-                    status: 'active',
-                    statusText: 'Online (10DLC Approved)',
-                    description: 'Wholesale seller SMS drips, local (904) phone numbers, and call recordings.',
-                    endpoint: 'https://api.twilio.com/2010-04-01/Accounts/AC.../Messages',
-                    enabled: true
-                },
-                {
-                    name: 'CrownKey GIS Parcel Engine',
-                    icon: 'pin',
-                    status: 'active',
-                    statusText: 'Verified (Duval/Clay/St. Johns/Nassau)',
-                    description: 'Direct Florida county tax appraiser feed for automated parcel validation and deed tracking.',
-                    endpoint: 'https://gis.coj.net/propertyappraiser/parcels/v2',
-                    enabled: true
-                },
-                {
-                    name: 'SendGrid Email Delivery',
-                    icon: 'mail',
-                    status: 'active',
-                    statusText: 'Operational',
-                    description: 'VIP cash buyer blasts, deal packet attachments, and title escrow notifications.',
-                    endpoint: 'https://api.sendgrid.com/v3/mail/send',
-                    enabled: true
-                },
-                {
-                    name: 'smrtPhone Telephony & SMS Sync',
-                    icon: 'phone',
-                    status: 'active',
-                    statusText: 'Connected (Podio Bridge & Webhook)',
-                    description: 'Real-time call tracking, recordings, and SMS messages linked directly through Podio and /api/v1/webhooks/smrtphone.',
-                    endpoint: 'https://api.smrtphone.io & Webhook: /api/v1/webhooks/smrtphone',
-                    enabled: true
-                },
-                {
-                    name: 'CrownKey Direct Mail QR Tracker & AudienceLab',
-                    icon: 'pin',
-                    status: 'active',
-                    statusText: 'Active (DUV-FC-32221)',
-                    description: 'Direct mail distress pillar tracking (FC, TAX, CODE, PRB, VAC, ABS) with instant scan logging and AudienceLab retargeting.',
-                    endpoint: '/api/v1/track/qr/{CROWNKEY} & AudienceLab CTA Pixel',
-                    enabled: true
-                },
-                {
-                    name: 'BatchLeads Automated Webhook Gateway',
-                    icon: 'zap',
-                    status: 'active',
-                    statusText: "Connected (Darren's Workspace)",
-                    description: 'Real-time tag push ("Push to HushHawk", "Hot Lead") with automatic CrownKey attribution (DUV-[PARCEL]-VAC-001 · BATCHLEADS).',
-                    endpoint: '/api/v1/integrations/batchleads/webhook',
-                    enabled: true
-                }
-            ]
-        };
-        const settings = { ...defaults, ...(db.data.settings || {}) };
-        // Ensure real live integrations and security always override legacy cached settings
-        settings.integrations = defaults.integrations;
-        settings.security = { ...defaults.security, ...(db.data.settings?.security || {}) };
-        settings.podio = defaults.podio;
-        settings.storage = defaults.storage;
+async function loadStoredSettings() {
+    const { rows } = await pool.query('SELECT key, value FROM ops.app_settings');
+    return Object.fromEntries(rows.map(r => [r.key, r.value]));
+}
 
-        res.json(settings);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-apiRouter.post('/settings', (req, res) => {
-    try {
-        db.data.settings = { ...(db.data.settings || {}), ...req.body };
-        db.persist();
-        res.json({ ok: true, settings: db.data.settings });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// Live Integration Diagnostics & Real Latency Benchmarking
-apiRouter.post('/integrations/test-all', async (req, res) => {
-    const results = [];
-
-    // 1. AWS RDS PostgreSQL Test
-    const tPg = Date.now();
-    let pgOk = false;
-    let pgErr = null;
-    try {
-        await pool.query('SELECT 1');
-        pgOk = true;
-    } catch (e) {
-        pgErr = e.message;
-    }
-    const pgLatency = Date.now() - tPg;
-    results.push({
-        name: 'AWS RDS PostgreSQL Canonical Database',
-        status: pgOk ? 'active' : 'error',
-        statusText: pgOk ? `Operational (${pgLatency}ms)` : 'Database Error: ' + pgErr,
-        latencyMs: pgLatency,
-        liveTested: true
-    });
-
-    // 2. AWS S3 Private Vault Test
-    const s3Cfg = StorageService.getConfig();
-    results.push({
-        name: 'AWS S3 Private Property Document Vault',
-        status: s3Cfg.configured ? 'active' : 'standby',
-        statusText: s3Cfg.configured ? `Encrypted Bucket Online (AES256)` : 'Standby / Local Emulation',
-        latencyMs: s3Cfg.configured ? 18 : 0,
-        liveTested: true
-    });
-
-    // 3. Podio CRM Sync
-    const tPodio = Date.now();
-    let podioOk = false;
-    let podioMsg = '';
-    try {
-        await PodioService.authenticateApp(PodioSyncService.LEADS_APP_ID, PodioSyncService.APP_TOKEN);
-        podioOk = true;
-        podioMsg = `Connected Live (Space: Elite Homes USA Group LLC · 16 Apps Active)`;
-    } catch (e) {
-        podioMsg = 'Podio Auth Error: ' + e.message;
-    }
-    const podioLatency = Date.now() - tPodio;
-    results.push({
-        name: 'Podio Multi-App CRM Coexistence Engine',
-        status: podioOk ? 'active' : 'error',
-        statusText: podioMsg,
-        latencyMs: podioLatency,
-        liveTested: true
-    });
-
-    // 4. smrtPhone Telephony & SMS Gateway
-    results.push({
-        name: 'smrtPhone Telephony & SMS Sync',
-        status: 'active',
-        statusText: 'Webhook Live (/api/v1/webhooks/smrtphone)',
-        latencyMs: 8,
-        liveTested: true
-    });
-
-    // 5. CrownKey GIS Parcel Engine
-    results.push({
-        name: 'CrownKey GIS Parcel Engine',
-        status: 'active',
-        statusText: 'Active Feed (Duval/Clay/St. Johns/Nassau)',
-        latencyMs: 14,
-        liveTested: true
-    });
-
-    // 6. Carrier Dispatch (Twilio / SendGrid / SMTP / Native)
+function integrationStatuses(pgOnline, s3Config) {
     const carrier = CarrierDispatchService.getCarrierStatus();
-    results.push({
-        name: 'Telephony & SMS Carrier Bridge',
-        status: carrier.sms.configured ? 'active' : 'active',
-        statusText: carrier.sms.provider,
-        latencyMs: 11,
-        liveTested: true
+    const mk = (name, icon, ok, okText, offText, description, endpoint) => ({
+        name, icon, description, endpoint, enabled: ok,
+        status: ok ? 'active' : 'warn', statusText: ok ? okText : offText
     });
-    results.push({
-        name: 'Email Delivery Gateway',
-        status: carrier.email.configured ? 'active' : 'active',
-        statusText: carrier.email.provider,
-        latencyMs: 9,
-        liveTested: true
-    });
+    return [
+        mk('PostgreSQL Core Database', 'database', pgOnline, 'Connected', 'Unreachable',
+            'CrownKey registry, events, leads and audit trail.', null),
+        mk('Amazon S3 Private Vault', 'database', s3Config.status === 'CONFIGURED', 'Configured', 'Not configured',
+            'Private bucket for photos, deeds and documents.', s3Config.bucket ? `s3://${s3Config.bucket}` : null),
+        mk('Podio CRM Sync', 'refresh', configured('PODIO_CLIENT_ID', 'PODIO_APP_TOKEN'), 'Credentials configured', 'Credentials missing',
+            'Two-way sync plus webhook listener.', publicWebhookUrl('/api/v1/webhooks/podio')),
+        mk('Twilio SMS & Voice', 'phone', Boolean(carrier?.sms?.configured), 'Configured', 'Not configured',
+            'Outbound SMS and calls.', null),
+        mk('Email Delivery', 'mail', Boolean(carrier?.email?.configured), carrier?.email?.provider || 'Configured', 'Not configured',
+            'Outbound email.', null),
+        mk('smrtPhone Webhook', 'phone', configured('PUBLIC_API_URL', 'WEBHOOK_SECRET'), 'Webhook endpoint ready', 'Set PUBLIC_API_URL and WEBHOOK_SECRET',
+            'Inbound call and SMS events.', publicWebhookUrl('/api/v1/webhooks/smrtphone')),
+        mk('BatchLeads Webhook', 'zap', configured('PUBLIC_API_URL', 'WEBHOOK_SECRET'), 'Webhook endpoint ready', 'Set PUBLIC_API_URL and WEBHOOK_SECRET',
+            'Tag-push lead ingestion.', publicWebhookUrl('/api/v1/integrations/batchleads/webhook'))
+    ];
+}
 
-    // 7. CrownKey Direct Mail QR Tracker & AudienceLab
-    results.push({
-        name: 'CrownKey Direct Mail QR Tracker & AudienceLab',
-        status: 'active',
-        statusText: 'Active Tracking Pixel (/api/v1/track/qr/{CROWNKEY})',
-        latencyMs: 5,
-        liveTested: true
-    });
+apiRouter.get('/settings', async (req, res) => {
+    try {
+        const stored = await loadStoredSettings();
+        const s3Config = StorageService.getConfig();
+        const pg = await checkDatabaseHealth();
+        res.json({
+            general: { entityName: '', titleCompany: '', titleEmail: '', primaryCounty: '', ein: '', ...(stored.general || {}) },
+            underwriting: { maoDiscount: null, minSpread: null, defaultEmd: null, inspectionDays: null, requireProofOfFunds: false, ...(stored.underwriting || {}) },
+            security: {
+                s3Bucket: s3Config.bucket, s3Region: s3Config.region, s3Encryption: s3Config.encryption, s3Status: s3Config.status
+            },
+            podio: { appId: process.env.PODIO_APP_ID || null, configured: configured('PODIO_CLIENT_ID', 'PODIO_APP_TOKEN') },
+            storage: s3Config,
+            integrations: integrationStatuses(pg.status === 'ONLINE', s3Config)
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
 
-    // 8. BatchLeads Automated Webhook Gateway
-    results.push({
-        name: 'BatchLeads Automated Webhook Gateway',
-        status: 'active',
-        statusText: "Connected (Darren's Workspace · /api/v1/integrations/batchleads/webhook)",
-        latencyMs: 4,
-        liveTested: true
-    });
+apiRouter.post('/settings', async (req, res) => {
+    try {
+        const entries = SETTINGS_SECTIONS.filter(k => req.body && typeof req.body[k] === 'object' && req.body[k] !== null);
+        if (!entries.length) return res.status(400).json({ error: 'Provide general and/or underwriting settings.' });
+        for (const key of entries) {
+            await pool.query(
+                `INSERT INTO ops.app_settings (key, value, updated_by, updated_at) VALUES ($1, $2, $3, now())
+                 ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_by = EXCLUDED.updated_by, updated_at = now()`,
+                [key, JSON.stringify(req.body[key]), actorName(req)]
+            );
+        }
+        res.json({ ok: true, saved: entries });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
 
-    res.json({
-        ok: true,
-        testedCount: results.length,
-        timestamp: new Date().toISOString(),
-        integrations: results
-    });
+// Live Integration Diagnostics: every result is measured or read from real configuration.
+const INTEGRATION_TESTS = {
+    postgres: { name: 'PostgreSQL Core Database', run: async () => { await pool.query('SELECT 1'); return 'Query succeeded.'; } },
+    podio: {
+        name: 'Podio CRM',
+        run: async () => {
+            if (!configured('PODIO_CLIENT_ID', 'PODIO_APP_TOKEN')) throw new Error('PODIO_CLIENT_ID / PODIO_APP_TOKEN are not set.');
+            await PodioService.authenticateApp(PodioSyncService.LEADS_APP_ID, PodioSyncService.APP_TOKEN);
+            return 'Podio authentication succeeded.';
+        }
+    },
+    s3: {
+        name: 'Amazon S3 Vault',
+        run: async () => {
+            const cfg = StorageService.getConfig();
+            if (cfg.status !== 'CONFIGURED') throw new Error('S3 credentials or bucket are not configured.');
+            return `Bucket ${cfg.bucket} is configured.`;
+        }
+    },
+    carriers: {
+        name: 'SMS / Email carriers',
+        run: async () => {
+            const c = CarrierDispatchService.getCarrierStatus();
+            if (!c.sms.configured && !c.email.configured) throw new Error('No SMS or email carrier is configured.');
+            return `SMS: ${c.sms.configured ? c.sms.provider : 'not configured'}; Email: ${c.email.configured ? c.email.provider : 'not configured'}.`;
+        }
+    },
+    webhooks: {
+        name: 'Inbound webhooks',
+        run: async () => {
+            if (!configured('PUBLIC_API_URL', 'WEBHOOK_SECRET')) throw new Error('PUBLIC_API_URL and WEBHOOK_SECRET must be set.');
+            return 'Webhook URL and secret are configured.';
+        }
+    }
+};
+
+async function runIntegrationTest(key) {
+    const test = INTEGRATION_TESTS[key];
+    const t0 = Date.now();
+    try {
+        const message = await test.run();
+        return { key, name: test.name, ok: true, status: 'active', statusText: message, latencyMs: Date.now() - t0 };
+    } catch (e) {
+        return { key, name: test.name, ok: false, status: 'error', statusText: e.message, latencyMs: Date.now() - t0 };
+    }
+}
+
+apiRouter.post('/integrations/test-all', async (req, res) => {
+    const results = await Promise.all(Object.keys(INTEGRATION_TESTS).map(runIntegrationTest));
+    res.json({ ok: results.every(r => r.ok), testedAt: new Date().toISOString(), results });
 });
 
 apiRouter.post('/integrations/test/:name', async (req, res) => {
-    const { name } = req.params;
-    const t0 = Date.now();
-    let ok = true;
-    let detail = 'Service responded with zero drift.';
-
-    if (name.toLowerCase().includes('database') || name.toLowerCase().includes('rds') || name.toLowerCase().includes('postgres')) {
-        try {
-            await pool.query('SELECT 1');
-            detail = `PostgreSQL RDS cluster healthy (${Date.now() - t0}ms).`;
-        } catch (e) {
-            ok = false;
-            detail = 'PostgreSQL error: ' + e.message;
-        }
-    } else if (name.toLowerCase().includes('podio')) {
-        try {
-            const auth = await PodioService.authenticateApp(PodioSyncService.LEADS_APP_ID, PodioSyncService.APP_TOKEN);
-            detail = `Podio API connected live (Space: Elite Homes USA Group LLC, Token valid). Latency: ${Date.now() - t0}ms`;
-        } catch (e) {
-            ok = false;
-            detail = 'Podio connection error: ' + e.message;
-        }
-    } else if (name.toLowerCase().includes('smrtphone')) {
-        detail = 'smrtPhone Telephony bridge active on +13866273499 & +19045790065 with Podio coexistence.';
-    } else if (name.toLowerCase().includes('s3') || name.toLowerCase().includes('vault')) {
-        const s3Cfg = StorageService.getConfig();
-        detail = s3Cfg.configured ? `S3 Bucket ${s3Cfg.bucket} reachable.` : 'S3 running in secure local emulation mode.';
-    } else if (name.toLowerCase().includes('carrier') || name.toLowerCase().includes('sms') || name.toLowerCase().includes('email')) {
-        const c = CarrierDispatchService.getCarrierStatus();
-        detail = `Carrier engine: SMS (${c.sms.provider}), Email (${c.email.provider}).`;
-    } else if (name.toLowerCase().includes('batchleads')) {
-        detail = "BatchLeads Webhook Gateway active for Darren's Workspace. Endpoint: /api/v1/integrations/batchleads/webhook.";
-    }
-
-    res.json({
-        ok,
-        name,
-        latencyMs: Date.now() - t0,
-        status: ok ? 'active' : 'error',
-        message: detail
-    });
+    const needle = req.params.name.toLowerCase();
+    const alias = { database: 'postgres', rds: 'postgres', vault: 's3', sms: 'carriers', email: 'carriers', carrier: 'carriers', smrtphone: 'webhooks', batchleads: 'webhooks' };
+    const key = Object.keys(INTEGRATION_TESTS).find(k => needle.includes(k)) || Object.entries(alias).find(([k]) => needle.includes(k))?.[1];
+    if (!key) return res.status(404).json({ ok: false, error: `Unknown integration '${req.params.name}'.` });
+    const r = await runIntegrationTest(key);
+    res.json({ ok: r.ok, name: r.name, latencyMs: r.latencyMs, status: r.status, message: r.statusText });
 });
 
 // ============================================================================
@@ -6017,48 +4882,22 @@ apiRouter.post('/automations/:id/execute', async (req, res) => {
 // ============================================================================
 apiRouter.get('/marketing', async (req, res) => {
     try {
-        let directMailCount = 0;
-        let facebookCount = 0;
-        let coldCallCount = 0;
-        let smsCount = 0;
-        let websiteCount = 0;
-
-        try {
-            const sourceRes = await pool.query(`
-                SELECT 
-                    COALESCE(first_source_code, 'DIRECT_MAIL') as source,
-                    COUNT(*) as count
-                FROM core.leads
-                GROUP BY first_source_code
-            `);
-            const sourceCounts = {};
-            sourceRes.rows.forEach(r => {
-                sourceCounts[(r.source || '').toUpperCase()] = parseInt(r.count, 10);
-            });
-            directMailCount = sourceCounts['MAIL'] || sourceCounts['DIRECT_MAIL'] || 0;
-            facebookCount = sourceCounts['FB_AD'] || sourceCounts['FACEBOOK'] || 0;
-            coldCallCount = sourceCounts['INBOUND_CALL'] || sourceCounts['COLD_CALL'] || 0;
-            smsCount = sourceCounts['SMS_CAMPAIGN'] || sourceCounts['SMS'] || 0;
-            websiteCount = sourceCounts['INBOUND_WEB'] || sourceCounts['WEBSITE'] || 0;
-        } catch (_) {}
-
-        const channelStats = [
-            { channel: 'Direct Mail (USPS)', spend: '$0', leads: directMailCount, cpl: '$0.00', contracts: 0, roi: '0%' },
-            { channel: 'Meta / Facebook Ads', spend: '$0', leads: facebookCount, cpl: '$0.00', contracts: 0, roi: '0%' },
-            { channel: 'Cold Call (smrtPhone)', spend: '$0', leads: coldCallCount, cpl: '$0.00', contracts: 0, roi: '0%' },
-            { channel: 'SMS Carrier Outreach', spend: '$0', leads: smsCount, cpl: '$0.00', contracts: 0, roi: '0%' },
-            { channel: 'Driving for Dollars / Inbound', spend: '$0', leads: websiteCount, cpl: '$0.00', contracts: 0, roi: '0%' }
-        ];
-
-        let podioCampaigns = [];
-        try {
-            podioCampaigns = await PodioSyncService.syncCampaigns();
-        } catch (pErr) {
-            console.warn('[Podio Campaigns Sync Warn]', pErr.message);
-        }
-
-        let campaigns = (podioCampaigns && podioCampaigns.length) ? podioCampaigns : (db.data.marketing_campaigns || []);
-
+        // Lead counts per first source, with dictionary names. Spend only appears where a campaign for that channel has a budget entered.
+        const { rows } = await pool.query(
+            `SELECT l.first_source_code AS code, coalesce(s.source_name, l.first_source_code, 'Unknown') AS channel, count(*)::int AS leads,
+                    count(*) FILTER (WHERE l.status IN ('CONTRACT','CLOSED'))::int AS contracts
+             FROM core.leads l LEFT JOIN ref.lead_sources s ON s.source_code = l.first_source_code
+             GROUP BY l.first_source_code, s.source_name ORDER BY leads DESC`);
+        const campaigns = db.data.marketing_campaigns || [];
+        const spendFor = name => campaigns.filter(c => String(c.channel || '').toLowerCase() === String(name).toLowerCase()).reduce((sum, c) => sum + (Number(c.spend) || 0), 0);
+        const money = v => '$' + v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const channelStats = rows.map(r => {
+            const spend = spendFor(r.channel);
+            return {
+                channel: r.channel, source_code: r.code, leads: r.leads, contracts: r.contracts,
+                spend: spend > 0 ? money(spend) : '—', cpl: spend > 0 && r.leads ? money(spend / r.leads) : '—', roi: '—'
+            };
+        });
         res.json({ campaigns, channelStats, total: campaigns.length });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -6068,18 +4907,19 @@ apiRouter.get('/marketing', async (req, res) => {
 apiRouter.post('/marketing', (req, res) => {
     try {
         if (!db.data.marketing_campaigns) db.data.marketing_campaigns = [];
+        if (!req.body.name || !String(req.body.name).trim() || !req.body.channel) return res.status(400).json({ error: 'A campaign name and channel are required.' });
         const campaign = {
             id: 'm-' + Date.now(),
             name: req.body.name,
-            channel: req.body.channel || 'Direct Mail',
-            targetAudience: req.body.targetAudience || 'Target Jacksonville Homeowners',
-            spend: Number(req.body.budget || req.body.spend) || 2500,
+            channel: req.body.channel,
+            targetAudience: req.body.targetAudience || '',
+            spend: Number(req.body.budget ?? req.body.spend ?? 0) || 0,
             leads: 0,
             cpl: 0,
             contracts: 0,
             roi: 0,
             status: 'Active',
-            dateRange: 'Just Launched',
+            dateRange: '',
             createdAt: new Date().toISOString()
         };
         db.data.marketing_campaigns.unshift(campaign);
@@ -6145,6 +4985,7 @@ apiRouter.get('/analytics', async (req, res) => {
         let totalRevenue = 0;
         let avgSpread = 0;
         let buyersCount = 0;
+        let funnelCounts = { qualified: 0, offers: 0, assigned: 0 };
 
         try {
             const [leadsCount, funnelStats, buyersStat] = await Promise.all([
@@ -6168,27 +5009,23 @@ apiRouter.get('/analytics', async (req, res) => {
             totalRevenue = Number(fRow?.total_revenue) || 0;
             avgSpread = Math.round(Number(fRow?.avg_spread) || 0);
             buyersCount = buyersStat.rows[0]?.count || 0;
+            const { rows: [steps] } = await pool.query(
+                `SELECT (SELECT count(*) FROM core.leads WHERE status IN ('QUALIFIED','OFFER','CONTRACT','CLOSED'))::int AS qualified,
+                        (SELECT count(*) FROM core.leads WHERE status IN ('OFFER','CONTRACT','CLOSED'))::int AS offers,
+                        (SELECT count(*) FROM crm.deal_funnel WHERE milestone_index >= 9)::int AS assigned`);
+            funnelCounts = steps;
         } catch (dbErr) {
-            console.warn('[Analytics PG Warn]', dbErr.message);
+            return res.status(500).json({ error: dbErr.message });
         }
 
         // Submarkets dynamic query from real properties
         let submarkets = [];
         try {
             const subRes = await pool.query(`
-                SELECT postal_code, count(*)::int as prop_count
-                FROM core.properties
-                WHERE postal_code IS NOT NULL
-                GROUP BY postal_code
-                ORDER BY prop_count DESC
-                LIMIT 5
-            `);
-            submarkets = subRes.rows.map(r => ({
-                area: `${r.postal_code} (Jacksonville Metro)`,
-                deals: 0,
-                volume: 0,
-                avgSpread: 0
-            }));
+                SELECT zip, count(*)::int AS deals, coalesce(sum(buy_price), 0) AS volume, coalesce(round(avg(fee) FILTER (WHERE fee > 0)), 0) AS avg_spread
+                FROM crm.deal_funnel WHERE zip IS NOT NULL AND zip <> ''
+                GROUP BY zip ORDER BY deals DESC LIMIT 5`);
+            submarkets = subRes.rows.map(r => ({ area: r.zip, deals: r.deals, volume: Number(r.volume), avgSpread: Number(r.avg_spread) }));
         } catch (_) {}
 
         res.json({
@@ -6196,14 +5033,14 @@ apiRouter.get('/analytics', async (req, res) => {
                 totalRevenue: totalRevenue,
                 contractsUnderEscrow: totalContracts,
                 avgAssignmentSpread: avgSpread,
-                dispoSpeedDays: 0
+                dispoSpeedDays: null
             },
             funnel: [
                 { label: 'Total Inbound Raw Leads', value: totalLeads },
-                { label: 'Qualified Distressed Sellers', value: 0 },
-                { label: 'Cash Offers Presented', value: 0 },
+                { label: 'Qualified Sellers', value: funnelCounts.qualified },
+                { label: 'Offers Presented', value: funnelCounts.offers },
                 { label: 'Executed Purchase Contracts (PSA)', value: totalContracts },
-                { label: 'Assigned to Cash Buyers', value: 0 },
+                { label: 'Assigned to Cash Buyers', value: funnelCounts.assigned },
                 { label: 'Closed & Escrow Wire Disbursed', value: totalClosed }
             ],
             leaderboard: [],
@@ -6215,87 +5052,11 @@ apiRouter.get('/analytics', async (req, res) => {
 });
 
 // ============================================================================
-// SYSTEM RESET / WIPE API (Start completely fresh)
-// ============================================================================
-apiRouter.post('/admin/reset-database', (req, res) => {
-    try {
-        // Clear all operational CRM records while preserving architectural schema & reference lookup tables
-        if (db.data.core) {
-            db.data.core.leads = [];
-            db.data.core.tasks = [];
-            db.data.core.interactions = [];
-            db.data.core.pillar_events = [];
-            db.data.core.properties = [];
-            db.data.core.people = [];
-            db.data.core.businesses = [];
-            db.data.core.campaigns = [];
-        }
-        if (db.data.crm) {
-            db.data.crm.buyers = [];
-            db.data.crm.contracts = [];
-            db.data.crm.contacts = [];
-            db.data.crm.facebook_leads = [];
-            db.data.crm.follow_ups = [];
-            db.data.crm.direct_mail = [];
-            db.data.crm.communications = [];
-            db.data.crm.calendar_events = [];
-            db.data.crm.skip_traces = [];
-            db.data.crm.team_members = [];
-            db.data.crm.county_records = [];
-            db.data.crm.external_sync_map = [];
-            db.data.crm.suppression_records = [];
-        }
-        db.data.automations = [];
-        db.data.marketing_campaigns = [];
-        db.data.deal_analyses = [];
-        if (db.data.ops) {
-            db.data.ops.outbox_events = [];
-        }
-        if (db.data.audit) {
-            db.data.audit.audit_events = [];
-        }
-        if (typeof db.persist === 'function') {
-            db.persist();
-        }
-
-        res.json({
-            ok: true,
-            message: 'All mock and sample records cleared. Database is 100% clean and fresh.',
-            timestamp: new Date().toISOString()
-        });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// ============================================================================
 // HAWKAI: Dedicated Admin AI Copilot Intelligence Routes (Enterprise Authenticated)
 // ============================================================================
 function verifyHawkAIAuth(req) {
-    const authHeader = req.headers.authorization;
-    const sessionHeader = req.headers['x-hushhawk-session'];
-    const apiKey = req.headers['x-api-key'];
-
-    if (process.env.NODE_ENV === 'test') {
-        return true;
-    }
-    if (apiKey && (apiKey === (process.env.INTERNAL_API_KEY || 'hushhawk-internal-2026') || apiKey.length >= 16)) {
-        return true;
-    }
-    if (authHeader && authHeader.startsWith('Bearer ') && authHeader.length > 15) {
-        return true;
-    }
-    if (sessionHeader) {
-        try {
-            const parsed = JSON.parse(decodeURIComponent(sessionHeader));
-            if (parsed && (parsed.email || parsed.token || parsed.user || parsed.id)) {
-                return true;
-            }
-        } catch (e) {
-            if (sessionHeader.length > 10) return true;
-        }
-    }
-    return false;
+    // requireSession has already validated the Bearer token; HawkAI is limited to administrators.
+    return Boolean(req.user && req.user.isAdmin);
 }
 
 apiRouter.post('/ai/query', async (req, res) => {

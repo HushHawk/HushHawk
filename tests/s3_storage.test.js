@@ -7,6 +7,10 @@ import assert from 'assert';
 import crypto from 'crypto';
 import { StorageService } from '../backend/src/services/storageService.js';
 import { pool } from '../backend/src/store/pgClient.js';
+import { installTestAuth, assertDisposableDatabase } from './helpers/auth.js';
+
+assertDisposableDatabase();
+const testAuth = await installTestAuth();
 
 const API_BASE = process.env.API_BASE || 'http://localhost:3001/api/v1';
 
@@ -268,6 +272,7 @@ async function runTests() {
         console.error('\n❌ Test Suite Failure:', err);
         process.exit(1);
     } finally {
+        await testAuth.cleanup();
         await pool.end();
     }
 }

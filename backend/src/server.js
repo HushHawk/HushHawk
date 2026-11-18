@@ -3,11 +3,20 @@ import cors from 'cors';
 import { apiRouter } from './routes/api.js';
 import { wwRouter } from './routes/wewebAdapter.js';
 import { RbacService } from './services/rbacService.js';
+import { db } from './store/database.js';
+import { pool } from './store/pgClient.js';
+import { PodioSyncService } from './services/podioSyncService.js';
+import { ConnectorService } from './services/connectorService.js';
+import { GraphService } from './services/graphService.js';
+import { requireSession, bearerToken, loginRateLimit } from './middleware/auth.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-app.use(cors());
+// Browsers may only call the API from the configured origins. Same-origin requests (the bundled app) need no CORS.
+const allowedOrigins = (process.env.CORS_ORIGINS || '').split(',').map(o => o.trim()).filter(Boolean);
+app.use(cors({ origin: (origin, cb) => cb(null, !origin || allowedOrigins.includes(origin)) }));
+app.disable('x-powered-by');
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
@@ -25,12 +34,7 @@ app.use((req, res, next) => {
 
 // Root ping
 app.get('/', (req, res) => {
-    res.json({
-        service: 'HushHawk Primary API Backend',
-        version: '1.0.0',
-        documentation: '/api/v1/health',
-        canonicalStore: 'PostgreSQL-Canonical v1.0',
-    });
+    res.json({ service: 'HushHawk API', health: '/api/v1/health' });
 });
 
 // Mount /api/v1 and /api for seamless webhook and API compatibility
@@ -38,7 +42,7 @@ app.use('/api/v1', apiRouter);
 app.use('/api', apiRouter);
 
 // Auth login endpoint
-app.post('/api/auth/login', async (req, res) => {
+app.post('/api/auth/login', (req, res, next) => loginRateLimit(req, res, next), async (req, res) => {
     try {
         const { email, password } = req.body;
         const result = await RbacService.authenticate({ email, password });
@@ -51,7 +55,7 @@ app.post('/api/auth/login', async (req, res) => {
 app.get('/api/auth/get-session', async (req, res, next) => {
     res.set('Cache-Control', 'no-store');
     try {
-        const token = req.get('authorization')?.match(/^Bearer (.+)$/i)?.[1];
+        const token = bearerToken(req);
         const session = await RbacService.getSession(token);
         if (!session) return res.json(null);
         res.json({ user: session.user, session: { userId: session.user.id, expiresAt: session.expiresAt } });
@@ -61,8 +65,8 @@ app.get('/api/auth/get-session', async (req, res, next) => {
 });
 
 // Mount /ww and /api/ww adapter for WeWeb frontend table-views and workflows
-app.use('/ww', wwRouter);
-app.use('/api/ww', wwRouter);
+app.use('/ww', requireSession, wwRouter);
+app.use('/api/ww', requireSession, wwRouter);
 
 // Error handler
 app.use((err, req, res, next) => {
@@ -70,12 +74,59 @@ app.use((err, req, res, next) => {
     res.status(500).json({ error: err.message || 'Internal Server Error' });
 });
 
-app.listen(PORT, () => {
-    console.log(`=======================================================`);
-    console.log(`🦅 HUSHHAWK Primary API Backend Running on :${PORT}`);
-    console.log(`   Canonical DB: PostgreSQL schemas (ref, raw, core, rel, crm, ops, audit)`);
-    console.log(`   Health Check: http://localhost:${PORT}/api/v1/health`);
-    console.log(`=======================================================`);
+// ---------------------------------------------------------------------------
+// Background automation: keep data current without anyone clicking Sync.
+// Each job is guarded against overlapping runs and logs failures instead of hiding them.
+// ---------------------------------------------------------------------------
+const running = new Set();
+function schedule(name, intervalMs, job) {
+    const tick = async () => {
+        if (running.has(name)) return;
+        running.add(name);
+        try { await job(); } catch (error) { console.error(`[Scheduler:${name}] failed:`, error.message); } finally { running.delete(name); }
+    };
+    setTimeout(tick, 15_000);
+    return setInterval(tick, intervalMs).unref();
+}
+
+function startScheduler() {
+    const minutes = name => Math.max(1, Number.parseInt(process.env[name] ?? '', 10) || 0);
+    const podioEvery = minutes('PODIO_SYNC_INTERVAL_MIN');
+    if (podioEvery && process.env.PODIO_CLIENT_ID && process.env.PODIO_APP_TOKEN) {
+        schedule('podio-sync', podioEvery * 60_000, async () => {
+            const result = await PodioSyncService.syncAll();
+            console.log(`[Scheduler:podio-sync] ${JSON.stringify(result.counts)}`);
+        });
+    }
+    schedule('connectors', 5 * 60_000, async () => {
+        const results = await ConnectorService.runDue();
+        if (results.length) console.log(`[Scheduler:connectors] ran ${results.length} connector(s)`);
+    });
+    if (GraphService.isConfigured()) {
+        schedule('graph-outbox', 30_000, async () => {
+            const result = await GraphService.syncOutbox();
+            if (result.published || result.failed) console.log(`[Scheduler:graph-outbox] published=${result.published} failed=${result.failed}`);
+        });
+    }
+}
+
+async function main() {
+    await pool.query('SELECT 1'); // fail fast when the database is unreachable
+    await db.load();
+    const server = app.listen(PORT, () => {
+        console.log(`HushHawk API listening on :${PORT}`);
+        startScheduler();
+    });
+    const shutdown = async () => {
+        server.close();
+        try { await db.flush(); } finally { await pool.end().catch(() => {}); process.exit(0); }
+    };
+    process.once('SIGTERM', shutdown);
+}
+
+main().catch(error => {
+    console.error('Failed to start HushHawk API:', error.message);
+    process.exit(1);
 });
 
 export default app;

@@ -224,7 +224,7 @@ export class DirectMailTrackerService {
             trackingUrl,
             audienceLabId: `ALAB-${cleanKey}`,
             envelopeMarkup: {
-                returnAddress: 'HushHawk Acquisitions · 100 N Laura St, Jacksonville FL 32202',
+                returnAddress: process.env.MAIL_RETURN_ADDRESS || '',
                 recipientAddress: [ownerName, address].filter(Boolean).join('\n'),
                 identifierStamp: cleanKey,
                 qrCodeUrl: trackingUrl

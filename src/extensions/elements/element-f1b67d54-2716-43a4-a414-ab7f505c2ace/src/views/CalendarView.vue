@@ -6,7 +6,7 @@
           <span class="icon-title" v-html="icons.calendar"></span>
           Wholesale Closing &amp; Walkthrough Schedule
         </h2>
-        <span class="calendar-sub">Jacksonville In-Field &amp; Title Operations</span>
+        <span class="calendar-sub">In-field and title operations</span>
       </div>
       <div class="header-controls">
         <div class="view-switcher">
@@ -87,7 +87,7 @@
         </div>
         <div v-for="ev in filteredEvents" :key="ev.id" class="agenda-item" @click="selectEvent(ev)">
           <div class="agenda-date-col">
-            <span class="agenda-month">OCT</span>
+            <span class="agenda-month">{{ ev.month }}</span>
             <strong class="agenda-day">{{ ev.dayNum }}</strong>
           </div>
           <div class="agenda-main">
@@ -206,14 +206,12 @@
             <div class="form-group">
               <label>Assigned Rep</label>
               <select v-model="newAppt.rep">
-                <option value="Marcus Vance">Marcus Vance</option>
-                <option value="Sarah Jenkins">Sarah Jenkins</option>
-                <option value="Elena Rostova">Elena Rostova</option>
+                <option v-for="member in teamNames" :key="member" :value="member">{{ member }}</option>
               </select>
             </div>
             <div class="form-group">
               <label>Date</label>
-              <input v-model="newAppt.date" type="text" placeholder="2026-10-27" />
+              <input v-model="newAppt.date" type="date" required />
             </div>
             <div class="form-group">
               <label>Time</label>
@@ -246,6 +244,21 @@
 <script>
 import { icons } from '../icons.js';
 
+function todayIso() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+function currentUserName() {
+  try {
+    const raw = window.sessionStorage.getItem('hushhawk_session') || window.localStorage.getItem('hushhawk_session');
+    const parsed = raw ? JSON.parse(raw) : {};
+    return (parsed.user || parsed).name || '';
+  } catch (e) {
+    return '';
+  }
+}
+
 export default {
   name: 'CalendarView',
   props: {
@@ -264,29 +277,34 @@ export default {
         { name: 'Inspection', color: '#fb923c' },
         { name: 'Title Closing', color: '#4ade80' }
       ],
-      weekDays: [
-        { name: 'Mon', num: '26', date: '2026-10-26', isToday: true },
-        { name: 'Tue', num: '27', date: '2026-10-27', isToday: false },
-        { name: 'Wed', num: '28', date: '2026-10-28', isToday: false },
-        { name: 'Thu', num: '29', date: '2026-10-29', isToday: false },
-        { name: 'Fri', num: '30', date: '2026-10-30', isToday: false },
-        { name: 'Sat', num: '31', date: '2026-10-31', isToday: false }
-      ],
+      teamNames: [],
       newAppt: {
         title: '',
         address: '',
         type: 'Seller Walkthrough',
-        rep: 'Marcus Vance',
-        date: '2026-10-27',
-        time: '2:00 PM',
+        rep: '',
+        date: todayIso(),
+        time: '',
         lockbox: '',
         phone: '',
+        contactName: '',
         notes: ''
       },
       events: []
     };
   },
   computed: {
+    // Monday to Saturday of the current week, computed from today's date.
+    weekDays() {
+      const now = new Date();
+      const monday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - ((now.getDay() + 6) % 7));
+      const names = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      return names.map((name, i) => {
+        const d = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + i);
+        const iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        return { name, num: String(d.getDate()), date: iso, isToday: iso === todayIso() };
+      });
+    },
     filteredEvents() {
       if (!this.selectedType) return this.events;
       return this.events.filter(e => e.type === this.selectedType);
@@ -294,19 +312,31 @@ export default {
   },
 
   mounted() {
+    this.newAppt.rep = currentUserName();
     this.loadCalendarEvents();
+    this.loadTeam();
   },
   methods: {
     async loadCalendarEvents() {
       try {
         const res = await fetch('/api/v1/calendar');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
-        if (data) {
-          this.events = data.events;
-        }
+        const colors = Object.fromEntries(this.eventTypes.map(t => [t.name, t.color]));
+        this.events = (data.events || []).map(e => ({ ...e, color: colors[e.type] || '#94a3b8', repInitials: (e.rep || '').split(' ').filter(Boolean).map(n => n[0]).join('') }));
       } catch (err) {
-        console.warn('[Calendar] Using local cache:', err.message);
+        this.showToast('Calendar unavailable', err.message, 'error');
       }
+    },
+    async loadTeam() {
+      try {
+        const res = await fetch('/api/v1/chat/presence');
+        if (!res.ok) return;
+        const data = await res.json();
+        this.teamNames = (data.presence || []).map(p => p.full_name).filter(Boolean);
+      } catch (_) { /* the rep list stays limited to the signed-in user */ }
+      const me = currentUserName();
+      if (me && !this.teamNames.includes(me)) this.teamNames.unshift(me);
     },
 
     getEventsForDay(date) {
@@ -325,92 +355,44 @@ export default {
       }
     },
     async sendDirections(ev) {
-      const phone = ev.phone || '(904) 555-0199';
-      const lockbox = ev.lockbox || '3821';
-      const text = `HushHawk Appointment: Lockbox code is ${lockbox} for ${ev.address}. Directions: https://maps.google.com/?q=${encodeURIComponent(ev.address)}`;
-      this.showToast('Lockbox & Access Dispatched', `Sent SMS with lockbox code (${lockbox}) and GPS directions to ${ev.contactName} (${phone}).`, 'success');
+      if (!ev.phone) {
+        this.showToast('No phone number', 'Add a contact phone number to this appointment before sending directions.', 'error');
+        return;
+      }
+      const lines = [`HushHawk appointment at ${ev.address}`];
+      if (ev.lockbox) lines.push(`Lockbox code: ${ev.lockbox}`);
+      lines.push(`Directions: https://maps.google.com/?q=${encodeURIComponent(ev.address)}`);
       try {
-        await fetch('/api/v1/outreach-actions/texts/send', {
+        const res = await fetch('/api/v1/outreach-actions/texts/send', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            textId: 'dir-' + Date.now(),
-            message: text
-          })
+          body: JSON.stringify({ phone: ev.phone, contactName: ev.contactName || null, message: lines.join('\n') })
         });
-      } catch (_) {}
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+        this.showToast('Directions sent', `Text sent to ${ev.contactName || ev.phone}.`, 'success');
+      } catch (err) {
+        this.showToast('Directions not sent', err.message, 'error');
+      }
     },
     async saveNewAppointment() {
-      const typeObj = this.eventTypes.find(t => t.name === this.newAppt.type) || this.eventTypes[0];
-      const initials = this.newAppt.rep.split(' ').map(n => n[0]).join('');
+      const typeObj = this.eventTypes.find(t => t.name === this.newAppt.type) || { color: '#94a3b8' };
       const payload = {
-        title: this.newAppt.title,
-        address: this.newAppt.address,
-        type: this.newAppt.type,
-        rep: this.newAppt.rep,
-        date: this.newAppt.date,
-        time: this.newAppt.time,
-        notes: this.newAppt.notes
+        title: this.newAppt.title, address: this.newAppt.address, type: this.newAppt.type, rep: this.newAppt.rep,
+        date: this.newAppt.date, time: this.newAppt.time, notes: this.newAppt.notes,
+        contactName: this.newAppt.contactName, phone: this.newAppt.phone, lockbox: this.newAppt.lockbox
       };
       try {
-        const res = await fetch('/api/v1/calendar', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        if (res.ok) {
-          const saved = await res.json();
-          this.events.push({
-            ...saved,
-            dayNum: (saved.date || '').split('-')[2] || '27',
-            dateString: saved.date,
-            color: typeObj.color,
-            repInitials: initials,
-            contactName: 'Field Contact',
-            phone: this.newAppt.phone || '(904) 555-0100',
-            lockbox: this.newAppt.lockbox
-          });
-        } else {
-          this.events.push({
-            id: 'ev-' + Date.now(),
-            ...payload,
-            dayNum: payload.date.split('-')[2] || '01',
-            dateString: payload.date,
-            parcelId: '',
-            color: typeObj.color,
-            repInitials: initials,
-            contactName: 'Field Contact',
-            phone: this.newAppt.phone || '',
-            lockbox: this.newAppt.lockbox
-          });
-        }
-      } catch (e) {
-        this.events.push({
-          id: 'ev-' + Date.now(),
-          ...payload,
-          dayNum: payload.date.split('-')[2] || '01',
-          dateString: payload.date,
-          parcelId: '',
-          color: typeObj.color,
-          repInitials: initials,
-          contactName: 'Field Contact',
-          phone: this.newAppt.phone || '',
-          lockbox: this.newAppt.lockbox
-        });
+        const res = await fetch('/api/v1/calendar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        const saved = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(saved.error || `HTTP ${res.status}`);
+        this.events.push({ ...saved, color: typeObj.color, repInitials: (saved.rep || '').split(' ').filter(Boolean).map(n => n[0]).join('') });
+        this.isAddModalOpen = false;
+        this.newAppt = { title: '', address: '', type: '', rep: currentUserName(), date: todayIso(), time: '', lockbox: '', phone: '', contactName: '', notes: '' };
+        this.showToast('Appointment booked', `"${saved.title}" scheduled for ${saved.date}.`, 'success');
+      } catch (err) {
+        this.showToast('Appointment not saved', err.message, 'error');
       }
-      this.isAddModalOpen = false;
-      this.newAppt = {
-        title: '',
-        address: '',
-        type: 'Seller Walkthrough',
-        rep: 'Marcus Vance',
-        date: '2026-10-27',
-        time: '2:00 PM',
-        lockbox: '',
-        phone: '',
-        notes: ''
-      };
-      this.showToast('Appointment Booked', `"${payload.title}" scheduled for ${payload.date}.`, 'success');
     },
 
     async confirmDeleteEvent(ev) {

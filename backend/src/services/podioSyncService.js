@@ -1,5 +1,6 @@
 import crypto from 'crypto';
-import { pool } from '../store/pgClient.js';
+import { pool, withTransaction } from '../store/pgClient.js';
+import { normalizeParcelMatch } from '../../../packages/crownkey/index.js';
 import { PodioService } from './podioService.js';
 import { db } from '../store/database.js';
 
@@ -9,14 +10,38 @@ function toDeterministicUuid(str) {
 }
 
 function parseAddress(fullAddr) {
-    if (!fullAddr) return { line1: '', city: 'Jacksonville', state: 'FL', zip: '32204' };
-    const parts = fullAddr.split(',').map(s => s.trim());
-    const line1 = parts[0] || fullAddr;
-    const city = parts[1] || 'Jacksonville';
-    const stateZip = (parts[2] || 'FL').trim().split(' ');
-    const state = stateZip[0] || 'FL';
-    const zip = stateZip[1] || '32204';
-    return { line1, city, state, zip };
+    if (!fullAddr) return { line1: '', city: '', state: '', zip: '' };
+    const parts = String(fullAddr).split(',').map(s => s.trim());
+    const stateZip = (parts[2] || '').split(/\s+/).filter(Boolean);
+    return { line1: parts[0] || '', city: parts[1] || '', state: stateZip[0] || '', zip: stateZip[1] || '' };
+}
+
+const firstOf = (map, ...labels) => { for (const l of labels) if (map[l] !== undefined && map[l] !== null && String(map[l]).trim() !== '') return String(map[l]).trim(); return ''; };
+
+/** Podio status text -> pipeline stage. Unrecognised text keeps the lead NEW; nothing is guessed beyond these words. */
+function podioStage(text = '') {
+    const t = text.toLowerCase();
+    if (/dead|lost|not interested|do not|dnc|wrong number/.test(t)) return 'LOST';
+    if (/closed|sold/.test(t)) return 'CLOSED';
+    if (/contract/.test(t)) return 'CONTRACT';
+    if (/offer/.test(t)) return 'OFFER';
+    if (/qualif|appointment/.test(t)) return 'QUALIFIED';
+    if (/follow/.test(t)) return 'FOLLOW_UP';
+    if (/contact/.test(t)) return 'CONTACTED';
+    return 'NEW';
+}
+
+/** Podio "Source" label -> dictionary code. Unknown or blank text maps to UNKNOWN, with the original kept in source_detail. */
+const PODIO_SOURCE_ALIASES = [
+    [/face\s*book|fb\b/i, 'FB'], [/instagram/i, 'IG'], [/direct\s*mail|postcard|yellow letter|mailer|\bmail\b/i, 'MAIL'],
+    [/web\s*site|website|web form|landing/i, 'WEB'], [/sms|text/i, 'SMS'], [/email|emailing/i, 'EML'], [/referr/i, 'REF'],
+    [/cold\s*call|outbound call/i, 'COLD'], [/sign/i, 'SIGN'], [/google|ppc|adwords/i, 'PPC'], [/seo|organic/i, 'SEO'],
+    [/door|knock/i, 'DOOR'], [/event|network/i, 'EVENT'], [/repeat|existing/i, 'REPEAT'], [/call/i, 'CALL'], [/whatsapp/i, 'WHATSAPP']
+];
+function podioSourceCode(text = '') {
+    const t = String(text).trim();
+    if (!t) return 'UNKNOWN';
+    return PODIO_SOURCE_ALIASES.find(([re]) => re.test(t))?.[1] || 'OTHER';
 }
 
 function chunkArray(arr, size) {
@@ -28,12 +53,12 @@ function chunkArray(arr, size) {
 }
 
 export class PodioSyncService {
-    static LEADS_APP_ID = process.env.PODIO_APP_ID || '30087410';
-    static PROPS_APP_ID = process.env.PODIO_PROPERTIES_APP_ID || '30087415';
-    static FEEDS_APP_ID = process.env.PODIO_FEEDS_APP_ID || '30087421';
-    static APP_TOKEN = process.env.PODIO_APP_TOKEN || '***REMOVED***';
-    static OUTBOUND_PHONE = process.env.PODIO_OUTBOUND_PHONE || '+13866273499';
-    static OUTBOUND_EMAIL = process.env.PODIO_OUTBOUND_EMAIL || 'team@elitehomes1.com';
+    static LEADS_APP_ID = process.env.PODIO_APP_ID;
+    static PROPS_APP_ID = process.env.PODIO_PROPERTIES_APP_ID;
+    static FEEDS_APP_ID = process.env.PODIO_FEEDS_APP_ID;
+    static APP_TOKEN = process.env.PODIO_APP_TOKEN;
+    static OUTBOUND_PHONE = process.env.PODIO_OUTBOUND_PHONE || '';
+    static OUTBOUND_EMAIL = process.env.PODIO_OUTBOUND_EMAIL || '';
 
     // Complete Registry of all 16 Apps in Podio Workspace 'Elite Homes USA Group LLC'
     static APPS = {
@@ -58,301 +83,192 @@ export class PodioSyncService {
     static _cachedStatus = null;
     static _statusExpiresAt = 0;
 
+    /** Live Podio status. Counts come from Podio itself; when Podio cannot be reached the error is reported as-is. */
     static async getStatus(force = false) {
-        if (!force && this._cachedStatus && Date.now() < this._statusExpiresAt) {
-            return this._cachedStatus;
+        if (!force && this._cachedStatus && Date.now() < this._statusExpiresAt) return this._cachedStatus;
+        if (!process.env.PODIO_CLIENT_ID || !this.APP_TOKEN || !this.LEADS_APP_ID) {
+            return { connected: false, status: 'NOT_CONFIGURED', error: 'PODIO_CLIENT_ID, PODIO_APP_TOKEN and PODIO_APP_ID must be set.', lastChecked: new Date().toISOString() };
         }
+        try {
+            const auth = await PodioService.authenticateApp(this.LEADS_APP_ID, this.APP_TOKEN);
+            const token = auth.access_token;
+            const count = async appId => (appId ? (await PodioService.fetchAppItems(token, appId, 1)).total ?? null : null);
+            const [leadsCount, propertiesCount, feedsCount] = await Promise.all([count(this.LEADS_APP_ID), count(this.PROPS_APP_ID), count(this.FEEDS_APP_ID).catch(() => null)]);
+            const { rows: [local] } = await pool.query(
+                `SELECT count(*) FILTER (WHERE internal_entity_type = 'LEAD')::int AS leads, count(*) FILTER (WHERE internal_entity_type = 'PROPERTY')::int AS properties,
+                        max(last_sync_at) AS last_sync FROM crm.external_sync_map WHERE external_system = 'PODIO'`);
+            const { rows: [skip] } = await pool.query(
+                `SELECT count(*)::int AS n FROM raw.source_records sr WHERE sr.source_system = 'PODIO_PROPERTIES'
+                   AND NOT EXISTS (SELECT 1 FROM crm.external_sync_map m WHERE m.external_system = 'PODIO' AND m.internal_entity_type = 'PROPERTY' AND m.external_item_id = sr.source_external_id)`);
+            this._cachedStatus = {
+                connected: true, status: 'ONLINE', propertiesAwaitingParcel: skip.n, leadsAppId: this.LEADS_APP_ID, leadsCount, propertiesAppId: this.PROPS_APP_ID, propertiesCount,
+                feedsAppId: this.FEEDS_APP_ID, feedsCount, syncedLeads: local.leads, syncedProperties: local.properties, lastSyncAt: local.last_sync,
+                outboundPhone: this.OUTBOUND_PHONE, outboundEmail: this.OUTBOUND_EMAIL, lastChecked: new Date().toISOString()
+            };
+            this._statusExpiresAt = Date.now() + 60000;
+            return this._cachedStatus;
+        } catch (err) {
+            return { connected: false, status: 'ERROR', error: err.message, lastChecked: new Date().toISOString() };
+        }
+    }
+
+    /** Upserts one Podio property item: 'synced', 'skipped' (no parcel/county yet) or 'failed'. */
+    static async upsertPropertyItem(it, counties) {
+        const norm = t => t.toUpperCase().replace(/\.$/, '').replace(/^ST\.? /, 'ST ');
+        const f = {};
+        (it.fields || []).forEach(field => { f[field.label] = field.values?.[0]?.value; });
+        const parcelRaw = firstOf(f, 'Parcel Number', 'Parcel ID', 'Parcel', 'APN', 'Tax ID', 'Parcel # (Tax ID)');
+        const countyName = firstOf(f, 'County', 'Property County');
+        const { line1, city, state, zip } = parseAddress(firstOf(f, 'Property Address', 'Property Address (DND)') || it.title || '');
+        const county = countyName ? counties.find(c => norm(c.county_name) === norm(countyName) || norm(c.county_name) === `${norm(countyName)} COUNTY` || c.county_code === countyName.toUpperCase()) : null;
 
         try {
-            const timeoutPromise = new Promise((_, reject) => 
-                setTimeout(() => reject(new Error('Podio connection timeout')), 2500)
-            );
+            // Raw evidence first, always.
+            const payloadHash = crypto.createHash('sha256').update(JSON.stringify(it)).digest('hex');
+            await pool.query(
+                `INSERT INTO raw.source_records (source_system, jurisdiction, source_external_id, payload, payload_hash, parser_version)
+                 VALUES ('PODIO_PROPERTIES', $1, $2, $3, $4, 'podio-sync-v2')
+                 ON CONFLICT (source_system, jurisdiction, source_external_id) WHERE source_external_id IS NOT NULL
+                 DO UPDATE SET payload = EXCLUDED.payload, payload_hash = EXCLUDED.payload_hash, observed_at = now()`,
+                [county?.county_name || 'UNKNOWN', String(it.item_id), JSON.stringify(it), payloadHash]);
 
-            const fetchStatusPromise = (async () => {
-                const auth = await PodioService.authenticateApp(this.LEADS_APP_ID, this.APP_TOKEN);
-                const token = auth.access_token;
-
-                const [leadsRes, propsRes, feedsRes] = await Promise.all([
-                    PodioService.fetchAppItems(token, this.LEADS_APP_ID, 1),
-                    PodioService.fetchAppItems(token, this.PROPS_APP_ID, 1),
-                    PodioService.fetchAppItems(token, this.FEEDS_APP_ID, 1).catch(() => ({ total: 492 }))
-                ]);
-
-                return {
-                    connected: true,
-                    status: 'ONLINE',
-                    workspace: 'Elite Homes USA Group LLC',
-                    leadsAppId: this.LEADS_APP_ID,
-                    leadsCount: leadsRes.total || 68,
-                    propertiesAppId: this.PROPS_APP_ID,
-                    propertiesCount: propsRes.total || 18,
-                    feedsAppId: this.FEEDS_APP_ID,
-                    feedsCount: feedsRes.total || 492,
-                    outboundPhone: this.OUTBOUND_PHONE,
-                    outboundEmail: this.OUTBOUND_EMAIL,
-                    tokenType: auth.token_type,
-                    expiresIn: auth.expires_in,
-                    lastChecked: new Date().toISOString()
-                };
-            })();
-
-            const status = await Promise.race([fetchStatusPromise, timeoutPromise]);
-            this._cachedStatus = status;
-            this._statusExpiresAt = Date.now() + 60000;
-            return status;
+            if (!parcelRaw || !county) return 'skipped';
+            const parcelMatch = normalizeParcelMatch(parcelRaw);
+            const { rows: [prop] } = await pool.query(
+                `INSERT INTO core.properties (county_id, parcel_raw, parcel_match, address_line1, city, state_code, postal_code, property_type, legal_description)
+                 VALUES ($1,$2,$3,$4,$5,coalesce(nullif($6,''),'FL'),$7,$8,$9)
+                 ON CONFLICT (county_id, parcel_match) DO UPDATE
+                   SET address_line1 = coalesce(nullif(EXCLUDED.address_line1,''), core.properties.address_line1),
+                       city = coalesce(EXCLUDED.city, core.properties.city), postal_code = coalesce(EXCLUDED.postal_code, core.properties.postal_code),
+                       property_type = coalesce(EXCLUDED.property_type, core.properties.property_type), updated_at = now()
+                 RETURNING property_id`,
+                [county.county_id, parcelRaw, parcelMatch, line1 || null, city || null, state, zip || null, f['Property Type']?.text || null, firstOf(f, 'Legal Description') || null]);
+            await pool.query(
+                `INSERT INTO crm.external_sync_map (internal_entity_type, internal_uuid, external_system, external_app_id, external_item_id, last_sync_at, status)
+                 VALUES ('PROPERTY', $1, 'PODIO', $2, $3, NOW(), 'SYNCED')
+                 ON CONFLICT (internal_entity_type, internal_uuid, external_system) DO UPDATE SET last_sync_at = NOW(), external_item_id = EXCLUDED.external_item_id`,
+                [prop.property_id, String(this.PROPS_APP_ID), String(it.item_id)]);
+            return 'synced';
         } catch (err) {
-            // Rapid DB fallback for instant UI response
-            try {
-                const [leadsDb, propsDb, threadsDb] = await Promise.all([
-                    pool.query(`SELECT count(*) FROM core.leads WHERE source_detail LIKE '%Podio%' OR first_source_code = 'PODIO'`),
-                    pool.query(`SELECT count(*) FROM core.properties WHERE parcel_raw LIKE '%PODIO%'`),
-                    pool.query(`SELECT count(*) FROM core.conversation_desk_threads WHERE platform_id = 'podio' OR platform_id = 'smrtphone'`).catch(() => ({ rows: [{ count: 492 }] }))
-                ]);
-                const leadsCount = parseInt(leadsDb.rows[0]?.count || 68, 10);
-                const propsCount = parseInt(propsDb.rows[0]?.count || 18, 10);
-                const feedsCount = parseInt(threadsDb.rows[0]?.count || 492, 10);
-
-                const fallbackStatus = {
-                    connected: true,
-                    status: 'ONLINE',
-                    workspace: 'Elite Homes USA Group LLC',
-                    leadsAppId: this.LEADS_APP_ID,
-                    leadsCount: Math.max(leadsCount, 68),
-                    propertiesAppId: this.PROPS_APP_ID,
-                    propertiesCount: Math.max(propsCount, 18),
-                    feedsAppId: this.FEEDS_APP_ID,
-                    feedsCount: Math.max(feedsCount, 492),
-                    outboundPhone: this.OUTBOUND_PHONE,
-                    outboundEmail: this.OUTBOUND_EMAIL,
-                    tokenType: 'bearer',
-                    expiresIn: 28800,
-                    lastChecked: new Date().toISOString(),
-                    fallback: true
-                };
-                this._cachedStatus = fallbackStatus;
-                this._statusExpiresAt = Date.now() + 30000;
-                return fallbackStatus;
-            } catch (dbErr) {
-                return {
-                    connected: false,
-                    status: 'ERROR',
-                    workspace: 'Elite Homes USA Group LLC',
-                    leadsAppId: this.LEADS_APP_ID,
-                    leadsCount: 68,
-                    propertiesAppId: this.PROPS_APP_ID,
-                    propertiesCount: 18,
-                    feedsAppId: this.FEEDS_APP_ID,
-                    feedsCount: 492,
-                    error: err.message,
-                    lastChecked: new Date().toISOString()
-                };
-            }
+            console.error(`[PodioSync] property ${it.item_id} failed:`, err.message);
+            return 'failed';
         }
+    }
+
+    /** Upserts one Podio lead item. Returns true when stored. Used by the scheduled sync and the webhook. */
+    static async upsertLeadItem(it) {
+        const fMap = {}; let propertyItemId = null;
+        (it.fields || []).forEach(f => {
+            if (f.type === 'phone' || f.type === 'email') fMap[f.label] = f.values?.[0]?.value;
+            else if (f.type === 'category') fMap[f.label] = f.values?.[0]?.value?.text;
+            else if (f.type === 'app') {
+                fMap[f.label] = f.values?.[0]?.value?.title;
+                const ref = f.values?.[0]?.value;
+                if (ref && String(ref.app?.app_id) === String(this.PROPS_APP_ID)) propertyItemId = String(ref.item_id);
+            } else fMap[f.label] = f.values?.[0]?.value;
+        });
+
+        const leadUuid = toDeterministicUuid(`podio-lead-${it.item_id}`);
+        const personUuid = toDeterministicUuid(`podio-person-${it.item_id}`);
+        const rawName = firstOf(fMap, 'Full Name', 'First Name') || it.title || '';
+        const email = firstOf(fMap, 'Email ID(s)');
+        const phone = firstOf(fMap, 'Phone #(s) (+11234567890)', 'Phone #(s)');
+        const sourceText = firstOf(fMap, 'Source');
+        const stage = podioStage(firstOf(fMap, 'Status'));
+        const sourceCode = podioSourceCode(sourceText);
+        const createdAt = it.created_on || null;
+        const updatedAt = it.last_event_on || null;
+        // A name that is really an email address is shown as the readable local part, never padded with a made-up surname.
+        const name = rawName.includes('@') ? rawName.split('@')[0].split('.').map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' ') : rawName;
+
+        try {
+            await withTransaction(async client => {
+                let personId = null;
+                if (name) {
+                    const parts = name.split(/\s+/);
+                    await client.query(
+                        `INSERT INTO core.people (person_id, full_name, first_name, last_name, primary_phone, primary_email, created_at, updated_at)
+                         VALUES ($1,$2,$3,$4,$5,$6,coalesce($7::timestamptz, now()), now())
+                         ON CONFLICT (person_id) DO UPDATE SET full_name = EXCLUDED.full_name,
+                           primary_phone = coalesce(EXCLUDED.primary_phone, core.people.primary_phone),
+                           primary_email = coalesce(EXCLUDED.primary_email, core.people.primary_email), updated_at = now()`,
+                        [personUuid, name, parts[0] || null, parts.slice(1).join(' ') || null, phone || null, email ? email.toLowerCase() : null, createdAt]);
+                    personId = personUuid;
+                }
+                let propertyId = null;
+                if (propertyItemId) {
+                    const { rows: [link] } = await client.query(
+                        `SELECT internal_uuid FROM crm.external_sync_map WHERE internal_entity_type = 'PROPERTY' AND external_system = 'PODIO' AND external_item_id = $1`, [propertyItemId]);
+                    propertyId = link?.internal_uuid || null;
+                }
+                await client.query(
+                    `INSERT INTO core.leads (lead_id, person_id, property_id, status, first_source_code, source_detail, attribution_confidence, first_attribution_evidence, created_at, updated_at)
+                     VALUES ($1,$2,$3,$4,$5,$6,'REPORTED',$7,coalesce($8::timestamptz, now()), coalesce($9::timestamptz, now()))
+                     ON CONFLICT (lead_id) DO UPDATE SET status = EXCLUDED.status, updated_at = EXCLUDED.updated_at,
+                       property_id = coalesce(core.leads.property_id, EXCLUDED.property_id),
+                       person_id = coalesce(core.leads.person_id, EXCLUDED.person_id)`,
+                    [leadUuid, personId, propertyId, stage, sourceCode, sourceText ? `Podio: ${sourceText}` : 'Podio', `Podio item ${it.item_id}`, createdAt, updatedAt]);
+                await client.query(
+                    `INSERT INTO crm.external_sync_map (internal_entity_type, internal_uuid, external_system, external_app_id, external_item_id, last_sync_at, status)
+                     VALUES ('LEAD', $1, 'PODIO', $2, $3, NOW(), 'SYNCED')
+                     ON CONFLICT (internal_entity_type, internal_uuid, external_system) DO UPDATE SET last_sync_at = NOW(), external_item_id = EXCLUDED.external_item_id`,
+                    [leadUuid, String(this.LEADS_APP_ID), String(it.item_id)]);
+                if (propertyId) await client.query('INSERT INTO core.lead_property_links (lead_id, property_id, created_by) VALUES ($1,$2,\'Podio sync\') ON CONFLICT DO NOTHING', [leadUuid, propertyId]);
+            });
+            return true;
+        } catch (err) {
+            console.error(`[PodioSync] lead ${it.item_id} failed:`, err.message);
+            return false;
+        }
+    }
+
+    /**
+     * Podio Properties app -> core.properties. A property is registered only when Podio supplies both a parcel and a county
+     * that exists in the registry. Items without them are kept as raw source records for follow-up and are counted as skipped.
+     */
+    /** Fetches one item from Podio and routes it to the right upsert. Used by webhooks so push and pull share identical rules. */
+    static async syncItem(appId, itemId) {
+        const auth = await PodioService.authenticateApp(this.LEADS_APP_ID, this.APP_TOKEN);
+        const item = await PodioService.getItem(auth.access_token, itemId);
+        const itemApp = String(item?.app?.app_id || appId || '');
+        if (itemApp === String(this.LEADS_APP_ID)) return { type: 'LEAD', stored: await this.upsertLeadItem(item) };
+        if (itemApp === String(this.PROPS_APP_ID)) {
+            const { rows: counties } = await pool.query('SELECT county_id, county_name, county_code FROM ref.counties');
+            return { type: 'PROPERTY', result: await this.upsertPropertyItem(item, counties) };
+        }
+        return { type: 'OTHER', item, appId: itemApp };
     }
 
     static async syncProperties() {
         const auth = await PodioService.authenticateApp(this.LEADS_APP_ID, this.APP_TOKEN);
-        const token = auth.access_token;
-
-        const data = await PodioService.fetchAppItems(token, this.PROPS_APP_ID, 100);
+        const data = await PodioService.fetchAppItems(auth.access_token, this.PROPS_APP_ID, 500);
         const items = data.items || [];
-        let count = 0;
+        const { rows: counties } = await pool.query('SELECT county_id, county_name, county_code FROM ref.counties');
+        const norm = t => t.toUpperCase().replace(/\.$/, '').replace(/^ST\.? /, 'ST ');
+        let synced = 0; let skipped = 0;
 
-        // Process in concurrent batches of 15 for maximum performance
-        const chunks = chunkArray(items, 15);
-        for (const chunk of chunks) {
-            await Promise.all(chunk.map(async (it) => {
-                const fMap = {};
-                (it.fields || []).forEach(f => {
-                    fMap[f.label] = f.values?.[0]?.value;
-                });
-
-                const rawAddr = fMap['Property Address'] || fMap['Property Address (DND)'] || it.title || '';
-                const { line1, city, state, zip } = parseAddress(rawAddr);
-                const propType = fMap['Property Type']?.text || 'Single Family';
-                const offerAmt = fMap['Our Offer Amount'] ? parseFloat(fMap['Our Offer Amount']) : null;
-                const notes = fMap['Notes'] || '';
-                const propUuid = toDeterministicUuid(`podio-prop-${it.item_id}`);
-
-                let countyCode = 'DUV';
-                if (/32068|32073|32043|32003/.test(zip)) countyCode = 'CLY';
-                if (/32084|32080|32082|32086|32259/.test(zip)) countyCode = 'STJ';
-                if (/33881/.test(zip)) countyCode = 'POL';
-
-                try {
-                    await pool.query(`
-                        INSERT INTO core.properties (
-                            property_id, county_id, parcel_raw, parcel_match,
-                            address_line1, city, state_code, postal_code,
-                            property_type, legal_description, assessed_value, created_at, updated_at
-                        ) VALUES (
-                            $1,
-                            (SELECT county_id FROM ref.counties WHERE county_code = $2 LIMIT 1),
-                            $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW(), NOW()
-                        )
-                        ON CONFLICT (county_id, parcel_match) DO UPDATE
-                        SET address_line1 = EXCLUDED.address_line1,
-                            city = EXCLUDED.city,
-                            state_code = EXCLUDED.state_code,
-                            postal_code = EXCLUDED.postal_code,
-                            property_type = EXCLUDED.property_type,
-                            assessed_value = EXCLUDED.assessed_value,
-                            updated_at = NOW()
-                    `, [
-                        propUuid,
-                        countyCode,
-                        `PODIO-${it.item_id}`,
-                        `PODIO${it.item_id}`,
-                        line1,
-                        city,
-                        state,
-                        zip,
-                        propType,
-                        notes || null,
-                        offerAmt ? Math.round(offerAmt * 1.4) : null
-                    ]);
-
-                    await pool.query(`
-                        INSERT INTO crm.external_sync_map (internal_entity_type, internal_uuid, external_system, external_app_id, external_item_id, last_sync_at, status)
-                        VALUES ('PROPERTY', $1, 'PODIO', $2, $3, NOW(), 'SYNCED')
-                        ON CONFLICT (internal_entity_type, internal_uuid, external_system) DO UPDATE
-                        SET last_sync_at = NOW(), external_item_id = EXCLUDED.external_item_id
-                    `, [propUuid, String(this.PROPS_APP_ID), String(it.item_id)]);
-
-                    count++;
-                } catch (err) {
-                    console.warn(`[PodioSync] Error upserting property ${it.item_id}:`, err.message);
-                }
-            }));
+        for (const chunk of chunkArray(items, 15)) {
+            await Promise.all(chunk.map(async it => { const r = await this.upsertPropertyItem(it, counties); if (r === 'synced') synced++; else if (r === 'skipped') skipped++; }));
         }
-
-        if (this._cachedStatus) {
-            this._cachedStatus.propertiesCount = count;
-        }
-
-        return count;
+        this.lastPropertySkips = skipped;
+        if (this._cachedStatus) this._cachedStatus.propertiesCount = synced;
+        return synced;
     }
 
+    /**
+     * Podio Leads app -> core.people + core.leads. The first source comes from Podio's own Source field and is written once;
+     * later syncs only move the pipeline stage. A lead is linked to a property only through its Podio property relation.
+     */
     static async syncLeads() {
         const auth = await PodioService.authenticateApp(this.LEADS_APP_ID, this.APP_TOKEN);
-        const token = auth.access_token;
-
-        const data = await PodioService.fetchAppItems(token, this.LEADS_APP_ID, 100);
+        const data = await PodioService.fetchAppItems(auth.access_token, this.LEADS_APP_ID, 500);
         const items = data.items || [];
         let count = 0;
 
-        // Process in concurrent batches of 15 for maximum performance
-        const chunks = chunkArray(items, 15);
-        for (const chunk of chunks) {
-            await Promise.all(chunk.map(async (it) => {
-                const fMap = {};
-                (it.fields || []).forEach(f => {
-                    if (f.type === 'phone' || f.type === 'email') {
-                        fMap[f.label] = f.values?.[0]?.value;
-                    } else if (f.type === 'category') {
-                        fMap[f.label] = f.values?.[0]?.value?.text;
-                    } else if (f.type === 'app') {
-                        fMap[f.label] = f.values?.[0]?.value?.title;
-                    } else {
-                        fMap[f.label] = f.values?.[0]?.value;
-                    }
-                });
-
-                const leadUuid = toDeterministicUuid(`podio-lead-${it.item_id}`);
-                const personUuid = toDeterministicUuid(`podio-person-${it.item_id}`);
-                const rawName = fMap['Full Name'] || fMap['First Name'] || it.title || `Seller #${it.app_item_id}`;
-                const email = fMap['Email ID(s)'] || '';
-                const phone = fMap['Phone #(s) (+11234567890)'] || '';
-                const status = fMap['Status'] || 'New Untouched';
-                const source = fMap['Source'] || 'Emailing';
-                const createdAt = it.created_on || new Date().toISOString();
-                const updatedAt = it.last_event_on || new Date().toISOString();
-                const leadStage = status.toLowerCase().includes('contact') ? 'CONTACTED' : 'NEW';
-
-                // Clean full name if it is an email
-                let cleanName = rawName;
-                if (cleanName.includes('@')) {
-                    const userPart = cleanName.split('@')[0];
-                    const parts = userPart.split('.');
-                    cleanName = parts.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' ');
-                    if (!cleanName.includes(' ')) cleanName += ' Sterling';
-                }
-
-                try {
-                    await pool.query(`
-                        INSERT INTO core.people (person_id, full_name, first_name, last_name, primary_phone, primary_email, created_at, updated_at)
-                        VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())
-                        ON CONFLICT (person_id) DO UPDATE
-                        SET full_name = EXCLUDED.full_name,
-                            primary_phone = COALESCE(EXCLUDED.primary_phone, core.people.primary_phone),
-                            primary_email = COALESCE(EXCLUDED.primary_email, core.people.primary_email),
-                            updated_at = NOW()
-                    `, [
-                        personUuid,
-                        cleanName,
-                        cleanName.split(' ')[0] || cleanName,
-                        cleanName.split(' ').slice(1).join(' ') || '',
-                        phone || null,
-                        email || null,
-                        createdAt
-                    ]);
-
-                    await pool.query(`
-                        INSERT INTO core.leads (lead_id, person_id, status, first_source_code, source_detail, priority_score, created_at, updated_at)
-                        VALUES ($1, $2, $3, 'MAIL', $4, 75, $5, $6)
-                        ON CONFLICT (lead_id) DO UPDATE
-                        SET status = EXCLUDED.status,
-                            updated_at = EXCLUDED.updated_at
-                    `, [
-                        leadUuid,
-                        personUuid,
-                        leadStage,
-                        `Podio: ${source}`,
-                        createdAt,
-                        updatedAt
-                    ]);
-
-                    await pool.query(`
-                        INSERT INTO crm.external_sync_map (internal_entity_type, internal_uuid, external_system, external_app_id, external_item_id, last_sync_at, status)
-                        VALUES ('LEAD', $1, 'PODIO', $2, $3, NOW(), 'SYNCED')
-                        ON CONFLICT (internal_entity_type, internal_uuid, external_system) DO UPDATE
-                        SET last_sync_at = NOW(), external_item_id = EXCLUDED.external_item_id
-                    `, [leadUuid, String(this.LEADS_APP_ID), String(it.item_id)]);
-
-                    count++;
-                } catch (err) {
-                    console.warn(`[PodioSync] Error upserting lead ${it.item_id}:`, err.message);
-                }
-            }));
+        for (const chunk of chunkArray(items, 15)) {
+            await Promise.all(chunk.map(async it => { if (await this.upsertLeadItem(it)) count++; }));
         }
-
-        // Link unlinked leads to real properties
-        try {
-            await pool.query(`
-                WITH ranked_leads AS (
-                    SELECT lead_id, ROW_NUMBER() OVER (ORDER BY created_at DESC) as rn
-                    FROM core.leads
-                    WHERE property_id IS NULL
-                ),
-                ranked_props AS (
-                    SELECT property_id, ROW_NUMBER() OVER (ORDER BY created_at ASC) as rn, count(*) OVER () as total_props
-                    FROM core.properties
-                    WHERE address_line1 IS NOT NULL
-                )
-                UPDATE core.leads l
-                SET property_id = p.property_id
-                FROM ranked_leads rl
-                JOIN ranked_props p ON ((rl.rn - 1) % p.total_props) + 1 = p.rn
-                WHERE l.lead_id = rl.lead_id;
-            `);
-        } catch (linkErr) {
-            console.warn('[PodioSync] Property link warning:', linkErr.message);
-        }
-
-        if (this._cachedStatus) {
-            this._cachedStatus.leadsCount = count;
-        }
-
+        if (this._cachedStatus) this._cachedStatus.leadsCount = count;
         return count;
     }
 
@@ -457,7 +373,7 @@ export class PodioSyncService {
                     await pool.query(`
                         INSERT INTO core.conversation_desk_threads 
                         (id, platform_id, contact_name, contact_phone, contact_email, property_address, property_city, property_state, status, unread_count, last_message_preview, last_message_at, created_at, updated_at)
-                        VALUES ($1, $2, $3, $4, $5, $6, 'Jacksonville', 'FL', 'Active', $7, $8, $9, $9, $9)
+                        VALUES ($1, $2, $3, $4, $5, $6, '', '', 'Active', $7, $8, $9, $9, $9)
                         ON CONFLICT (id) DO UPDATE SET
                             last_message_preview = CASE
                                 WHEN EXCLUDED.last_message_at >= core.conversation_desk_threads.last_message_at
@@ -488,7 +404,7 @@ export class PodioSyncService {
                         msgId,
                         threadId,
                         isInbound ? 'lead' : 'agent',
-                        isInbound ? callerName : 'Darren Richardson (HushHawk / Podio)',
+                        isInbound ? callerName : 'Podio user',
                         content,
                         itemDate
                     ]);
@@ -498,7 +414,7 @@ export class PodioSyncService {
                     await pool.query(`
                         INSERT INTO core.interactions
                         (interaction_id, method, direction, actor_id, result, notes, occurred_at)
-                        VALUES ($1, $2, $3, 'Darren Richardson (Podio)', $4, $5, $6)
+                        VALUES ($1, $2, $3, 'Podio user', $4, $5, $6)
                         ON CONFLICT (interaction_id) DO UPDATE SET
                             result = EXCLUDED.result,
                             notes = EXCLUDED.notes
@@ -584,7 +500,7 @@ export class PodioSyncService {
             await pool.query(`
                 INSERT INTO core.interactions
                 (interaction_id, method, direction, actor_id, result, notes, occurred_at)
-                VALUES ($1, $2, 'OUTBOUND', 'Darren Richardson (Podio Outbound)', 'SUCCESS', $3, NOW())
+                VALUES ($1, $2, 'OUTBOUND', 'Podio user', 'SUCCESS', $3, NOW())
             `, [
                 interactionUuid,
                 type.toUpperCase(),
@@ -708,10 +624,10 @@ export class PodioSyncService {
             }
 
             // Ideal Price Range: 6 = '$200k - $500k', 5 = '$100k - $200k', 7 = '$500k+'
-            const maxVal = Number(max) || 350000;
+            const maxVal = Number(max);
             if (maxVal > 500000) fields[269571714] = 7;
             else if (maxVal > 200000) fields[269571714] = 6;
-            else fields[269571714] = 5;
+            else if (maxVal > 0) fields[269571714] = 5;
 
             // Buyer is looking for: 1 = 'Houses to rehab and sell', 2 = 'Houses to hold as rentals'
             fields[269571711] = 1;
@@ -734,18 +650,19 @@ export class PodioSyncService {
     /**
      * Create a real Offer in Podio App 30087411
      */
-    static async createOfferInPodio({ leadItemId, address, buyPrice, emd = 1000, status = 'Determining Offer', notes = '' }) {
+    static async createOfferInPodio({ leadItemId, address, buyPrice, emd, county = '', clauses = '', status = 'Determining Offer', notes = '' }) {
+        if (!address || !(Number(buyPrice) > 0) || emd === undefined || emd === null || emd === '' || !(Number(emd) >= 0)) throw new Error('address, buyPrice and emd are required to create an offer.');
         try {
             console.log(`[PodioSync] Pushing new Offer to Podio App 30087411 for ${address}`);
             const auth = await PodioService.authenticateApp(this.LEADS_APP_ID, this.APP_TOKEN);
             const token = auth.access_token;
 
             const fields = {
-                269571382: { value: String(buyPrice || 95000), currency: 'USD' },
-                269571383: { value: String(emd || 1000), currency: 'USD' },
-                269571384: 'Duval County',
-                269571385: address || 'Jacksonville, FL Subject Property',
-                269571386: 'Standard AS-IS Cash Purchase Contract with 14-day inspection.'
+                269571382: { value: String(buyPrice), currency: 'USD' },
+                269571383: { value: String(emd), currency: 'USD' },
+                269571384: county,
+                269571385: address,
+                ...(clauses ? { 269571386: clauses } : {})
             };
 
             if (leadItemId) {
@@ -839,39 +756,61 @@ export class PodioSyncService {
             const buyers = items.map((b, idx) => {
                 const getF = (label) => b.fields.find(f => f.label.toLowerCase() === label.toLowerCase())?.values?.[0];
                 const entityName = getF('Entity Name')?.value || b.title;
-                const phone = getF('Phone #(s)')?.value || '(904) 579-0065';
-                const email = getF('Email ID(s)')?.value || 'buyer@elitehomes1.com';
-                const criteria = getF('About Cash Buyer/Criteria')?.value?.replace(/<[^>]+>/g, ' ').trim() || 'Jacksonville SFR Buy Box';
-                const priceRange = getF('Ideal Price Range?')?.value?.text || '$200k-$500k';
-                const propType = getF('Type Of Property Buyer is Looking For?')?.value?.text || 'Single Family';
-                const lookingFor = getF('Buyer Is Looking For')?.value?.text || 'Houses to rehab and sell';
+                const phone = getF('Phone #(s)')?.value || '';
+                const email = getF('Email ID(s)')?.value || '';
+                const criteria = getF('About Cash Buyer/Criteria')?.value?.replace(/<[^>]+>/g, ' ').trim() || '';
+                const priceRange = getF('Ideal Price Range?')?.value?.text || '';
+                const propType = getF('Type Of Property Buyer is Looking For?')?.value?.text || '';
+                const lookingFor = getF('Buyer Is Looking For')?.value?.text || '';
 
                 // Extract ZIP codes if mentioned in criteria
-                const zipsFound = criteria.match(/\b32\d{3}\b/g) || ['32204', '32205', '32207', '32208', '32210', '32246', '32256'];
+                const zipsFound = criteria.match(/\b\d{5}\b/g) || [];
                 const uniqueZips = [...new Set(zipsFound)];
 
                 return {
                     id: 'b-' + b.item_id,
                     podioItemId: b.item_id,
                     name: b.title || entityName,
-                    company: entityName || 'Private Investor Group',
+                    company: entityName || '',
                     phone,
                     email,
-                    location: 'Jacksonville, FL',
+                    location: '',
                     zips: uniqueZips,
-                    min: 75000,
-                    max: priceRange.includes('500k') ? 650000 : 350000,
+                    min: null,
+                    max: null,
                     types: propType,
                     lookingFor,
                     criteria,
                     priceRange,
-                    pofVerified: true,
-                    response: 90 + (idx % 10),
-                    dealsClosed: 3 + (idx % 5),
-                    tier: idx < 2 ? 'Active VIP' : 'Verified Buyer',
-                    tierClass: idx < 2 ? 'tier-gold' : 'tier-blue'
+                    pofVerified: false,
+                    response: null,
+                    dealsClosed: null,
+                    tier: '',
+                    tierClass: ''
                 };
             });
+
+            // Persist so the Cash Buyers workspace reads stored data instead of calling Podio on every page load.
+            const parseMoney = txt => (String(txt).match(/\$?\s*[\d.,]+\s*[kKmM]?/g) || []).map(x => {
+                const n = parseFloat(x.replace(/[^\d.]/g, ''));
+                return /m/i.test(x) ? n * 1e6 : /k/i.test(x) ? n * 1e3 : n;
+            }).filter(Number.isFinite);
+            for (const b of buyers) {
+                const nums = parseMoney(b.priceRange);
+                try {
+                    await pool.query(
+                        `INSERT INTO crm.cash_buyers (id, full_name, company, phone, email, buy_box, zips, price_min, price_max, property_types, notes, podio_item_id, updated_at)
+                         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,now())
+                         ON CONFLICT (id) DO UPDATE SET full_name = EXCLUDED.full_name, company = EXCLUDED.company, phone = EXCLUDED.phone, email = EXCLUDED.email,
+                           buy_box = EXCLUDED.buy_box, zips = EXCLUDED.zips, price_min = EXCLUDED.price_min, price_max = EXCLUDED.price_max,
+                           property_types = EXCLUDED.property_types, notes = EXCLUDED.notes, podio_item_id = EXCLUDED.podio_item_id, updated_at = now()`,
+                        [b.id, b.name, b.company || null, b.phone || null, b.email || null, b.criteria || b.lookingFor || null, b.zips || [],
+                         nums.length ? Math.min(...nums) : null, nums.length > 1 ? Math.max(...nums) : (nums[0] ?? null),
+                         b.types || null, b.lookingFor || null, String(b.podioItemId)]);
+                } catch (e) {
+                    console.error('[PodioSync] buyer upsert failed:', e.message);
+                }
+            }
 
             console.log(`[PodioSync] Synced ${buyers.length} verified Cash Buyers from Podio!`);
             return buyers;
@@ -893,35 +832,44 @@ export class PodioSyncService {
 
             const contacts = items.map((c) => {
                 const getF = (label) => c.fields.find(f => f.label.toLowerCase() === label.toLowerCase())?.values?.[0];
-                const email = getF('Email ID(s)')?.value || (c.title?.includes('@') ? c.title : 'contact@elitehomes1.com');
-                const typeText = getF('Type')?.value?.text || 'Distressed Seller';
+                const email = getF('Email ID(s)')?.value || (c.title?.includes('@') ? c.title : '');
+                const typeText = getF('Type')?.value?.text || '';
                 const associatedLeads = parseInt(getF('No. of associated Leads')?.value || 1, 10);
-                const firstName = getF('First Name')?.value || c.title?.split(' ')[0] || 'Lead';
+                const firstName = getF('First Name')?.value || c.title?.split(' ')[0] || '';
 
                 // Real phone if present, or format based on Podio title/email
-                let phone = getF('Phone #(s)')?.value;
-                if (!phone) {
-                    phone = email.includes('verizon.net') ? '+15714356847' : 
-                            email.includes('gmail.com') ? '+19047803358' : '+19045790065';
-                }
+                const phone = getF('Phone #(s)')?.value || '';
 
                 return {
                     id: 'cnt-' + c.item_id,
                     podioItemId: c.item_id,
                     name: c.title || firstName,
-                    company: typeText === 'Cash Buyer' ? 'Investment Partner' : 'Property Owner',
+                    company: '',
                     type: typeText,
                     phone,
                     email,
                     tags: ['Podio Synced', typeText, `${associatedLeads} Deals`],
-                    property: 'Jacksonville, FL',
-                    status: 'Active',
+                    property: '',
+                    status: '',
                     initials: (c.title || 'CL').split(' ').map(s => s[0]).join('').slice(0, 2).toUpperCase(),
-                    lastTouch: 'Live Podio Sync',
+                    lastTouch: c.last_event_on || '',
                     notes: `Associated with ${associatedLeads} lead records in Podio CRM.`
                 };
             });
 
+            for (const c of contacts) {
+                try {
+                    await pool.query(
+                        `INSERT INTO crm.seller_contacts (id, seller_name, phone, email, company, contact_type, tags, notes, podio_item_id, updated_at)
+                         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,now())
+                         ON CONFLICT (id) DO UPDATE SET seller_name = EXCLUDED.seller_name, phone = EXCLUDED.phone, email = EXCLUDED.email,
+                           company = EXCLUDED.company, contact_type = EXCLUDED.contact_type, tags = EXCLUDED.tags, notes = EXCLUDED.notes,
+                           podio_item_id = EXCLUDED.podio_item_id, updated_at = now()`,
+                        ['c-' + c.podioItemId, c.name, c.phone || null, c.email || null, c.company || null, c.type || null, c.tags || [], c.notes || null, String(c.podioItemId)]);
+                } catch (e) {
+                    console.error('[PodioSync] contact upsert failed:', e.message);
+                }
+            }
             console.log(`[PodioSync] Synced ${contacts.length} real contacts from Podio!`);
             return contacts;
         } catch (err) {
@@ -943,21 +891,21 @@ export class PodioSyncService {
             const offers = items.map((o) => {
                 const getF = (label) => o.fields.find(f => f.label.toLowerCase() === label.toLowerCase())?.values?.[0];
                 const price = parseFloat(getF('Purchase Price')?.value || 0);
-                const emd = parseFloat(getF('EMD')?.value || 1000);
-                const status = getF('STATUS')?.value?.text || 'Determining Offer';
-                const clauses = getF('Additional Clauses/Terms')?.value || 'Standard AS-IS Cash Purchase Contract with 14-day inspection.';
-                const legalDesc = getF('Legal Description')?.value || 'Jacksonville / Duval County parcel';
+                const emd = parseFloat(getF('EMD')?.value || 0);
+                const status = getF('STATUS')?.value?.text || '';
+                const clauses = getF('Additional Clauses/Terms')?.value || '';
+                const legalDesc = getF('Legal Description')?.value || '';
 
                 return {
                     id: 'off-' + o.item_id,
                     podioItemId: o.item_id,
-                    leadName: o.title || 'Wholesale Offer',
+                    leadName: o.title || '',
                     propertyAddress: legalDesc,
                     purchasePrice: price,
                     emd,
                     status,
                     clauses,
-                    notes: getF('Notes')?.value || 'Offer logged in Podio CRM',
+                    notes: getF('Notes')?.value || '',
                     sentAt: o.created_on
                 };
             });
@@ -984,28 +932,28 @@ export class PodioSyncService {
 
             const deals = (wbRes.items || []).map((w, idx) => {
                 const getF = (label) => w.fields.find(f => f.label.toLowerCase() === label.toLowerCase())?.values?.[0];
-                const buyPrice = parseFloat(getF('Buy Price')?.value || 125000);
-                const profit = parseFloat(getF('Profit')?.value || 25000);
-                const status = getF('STATUS')?.value?.text || 'Under Contract';
-                const emdReceived = getF('EMD Received?')?.value?.text || 'Yes';
+                const buyPrice = parseFloat(getF('Buy Price')?.value || 0);
+                const profit = parseFloat(getF('Profit')?.value || 0);
+                const status = getF('STATUS')?.value?.text || '';
+                const emdReceived = getF('EMD Received?')?.value?.text || '';
 
                 return {
                     id: 'wb-' + w.item_id,
                     podioItemId: w.item_id,
-                    code: 'WB-' + (202600 + idx),
-                    address: w.title || 'Jacksonville Wholesale Deal',
-                    zip: '32204',
-                    type: 'Assignment',
-                    seller: 'Motivated Seller',
-                    buyer: 'Vetted Cash Buyer',
+                    code: 'WB-' + w.item_id,
+                    address: w.title || '',
+                    zip: '',
+                    type: '',
+                    seller: '',
+                    buyer: '',
                     buyPrice,
                     fee: profit,
-                    titleAgency: 'First American Title / Oakberry',
+                    titleAgency: '',
                     fileNumber: 'WB-' + w.item_id,
-                    closingDate: new Date(Date.now() + 14 * 86400000).toISOString().slice(0, 10),
+                    closingDate: null,
                     status,
                     emdReceived,
-                    notes: 'Active deal tracked on Podio Whiteboard.'
+                    notes: ''
                 };
             });
 

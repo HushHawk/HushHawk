@@ -222,7 +222,7 @@
               :title="'Podio Live CRM · ' + podioStatusText + ' · Click to refresh all feeds'"
             >
               <span class="sync-dot" :class="{ spinning: isRefreshingAll || isSyncingPodio, warn: hasFetchIssue }"></span>
-              <span>{{ (isRefreshingAll || isSyncingPodio) ? 'Syncing Feeds…' : (hasFetchIssue ? 'Podio Warning · Click to Retry' : 'Podio Live (' + podioLeadsCount + ' Leads)') }}</span>
+              <span>{{ (isRefreshingAll || isSyncingPodio) ? 'Syncing Feeds…' : (hasFetchIssue ? 'Podio Warning · Click to Retry' : (podioConnected ? 'Podio Live (' + (podioLeadsCount ?? 0) + ' Leads)' : 'Podio not connected')) }}</span>
             </button>
             <button
               type="button"
@@ -370,7 +370,7 @@
                     <div class="tdc-address-group">
                       <span class="tdc-code">{{ deal.code || deal.id }}</span>
                       <strong class="tdc-street">{{ deal.address }}</strong>
-                      <span class="tdc-city">{{ deal.city || 'Jacksonville' }}, {{ deal.state || 'FL' }} {{ deal.zip }} ({{ deal.county || 'Duval' }} County)</span>
+                      <span class="tdc-city">{{ [deal.city, deal.state].filter(Boolean).join(', ') }} {{ deal.zip }}{{ deal.county ? ' (' + deal.county + ' County)' : '' }}</span>
                     </div>
                     <span class="tdc-days-tag" :class="{ 'stale': deal.daysInStage >= 3 }">
                       {{ deal.daysInStage || 0 }}d in stage
@@ -535,7 +535,7 @@
               </ul>
             </div>
             <div class="sources-footer">
-              <span>Source: <strong>Podio Live CRM</strong></span>
+              <span>Source: <strong>HushHawk leads (first source)</strong></span>
               <a href="/marketing" @click="guard">Breakdown ↗</a>
             </div>
           </article>
@@ -902,32 +902,44 @@ const isEmailModalOpen = ref(false);
 const selectedEmail = ref(null);
 const isSendingEmail = ref(false);
 
+function currentUserName() {
+  try {
+    const raw = window.sessionStorage.getItem('hushhawk_session') || window.localStorage.getItem('hushhawk_session');
+    const parsed = raw ? JSON.parse(raw) : {};
+    return (parsed.user || parsed).name || '';
+  } catch (e) {
+    return '';
+  }
+}
+
 async function sendTeamMessage() {
   if (!teamReplyDraft.value.trim()) return;
   const draftText = teamReplyDraft.value.trim();
-  const threadId = activeChatThreadId.value || '00000000-0000-0000-0000-000000000001';
-  teamMessages.value.push({
-    id: 'local-' + Date.now(),
-    sender: 'Alex Richard',
-    initials: 'AR',
-    roleColor: 'gold',
-    text: draftText,
-    time: 'Just now'
-  });
-  teamReplyDraft.value = '';
-
+  const threadId = activeChatThreadId.value;
+  if (!threadId) {
+    showFunnelToast('Open a conversation before sending a message.', 'error');
+    return;
+  }
   try {
-    await fetch(`/api/v1/chat/threads/${threadId}/messages`, {
+    const res = await fetch(`/api/v1/chat/threads/${threadId}/messages`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        sender_name: 'Alex Richard',
-        sender_role: 'Acquisitions Lead (Admin)',
-        message_text: draftText
-      })
+      body: JSON.stringify({ message_text: draftText })
     });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+    const name = currentUserName();
+    teamMessages.value.push({
+      id: data.message?.id || data.id || ('sent-' + Date.now()),
+      sender: name,
+      initials: name.split(' ').filter(Boolean).map(w => w[0]).join('').slice(0, 2).toUpperCase(),
+      roleColor: 'gold',
+      text: draftText,
+      time: new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
+    });
+    teamReplyDraft.value = '';
   } catch (err) {
-    console.warn('[TeamChat] Save message warn:', err.message);
+    showFunnelToast('Message not sent: ' + err.message, 'error');
   }
 }
 
@@ -936,9 +948,9 @@ function openComposeEmail() {
     id: 'new-' + Date.now(),
     name: '',
     email: '',
-    subject: 'Wholesale Deal Opportunity - Jacksonville, FL',
-    property: 'Duval County',
-    body: 'Hello,\n\nWe have an off-market contract opportunity in Jacksonville. Let us know if your buy box matches.\n\nBest regards,\nAlex Richard | HushHawk Intelligence',
+    subject: '',
+    property: '',
+    body: `\n\nBest regards,\n${currentUserName()}`,
     category: 'Proposals'
   };
   isEmailModalOpen.value = true;
@@ -1064,20 +1076,27 @@ const isAdvancingDeal = ref({});
 const advanceToast = ref(null);
 const isAddDealOpen = ref(false);
 const isSyncingPodio = ref(false);
-const podioLeadsCount = ref(68);
-const podioStatusText = ref('Connected (68 Leads)');
+const podioLeadsCount = ref(null);
+const podioConnected = ref(false);
+const podioStatusText = ref('Checking Podio…');
 
 async function checkPodioStatus() {
   try {
     const res = await fetch('/api/v1/integrations/podio/status');
     if (res.ok) {
       const data = await res.json();
+      podioConnected.value = Boolean(data.connected);
       if (data.connected) {
-        podioLeadsCount.value = data.leadsCount || 68;
-        podioStatusText.value = `Connected (${data.leadsCount} Leads, ${data.propertiesCount} Props)`;
+        podioLeadsCount.value = data.leadsCount ?? 0;
+        podioStatusText.value = `Connected (${data.leadsCount ?? 0} leads, ${data.propertiesCount ?? 0} properties, ${data.propertiesAwaitingParcel ?? 0} awaiting parcel)`;
+      } else {
+        podioStatusText.value = data.error || 'Not connected';
       }
     }
-  } catch (e) {}
+  } catch (e) {
+    podioConnected.value = false;
+    podioStatusText.value = 'Podio status unavailable';
+  }
 }
 
 async function syncPodioLive() {
@@ -1087,8 +1106,8 @@ async function syncPodioLive() {
     const res = await fetch('/api/v1/integrations/podio/sync', { method: 'POST' });
     const data = await res.json();
     if (data.success) {
-      podioLeadsCount.value = data.leadsSynced || 68;
-      podioStatusText.value = `Synced (${data.leadsSynced} Leads)`;
+      podioLeadsCount.value = data.leadsSynced ?? podioLeadsCount.value;
+      podioStatusText.value = `Synced (${data.leadsSynced ?? 0} leads)`;
       showFunnelToast(`Podio Sync Complete: ${data.leadsSynced} leads & ${data.propertiesSynced} properties synchronized live!`, 'success');
       await loadDashboardData();
     } else {
@@ -1279,7 +1298,7 @@ async function refreshAllData() {
           const spread = arv - purchase - repairs;
           activeSnapshot.value = {
             address: validProp.address_line1,
-            cityStateZip: (validProp.city || 'Jacksonville') + ', ' + (validProp.state_code || 'FL') + ' ' + (validProp.postal_code || '32208') + ' · ' + (validProp.property_type || 'Single Family'),
+            cityStateZip: [validProp.city, validProp.state_code].filter(Boolean).join(', ') + ' ' + (validProp.postal_code || '') + ' · ' + (validProp.property_type || 'Single Family'),
             arv: arv,
             repairs: repairs,
             purchase: purchase,
@@ -1299,8 +1318,8 @@ async function refreshAllData() {
         if (lData.leads && lData.leads.length) {
           leads.value = lData.leads.map(l => ({
             name: l.name || 'Seller Lead',
-            address: l.address && l.address !== 'No Property Address on File' ? l.address : (l.email || 'Jacksonville, FL'),
-            zip: l.zip || '32208',
+            address: l.address && l.address !== 'No Property Address on File' ? l.address : '',
+            zip: l.zip || '',
             status: l.status || 'New',
             source: l.source || 'Unknown'
           }));
@@ -1333,11 +1352,11 @@ async function refreshAllData() {
 }
 const addDealForm = ref({
   address: '',
-  city: 'Jacksonville',
-  zip: '32210',
+  city: '',
+  zip: '',
   seller: '',
-  buyPrice: 125000,
-  fee: 28000,
+  buyPrice: '',
+  fee: '',
   milestoneIndex: 0
 });
 
@@ -1464,11 +1483,11 @@ async function advanceDeal(deal, targetIndex) {
 function openAddDeal(idx = 0) {
   addDealForm.value = {
     address: '',
-    city: 'Jacksonville',
-    zip: '32210',
+    city: '',
+    zip: '',
     seller: '',
-    buyPrice: 125000,
-    fee: 28000,
+    buyPrice: '',
+    fee: '',
     milestoneIndex: idx
   };
   isAddDealOpen.value = true;
@@ -1679,7 +1698,7 @@ async function loadDashboardData() {
         const spread = arv - purchase - repairs;
         activeSnapshot.value = {
           address: validProp.address_line1,
-          cityStateZip: (validProp.city || 'Jacksonville') + ', ' + (validProp.state_code || 'FL') + ' ' + (validProp.postal_code || '32208') + ' · ' + (validProp.property_type || 'Single Family'),
+          cityStateZip: [validProp.city, validProp.state_code].filter(Boolean).join(', ') + ' ' + (validProp.postal_code || '') + ' · ' + (validProp.property_type || 'Single Family'),
           arv: arv,
           repairs: repairs,
           purchase: purchase,
@@ -1697,7 +1716,7 @@ async function loadDashboardData() {
         leads.value = lData.leads.map(l => ({
           name: l.name || 'Seller Lead',
           address: l.address && l.address !== 'No Property Address on File' ? l.address : (l.email || 'Jacksonville, FL'),
-          zip: l.zip || '32208',
+          zip: l.zip || '',
           status: l.status || 'New',
           source: l.source || 'Unknown'
         }));
@@ -1710,7 +1729,7 @@ async function loadDashboardData() {
           leads.value = lData.leads.map(l => ({
             name: l.name || l.author || 'Seller Lead',
             address: l.propertyAddress || l.address || 'Jacksonville, FL',
-            zip: l.zip || '32208',
+            zip: l.zip || '',
             status: l.status || 'New',
             source: l.source || 'Unknown'
           }));

@@ -6,18 +6,10 @@
  */
 
 import crypto from 'crypto';
-import { pool } from '../store/pgClient.js';
-import { db } from '../store/database.js';
-import { renderCrownKey, normalizeParcelMatch } from '../../../packages/crownkey/index.js';
-
-// County mapping cache for standard FL service territory
-const COUNTY_MAP = {
-    'CLAY': { code: 'CLY', id: 'c3333333-3333-3333-3333-333333333333', name: 'Clay County' },
-    'DUVAL': { code: 'DUV', id: 'c1111111-1111-1111-1111-111111111111', name: 'Duval County' },
-    'ST. JOHNS': { code: 'STJ', id: 'c2222222-2222-2222-2222-222222222222', name: 'St. Johns County' },
-    'ST JOHNS': { code: 'STJ', id: 'c2222222-2222-2222-2222-222222222222', name: 'St. Johns County' },
-    'NASSAU': { code: 'NAS', id: 'c4444444-4444-4444-4444-444444444444', name: 'Nassau County' },
-};
+import { pool, withTransaction, audit } from '../store/pgClient.js';
+import { normalizeParcelMatch } from '../../../packages/crownkey/index.js';
+import { CrmService } from './crmService.js';
+import { HttpError } from './eventService.js';
 
 export class LeadImportService {
     /**
@@ -93,311 +85,142 @@ export class LeadImportService {
     /**
      * Ingest batch of leads into AWS RDS PostgreSQL
      */
-    static async processImport({
-        data,
-        sourceCode = 'MAIL',
-        actor = 'Acquisitions Admin',
-        defaultListName = 'Bulk Import Batch'
-    }) {
-        const rows = typeof data === 'string' ? this.parseRawTabular(data) : (Array.isArray(data) ? data : []);
-        if (!rows.length) {
-            throw new Error('No valid rows found to import.');
-        }
-
-        const client = await pool.connect();
-        const importedLeads = [];
-        const createdPropertyIds = [];
-        const createdPersonIds = [];
-        const createdLeadIds = [];
-        let listName = defaultListName;
-
-        try {
-            await client.query('BEGIN');
-
-            for (const r of rows) {
-                // Header flexibility
-                const status = r['Lead Status'] || r['Status'] || r['lead_status'] || 'New';
-                const firstName = (r['First Name'] || r['first_name'] || '').trim();
-                const lastName = (r['Last Name'] || r['last_name'] || '').trim();
-                const rowListName = (r['List'] || r['list'] || r['Campaign'] || '').trim();
-                if (rowListName && listName === defaultListName) {
-                    listName = rowListName;
-                }
-
-                // Construct full name & check if entity
-                let fullName = `${firstName} ${lastName}`.trim();
-                if (!fullName) fullName = lastName || firstName || 'Unknown Contact';
-
-                const isEntity = /(LLC|INC|CORP|LP|TRUST|ESTATE)/i.test(fullName);
-
-                // Geographic & Property details
-                const propCity = (r['Property City'] || r['property_city'] || 'Middleburg').trim();
-                const propState = (r['Property State'] || r['property_state'] || 'FL').trim();
-                const propZip = (r['Property Zip'] || r['property_zip'] || '').trim();
-                const propCountyName = (r['Property County'] || r['property_county'] || 'Clay').trim();
-
-                const countyLookup = COUNTY_MAP[propCountyName.toUpperCase()] || COUNTY_MAP['CLAY'];
-                const countyId = countyLookup.id;
-                const countyCode = countyLookup.code;
-
-                // Raw APN parcel preservation
-                const parcelRaw = (r['Apn'] || r['APN'] || r['Parcel'] || r['parcel_raw'] || '').trim();
-                const parcelMatch = normalizeParcelMatch(parcelRaw);
-
-                // Mailing Address
-                const mailCity = (r['Mailing City'] || r['mailing_city'] || '').trim();
-                const mailState = (r['Mailing State'] || r['mailing_state'] || '').trim();
-                const mailZip = (r['Mailing Zip'] || r['mailing_zip'] || '').trim();
-                const mailCounty = (r['Mailing County'] || r['mailing_county'] || '').trim();
-                const mailingAddress = mailCity ? `${mailCity}, ${mailState} ${mailZip}`.trim() : '';
-
-                // Contact Ladder (Phones 1..5 with types)
-                const phones = [];
-                for (let p = 1; p <= 5; p++) {
-                    const phoneRaw = r[`Phone ${p}`] || r[`phone_${p}`] || '';
-                    const phoneType = r[`Phone ${p} TYPE`] || r[`phone_${p}_type`] || (p === 1 ? 'Mobile' : 'Landline');
-                    if (phoneRaw && String(phoneRaw).trim().length >= 7) {
-                        phones.push({
-                            slot: p,
-                            raw: String(phoneRaw).trim(),
-                            formatted: this.formatPhone(phoneRaw),
-                            type: phoneType.trim(),
-                            is_primary: p === 1
-                        });
-                    }
-                }
-
-                const primaryPhone = phones[0]?.formatted || phones[0]?.raw || '';
-
-                // Emails (Email & Email 2)
-                const email1 = (r['Email'] || r['email'] || r['email_1'] || '').trim();
-                const email2 = (r['Email 2'] || r['email_2'] || '').trim();
-                const emails = [email1, email2].filter(Boolean);
-                const primaryEmail = emails[0] || '';
-
-                // Render canonical CrownKey
-                const crownKey = renderCrownKey({
-                    countyCode,
-                    parcelRaw: parcelRaw || '00-00-00-000000-000-00',
-                    firstSourceCode: sourceCode
-                });
-
-                // 1. Create or Find core.people
-                const personId = crypto.randomUUID();
-                await client.query(`
-                    INSERT INTO core.people (
-                        person_id, full_name, first_name, last_name, primary_phone, primary_email,
-                        mailing_address, is_suppressed, verification_level, phones, emails, metadata, created_at, updated_at
-                    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW(), NOW())
-                `, [
-                    personId,
-                    fullName,
-                    firstName || null,
-                    lastName || null,
-                    primaryPhone || null,
-                    primaryEmail || null,
-                    mailingAddress || null,
-                    false,
-                    'TIER_1_UNVERIFIED',
-                    JSON.stringify(phones),
-                    JSON.stringify(emails),
-                    JSON.stringify({ isEntity, mailingCounty: mailCounty, originalList: listName })
-                ]);
-                createdPersonIds.push(personId);
-
-                // 2. Create core.properties
-                const propertyId = crypto.randomUUID();
-                const addressLine1 = propCity ? `${propCity} Property (${parcelRaw})` : `Parcel ${parcelRaw}`;
-                await client.query(`
-                    INSERT INTO core.properties (
-                        property_id, county_id, parcel_raw, parcel_match, address_line1,
-                        city, state_code, postal_code, property_type, assessed_value, metadata, created_at, updated_at
-                    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW(), NOW())
-                `, [
-                    propertyId,
-                    countyId,
-                    parcelRaw,
-                    parcelMatch,
-                    addressLine1,
-                    propCity,
-                    propState,
-                    propZip,
-                    'Single Family Residential',
-                    250000.00,
-                    JSON.stringify({ countyCode, crownKey, listName })
-                ]);
-                createdPropertyIds.push(propertyId);
-
-                // 3. Create core.leads
-                const leadId = crypto.randomUUID();
-                const normalizedStatus = status.toUpperCase().includes('NEW') ? 'NEW' : 'CONTACTED';
-                await client.query(`
-                    INSERT INTO core.leads (
-                        lead_id, first_source_code, source_detail, property_id, person_id,
-                        status, priority_score, metadata, created_at, updated_at
-                    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW())
-                `, [
-                    leadId,
-                    sourceCode,
-                    `Skip-Trace List: ${listName}`,
-                    propertyId,
-                    personId,
-                    normalizedStatus,
-                    65,
-                    JSON.stringify({
-                        crownKey,
-                        rawStatus: status,
-                        phoneCount: phones.length,
-                        emailCount: emails.length,
-                        listName
-                    })
-                ]);
-                createdLeadIds.push(leadId);
-
-                // Also sync to in-memory store for instant UI reactivity
-                const leadRecord = {
-                    lead_id: leadId,
-                    first_source_code: sourceCode,
-                    source_detail: `Skip-Trace List: ${listName}`,
-                    property_id: propertyId,
-                    person_id: personId,
-                    status: normalizedStatus,
-                    priority_score: 65,
-                    created_at: new Date().toISOString(),
-                    crownKey
-                };
-                db.data.core.leads.unshift(leadRecord);
-                db.data.core.properties.unshift({
-                    property_id: propertyId,
-                    county_id: countyId,
-                    parcel_raw: parcelRaw,
-                    parcel_match: parcelMatch,
-                    address_line1: addressLine1,
-                    city: propCity,
-                    state_code: propState,
-                    postal_code: propZip,
-                    crownKey
-                });
-                db.data.core.people.unshift({
-                    person_id: personId,
-                    full_name: fullName,
-                    primary_phone: primaryPhone,
-                    primary_email: primaryEmail
-                });
-
-                importedLeads.push({
-                    lead_id: leadId,
-                    crownKey,
-                    owner_name: fullName,
-                    parcel_raw: parcelRaw,
-                    city: propCity,
-                    zip: propZip,
-                    primary_phone: primaryPhone,
-                    phones_count: phones.length,
-                    primary_email: primaryEmail,
-                    emails_count: emails.length,
-                    status: normalizedStatus
-                });
-            }
-
-            // 4. Record Audit Event
-            const auditId = crypto.randomUUID();
-            await client.query(`
-                INSERT INTO audit.audit_events (
-                    audit_id, actor, action, entity_type, entity_id, request_id, redacted_diff, created_at
-                ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())
-            `, [
-                auditId,
-                actor,
-                'LEADS_BULK_IMPORTED',
-                'LEAD_BATCH',
-                createdLeadIds[0],
-                crypto.randomUUID(),
-                JSON.stringify({
-                    count: rows.length,
-                    list_name: listName,
-                    lead_ids: createdLeadIds
-                })
-            ]);
-
-            // 5. Trigger Real-Time Operational Notification
-            const notifId = crypto.randomUUID();
-            await client.query(`
-                INSERT INTO ops.notifications (
-                    notification_id, title, body, category, priority, color, icon, is_read, metadata, created_at
-                ) VALUES ($1, $2, $3, $4, $5, $6, $7, false, $8, NOW())
-            `, [
-                notifId,
-                `Real-Time Lead Ingestion: ${rows.length} Leads`,
-                `Successfully ingested ${rows.length} skip-traced records from "${listName}" into PostgreSQL.`,
-                'LEAD',
-                'MEDIUM',
-                'cyan',
-                'upload',
-                JSON.stringify({ count: rows.length, list_name: listName, lead_ids: createdLeadIds })
-            ]);
-
-            await client.query('COMMIT');
-
-            return {
-                success: true,
-                count: importedLeads.length,
-                list_name: listName,
-                notification_id: notifId,
-                leads: importedLeads,
-                ids: {
-                    lead_ids: createdLeadIds,
-                    property_ids: createdPropertyIds,
-                    person_ids: createdPersonIds
-                }
-            };
-        } catch (err) {
-            await client.query('ROLLBACK');
-            throw err;
-        } finally {
-            client.release();
-        }
-    }
 
     /**
-     * Purge specific imported batch (for cleanup after verification testing)
+     * Imports leads from skip-trace / list exports. Every row is handled in its own savepoint:
+     * a bad row is rejected with a reason and never blocks or corrupts the others.
+     * Counties must exist in the registry, parcels stay text, properties are matched by county + parcel,
+     * and a row without a parcel becomes a lead with its property still pending.
      */
-    static async purgeBatch({ leadIds = [], propertyIds = [], personIds = [] }) {
-        if (!leadIds.length && !propertyIds.length && !personIds.length) {
-            return { purged: 0 };
-        }
+    static async processImport({ data, sourceCode, actor, defaultListName = 'Bulk Import Batch' }) {
+        if (!sourceCode) throw new HttpError(400, 'sourceCode is required.');
+        if (!actor) throw new HttpError(400, 'An actor is required.');
+        const rows = typeof data === 'string' ? this.parseRawTabular(data) : (Array.isArray(data) ? data : []);
+        if (!rows.length) throw new HttpError(400, 'No valid rows found to import.');
+
+        const { rows: counties } = await pool.query('SELECT county_id, county_name, county_code FROM ref.counties');
+        const findCounty = name => {
+            const n = String(name || '').trim().toUpperCase().replace(/\.$/, '').replace(/^ST\.? /, 'ST ');
+            return counties.find(c => {
+                const full = c.county_name.toUpperCase().replace(/^ST\.? /, 'ST ');
+                return full === n || full === `${n} COUNTY` || c.county_code === n;
+            });
+        };
+
+        const pick = (r, ...keys) => { for (const k of keys) if (r[k] !== undefined && String(r[k]).trim() !== '') return String(r[k]).trim(); return ''; };
+        const imported = []; const rejected = [];
+        const ids = { lead_ids: [], property_ids: [], person_ids: [] };
+        let listName = defaultListName;
 
         const client = await pool.connect();
         try {
             await client.query('BEGIN');
+            const { rows: [job] } = await client.query(
+                `INSERT INTO ops.import_jobs (source_system, import_type, created_by) VALUES ($1,'LEAD',$2) RETURNING import_job_id`, [`LIST:${defaultListName}`, actor]);
 
-            if (leadIds.length) {
-                await client.query('DELETE FROM core.leads WHERE lead_id = ANY($1)', [leadIds]);
-                // In-memory sync
-                db.data.core.leads = db.data.core.leads.filter(l => !leadIds.includes(l.lead_id));
-            }
-            if (propertyIds.length) {
-                await client.query('DELETE FROM core.properties WHERE property_id = ANY($1)', [propertyIds]);
-                db.data.core.properties = db.data.core.properties.filter(p => !propertyIds.includes(p.property_id));
-            }
-            if (personIds.length) {
-                await client.query('DELETE FROM core.people WHERE person_id = ANY($1)', [personIds]);
-                db.data.core.people = db.data.core.people.filter(p => !personIds.includes(p.person_id));
+            for (let i = 0; i < rows.length; i++) {
+                const r = rows[i];
+                await client.query('SAVEPOINT row_import');
+                try {
+                    const rowList = pick(r, 'List', 'list', 'Campaign');
+                    if (rowList && listName === defaultListName) listName = rowList;
+                    const firstName = pick(r, 'First Name', 'first_name');
+                    const lastName = pick(r, 'Last Name', 'last_name');
+                    const fullName = `${firstName} ${lastName}`.trim();
+                    if (!fullName) throw new Error('Owner name is missing.');
+
+                    const countyName = pick(r, 'Property County', 'property_county');
+                    const parcelRaw = pick(r, 'Apn', 'APN', 'Parcel', 'parcel_raw');
+                    let propertyId = null;
+                    if (parcelRaw) {
+                        const county = findCounty(countyName);
+                        if (!county) throw new Error(`County '${countyName || '(blank)'}' is not in the county registry.`);
+                        const parcelMatch = normalizeParcelMatch(parcelRaw);
+                        const { rows: [existing] } = await client.query('SELECT property_id FROM core.properties WHERE county_id = $1 AND parcel_match = $2', [county.county_id, parcelMatch]);
+                        if (existing) propertyId = existing.property_id;
+                        else {
+                            const { rows: [created] } = await client.query(
+                                `INSERT INTO core.properties (county_id, parcel_raw, parcel_match, address_line1, city, state_code, postal_code)
+                                 VALUES ($1,$2,$3,$4,$5,coalesce(nullif($6,''),'FL'),$7) RETURNING property_id`,
+                                [county.county_id, parcelRaw, parcelMatch, pick(r, 'Property Address', 'Address', 'property_address') || null,
+                                 pick(r, 'Property City', 'property_city') || null, pick(r, 'Property State', 'property_state'), pick(r, 'Property Zip', 'property_zip') || null]);
+                            propertyId = created.property_id;
+                            ids.property_ids.push(propertyId);
+                        }
+                    }
+
+                    const phones = [];
+                    for (let n = 1; n <= 5; n++) {
+                        const raw = pick(r, `Phone ${n}`, `phone_${n}`);
+                        if (raw.replace(/\D/g, '').length >= 7) {
+                            phones.push({ slot: n, raw, formatted: this.formatPhone(raw), type: pick(r, `Phone ${n} TYPE`, `phone_${n}_type`) || null, is_primary: n === 1 });
+                        }
+                    }
+                    const emails = [pick(r, 'Email', 'email', 'email_1'), pick(r, 'Email 2', 'email_2')].filter(Boolean);
+                    const mailCity = pick(r, 'Mailing City', 'mailing_city');
+                    const mailing = mailCity ? `${mailCity}, ${pick(r, 'Mailing State', 'mailing_state')} ${pick(r, 'Mailing Zip', 'mailing_zip')}`.trim() : null;
+
+                    const lead = await CrmService.createLead({
+                        sourceCode, sourceDetail: `List: ${rowList || listName}`, propertyId, actor, db: client,
+                        person: { name: fullName, phone: phones[0]?.formatted || phones[0]?.raw || null, email: emails[0] || null, mailingAddress: mailing },
+                        metadata: { listName: rowList || listName, rawStatus: pick(r, 'Lead Status', 'Status', 'lead_status') || null, importJobId: job.import_job_id }
+                    });
+                    await client.query(
+                        `UPDATE core.people SET first_name = $2, last_name = $3, phones = $4, emails = $5, metadata = $6, verification_level = 'UNVERIFIED' WHERE person_id = $1`,
+                        [lead.person_id, firstName || null, lastName || null, JSON.stringify(phones), JSON.stringify(emails),
+                         JSON.stringify({ isEntity: /(LLC|INC|CORP|LP|TRUST|ESTATE)/i.test(fullName), originalList: rowList || listName })]);
+                    const rawStatus = pick(r, 'Lead Status', 'Status', 'lead_status').toUpperCase();
+                    if (rawStatus && !rawStatus.includes('NEW')) await client.query(`UPDATE core.leads SET status = 'CONTACTED' WHERE lead_id = $1`, [lead.lead_id]);
+
+                    ids.lead_ids.push(lead.lead_id); ids.person_ids.push(lead.person_id);
+                    imported.push({ lead_id: lead.lead_id, owner_name: fullName, parcel_raw: parcelRaw || null, property_pending: !propertyId, primary_phone: phones[0]?.formatted || null, phones_count: phones.length, emails_count: emails.length });
+                    await client.query(`INSERT INTO ops.import_job_items (import_job_id, row_number, outcome, entity_id) VALUES ($1,$2,'CREATED',$3)`, [job.import_job_id, i + 1, lead.lead_id]);
+                    await client.query('RELEASE SAVEPOINT row_import');
+                } catch (error) {
+                    await client.query('ROLLBACK TO SAVEPOINT row_import');
+                    rejected.push({ row: i + 1, reason: error.message });
+                    await client.query(`INSERT INTO ops.import_job_items (import_job_id, row_number, outcome, message) VALUES ($1,$2,'REJECTED',$3)`, [job.import_job_id, i + 1, error.message]);
+                }
             }
 
+            await client.query(
+                `UPDATE ops.import_jobs SET status = 'COMPLETED', created_count = $2, rejected_count = $3, completed_at = now() WHERE import_job_id = $1`,
+                [job.import_job_id, imported.length, rejected.length]);
+            await audit(client, { actor, action: 'LEADS_BULK_IMPORTED', entityType: 'IMPORT_JOB', entityId: job.import_job_id, diff: { listName, created: imported.length, rejected: rejected.length, sourceCode } });
+            const { rows: [note] } = await client.query(
+                `INSERT INTO ops.notifications (notification_id, title, body, category, priority, color, icon, is_read, metadata, created_at)
+                 VALUES (gen_random_uuid(), $1, $2, 'LEAD', 'MEDIUM', 'cyan', 'upload', false, $3, now()) RETURNING notification_id`,
+                [`Lead import: ${imported.length} created`, `${imported.length} lead(s) imported from "${listName}"; ${rejected.length} row(s) rejected.`, JSON.stringify({ importJobId: job.import_job_id })]);
             await client.query('COMMIT');
-            return {
-                success: true,
-                purged_leads: leadIds.length,
-                purged_properties: propertyIds.length,
-                purged_people: personIds.length
-            };
-        } catch (err) {
-            await client.query('ROLLBACK');
-            throw err;
+            return { success: true, importJobId: job.import_job_id, count: imported.length, rejected_count: rejected.length, rejected, list_name: listName, notification_id: note.notification_id, leads: imported, ids };
+        } catch (error) {
+            await client.query('ROLLBACK').catch(() => {});
+            throw error;
         } finally {
             client.release();
         }
     }
-}
 
+    /** Administrator-only removal of a mistaken import. Refuses anything that already has events or other leads attached. */
+    static async purgeBatch({ leadIds = [], propertyIds = [], personIds = [], actor }) {
+        if (!leadIds.length && !propertyIds.length && !personIds.length) return { purged: 0 };
+        return withTransaction(async client => {
+            if (leadIds.length) {
+                for (const t of ['core.attribution_touchpoints', 'core.lead_property_links', 'core.lead_event_links', 'core.interactions']) {
+                    await client.query(`DELETE FROM ${t} WHERE lead_id = ANY($1::uuid[])`, [leadIds]);
+                }
+                await client.query('DELETE FROM crm.lead_stage_history WHERE lead_id = ANY($1::uuid[])', [leadIds]);
+                await client.query('DELETE FROM core.leads WHERE lead_id = ANY($1::uuid[])', [leadIds]);
+            }
+            if (propertyIds.length) {
+                const { rowCount } = await client.query(
+                    `SELECT 1 FROM core.pillar_events WHERE property_id = ANY($1::uuid[]) UNION ALL SELECT 1 FROM core.leads WHERE property_id = ANY($1::uuid[])`, [propertyIds]);
+                if (rowCount) throw new HttpError(409, 'A property still has events or leads attached and cannot be purged.');
+                await client.query('DELETE FROM core.properties WHERE property_id = ANY($1::uuid[])', [propertyIds]);
+            }
+            if (personIds.length) await client.query('DELETE FROM core.people WHERE person_id = ANY($1::uuid[])', [personIds]);
+            await audit(client, { actor, action: 'LEADS_BATCH_PURGED', entityType: 'LEAD_BATCH', entityId: leadIds[0] || propertyIds[0] || personIds[0], diff: { leads: leadIds.length, properties: propertyIds.length, people: personIds.length } });
+            return { success: true, purged: { leads: leadIds.length, properties: propertyIds.length, people: personIds.length } };
+        });
+    }
+}

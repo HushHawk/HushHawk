@@ -164,8 +164,9 @@ export class LeadDeskService {
     /**
      * Send a message to a thread (outbound rep reply)
      */
-    static async sendMessage({ threadId, content, senderName = 'Alex Richard (HushHawk)', senderType = 'rep' }) {
+    static async sendMessage({ threadId, content, senderName, senderType = 'rep' }) {
         if (!content || !content.trim()) throw new Error('Message content is required');
+        if (!senderName) throw new Error('A sender name is required');
 
         const messageId = 'msg-' + Date.now() + '-' + crypto.randomBytes(3).toString('hex');
         try {
@@ -256,7 +257,8 @@ export class LeadDeskService {
     /**
      * Assign lead thread to team member in PostgreSQL
      */
-    static async assignThread({ threadId, assignedTo = 'Alex Richard' }) {
+    static async assignThread({ threadId, assignedTo }) {
+        if (!assignedTo) throw new Error('A team member is required');
         const res = await pool.query(`
             UPDATE core.conversation_desk_threads
             SET status = $1, updated_at = now()
@@ -285,6 +287,7 @@ export class LeadDeskService {
         if (threadRes.rows.length === 0) throw new Error(`Thread ${threadId} not found`);
         const thread = threadRes.rows[0];
 
+        if (!thread.contact_phone) throw new Error('This conversation has no phone number to schedule a call with.');
         const callId = 'call-' + Date.now() + '-' + crypto.randomBytes(2).toString('hex');
         await pool.query(`
             INSERT INTO core.outreach_calls (id, contact_name, phone, property_address, property_id, priority, cadence_stage, notes, status, created_at)
@@ -293,8 +296,8 @@ export class LeadDeskService {
         `, [
             callId,
             thread.contact_name,
-            thread.contact_phone || '+13866273499',
-            thread.property_address || 'Jacksonville, FL',
+            thread.contact_phone,
+            thread.property_address || null,
             thread.property_id || null,
             'Desk Cadence (' + dueDate + ')',
             notes

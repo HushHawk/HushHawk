@@ -25,10 +25,12 @@ echo "=== [4/7] Installing dependencies ==="
 npm install
 
 echo "=== [5/7] Checking production database configuration ==="
-if [ -z "${DATABASE_URL:-}" ] && ! grep -qE '^DATABASE_URL=.+$' .env 2>/dev/null; then
-  echo "Configure DATABASE_URL through the instance secret environment or its existing .env before deploying." >&2
-  exit 1
-fi
+for required in DATABASE_URL WEBHOOK_SECRET PUBLIC_API_URL; do
+  if [ -z "${!required:-}" ] && ! grep -qE "^${required}=.+$" .env 2>/dev/null; then
+    echo "Configure ${required} through the instance secret environment or its existing .env before deploying." >&2
+    exit 1
+  fi
+done
 export NODE_ENV=production
 export PORT=3001
 
@@ -36,6 +38,9 @@ echo "=== [6/7] Building Frontend Production Dist ==="
 npm run build
 chmod 755 /home/ec2-user
 chmod -R 755 /home/ec2-user/hushhawk/dist
+
+echo "=== Applying database migrations ==="
+npm run db:migrate
 
 echo "=== [7/7] Starting HushHawk API with PM2 ==="
 pm2 delete hushhawk-api 2>/dev/null || true
@@ -93,8 +98,8 @@ sudo systemctl restart nginx
 echo ""
 echo "=========================================================="
 echo "🎉 FULL-STACK DEPLOYMENT COMPLETE!"
-echo "👉 Frontend Web App: http://3.148.218.118"
-echo "👉 Backend API:      http://3.148.218.118/api/v1/health"
+echo "👉 Frontend Web App: ${PUBLIC_API_URL:-<set PUBLIC_API_URL>}"
+echo "👉 Backend API:      ${PUBLIC_API_URL:-<set PUBLIC_API_URL>}/api/v1/health"
 echo "=========================================================="
 sleep 2
 curl -s http://localhost:3001/api/v1/health | grep -o '"status":"ONLINE"' && echo "✅ API is ONLINE and connected to RDS!" || echo "⚠️ Check API logs: pm2 logs"

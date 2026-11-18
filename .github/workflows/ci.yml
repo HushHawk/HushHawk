@@ -55,30 +55,19 @@ jobs:
       - name: Verify CrownKey Deterministic Standard
         run: npm run test:crownkey
 
-      - name: Verify 12 Platform Acceptance Tests
-        run: npm run test:acceptance
-
-      - name: Run Milestone 1 Exit Check
-        run: npm run test:milestone1
+      - name: Core engine acceptance tests (auth, numbering, attribution, compliance, imports)
+        run: npm test
 
       - name: Verify Real-Time Operational Notifications
         run: npm run test:notifications
 
-      - name: Verify Bulk Lead Ingestion & Skip-Trace Processing
-        run: npm run test:leads
-
-      - name: Verify Blueprint Subsystems (Mail, Call, SMS, CRM, Tasks, Audit)
-        run: npm run test:subsystems
-
-      - name: Verify Direct Mail Tracking and Partner Chat
-        run: |
-          npm run test:direct-mail
-          npm run test:partner-chat
+      - name: Verify Direct Mail Tracking
+        run: npm run test:direct-mail
 
       - name: Verify Private Vault Storage in Development Mode
         run: |
           node backend/src/server.js &
-          sleep 3
+          sleep 4
           npm run test:s3
 
       - name: Build Production Frontend

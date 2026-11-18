@@ -1,13 +1,16 @@
 import crypto from 'crypto';
-import { pool } from '../store/pgClient.js';
+import { pool, withTransaction, audit } from '../store/pgClient.js';
 import { db } from '../store/database.js';
+import { CrownKeyService } from './crownkeyService.js';
+import { HttpError } from './eventService.js';
+
+const digits = v => String(v || '').replace(/\D/g, '');
+const formatDuration = sec => (sec > 0 ? `${Math.floor(sec / 60)}m ${sec % 60}s` : null);
 
 export class SmrtPhoneService {
     static activeCall = null;
 
-    static getActiveCall() {
-        return this.activeCall;
-    }
+    static getActiveCall() { return this.activeCall; }
 
     static dismissActiveCall() {
         this.activeCall = null;
@@ -15,189 +18,84 @@ export class SmrtPhoneService {
     }
 
     /**
-     * Process an incoming smrtPhone webhook event (Call or SMS)
-     * Compatible with smrtPhone's standard webhook payload structure
+     * Records a smrtPhone call or SMS webhook. The caller is matched to a stored person by phone number;
+     * when nobody matches, the interaction is stored against the number alone. Nothing is guessed:
+     * missing durations, bodies and names stay empty.
      */
     static async handleWebhook(payload = {}) {
-        const eventId = crypto.randomUUID();
-        const interactionId = crypto.randomUUID();
-        const notifId = crypto.randomUUID();
+        const eventType = String(payload.event || payload.type || (payload.call_id ? 'call.completed' : 'sms.received')).toLowerCase();
+        const isCall = eventType.includes('call') || Boolean(payload.call_id || payload.call_duration);
+        const direction = String(payload.direction || (eventType.includes('outbound') ? 'OUTBOUND' : 'INBOUND')).toUpperCase();
+        if (!['INBOUND', 'OUTBOUND'].includes(direction)) throw new HttpError(400, 'direction must be INBOUND or OUTBOUND.');
+
+        // The external party is the sender for inbound events and the recipient for outbound ones.
+        const external = direction === 'INBOUND'
+            ? (payload.from || payload.caller_id || payload.from_number)
+            : (payload.to || payload.to_number);
+        if (digits(external).length < 7) throw new HttpError(400, 'The webhook did not include the contact phone number.');
+
+        const body = payload.body || payload.message || payload.text || null;
+        if (!isCall && !body) throw new HttpError(400, 'SMS webhooks must include the message body.');
+        const durationSec = Number(payload.call_duration || payload.duration) || 0;
+        const duration = formatDuration(durationSec);
+        const recordingUrl = payload.recording_url || payload.recording || null;
+        const callStatus = String(payload.status || payload.disposition || 'UNKNOWN').toUpperCase();
+        const note = body || (isCall ? `Call ${callStatus.toLowerCase()}${duration ? ` (${duration})` : ''}` : '');
         const now = new Date().toISOString();
 
-        // 1. Detect Event Type (Call or SMS)
-        const eventType = (payload.event || payload.type || (payload.call_id ? 'call.completed' : 'sms.received')).toLowerCase();
-        const isCall = eventType.includes('call') || Boolean(payload.call_id || payload.call_duration);
-        const isSms = eventType.includes('sms') || eventType.includes('message') || Boolean(payload.body || payload.message);
+        const tail = digits(external).slice(-10);
+        const { rows: [match] } = await pool.query(
+            `SELECT pe.person_id, pe.full_name, l.lead_id, l.property_id
+             FROM core.people pe
+             LEFT JOIN LATERAL (SELECT lead_id, property_id FROM core.leads WHERE person_id = pe.person_id ORDER BY created_at DESC LIMIT 1) l ON TRUE
+             WHERE right(regexp_replace(coalesce(pe.primary_phone, ''), '\\D', '', 'g'), 10) = $1
+                OR EXISTS (SELECT 1 FROM jsonb_array_elements(coalesce(pe.phones, '[]'::jsonb)) ph WHERE right(regexp_replace(coalesce(ph->>'raw', ''), '\\D', '', 'g'), 10) = $1)
+             ORDER BY pe.updated_at DESC LIMIT 1`, [tail]);
 
-        // 2. Extract Key Fields
-        const fromNumber = payload.from || payload.caller_id || payload.from_number || '+13866273499';
-        const toNumber = payload.to || payload.to_number || '+19045790065';
-        const direction = (payload.direction || 'INBOUND').toUpperCase();
-        const durationSec = Number(payload.call_duration || payload.duration) || (isCall ? 84 : 0);
-        const durationFormatted = durationSec > 0 ? `${Math.floor(durationSec / 60)}m ${durationSec % 60}s` : '0m 45s';
-        const recordingUrl = payload.recording_url || payload.recording || null;
-        const callStatus = (payload.status || payload.disposition || 'ANSWERED').toUpperCase();
-        const messageBody = payload.body || payload.message || payload.text || (isCall ? `smrtPhone Call completed with seller (${durationFormatted}).` : 'Hello, I received your letter regarding my property.');
-        const podioItemId = payload.podio_item_id || payload.item_id || null;
-
-        // 3. Resolve Contact & Property
-        let contactName = payload.contact_name || payload.seller_name || 'Jacksonville Seller';
-        let propertyAddress = payload.property_address || '123 Main St, Jacksonville FL 32202';
-        let propertyId = null;
-
-        if (db.data.core?.properties?.length) {
-            const matched = db.data.core.properties.find(p => 
-                (p.seller_phone && p.seller_phone.replace(/\D/g, '').includes(fromNumber.replace(/\D/g, ''))) ||
-                (p.contact_phone && p.contact_phone.replace(/\D/g, '').includes(fromNumber.replace(/\D/g, '')))
-            ) || db.data.core.properties[0];
-
-            if (matched) {
-                propertyId = matched.property_id;
-                contactName = matched.owner_name || matched.seller_name || contactName;
-                propertyAddress = `${matched.address_line1}, ${matched.city} ${matched.state_code}`;
-            }
+        let property = null; let crownKey = null;
+        if (match?.property_id) {
+            const [p] = await CrownKeyService.loadProperties('WHERE p.property_id = $1', [match.property_id]);
+            property = p || null;
+            crownKey = p ? (await CrownKeyService.enrichProperty(p)).crownKeyBase : null;
         }
+        const contactName = match?.full_name || payload.contact_name || payload.seller_name || String(external);
+        const address = property?.address_line1 || payload.property_address || '';
 
-        // 4. Save to core.interactions (PostgreSQL RDS)
-        const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-        let validPropertyUuid = (propertyId && UUID_REGEX.test(propertyId)) ? propertyId : null;
-        if (!validPropertyUuid) {
-            try {
-                const pRow = await pool.query('SELECT property_id FROM core.properties LIMIT 1');
-                if (pRow.rows.length > 0) validPropertyUuid = pRow.rows[0].property_id;
-            } catch (_) {}
-        }
+        const interaction = await withTransaction(async client => {
+            const { rows: [row] } = await client.query(
+                `INSERT INTO core.interactions (lead_id, person_id, property_id, method, direction, actor_id, result, notes, occurred_at)
+                 VALUES ($1,$2,$3,$4,$5,'smrtPhone',$6,$7,now()) RETURNING interaction_id`,
+                [match?.lead_id || null, match?.person_id || null, match?.property_id || null, isCall ? 'CALL' : 'TEXT', direction,
+                 isCall ? `${callStatus}${duration ? ` (${duration})` : ''}` : 'DELIVERED',
+                 `smrtPhone ${isCall ? 'call' : 'SMS'} ${direction === 'INBOUND' ? 'from' : 'to'} ${external}. ${note}${recordingUrl ? ` Recording: ${recordingUrl}` : ''}`]);
+            await audit(client, { actor: 'smrtPhone', action: isCall ? 'SMRTPHONE_CALL_LOGGED' : 'SMRTPHONE_SMS_LOGGED', entityType: 'INTERACTION', entityId: row.interaction_id, diff: { matchedPerson: Boolean(match), isCall } });
+            await client.query(
+                `INSERT INTO ops.notifications (notification_id, title, body, category, priority, color, icon, is_read, created_at)
+                 VALUES (gen_random_uuid(), $1, $2, 'COMMUNICATIONS', 'HIGH', $3, $4, false, now())`,
+                [`${isCall ? 'Call' : 'SMS'} ${direction === 'INBOUND' ? 'from' : 'to'} ${contactName}`, isCall ? `${note} · ${external}` : `"${String(body).slice(0, 80)}" · ${external}`,
+                 isCall ? 'blue' : 'green', isCall ? 'phone' : 'mail']);
+            return row;
+        });
 
-        const method = isCall ? 'CALL' : 'TEXT';
-        try {
-            await pool.query(
-                `INSERT INTO core.interactions 
-                 (interaction_id, property_id, method, direction, actor_id, result, notes, occurred_at)
-                 VALUES ($1, $2, $3, $4, 'smrtPhone Gateway', $5, $6, NOW())`,
-                [
-                    interactionId,
-                    validPropertyUuid,
-                    method,
-                    direction,
-                    isCall ? `${callStatus} (${durationFormatted})` : 'DELIVERED',
-                    isCall ? `smrtPhone Call · From: ${fromNumber} · Status: ${callStatus} · Recording: ${recordingUrl || 'Available in smrtPhone'} · Notes: ${messageBody}`
-                           : `smrtPhone SMS · From: ${fromNumber} · Message: ${messageBody}`
-                ]
-            );
-        } catch (dbErr) {
-            console.warn('[smrtPhone] Interaction RDS Warn:', dbErr.message);
-        }
-
-        // 5. Sync into Omnichannel Communications (db.data.crm.communications)
-        if (!db.data.crm.communications) db.data.crm.communications = [];
-        let thread = db.data.crm.communications.find(t => 
-            t.phone && t.phone.replace(/\D/g, '') === fromNumber.replace(/\D/g, '')
-        );
-
-        const newMsg = {
-            sender: direction === 'INBOUND' ? 'contact' : 'rep',
-            name: direction === 'INBOUND' ? contactName : 'Alex Richard (HushHawk)',
-            text: messageBody,
-            time: 'Just now',
-            timestamp: now,
-            isCall,
-            duration: durationFormatted,
-            recordingUrl,
-            source: 'smrtPhone'
-        };
-
+        // Communications workspace thread
+        const phoneDigits = digits(external);
+        let thread = db.data.crm.communications.find(t => t.phone && digits(t.phone) === phoneDigits);
+        const message = { sender: direction === 'INBOUND' ? 'contact' : 'rep', name: direction === 'INBOUND' ? contactName : (payload.agent_name || 'smrtPhone'),
+            text: note, timestamp: now, isCall, duration, recordingUrl, source: 'smrtPhone' };
         if (thread) {
-            if (!thread.messages) thread.messages = [];
-            thread.messages.push(newMsg);
-            thread.lastMessage = messageBody;
-            thread.time = 'Just now';
-            thread.unread = direction === 'INBOUND';
+            thread.messages = [...(thread.messages || []), message];
+            thread.lastMessage = note; thread.time = now; thread.unread = direction === 'INBOUND';
         } else {
-            thread = {
-                id: Date.now(),
-                contact: contactName,
-                phone: fromNumber,
-                address: propertyAddress,
-                type: isCall ? 'Calls' : 'SMS',
-                role: 'Distressed Seller',
-                rep: 'Alex Richard',
-                repInitials: 'AR',
-                lastMessage: messageBody,
-                time: 'Just now',
-                unread: direction === 'INBOUND',
-                lastOffer: 145000,
-                arv: 230000,
-                source: 'smrtPhone',
-                podioItemId,
-                messages: [newMsg]
-            };
+            thread = { id: crypto.randomUUID(), contact: contactName, phone: String(external), address, type: isCall ? 'Calls' : 'SMS', role: '', rep: '', repInitials: '',
+                lastMessage: note, time: now, unread: direction === 'INBOUND', source: 'smrtPhone', podioItemId: payload.podio_item_id || payload.item_id || null, messages: [message] };
             db.data.crm.communications.unshift(thread);
         }
-
         db.persist();
 
-        // 6. Push real-time notification into ops.notifications
-        try {
-            await pool.query(
-                `INSERT INTO ops.notifications (notification_id, title, body, category, priority, color, icon, is_read, created_at)
-                 VALUES ($1, $2, $3, 'COMMUNICATIONS', 'HIGH', $4, $5, false, NOW())`,
-                [
-                    notifId,
-                    isCall ? `smrtPhone Call: ${contactName}` : `smrtPhone SMS: ${contactName}`,
-                    isCall ? `Call from ${fromNumber} regarding ${propertyAddress} (${durationFormatted}).`
-                           : `SMS from ${fromNumber}: "${messageBody.slice(0, 60)}${messageBody.length > 60 ? '...' : ''}"`,
-                    isCall ? 'blue' : 'green',
-                    isCall ? 'phone' : 'mail'
-                ]
-            );
-        } catch (notifErr) {
-            console.warn('[smrtPhone] Notification RDS Warn:', notifErr.message);
-        }
-
-        // 7. Audit log
-        try {
-            await pool.query(
-                `INSERT INTO audit.audit_events (audit_id, actor, action, entity_type, entity_id, request_id, redacted_diff, created_at)
-                 VALUES ($1, 'smrtPhone Webhook', $2, 'INTERACTION', $3, $4, $5, NOW())`,
-                [
-                    crypto.randomUUID(),
-                    isCall ? 'SMRTPHONE_CALL_LOGGED' : 'SMRTPHONE_SMS_LOGGED',
-                    interactionId,
-                    eventId,
-                    JSON.stringify({ fromNumber, contactName, propertyAddress, isCall, durationFormatted })
-                ]
-            );
-        } catch (auditErr) {
-            console.warn('[smrtPhone] Audit RDS Warn:', auditErr.message);
-        }
-
         if (isCall) {
-            SmrtPhoneService.activeCall = {
-                callId: eventId,
-                interactionId,
-                fromNumber,
-                contactName,
-                propertyAddress,
-                propertyId: validPropertyUuid,
-                duration: durationFormatted,
-                recordingUrl,
-                status: 'RINGING',
-                signal: payload.crown_key || payload.signal || 'FORECLOSURE (DUV-FC-32221)',
-                receivedAt: now
-            };
+            this.activeCall = { callId: payload.call_id || interaction.interaction_id, interactionId: interaction.interaction_id, fromNumber: String(external), contactName,
+                propertyAddress: address, propertyId: match?.property_id || null, duration, recordingUrl, status: callStatus, signal: payload.crown_key || crownKey, receivedAt: now };
         }
-
-        return {
-            ok: true,
-            eventId,
-            interactionId,
-            eventType: isCall ? 'CALL' : 'SMS',
-            contactName,
-            propertyAddress,
-            phone: fromNumber,
-            duration: durationFormatted,
-            recordingUrl,
-            threadId: thread.id
-        };
+        return { ok: true, interactionId: interaction.interaction_id, eventType: isCall ? 'CALL' : 'SMS', contactName, matchedContact: Boolean(match), propertyAddress: address, phone: String(external), duration, recordingUrl, threadId: thread.id };
     }
 }

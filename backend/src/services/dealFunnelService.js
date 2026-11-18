@@ -142,10 +142,10 @@ export class DealFunnelService {
             milestoneIndex: Number(row.milestone_index),
             propertyId: row.property_id,
             address: row.address_line1 || row.address,
-            city: row.city || 'Jacksonville',
-            state: row.state_code || row.state || 'FL',
-            zip: row.postal_code || row.zip || '32204',
-            county: row.county || 'Duval',
+            city: row.city || '',
+            state: row.state_code || row.state || '',
+            zip: row.postal_code || row.zip || '',
+            county: row.county || '',
             seller: row.seller,
             phone: row.phone || '—',
             email: row.email || '—',
@@ -154,11 +154,11 @@ export class DealFunnelService {
             arv: Number(row.arv || 0),
             repairs: Number(row.repairs || 0),
             fee: Number(row.fee || 0),
-            titleAgency: row.title_agency || 'First American Title Jax',
-            fileNumber: row.file_number || `FAT-2026-${row.id}`,
+            titleAgency: row.title_agency || '',
+            fileNumber: row.file_number || '',
             closingDate: row.closing_date ? new Date(row.closing_date).toISOString().split('T')[0] : null,
             daysInStage: Number(row.days_in_stage || 0),
-            source: row.source || 'Direct Mail',
+            source: row.source || '',
             notes: row.notes || '',
             history: Array.isArray(row.history) ? row.history : [],
             created_at: row.created_at,
@@ -180,11 +180,7 @@ export class DealFunnelService {
             `);
             deals = res.rows.map(this.mapRow);
         } catch (dbErr) {
-            console.warn('[DealFunnelService] PostgreSQL query fallback:', dbErr.message);
-            deals = (db.data.crm?.funnel_deals || []).map(d => ({
-                ...d,
-                milestoneIndex: Number(d.milestoneIndex)
-            }));
+            throw dbErr;
         }
 
         const totalDeals = deals.length;
@@ -286,17 +282,7 @@ export class DealFunnelService {
             }
             updatedDeal = this.mapRow(res.rows[0]);
         } catch (dbErr) {
-            console.warn('[DealFunnelService] PostgreSQL update error:', dbErr.message);
-            // In-memory fallback
-            const deals = db.data.crm.funnel_deals || [];
-            const deal = deals.find(d => d.id === dealId);
-            if (!deal) throw new Error(`Deal ${dealId} not found`);
-            deal.milestoneIndex = newIndex;
-            deal.daysInStage = 0;
-            deal.updated_at = new Date().toISOString();
-            if (notes) deal.notes = notes + (deal.notes ? ` | ${deal.notes}` : '');
-            db.persist();
-            updatedDeal = deal;
+            throw dbErr;
         }
 
         // Keep local contracts store in sync
@@ -323,64 +309,34 @@ export class DealFunnelService {
     /**
      * Create a new deal directly in PostgreSQL
      */
-    static async createDeal(dealData) {
-        const dealId = 'deal-' + Date.now();
-        const milestoneIndex = Math.max(0, Math.min(11, Number(dealData.milestoneIndex || 0)));
-        const code = dealData.code || `HH-2026-${crypto.randomInt(100, 999)}`;
-
-        let saved = null;
-        try {
-            const res = await pool.query(`
-                INSERT INTO crm.deal_funnel (
-                    id, code, milestone_index, address, city, state, zip, county,
-                    seller, phone, email, buyer, buy_price, arv, repairs, fee,
-                    title_agency, file_number, closing_date, days_in_stage, source, notes, created_at, updated_at
-                ) VALUES (
-                    $1, $2, $3, $4, $5, $6, $7, $8,
-                    $9, $10, $11, $12, $13, $14, $15, $16,
-                    $17, $18, $19, $20, $21, $22, now(), now()
-                ) RETURNING *
-            `, [
-                dealId, code, milestoneIndex,
-                dealData.address || 'New Wholesale Property',
-                dealData.city || 'Jacksonville',
-                dealData.state || 'FL',
-                dealData.zip || '32204',
-                dealData.county || 'Duval',
-                dealData.seller || 'Seller Record',
-                dealData.phone || '+13866273499',
-                dealData.email || 'seller@example.com',
-                dealData.buyer || '—',
-                Number(dealData.buyPrice) || 120000,
-                Number(dealData.arv) || 220000,
-                Number(dealData.repairs) || 30000,
-                Number(dealData.fee) || 28000,
-                dealData.titleAgency || 'First American Title Jax',
-                dealData.fileNumber || `FAT-2026-${dealId}`,
-                dealData.closingDate || new Date(Date.now() + 21 * 86400000).toISOString().split('T')[0],
-                0,
-                dealData.source || 'Direct Intake',
-                dealData.notes || 'Created via Command Center Deal Funnel'
-            ]);
-            saved = this.mapRow(res.rows[0]);
-        } catch (dbErr) {
-            console.warn('[DealFunnelService] PostgreSQL insert fallback:', dbErr.message);
-            saved = {
-                id: dealId,
-                code,
-                milestoneIndex,
-                address: dealData.address || 'New Property',
-                city: 'Jacksonville', state: 'FL', zip: '32204',
-                seller: dealData.seller || 'Seller Record',
-                buyPrice: Number(dealData.buyPrice) || 120000,
-                fee: Number(dealData.fee) || 28000,
-                created_at: new Date().toISOString()
-            };
-            if (!db.data.crm.funnel_deals) db.data.crm.funnel_deals = [];
-            db.data.crm.funnel_deals.unshift(saved);
-            db.persist();
+    static async createDeal(dealData, actor) {
+        const required = ['address', 'seller'];
+        for (const key of required) {
+            if (!dealData[key] || !String(dealData[key]).trim()) throw new Error(`${key} is required to create a deal.`);
         }
+        const dealId = dealData.id || ('deal-' + crypto.randomUUID());
+        const milestoneIndex = Math.max(0, Math.min(11, Number(dealData.milestoneIndex || 0)));
+        const code = dealData.code || `HH-${new Date().getUTCFullYear()}-${crypto.randomInt(1000, 9999)}`;
+        const num = v => (v === undefined || v === null || v === '' || Number.isNaN(Number(v)) ? 0 : Number(v));
 
+        const res = await pool.query(`
+            INSERT INTO crm.deal_funnel (
+                id, code, milestone_index, address, city, state, zip, county,
+                seller, phone, email, buyer, buy_price, arv, repairs, fee,
+                title_agency, file_number, closing_date, days_in_stage, source, notes, created_at, updated_at
+            ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,0,$20,$21, now(), now())
+            ON CONFLICT (id) DO UPDATE SET updated_at = crm.deal_funnel.updated_at
+            RETURNING *
+        `, [
+            dealId, code, milestoneIndex, String(dealData.address).trim(),
+            dealData.city || null, dealData.state || null, dealData.zip || null, dealData.county || null,
+            String(dealData.seller).trim(), dealData.phone || null, dealData.email || null, dealData.buyer || null,
+            num(dealData.buyPrice), num(dealData.arv), num(dealData.repairs), num(dealData.fee),
+            dealData.titleAgency || null, dealData.fileNumber || null, dealData.closingDate || null,
+            dealData.source || null, dealData.notes || null
+        ]);
+        const saved = this.mapRow(res.rows[0]);
+        await db.logAudit({ actor, action: 'DEAL_CREATED', entityType: 'DEAL', entityId: null, redactedDiff: { dealId, code } });
         this.syncContractsStore();
         return saved;
     }
@@ -412,7 +368,7 @@ export class DealFunnelService {
             ]);
             if (res.rows.length) return this.mapRow(res.rows[0]);
         } catch (dbErr) {
-            console.warn('[DealFunnelService] PostgreSQL updateDeal error:', dbErr.message);
+            throw dbErr;
         }
         return null;
     }
@@ -425,9 +381,9 @@ export class DealFunnelService {
             const res = await pool.query('DELETE FROM crm.deal_funnel WHERE id = $1 RETURNING *', [dealId]);
             if (res.rows.length) return this.mapRow(res.rows[0]);
         } catch (dbErr) {
-            console.warn('[DealFunnelService] PostgreSQL delete error:', dbErr.message);
+            throw dbErr;
         }
-        return { id: dealId };
+        return null;
     }
 
     /**
@@ -449,9 +405,9 @@ export class DealFunnelService {
                     buyer: row.buyer || '—',
                     buyPrice: Number(row.buy_price || 0),
                     fee: Number(row.fee || 0),
-                    titleAgency: row.title_agency || 'First American Title Jax',
+                    titleAgency: row.title_agency || '',
                     fileNumber: row.file_number,
-                    closingDate: row.closing_date ? new Date(row.closing_date).toISOString().split('T')[0] : '2026-06-15',
+                    closingDate: row.closing_date ? new Date(row.closing_date).toISOString().split('T')[0] : null,
                     status: row.milestone_index === 11 ? 'Closed/Funded' :
                             row.milestone_index >= 9 ? 'Assigned' :
                             row.milestone_index >= 7 ? 'Clear to Close' :
@@ -462,7 +418,7 @@ export class DealFunnelService {
                     milestones: [
                         { name: 'Purchase & Sale Executed', detail: 'Signed', completed: row.milestone_index >= 4 },
                         { name: 'Sent to Title Company', detail: 'Escrow opened', completed: row.milestone_index >= 5 },
-                        { name: 'Seller EMD Verified', detail: '$2,500 in escrow', completed: row.milestone_index >= 6 },
+                        { name: 'Seller EMD Verified', detail: 'EMD verified', completed: row.milestone_index >= 6 },
                         { name: 'Title Commitment & Municipal Lien', detail: 'Title clear', completed: row.milestone_index >= 7 },
                         { name: 'Dispositions Launch', detail: 'Marketed to VIP pool', completed: row.milestone_index >= 8 },
                         { name: 'Buyer Selected & Vetted', detail: row.buyer || 'Pending', completed: row.milestone_index >= 9 },
@@ -472,6 +428,8 @@ export class DealFunnelService {
                     docs: [{ name: `Executed_Contract_${row.address.replace(/[^a-zA-Z0-9]/g, '_')}.pdf` }]
                 }));
             }
-        } catch (e) {}
+        } catch (e) {
+            console.error('[DealFunnelService] contract sync failed:', e.message);
+        }
     }
 }

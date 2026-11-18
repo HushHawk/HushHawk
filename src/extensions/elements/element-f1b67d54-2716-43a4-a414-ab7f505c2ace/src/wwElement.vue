@@ -682,6 +682,18 @@ export default {
       document.addEventListener('click', this.clickOutsideHandler);
     }
 
+    // The workspace is only for signed-in users: without a stored session go straight to the login page.
+    // (The API enforces this independently; this just avoids showing an empty shell.)
+    if (typeof window !== 'undefined') {
+      const publicPaths = ['/login', '/signup', '/forgot-password'];
+      let hasToken = false;
+      try { hasToken = Boolean(window.localStorage.getItem('hushhawk_auth_token')); } catch (e) { hasToken = false; }
+      if (!hasToken && !publicPaths.some(p => window.location.pathname.startsWith(p))) {
+        window.location.replace('/login');
+        return;
+      }
+    }
+
     if (typeof window !== 'undefined') {
       try {
         const raw = window.sessionStorage.getItem('hushhawk_session') || window.localStorage.getItem('hushhawk_session');

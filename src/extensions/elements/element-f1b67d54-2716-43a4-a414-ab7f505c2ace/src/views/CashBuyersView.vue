@@ -681,7 +681,7 @@ export default {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               contactName: b.name,
-              phone: b.phone || '(904) 555-0199',
+              phone: b.phone || '',
               message: sendDealMessage.value
             })
           });
@@ -706,14 +706,14 @@ export default {
       const bName = newBuyer.value.name;
       const payload = {
         name: newBuyer.value.name,
-        company: newBuyer.value.company || 'Private Investor',
-        phone: newBuyer.value.phone || '(904) 555-0000',
-        email: newBuyer.value.email || 'investor@example.com',
-        location: 'Jacksonville, FL',
-        zips: newBuyer.value.zips ? newBuyer.value.zips.split(',').map(s => s.trim()) : ['32204'],
-        min: Number(newBuyer.value.min) || 50000,
-        max: Number(newBuyer.value.max) || 300000,
-        types: 'SFR, Cash Buyer',
+        company: newBuyer.value.company || '',
+        phone: newBuyer.value.phone || '',
+        email: newBuyer.value.email || '',
+        location: newBuyer.value.location || '',
+        zips: newBuyer.value.zips ? newBuyer.value.zips.split(',').map(s => s.trim()).filter(Boolean) : [],
+        min: newBuyer.value.min === '' || newBuyer.value.min == null ? null : Number(newBuyer.value.min),
+        max: newBuyer.value.max === '' || newBuyer.value.max == null ? null : Number(newBuyer.value.max),
+        types: newBuyer.value.types || '',
         pofVerified: true,
         notes: newBuyer.value.notes || 'Added from Cash Buyers command center.'
       };

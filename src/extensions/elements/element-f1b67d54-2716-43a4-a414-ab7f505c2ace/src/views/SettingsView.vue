@@ -126,119 +126,64 @@
       </div>
     </div>
 
-    <!-- Tab 3: Security & Database Sync -->
+    <!-- Tab 3: Security & Storage (read from the server; nothing here is preset) -->
     <div v-if="currentTab === 'security'" class="settings-grid">
       <div class="settings-card">
-        <h3>PostgreSQL Canonical Database Engine</h3>
-        <p class="card-desc">CrownKey parcel schema and AWS RDS persistent relational layer.</p>
-        <div class="sync-status-box">
-          <div class="sync-indicator online"></div>
-          <div>
-            <strong>Connected to AWS RDS PostgreSQL (us-east-2)</strong>
-            <p class="text-muted">Host: {{ security.databaseHost || 'hushhawk-postgres.cxsqkk2qulh9.us-east-2.rds.amazonaws.com' }} (Multi-AZ)</p>
+        <h3>Private File Storage</h3>
+        <p class="card-desc">Where property photos and documents are stored.</p>
+        <div class="session-details-box">
+          <div class="session-detail-item">
+            <span class="detail-label">Status:</span>
+            <strong class="detail-value">{{ security.s3Status || 'Not reported' }}</strong>
           </div>
-        </div>
-        <div class="form-grid">
-          <div class="form-group full">
-            <label>Database Connection URI (AWS RDS)</label>
-            <input type="text" :value="security.databaseUri || 'postgresql://hushhawk:••••••••@hushhawk-postgres.cxsqkk2qulh9.us-east-2.rds.amazonaws.com:5432/hushhawk'" readonly class="font-mono" />
+          <div class="session-detail-item">
+            <span class="detail-label">Bucket:</span>
+            <code class="detail-code">{{ security.s3Bucket || 'Not configured' }}</code>
           </div>
-          <div class="form-group">
-            <label>Auto-Migration Mode</label>
-            <select v-model="security.autoMigrate">
-              <option value="strict">Strict (001_initial_schema.sql locked)</option>
-              <option value="warn">Warn on DDL diff</option>
-            </select>
+          <div class="session-detail-item">
+            <span class="detail-label">Region:</span>
+            <code class="detail-code">{{ security.s3Region || 'Not configured' }}</code>
           </div>
-          <div class="form-group">
-            <label>Audit Log Retention</label>
-            <select v-model="security.logRetention">
-              <option value="90">90 Days</option>
-              <option value="180">180 Days</option>
-              <option value="365">1 Year</option>
-            </select>
+          <div class="session-detail-item">
+            <span class="detail-label">Encryption:</span>
+            <code class="detail-code">{{ security.s3Encryption || 'Not reported' }}</code>
           </div>
         </div>
       </div>
 
       <div class="settings-card">
-        <h3>Amazon S3 Private Object Vault</h3>
-        <p class="card-desc">Encrypted object storage for property inspection photos, deeds, and legal contracts.</p>
-        <div class="sync-status-box">
-          <div class="sync-indicator online"></div>
+        <div class="session-header-row">
           <div>
-            <strong>Bucket: {{ security.s3Bucket || 'hushhawk-private-property-vault' }} ({{ security.s3Region || 'us-east-2' }})</strong>
-            <p class="text-muted">Status: AES-256 Server-Side Encrypted • 100% Block Public Access Active</p>
-          </div>
-        </div>
-        <div class="form-grid">
-          <div class="form-group full">
-            <label>S3 Vault URI</label>
-            <input type="text" :value="'s3://' + (security.s3Bucket || 'hushhawk-private-property-vault')" readonly class="font-mono" />
-          </div>
-          <div class="form-group">
-            <label>Encryption Standard</label>
-            <input type="text" :value="security.s3Encryption || 'AES256 (Server-Side Encryption)'" readonly class="font-mono" />
-          </div>
-          <div class="form-group">
-            <label>Lifecycle Archival Policy</label>
-            <input type="text" value="90d -> Standard-IA | 365d -> Glacier" readonly class="font-mono" />
-          </div>
-        </div>
-      </div>
-
-      <div class="settings-card">
-        <h3>TCPA &amp; Skip Trace Compliance Scrubbing</h3>
-        <p class="card-desc">Federal DNC Registry and Litigator Scrub protocol for cold calling and SMS.</p>
-        <div class="toggle-list">
-          <label class="checkbox-label">
-            <input v-model="security.dncScrub" type="checkbox" />
-            <span>Automatic National Do Not Call (DNC) list verification prior to batch exports</span>
-          </label>
-          <label class="checkbox-label">
-            <input v-model="security.litigatorScrub" type="checkbox" />
-            <span>Block known serial TCPA litigators and predatory attorney phone numbers</span>
-          </label>
-          <label class="checkbox-label">
-            <input v-model="security.smsOptOut" type="checkbox" />
-            <span>Auto-unsubscribe sellers who reply "STOP", "UNSUBSCRIBE", or "REMOVE"</span>
-          </label>
-        </div>
-      </div>
-
-      <div class="settings-card security-session-card">
-        <div class="session-card-header">
-          <div>
-            <h3>Active Command Session &amp; Terminal Authentication</h3>
-            <p class="card-desc">Current authenticated administrator credentials and session token.</p>
+            <h3>Current Session</h3>
+            <p class="card-desc">The account you are signed in with.</p>
           </div>
           <span class="session-badge-active">ACTIVE SESSION</span>
         </div>
         <div class="session-details-box">
           <div class="session-detail-item">
-            <span class="detail-label">Current Identity:</span>
-            <strong class="detail-value text-gold">Main Administrator (Superadmin)</strong>
+            <span class="detail-label">Name:</span>
+            <strong class="detail-value text-gold">{{ sessionUser.name || 'Unknown' }}</strong>
           </div>
           <div class="session-detail-item">
-            <span class="detail-label">Terminal ID:</span>
-            <code class="detail-code">admin@hushhawk.com</code>
+            <span class="detail-label">Email:</span>
+            <code class="detail-code">{{ sessionUser.email || 'Unknown' }}</code>
           </div>
           <div class="session-detail-item">
-            <span class="detail-label">Security Protocol:</span>
-            <span class="detail-value text-emerald">256-Bit SSL/TLS • Terminal Token Locked</span>
+            <span class="detail-label">Role:</span>
+            <span class="detail-value">{{ sessionUser.roleName || sessionUser.role || 'Unknown' }}</span>
           </div>
         </div>
         <div class="session-actions">
           <button type="button" class="btn btn-danger btn-logout-action" @click="handleLogout">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-              <polyline points="16 17 21 12 16 7"/>
-              <line x1="21" y1="12" x2="9" y2="12"/>
-            </svg>
             <span>Log Out &amp; Terminate Session</span>
           </button>
         </div>
       </div>
+    </div>
+
+    <!-- Tab 4: CrownKey control (review queue, events, imports, dictionary, graph sync) -->
+    <div v-if="currentTab === 'crownkey'" class="settings-card">
+      <CrownKeyControl />
     </div>
 
     <!-- Success Toast Notification -->
@@ -251,11 +196,24 @@
 
 <script>
 import { icons } from '../icons.js';
+import CrownKeyControl from './CrownKeyControl.vue';
 
 export default {
   name: 'SettingsView',
+  components: { CrownKeyControl },
   props: {
     content: { type: Object, default: () => ({}) }
+  },
+  computed: {
+    sessionUser() {
+      try {
+        const raw = window.sessionStorage.getItem('hushhawk_session') || window.localStorage.getItem('hushhawk_session');
+        const parsed = raw ? JSON.parse(raw) : {};
+        return parsed.user || parsed;
+      } catch (e) {
+        return {};
+      }
+    }
   },
   data() {
     return {
@@ -265,110 +223,13 @@ export default {
       tabs: [
         { id: 'general', label: 'Organization & Underwriting', icon: 'settings' },
         { id: 'integrations', label: 'Integrations & APIs', icon: 'zap' },
-        { id: 'security', label: 'Security & Database', icon: 'shield' }
+        { id: 'security', label: 'Security & Storage', icon: 'shield' },
+        { id: 'crownkey', label: 'CrownKey Control', icon: 'database' }
       ],
-      general: {
-        entityName: 'HushHawk Capital & Acquisitions LLC',
-        titleCompany: 'First American Title / Crown Escrow',
-        titleEmail: 'closing@crownescrowjax.com',
-        primaryCounty: 'Duval County (Jacksonville)',
-        ein: '84-9182391'
-      },
-      underwriting: {
-        maoDiscount: 70,
-        minSpread: 15000,
-        defaultEmd: 2500,
-        inspectionDays: 10,
-        requireProofOfFunds: true
-      },
-      security: {
-        databaseUri: 'postgresql://hushhawk:••••••••@hushhawk-postgres.cxsqkk2qulh9.us-east-2.rds.amazonaws.com:5432/hushhawk',
-        databaseHost: 'hushhawk-postgres.cxsqkk2qulh9.us-east-2.rds.amazonaws.com',
-        databaseName: 'hushhawk',
-        databaseEngine: 'PostgreSQL 16 (AWS RDS Multi-AZ)',
-        s3Bucket: 'hushhawk-private-property-vault',
-        s3Region: 'us-east-2',
-        s3Encryption: 'AES256 (Server-Side Encryption)',
-        autoMigrate: 'strict',
-        logRetention: '180',
-        dncScrub: true,
-        litigatorScrub: true,
-        smsOptOut: true
-      },
-      integrations: [
-        {
-          name: 'PostgreSQL Core DB (AWS RDS)',
-          icon: 'database',
-          status: 'active',
-          statusText: 'Connected (Live AWS RDS)',
-          description: 'CrownKey parcel registry, transaction tracking, and relational data engine in AWS us-east-2.',
-          endpoint: 'postgresql://hushhawk:••••••••@hushhawk-postgres.cxsqkk2qulh9.us-east-2.rds.amazonaws.com:5432/hushhawk',
-          enabled: true
-        },
-        {
-          name: 'Amazon S3 Private Vault',
-          icon: 'database',
-          status: 'active',
-          statusText: 'Configured (AES-256 Encrypted)',
-          description: 'Private S3 bucket for inspection photos, deeds, title PDFs, and attachments (100% Block Public Access).',
-          endpoint: 's3://hushhawk-private-property-vault (us-east-2)',
-          enabled: true
-        },
-        {
-          name: 'Podio Wholesale CRM Sync',
-          icon: 'refresh',
-          status: 'active',
-          statusText: 'Connected (App ID: 30087410)',
-          description: 'Application: Hush Hawk Integration · Active 2-way webhook listener & coexistence sync.',
-          endpoint: 'https://api.podio.com/app/30087410 & Webhook: /api/v1/webhooks/podio',
-          enabled: true
-        },
-        {
-          name: 'Twilio SMS & Voice Gateway',
-          icon: 'phone',
-          status: 'active',
-          statusText: 'Online (10DLC Approved)',
-          description: 'Wholesale seller SMS drips, local (904) phone numbers, and call recordings.',
-          endpoint: 'https://api.twilio.com/2010-04-01/Accounts/AC.../Messages',
-          enabled: true
-        },
-        {
-          name: 'CrownKey GIS Parcel Engine',
-          icon: 'pin',
-          status: 'active',
-          statusText: 'Verified (Duval/Clay/St. Johns/Nassau)',
-          description: 'Direct Florida county tax appraiser feed for automated parcel validation and deed tracking.',
-          endpoint: 'https://gis.coj.net/propertyappraiser/parcels/v2',
-          enabled: true
-        },
-        {
-          name: 'SendGrid Email Delivery',
-          icon: 'mail',
-          status: 'active',
-          statusText: 'Operational',
-          description: 'VIP cash buyer blasts, deal packet attachments, and title escrow notifications.',
-          endpoint: 'https://api.sendgrid.com/v3/mail/send',
-          enabled: true
-        },
-        {
-          name: 'smrtPhone Telephony & SMS Sync',
-          icon: 'phone',
-          status: 'active',
-          statusText: 'Connected (Podio Bridge & Webhook)',
-          description: 'Real-time call tracking, recordings, and SMS messages linked directly through Podio and /api/v1/webhooks/smrtphone.',
-          endpoint: 'https://api.smrtphone.io & Webhook: /api/v1/webhooks/smrtphone',
-          enabled: true
-        },
-        {
-          name: 'CrownKey Direct Mail QR Tracker & AudienceLab',
-          icon: 'pin',
-          status: 'active',
-          statusText: 'Active (DUV-FC-32221)',
-          description: 'Direct mail distress pillar tracking (FC, TAX, CODE, PRB, VAC, ABS) with instant scan logging and AudienceLab retargeting.',
-          endpoint: '/api/v1/track/qr/{CROWNKEY} & AudienceLab CTA Pixel',
-          enabled: true
-        }
-      ],
+      general: { entityName: '', titleCompany: '', titleEmail: '', primaryCounty: '', ein: '' },
+      underwriting: { maoDiscount: null, minSpread: null, defaultEmd: null, inspectionDays: null, requireProofOfFunds: false },
+      security: { s3Bucket: '', s3Region: '', s3Encryption: '', s3Status: '' },
+      integrations: [],
     };
   },
   mounted() {
@@ -388,7 +249,7 @@ export default {
           }
         }
       } catch (err) {
-        console.warn('[Settings] Using defaults:', err.message);
+        this.showToast('Settings could not be loaded: ' + err.message, 'error');
       }
     },
     async saveAllSettings() {
@@ -417,10 +278,12 @@ export default {
         const res = await fetch('/api/v1/integrations/test-all', { method: 'POST' });
         if (res.ok) {
           const data = await res.json();
-          if (data.integrations && data.integrations.length) {
-            this.integrations = data.integrations;
-          }
-          this.showToast('Live Diagnostics Complete', `All ${data.testedCount} integrations verified live against AWS RDS, S3, and API services.`, 'success');
+          const failed = (data.results || []).filter(r => !r.ok);
+          this.integrations = this.integrations.map(item => {
+            const hit = (data.results || []).find(r => item.name.toLowerCase().includes(r.key) || r.name === item.name);
+            return hit ? { ...item, status: hit.ok ? 'active' : 'error', statusText: hit.statusText } : item;
+          });
+          this.showToast('Diagnostics complete', failed.length ? `${failed.length} integration(s) need attention.` : 'Every integration responded.', failed.length ? 'error' : 'success');
         } else {
           this.showToast('Diagnostics Error', 'Server returned error status.', 'error');
         }

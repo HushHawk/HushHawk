@@ -65,13 +65,16 @@ export class CarrierDispatchService {
      */
     static async dispatchSms({ to, message, from = null }) {
         const cleanTo = (to || '').replace(/[^\d+]/g, '');
-        const fromNumber = from || process.env.TWILIO_PHONE_NUMBER || process.env.OUTBOUND_CALLER_ID || '+19047124411';
+        const fromNumber = from || process.env.TWILIO_PHONE_NUMBER || process.env.OUTBOUND_CALLER_ID || null;
         
         // Native URI for zero-cost device click-to-text fallback
         const encodedBody = encodeURIComponent(message || '');
         const nativeUri = `sms:${cleanTo}?body=${encodedBody}`;
 
         const client = getTwilioClient();
+        if (client && cleanTo && !fromNumber) {
+            return { success: false, delivered: false, liveCarrier: false, provider: 'twilio', status: 'NOT_CONFIGURED', error: 'TWILIO_PHONE_NUMBER is not set.', nativeUri };
+        }
         if (client && cleanTo) {
             try {
                 const twilioMsg = await client.messages.create({
@@ -100,13 +103,13 @@ export class CarrierDispatchService {
             }
         }
 
-        // When Twilio keys not yet set in .env
         return {
-            success: true,
+            success: false,
+            delivered: false,
             liveCarrier: false,
-            provider: 'internal_queue',
-            status: 'QUEUED_IN_DB',
-            notice: 'Live carrier delivery is on standby. Add TWILIO_ACCOUNT_SID & TWILIO_AUTH_TOKEN to .env for cellular dispatch.',
+            provider: 'none',
+            status: 'NOT_CONFIGURED',
+            error: 'No SMS carrier is configured. Set TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN and TWILIO_PHONE_NUMBER.',
             nativeUri
         };
     }
@@ -116,7 +119,7 @@ export class CarrierDispatchService {
      */
     static async dispatchCall({ to, from = null }) {
         const cleanTo = (to || '').replace(/[^\d+]/g, '');
-        const fromNumber = from || process.env.TWILIO_PHONE_NUMBER || '+19047124411';
+        const fromNumber = from || process.env.TWILIO_PHONE_NUMBER || null;
         const nativeUri = `tel:${cleanTo}`;
 
         const client = getTwilioClient();
@@ -161,12 +164,12 @@ export class CarrierDispatchService {
      * Dispatch an Outbound Email
      */
     static async dispatchEmail({ to, subject, text, html = null, from = null }) {
-        const fromAddress = from || process.env.SENDGRID_FROM_EMAIL || process.env.SMTP_USER || 'acquisitions@hushhawk.com';
+        const fromAddress = from || process.env.SENDGRID_FROM_EMAIL || process.env.SMTP_USER || null;
         const nativeUri = `mailto:${encodeURIComponent(to || '')}?subject=${encodeURIComponent(subject || '')}&body=${encodeURIComponent(text || '')}`;
 
         // 1. Try SendGrid API
         const sg = getSendgridClient();
-        if (sg && to) {
+        if (sg && to && fromAddress) {
             try {
                 const [resp] = await sg.send({
                     to,
@@ -189,7 +192,7 @@ export class CarrierDispatchService {
 
         // 2. Try Standard SMTP (Gmail / Google Workspace / Outlook / cPanel)
         const smtp = getSmtpTransporter();
-        if (smtp && to) {
+        if (smtp && to && fromAddress) {
             try {
                 const info = await smtp.sendMail({
                     from: fromAddress,
@@ -210,13 +213,13 @@ export class CarrierDispatchService {
             }
         }
 
-        // Standby when no external email server configured
         return {
-            success: true,
+            success: false,
+            delivered: false,
             liveCarrier: false,
-            provider: 'internal_queue',
-            status: 'QUEUED_IN_DB',
-            notice: 'Add SENDGRID_API_KEY or SMTP_HOST/SMTP_USER/SMTP_PASS in .env for live inbox transmission.',
+            provider: 'none',
+            status: 'NOT_CONFIGURED',
+            error: 'No email transport is configured (or the configured one failed). Set SENDGRID_API_KEY or SMTP_HOST/SMTP_USER/SMTP_PASS and a from address.',
             nativeUri
         };
     }
@@ -236,7 +239,7 @@ export class CarrierDispatchService {
                     ? 'SendGrid (Live)' 
                     : (process.env.SMTP_HOST ? `SMTP (${process.env.SMTP_HOST})` : 'Internal DB + Native Device Mailto'),
                 configured: Boolean(process.env.SENDGRID_API_KEY || (process.env.SMTP_HOST && process.env.SMTP_USER)),
-                fromEmail: process.env.SENDGRID_FROM_EMAIL || process.env.SMTP_USER || 'acquisitions@hushhawk.com'
+                fromEmail: process.env.SENDGRID_FROM_EMAIL || process.env.SMTP_USER || null
             },
             ai: {
                 provider: process.env.GEMINI_API_KEY ? 'Google Gemini 1.5 Flash (Live)' : (process.env.OPENAI_API_KEY ? 'OpenAI GPT-4o (Live)' : 'HushHawk Built-in Underwriting Engine'),

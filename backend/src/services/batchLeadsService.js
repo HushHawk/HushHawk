@@ -1,497 +1,167 @@
 /**
- * @file backend/src/services/batchLeadsService.js
- * Dedicated BatchLeads Automated Webhook & Lead Ingestion Engine
- * 
- * Supports:
- * - Real-time push button webhook from Darren's BatchLeads Workspace (tag triggers: "Push to HushHawk", "Hot Lead", etc.)
- * - Strict CrownKey attribution: e.g. DUV-[PARCEL]-VAC-001 · BATCHLEADS
- * - PostgreSQL canonical persistence (core.properties, core.people, core.pillar_events, core.leads, core.tasks)
- * - Automatic Podio Seller Leads CRM dispatch with dedicated BatchLeads source
- * - Real-time in-app executive notification and live audit trail recording
+ * BatchLeads inbound webhook. Only data that arrives in the payload is stored: a push without a parcel and a
+ * registered county is rejected rather than filled in. Distress tags become POSSIBLE events (a list tag is a signal,
+ * not an official record) and the raw payload is kept as the source record.
  */
-
-import { AutomationService } from './automationService.js';
 import crypto from 'crypto';
-import { pool } from '../store/pgClient.js';
-import { db } from '../store/database.js';
-import { renderCrownKey, normalizeParcelMatch } from '../../../packages/crownkey/index.js';
+import { pool, withTransaction, audit } from '../store/pgClient.js';
+import { normalizeParcelMatch } from '../../../packages/crownkey/index.js';
+import { CrmService } from './crmService.js';
+import { CrownKeyService } from './crownkeyService.js';
+import { EventService, HttpError } from './eventService.js';
 import { PodioService } from './podioService.js';
+import { AutomationService } from './automationService.js';
 
-const COUNTY_LOOKUP = {
-    'DUVAL': { code: 'DUV', id: 'c1111111-1111-1111-1111-111111111111' },
-    'CLAY': { code: 'CLY', id: 'c3333333-3333-3333-3333-333333333333' },
-    'ST. JOHNS': { code: 'STJ', id: 'c2222222-2222-2222-2222-222222222222' },
-    'ST JOHNS': { code: 'STJ', id: 'c2222222-2222-2222-2222-222222222222' },
-    'NASSAU': { code: 'NAS', id: 'c4444444-4444-4444-4444-444444444444' }
+const clean = (val, fallback = '') => {
+    if (val === null || val === undefined) return fallback;
+    if (typeof val === 'object') {
+        const inner = val.street || val.street_address || val.address || val.formatted || val.name || val.value || val.line1 || '';
+        return typeof inner === 'string' ? inner.trim() : fallback;
+    }
+    return String(val).trim();
 };
+const first = (...values) => values.map(v => clean(v)).find(Boolean) || '';
 
 export class BatchLeadsService {
-    /**
-     * Clean and format phone number to standard (904) 555-1234
-     */
     static formatPhone(raw) {
-        if (!raw) return '';
-        const digits = String(raw).replace(/\D/g, '');
-        if (digits.length === 10) {
-            return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
-        }
-        if (digits.length === 11 && digits.startsWith('1')) {
-            return `(${digits.slice(1, 4)}) ${digits.slice(4, 7)}-${digits.slice(7)}`;
-        }
-        return String(raw).trim();
+        const digits = String(raw || '').replace(/\D/g, '');
+        if (digits.length === 10) return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+        if (digits.length === 11 && digits.startsWith('1')) return `(${digits.slice(1, 4)}) ${digits.slice(4, 7)}-${digits.slice(7)}`;
+        return String(raw || '').trim();
     }
 
-    /**
-     * Ingest an inbound lead webhook payload from BatchLeads
-     * @param {Object} payload Raw BatchLeads webhook JSON payload
-     * @returns {Promise<Object>} Processed lead record with CrownKey and status
-     */
     static async ingestWebhook(payload = {}) {
-        // Extract normalized fields regardless of whether nested in payload.property, payload.data, or root
         const root = payload.property || payload.data || payload.lead || payload.item || payload || {};
+        const addr = [root.address, root.propertyAddress, root.property_address].find(v => v && typeof v === 'object') || {};
 
-        // Safe helper to extract clean trimmed string from strings, numbers, or nested objects
-        const toCleanStr = (val, fallback = '') => {
-            if (val === null || val === undefined) return fallback;
-            if (typeof val === 'string') return val.trim();
-            if (typeof val === 'number') return String(val).trim();
-            if (typeof val === 'object') {
-                const inner = val.street || val.street_address || val.address || val.property_address || val.formatted || val.name || val.value || val.line1 || '';
-                if (typeof inner === 'string') return inner.trim();
-                return fallback;
-            }
-            return String(val).trim();
-        };
+        const address = first(root.street_address, root.propertyAddress, root.property_address, root.address, root.address_line1, root.formatted_address, addr.street, addr.street_address, addr.line1);
+        const city = first(root.city, root.property_city, addr.city);
+        const state = first(root.state, root.property_state, addr.state).toUpperCase();
+        const zip = first(root.zip, root.zip_code, root.property_zip, root.postal_code, addr.zip, addr.postal_code);
+        const countyName = first(root.county, root.property_county, addr.county);
+        const parcelRaw = first(root.apn, root.parcel_number, root.parcel_id, root.parcel, root.parcel_raw);
+        if (!parcelRaw) throw new HttpError(422, 'The BatchLeads push did not include a parcel / APN.');
+        if (!countyName) throw new HttpError(422, 'The BatchLeads push did not include the property county.');
 
-        // If root has nested address object
-        const addrObj = (typeof root.address === 'object' && root.address !== null) ? root.address : 
-                        (typeof root.propertyAddress === 'object' && root.propertyAddress !== null) ? root.propertyAddress :
-                        (typeof root.property_address === 'object' && root.property_address !== null) ? root.property_address : {};
+        const { rows: counties } = await pool.query('SELECT county_id, county_name, county_code FROM ref.counties');
+        const norm = s => s.toUpperCase().replace(/\.$/, '').replace(/^ST\.? /, 'ST ');
+        const county = counties.find(c => norm(c.county_name) === norm(countyName) || norm(c.county_name) === `${norm(countyName)} COUNTY` || c.county_code === countyName.toUpperCase());
+        if (!county) throw new HttpError(422, `County '${countyName}' is not in the county registry.`);
 
-        // 1. Property Details
-        const rawAddress = toCleanStr(
-            root.street_address || 
-            root.propertyAddress ||
-            root.property_address || 
-            root.address || 
-            root.address_line1 || 
-            root.formatted_address || 
-            root.address1 ||
-            addrObj.street ||
-            addrObj.street_address ||
-            addrObj.address ||
-            addrObj.line1,
-            '1000 Commercial Way'
-        );
+        const owner = [root.owner, root.contact].find(v => v && typeof v === 'object') || {};
+        const firstName = first(root.owner_first_name, root.first_name, owner.first_name);
+        const lastName = first(root.owner_last_name, root.last_name, owner.last_name);
+        const fullName = first(root.owner_name, root.owner_full_name, root.full_name, root.contact_name, owner.name, owner.full_name) || `${firstName} ${lastName}`.trim();
 
-        const city = toCleanStr(
-            root.city || 
-            root.propertyCity || 
-            root.property_city || 
-            addrObj.city,
-            'Jacksonville'
-        );
-
-        const state = toCleanStr(
-            root.state || 
-            root.propertyState || 
-            root.property_state || 
-            addrObj.state,
-            'FL'
-        ).toUpperCase();
-
-        const zip = toCleanStr(
-            root.zip || 
-            root.propertyZip || 
-            root.zip_code || 
-            root.property_zip || 
-            root.postal_code || 
-            addrObj.zip ||
-            addrObj.postal_code ||
-            addrObj.zip_code,
-            '32202'
-        );
-
-        const countyName = toCleanStr(
-            root.county || 
-            root.propertyCounty || 
-            root.property_county || 
-            addrObj.county,
-            'Duval'
-        ).toUpperCase();
-
-        const countyInfo = COUNTY_LOOKUP[countyName] || COUNTY_LOOKUP['DUVAL'];
-        const countyCode = countyInfo.code;
-        const countyId = countyInfo.id;
-
-        // Parcel / APN (preserve formatting, leading zeros, hyphens)
-        const parcelRaw = toCleanStr(
-            root.apn || 
-            root.parcel_number || 
-            root.parcel_id || 
-            root.parcel || 
-            root.parcel_raw,
-            '091823-0000'
-        );
-        const parcelMatch = normalizeParcelMatch(parcelRaw);
-
-        // 2. Owner / Contact Details
-        const ownerObj = (typeof root.owner === 'object' && root.owner !== null) ? root.owner :
-                         (typeof root.contact === 'object' && root.contact !== null) ? root.contact : {};
-
-        let fullName = toCleanStr(
-            root.owner_name || 
-            root.owner_full_name || 
-            root.full_name || 
-            root.contact_name ||
-            ownerObj.name ||
-            ownerObj.full_name,
-            ''
-        );
-
-        const firstName = toCleanStr(root.owner_first_name || root.first_name || ownerObj.first_name, '');
-        const lastName = toCleanStr(root.owner_last_name || root.last_name || ownerObj.last_name, '');
-        if (!fullName && (firstName || lastName)) {
-            fullName = `${firstName} ${lastName}`.trim();
-        }
-        if (!fullName) fullName = 'Property Owner';
-
-        // Extract Phones
         const phones = [];
-        if (Array.isArray(root.phone_numbers || root.phones)) {
-            const rawList = root.phone_numbers || root.phones;
-            rawList.forEach((item, idx) => {
+        const phoneList = root.phone_numbers || root.phones;
+        if (Array.isArray(phoneList)) {
+            phoneList.forEach((item, i) => {
                 const num = typeof item === 'object' ? (item.number || item.phone || '') : item;
-                const type = typeof item === 'object' ? (item.type || 'Mobile') : (idx === 0 ? 'Mobile' : 'Landline');
-                if (num && String(num).replace(/\D/g, '').length >= 7) {
-                    phones.push({
-                        slot: idx + 1,
-                        raw: String(num).trim(),
-                        formatted: this.formatPhone(num),
-                        type,
-                        is_primary: idx === 0
-                    });
-                }
+                if (String(num).replace(/\D/g, '').length >= 7) phones.push({ slot: i + 1, raw: String(num).trim(), formatted: this.formatPhone(num), type: typeof item === 'object' ? (item.type || null) : null, is_primary: i === 0 });
             });
         } else {
             for (let i = 1; i <= 5; i++) {
                 const num = root[`phone_${i}`] || root[`phone${i}`] || (i === 1 ? (root.phone || root.primary_phone) : null);
-                if (num && String(num).replace(/\D/g, '').length >= 7) {
-                    phones.push({
-                        slot: i,
-                        raw: String(num).trim(),
-                        formatted: this.formatPhone(num),
-                        type: i === 1 ? 'Mobile' : 'Landline',
-                        is_primary: i === 1
-                    });
-                }
+                if (num && String(num).replace(/\D/g, '').length >= 7) phones.push({ slot: i, raw: String(num).trim(), formatted: this.formatPhone(num), type: null, is_primary: i === 1 });
             }
         }
-        const primaryPhone = phones[0]?.formatted || phones[0]?.raw || '+19045550199';
+        const emails = Array.isArray(root.emails)
+            ? root.emails.map(e => (typeof e === 'object' ? (e.email || e.address) : e)).filter(e => e && String(e).includes('@')).map(e => String(e).trim().toLowerCase())
+            : [root.email || root.primary_email].filter(e => e && String(e).includes('@')).map(e => String(e).trim().toLowerCase());
+        const mailStreet = first(root.mailing_street, root.mailing_address);
+        const mailRest = `${first(root.mailing_city, root.mail_city)} ${first(root.mailing_state, root.mail_state)} ${first(root.mailing_zip, root.mail_zip)}`.trim();
+        const mailing = mailStreet ? `${mailStreet}, ${mailRest}`.trim() : (mailRest || null);
 
-        // Extract Emails
-        const emails = [];
-        if (Array.isArray(root.emails)) {
-            root.emails.forEach(e => {
-                const emailStr = typeof e === 'object' ? (e.email || e.address) : e;
-                if (emailStr && String(emailStr).includes('@')) emails.push(String(emailStr).trim().toLowerCase());
-            });
-        } else if (root.email || root.primary_email) {
-            emails.push(String(root.email || root.primary_email).trim().toLowerCase());
-        }
-        const primaryEmail = emails[0] || '';
+        const lists = Array.isArray(root.lists) ? root.lists : (root.list_name ? [root.list_name] : []);
+        const tags = Array.isArray(root.tags) ? root.tags : (root.tag ? [root.tag] : []);
+        const signal = re => lists.concat(tags).some(t => re.test(String(t)));
+        const pillars = [
+            [root.is_foreclosure || signal(/foreclos/i), 'FC'], [root.is_tax_delinquent || signal(/tax/i), 'TAX'],
+            [root.is_vacant || root.vacancy || signal(/vacan/i), 'VAC'], [root.is_absentee || signal(/absentee/i), 'ABS']
+        ].filter(([on]) => on).map(([, code]) => code);
 
-        // Mailing Address
-        const mailCity = toCleanStr(root.mailing_city || root.mail_city, '');
-        const mailState = toCleanStr(root.mailing_state || root.mail_state, '');
-        const mailZip = toCleanStr(root.mailing_zip || root.mail_zip, '');
-        const mailStreet = toCleanStr(root.mailing_street || root.mailing_address, '');
-        const mailingAddress = mailStreet ? `${mailStreet}, ${mailCity} ${mailState} ${mailZip}`.trim() : (mailCity ? `${mailCity}, ${mailState} ${mailZip}`.trim() : '');
+        const externalId = String(root.property_id || root.id || '').trim() || null;
+        const parcelMatch = normalizeParcelMatch(parcelRaw);
+        const payloadHash = crypto.createHash('sha256').update(JSON.stringify(payload)).digest('hex');
 
-        // 3. Distress Indicators & List Attribution
-        const lists = Array.isArray(root.lists) ? root.lists : (root.list_name ? [root.list_name] : ['BatchLeads Vacants']);
-        const tags = Array.isArray(root.tags) ? root.tags : (root.tag ? [root.tag] : ['BatchLeads Push', 'Hot Lead']);
-        const isVacant = Boolean(root.is_vacant || root.vacancy || lists.some(l => /vacan/i.test(l)));
-        const isTaxDelinquent = Boolean(root.is_tax_delinquent || lists.some(l => /tax/i.test(l)));
-        const isForeclosure = Boolean(root.is_foreclosure || lists.some(l => /foreclos/i.test(l)));
-        const isAbsentee = Boolean(root.is_absentee || lists.some(l => /absentee/i.test(l)));
+        const out = await withTransaction(async client => {
+            const { rows: [existing] } = await client.query('SELECT property_id FROM core.properties WHERE county_id = $1 AND parcel_match = $2', [county.county_id, parcelMatch]);
+            let propertyId = existing?.property_id;
+            if (!propertyId) {
+                ({ rows: [{ property_id: propertyId }] } = await client.query(
+                    `INSERT INTO core.properties (county_id, parcel_raw, parcel_match, address_line1, city, state_code, postal_code)
+                     VALUES ($1,$2,$3,$4,$5,coalesce(nullif($6,''),'FL'),$7) RETURNING property_id`,
+                    [county.county_id, parcelRaw, parcelMatch, address || null, city || null, state, zip || null]));
+            }
+            const { rows: [source] } = await client.query(
+                `INSERT INTO raw.source_records (source_system, jurisdiction, source_external_id, payload, payload_hash, parser_version)
+                 VALUES ('BATCHLEADS', $1, $2, $3, $4, 'webhook-v1')
+                 ON CONFLICT (source_system, jurisdiction, source_external_id) WHERE source_external_id IS NOT NULL
+                 DO UPDATE SET payload = EXCLUDED.payload, payload_hash = EXCLUDED.payload_hash, observed_at = now()
+                 RETURNING source_record_id`,
+                [county.county_name, externalId || `${parcelMatch}:${payloadHash.slice(0, 12)}`, JSON.stringify(payload), payloadHash]);
 
-        // Determine CrownKey Pillar Code
-        let pillarCode = 'VAC'; // Default to VAC since Darren's primary list is 9,131 Vacants
-        if (isForeclosure) pillarCode = 'FC';
-        else if (isTaxDelinquent) pillarCode = 'TAX';
-        else if (isVacant) pillarCode = 'VAC';
-        else if (isAbsentee) pillarCode = 'ABS';
-
-        // Render Canonical CrownKey with dedicated BATCHLEADS lead source
-        const crownKey = renderCrownKey({
-            countyCode,
-            parcelRaw,
-            pillarCode,
-            eventNumber: 1,
-            firstSourceCode: 'BATCHLEADS'
-        });
-
-        const batchLeadsPropertyId = root.property_id || root.id || `bl-${Date.now()}`;
-        const estimatedEquity = parseFloat(root.estimated_equity || root.equity || 75000);
-        const estimatedValue = parseFloat(root.estimated_value || root.arv || 215000);
-
-        // 4. PostgreSQL Database Persistence
-        const client = await pool.connect();
-        const propertyId = crypto.randomUUID();
-        const personId = crypto.randomUUID();
-        const eventId = crypto.randomUUID();
-        const leadId = crypto.randomUUID();
-        const taskId = crypto.randomUUID();
-
-        try {
-            await client.query('BEGIN');
-
-            // 4a. Insert/Update core.properties
-            const propRes = await client.query(`
-                INSERT INTO core.properties (
-                    property_id, county_id, parcel_raw, parcel_match, address_line1,
-                    city, state_code, postal_code, property_type, assessed_value, metadata, created_at, updated_at
-                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW(), NOW())
-                ON CONFLICT (county_id, parcel_match) DO UPDATE SET
-                    address_line1 = EXCLUDED.address_line1,
-                    city = EXCLUDED.city,
-                    assessed_value = EXCLUDED.assessed_value,
-                    metadata = EXCLUDED.metadata,
-                    updated_at = NOW()
-                RETURNING property_id;
-            `, [
-                propertyId,
-                countyId,
-                parcelRaw,
-                parcelMatch,
-                rawAddress,
-                city,
-                state,
-                zip,
-                'SINGLE_FAMILY',
-                estimatedValue,
-                JSON.stringify({
-                    source: 'BATCHLEADS',
-                    batchLeadsPropertyId,
-                    estimatedEquity,
-                    lists,
-                    tags,
-                    isVacant,
-                    darrenWorkspaceSync: true
-                })
-            ]);
-            const finalPropertyId = propRes.rows[0]?.property_id || propertyId;
-
-            // 4b. Insert/Update core.people
-            await client.query(`
-                INSERT INTO core.people (
-                    person_id, full_name, first_name, last_name, primary_phone, primary_email,
-                    mailing_address, is_suppressed, verification_level, phones, emails, metadata, created_at, updated_at
-                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW(), NOW())
-            `, [
-                personId,
-                fullName,
-                firstName || null,
-                lastName || null,
-                primaryPhone,
-                primaryEmail || null,
-                mailingAddress || null,
-                false,
-                'TIER_2_SKIP_TRACED',
-                JSON.stringify(phones),
-                JSON.stringify(emails),
-                JSON.stringify({ source: 'BATCHLEADS', batchLeadsPropertyId, lists })
-            ]);
-
-            // 4c. Insert Pillar Event (core.pillar_events)
-            await client.query(`
-                INSERT INTO core.pillar_events (
-                    event_id, property_id, pillar_code, event_number, external_event_id,
-                    case_reference, event_status, verification_status, event_date, created_at
-                ) VALUES ($1, $2, $3, 1, $4, $5, 'OPEN', 'CONFIRMED', CURRENT_DATE, NOW())
-                ON CONFLICT (property_id, pillar_code, event_number) DO UPDATE SET
-                    external_event_id = EXCLUDED.external_event_id,
-                    case_reference = EXCLUDED.case_reference;
-            `, [
-                eventId,
-                finalPropertyId,
-                pillarCode,
-                String(batchLeadsPropertyId),
-                crownKey
-            ]);
-
-            // 4d. Insert Lead (core.leads) with DEDICATED BatchLeads attribution
-            await client.query(`
-                INSERT INTO core.leads (
-                    lead_id, first_source_code, source_detail, property_id, person_id,
-                    status, priority_score, assigned_user_id, metadata, created_at, updated_at
-                ) VALUES ($1, 'BATCHLEADS', $2, $3, $4, 'NEW', 92, '01111111-1111-1111-1111-111111111111', $5, NOW(), NOW())
-            `, [
-                leadId,
-                `BatchLeads Webhook Tag Push: ${tags.join(', ')} (Darren's Workspace)`,
-                finalPropertyId,
-                personId,
-                JSON.stringify({
-                    crown_key: crownKey,
-                    lead_source: 'BATCHLEADS',
-                    lead_source_name: 'BatchLeads Push',
-                    channel: 'BatchLeads Inbound Webhook',
-                    badge: 'BatchLeads',
-                    badgeColor: '#8b5cf6',
-                    workspace: "Darren's Workspace",
-                    rawAddress,
-                    primaryPhone,
-                    primaryEmail,
-                    estimatedEquity,
-                    estimatedValue,
-                    tags,
-                    lists
-                })
-            ]);
-
-            // 4e. Link Property to Person in rel.entity_relationships
-            await client.query(`
-                INSERT INTO rel.entity_relationships (
-                    relationship_id, from_entity_type, from_entity_id, to_entity_type, to_entity_id,
-                    relationship_type, verification_status, confidence_score, created_at
-                ) VALUES ($1, 'PERSON', $2, 'PROPERTY', $3, 'OWNER', 'CONFIRMED', 0.95, NOW())
-            `, [
-                crypto.randomUUID(),
-                personId,
-                finalPropertyId
-            ]);
-
-            // 4f. Create High-Priority Task in core.tasks
-            await client.query(`
-                INSERT INTO core.tasks (
-                    task_id, title, status, category, priority, is_completed, due_time, created_at
-                ) VALUES ($1, $2, 'PENDING', 'Acquisitions', 'URGENT', false, 'Within 1 Hour', NOW())
-            `, [
-                taskId,
-                `🔥 Call New BatchLeads Lead: ${fullName} · ${rawAddress} (Hot Lead Push)`
-            ]);
-
-            // 4g. Emit Immutable Audit Event
-            await client.query(`
-                INSERT INTO audit.audit_events (
-                    audit_id, actor, action, entity_type, entity_id, request_id, redacted_diff, created_at
-                ) VALUES ($1, 'BatchLeads Webhook', 'BATCHLEADS_LEAD_INGESTED', 'LEAD', $2, $3, $4, NOW())
-            `, [
-                crypto.randomUUID(),
-                leadId,
-                crypto.randomUUID(),
-                JSON.stringify({
-                    crownKey,
-                    address: rawAddress,
-                    owner: fullName,
-                    phone: primaryPhone,
-                    source: 'BATCHLEADS',
-                    tags,
-                    batchLeadsPropertyId
-                })
-            ]);
-
-            await client.query('COMMIT');
-        } catch (dbErr) {
-            await client.query('ROLLBACK');
-            throw dbErr;
-        } finally {
-            client.release();
-        }
-
-        // 5. In-Memory Store Synchronization (Instant UI Availability)
-        const uiLead = {
-            id: leadId,
-            lead_id: leadId,
-            property_id: propertyId,
-            crown_key: crownKey,
-            crownKey,
-            name: fullName,
-            contact_name: fullName,
-            phone: primaryPhone,
-            email: primaryEmail,
-            address: rawAddress,
-            city,
-            state,
-            zip,
-            lead_source: 'BATCHLEADS',
-            source: 'BatchLeads',
-            leadSourceBadge: 'BatchLeads',
-            sourceColor: '#8b5cf6',
-            stage: 'New',
-            status: 'NEW',
-            motivation: 'High',
-            temperature: 'Hot',
-            score: 92,
-            tags: ['BatchLeads', ...tags],
-            arv: estimatedValue,
-            equity: estimatedEquity,
-            notes: `Auto-ingested via BatchLeads webhook from Darren's Workspace. Tags: ${tags.join(', ')}. Lists: ${lists.join(', ')}.`,
-            createdAt: new Date().toISOString()
-        };
-
-        if (Array.isArray(db.data.crm.leads)) {
-            db.data.crm.leads.unshift(uiLead);
-        }
-
-        // Create Operational Notification
-        const notification = {
-            id: `bl-notif-${Date.now()}`,
-            type: 'LEAD_INGESTED',
-            title: `🚀 New BatchLeads Lead: ${rawAddress}`,
-            message: `${fullName} pushed from Darren's Workspace with CrownKey ${crownKey}.`,
-            severity: 'URGENT',
-            created_at: new Date().toISOString(),
-            read: false,
-            link: '/seller-leads'
-        };
-        if (Array.isArray(db.data.crm.notifications)) {
-            db.data.crm.notifications.unshift(notification);
-        }
-
-        await AutomationService.onLeadSaved('batchleads_lead', {
-            leadId, eventId: root.property_id || root.id, target: rawAddress
-        });
-
-        // 6. Optional Outbound Sync to Podio (App 30087410 - Seller Leads)
-        let podioItemId = null;
-        try {
-            if (process.env.PODIO_CLIENT_ID && process.env.PODIO_APP_TOKEN) {
-                const auth = await PodioService.authenticateApp(process.env.PODIO_APP_ID || '30087410', process.env.PODIO_APP_TOKEN);
-                if (auth && auth.access_token) {
-                    const fields = {
-                        'seller-name': fullName,
-                        'property-address': rawAddress,
-                        'phone-number': primaryPhone,
-                        'email': primaryEmail,
-                        'lead-source': 'BatchLeads',
-                        'crownkey-reference': crownKey,
-                        'motivation': 'High',
-                        'notes': `Pushed from Darren's BatchLeads Workspace. Lists: ${lists.join(', ')}`
-                    };
-                    const podioRes = await PodioService.createItem(auth.access_token, process.env.PODIO_APP_ID || '30087410', fields);
-                    podioItemId = podioRes?.item_id || null;
+            const { rows: [prior] } = await client.query(`SELECT lead_id FROM core.leads WHERE property_id = $1 AND first_source_code = 'BATCHLEADS' ORDER BY created_at LIMIT 1`, [propertyId]);
+            let leadId = prior?.lead_id; let isNew = false;
+            if (leadId) {
+                await client.query(
+                    `INSERT INTO core.attribution_touchpoints (lead_id, source_code, contact_method, evidence, created_by) VALUES ($1,'BATCHLEADS','IMPORT','Repeat BatchLeads push','BatchLeads webhook')`, [leadId]);
+            } else {
+                const lead = await CrmService.createLead({
+                    sourceCode: 'BATCHLEADS', sourceDetail: lists.length ? `BatchLeads: ${lists.join(', ')}` : 'BatchLeads push', contactMethod: 'IMPORT', propertyId,
+                    attributionConfidence: 'VERIFIED', attributionEvidence: `BatchLeads webhook ${externalId || payloadHash.slice(0, 12)}`, actor: 'BatchLeads webhook', db: client,
+                    person: fullName ? { name: fullName, phone: phones[0]?.formatted || phones[0]?.raw || null, email: emails[0] || null, mailingAddress: mailing } : null,
+                    metadata: { tags, lists }
+                });
+                leadId = lead.lead_id; isNew = true;
+                if (lead.person_id) {
+                    await client.query('UPDATE core.people SET first_name = $2, last_name = $3, phones = $4, emails = $5 WHERE person_id = $1',
+                        [lead.person_id, firstName || null, lastName || null, JSON.stringify(phones), JSON.stringify(emails)]);
                 }
             }
-        } catch (podioErr) {
-            console.warn('[BatchLeads Podio Sync Info]:', podioErr.message);
+            await audit(client, { actor: 'BatchLeads webhook', action: isNew ? 'BATCHLEADS_LEAD_INGESTED' : 'BATCHLEADS_REPEAT_PUSH', entityType: 'LEAD', entityId: leadId, diff: { propertyId, pillars } });
+            return { propertyId, leadId, isNew, sourceRecordId: source.source_record_id };
+        });
+
+        const events = [];
+        for (const pillarCode of pillars) {
+            try {
+                const r = await EventService.recordPillarEvent({
+                    propertyId: out.propertyId, pillarCode, externalEventId: `BATCHLEADS:${externalId || parcelMatch}:${pillarCode}`,
+                    verificationStatus: 'POSSIBLE', sourceRecordId: out.sourceRecordId, evidenceNotes: 'Signal from BatchLeads list/tag; not an official record', actor: 'BatchLeads webhook'
+                });
+                await pool.query('INSERT INTO core.lead_event_links (lead_id, event_id, verification_status, created_by) VALUES ($1,$2,\'POSSIBLE\',\'BatchLeads webhook\') ON CONFLICT DO NOTHING', [out.leadId, r.event.event_id]);
+                events.push({ pillarCode, eventId: r.event.event_id, isNew: r.isNew });
+            } catch (error) {
+                events.push({ pillarCode, error: error.message });
+            }
         }
 
-        return {
-            success: true,
-            crownKey,
-            leadId,
-            propertyId,
-            source: 'BATCHLEADS',
-            sourceName: 'BatchLeads Webhook Push',
-            owner: fullName,
-            address: rawAddress,
-            phone: primaryPhone,
-            email: primaryEmail,
-            podioItemId,
-            tags,
-            message: `Lead successfully attributed to BATCHLEADS with CrownKey: ${crownKey}`
-        };
+        const [prop] = await CrownKeyService.loadProperties('WHERE p.property_id = $1', [out.propertyId]);
+        const enriched = await CrownKeyService.enrichProperty(prop);
+        const crownKey = enriched.leads.find(l => l.lead_id === out.leadId)?.crownKey || enriched.crownKeyBase;
+
+        await pool.query(
+            `INSERT INTO ops.notifications (notification_id, title, body, category, priority, color, icon, is_read, created_at)
+             VALUES (gen_random_uuid(), $1, $2, 'LEAD', 'HIGH', 'cyan', 'zap', false, now())`,
+            [`BatchLeads ${out.isNew ? 'lead' : 'repeat push'}: ${address || parcelRaw}`, `${fullName || 'Unnamed owner'} · ${crownKey}`]);
+        await AutomationService.onLeadSaved('batchleads_lead', { leadId: out.leadId, eventId: externalId, target: address || parcelRaw }).catch(error => console.error('[BatchLeads] automation failed:', error.message));
+
+        let podioItemId = null; let podioError = null;
+        if (out.isNew && process.env.PODIO_CLIENT_ID && process.env.PODIO_APP_TOKEN) {
+            try {
+                const appId = process.env.PODIO_APP_ID;
+                const auth = await PodioService.authenticateApp(appId, process.env.PODIO_APP_TOKEN);
+                const res = await PodioService.createItem(auth.access_token, appId, {
+                    'seller-name': fullName, 'property-address': address, 'phone-number': phones[0]?.formatted || '', email: emails[0] || '',
+                    'lead-source': 'BatchLeads', 'crownkey-reference': crownKey, notes: lists.length ? `BatchLeads lists: ${lists.join(', ')}` : 'BatchLeads push'
+                });
+                podioItemId = res?.item_id || null;
+            } catch (error) {
+                podioError = error.message;
+            }
+        }
+        return { success: true, crownKey, leadId: out.leadId, propertyId: out.propertyId, isNewLead: out.isNew, source: 'BATCHLEADS', events, podioItemId, podioError };
     }
 }

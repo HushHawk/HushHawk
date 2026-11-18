@@ -1,307 +1,219 @@
 import crypto from 'crypto';
-import { db } from '../store/database.js';
-import { EventService } from './eventService.js';
-import { CrownKeyService } from './crownkeyService.js';
+import { pool, withTransaction, audit } from '../store/pgClient.js';
+import { normalizeParcelMatch } from '../../../packages/crownkey/index.js';
+import { EventService, HttpError } from './eventService.js';
+
+const getPath = (obj, path) => (path ? path.split('.').reduce((o, k) => (o == null ? undefined : o[k]), obj) : obj);
+
+/** Canonical record shape every connector or manual import is mapped to. */
+const FIELDS = ['parcel', 'externalId', 'caseReference', 'pillarCode', 'filingDate', 'amount', 'address', 'city', 'zip'];
+
+function mapRecord(raw, fieldMap) {
+    const out = {};
+    for (const f of FIELDS) {
+        const source = fieldMap?.[f];
+        if (source) out[f] = getPath(raw, source);
+    }
+    return out;
+}
 
 export class ConnectorService {
-    /**
-     * Lists all connectors in the registry with their health state and last runs
-     */
-    static getRegistry() {
-        const connectors = [
-            {
-                connector_id: 'DUVAL_COURT_CLERK',
-                name: 'Duval County Clerk of Court',
-                jurisdiction: 'Duval County, FL',
-                access_type: 'Official API / Certified Scraper',
-                permitted_use: 'Public Court Record Foreclosure Dockets',
-                rate_limit: '60 req/min',
-                schedule: 'Hourly (06:00 - 22:00)',
-                parser_version: 'clerk-v2.1',
-                approval_status: 'APPROVED',
-                enabled: true,
-            },
-            {
-                connector_id: 'DUVAL_TAX_COLLECTOR',
-                name: 'Duval County Tax Collector',
-                jurisdiction: 'Duval County, FL',
-                access_type: 'Tax Certificate Data Feed',
-                permitted_use: 'Delinquent Ad Valorem Tax Rolls',
-                rate_limit: '120 req/min',
-                schedule: 'Daily at 02:00 EST',
-                parser_version: 'tax-v1.4',
-                approval_status: 'APPROVED',
-                enabled: true,
-            },
-            {
-                connector_id: 'DUVAL_CODE_ENFORCEMENT',
-                name: 'City of Jacksonville Code Enforcement',
-                jurisdiction: 'Duval County, FL',
-                access_type: 'Municipal Open Data Portal',
-                permitted_use: 'Code Violations & Unsafe Structures',
-                rate_limit: '30 req/min',
-                schedule: 'Daily at 05:00 EST',
-                parser_version: 'code-v1.0',
-                approval_status: 'APPROVED',
-                enabled: true,
-            },
-            {
-                connector_id: 'DUVAL_PROBATE_COURT',
-                name: 'Duval County Probate Division',
-                jurisdiction: 'Duval County, FL',
-                access_type: 'Estate Administration Public Docket',
-                permitted_use: 'Deceased Owner & Intestate Filings',
-                rate_limit: '30 req/min',
-                schedule: 'Daily at 04:00 EST',
-                parser_version: 'probate-v1.1',
-                approval_status: 'APPROVED',
-                enabled: true,
-            },
-        ];
+    static async getRegistry() {
+        const { rows } = await pool.query(
+            `SELECT c.*, lr.status AS last_status, lr.records_fetched AS last_fetched, lr.error_summary AS last_error
+             FROM ops.connectors c
+             LEFT JOIN LATERAL (SELECT * FROM raw.connector_runs r WHERE r.connector_id = c.connector_id ORDER BY started_at DESC LIMIT 1) lr ON TRUE
+             ORDER BY c.name`);
+        return rows;
+    }
 
-        return connectors.map(conn => {
-            const runs = db.data.raw.connector_runs.filter(r => r.connector_id === conn.connector_id);
-            const lastRun = runs[0] || null;
-            return {
-                ...conn,
-                last_run: lastRun,
-                total_runs: runs.length,
-            };
+    static async upsertConnector(input, actor) {
+        const c = input || {};
+        if (!c.connector_id || !c.name || !c.county_code) throw new HttpError(400, 'connector_id, name and county_code are required.');
+        if (c.connector_type === 'HTTP_JSON' && !c.feed_url) throw new HttpError(400, 'feed_url is required for HTTP_JSON connectors.');
+        if (c.feed_url && !/^https:\/\//i.test(c.feed_url)) throw new HttpError(400, 'feed_url must use https.');
+        return withTransaction(async client => {
+            const { rows: [row] } = await client.query(
+                `INSERT INTO ops.connectors (connector_id, name, county_code, pillar_code, connector_type, feed_url, auth_env_var, records_path, field_map, schedule_minutes, parser_version, created_by)
+                 VALUES ($1,$2,$3,$4,coalesce($5,'HTTP_JSON'),$6,$7,$8,coalesce($9::jsonb,'{}'::jsonb),$10,coalesce($11,'v1'),$12)
+                 ON CONFLICT (connector_id) DO UPDATE SET name=EXCLUDED.name, county_code=EXCLUDED.county_code, pillar_code=EXCLUDED.pillar_code,
+                   connector_type=EXCLUDED.connector_type, feed_url=EXCLUDED.feed_url, auth_env_var=EXCLUDED.auth_env_var,
+                   records_path=EXCLUDED.records_path, field_map=EXCLUDED.field_map, schedule_minutes=EXCLUDED.schedule_minutes,
+                   parser_version=EXCLUDED.parser_version
+                 RETURNING *`,
+                [c.connector_id, c.name, String(c.county_code).toUpperCase(), c.pillar_code || null, c.connector_type || null, c.feed_url || null,
+                 c.auth_env_var || null, c.records_path || null, c.field_map ? JSON.stringify(c.field_map) : null, c.schedule_minutes || null, c.parser_version || null, actor]);
+            await audit(client, { actor, action: 'CONNECTOR_SAVED', entityType: 'CONNECTOR', entityId: crypto.randomUUID(), diff: { connector_id: c.connector_id } });
+            return row;
         });
     }
 
+    static async setApproval(connectorId, { approved, enabled }, actor) {
+        return withTransaction(async client => {
+            const { rows: [row] } = await client.query(
+                `UPDATE ops.connectors SET approval_status = CASE WHEN $2 THEN 'APPROVED' ELSE 'NEEDS_REVIEW' END,
+                   enabled = ($2 AND coalesce($3, enabled)) WHERE connector_id = $1 RETURNING *`, [connectorId, Boolean(approved), enabled]);
+            if (!row) throw new HttpError(404, 'Connector not found.');
+            await audit(client, { actor, action: approved ? 'CONNECTOR_APPROVED' : 'CONNECTOR_UNAPPROVED', entityType: 'CONNECTOR', entityId: crypto.randomUUID(), diff: { connectorId } });
+            return row;
+        });
+    }
+
+    /** Pulls the configured feed, maps records, and ingests them. */
+    static async runConnector(connectorId, { actor = 'SCHEDULER' } = {}) {
+        const { rows: [config] } = await pool.query('SELECT * FROM ops.connectors WHERE connector_id = $1', [connectorId]);
+        if (!config) throw new HttpError(404, `Connector '${connectorId}' not found.`);
+        if (config.approval_status !== 'APPROVED' || !config.enabled) throw new HttpError(400, 'Connector is not approved and enabled.');
+        if (config.connector_type !== 'HTTP_JSON') throw new HttpError(400, 'Only HTTP_JSON connectors can be pulled; use an import for manual feeds.');
+
+        const { rows: [run] } = await pool.query(
+            `INSERT INTO raw.connector_runs (connector_id, parser_version, cursor_watermark) VALUES ($1,$2,$3) RETURNING run_id`,
+            [connectorId, config.parser_version, new Date().toISOString()]);
+        try {
+            const headers = { Accept: 'application/json' };
+            if (config.auth_env_var) {
+                const token = process.env[config.auth_env_var];
+                if (!token) throw new Error(`Environment variable ${config.auth_env_var} is not set.`);
+                headers.Authorization = `Bearer ${token}`;
+            }
+            const response = await fetch(config.feed_url, { headers, signal: AbortSignal.timeout(60_000) });
+            if (!response.ok) throw new Error(`Feed returned HTTP ${response.status}.`);
+            const body = await response.json();
+            const list = getPath(body, config.records_path);
+            if (!Array.isArray(list)) throw new Error('records_path did not resolve to an array.');
+            const records = list.map(raw => ({ ...mapRecord(raw, config.field_map), pillarCode: mapRecord(raw, config.field_map).pillarCode || config.pillar_code, payload: raw }));
+            const result = await this.ingest({ records, countyCode: config.county_code, sourceSystem: connectorId, connectorRunId: run.run_id, actor });
+            await pool.query(
+                `UPDATE raw.connector_runs SET status = 'COMPLETED', records_fetched = $2, records_parsed = $3, records_quarantined = $4, records_changed = $5,
+                   error_summary = $6, completed_at = now() WHERE run_id = $1`,
+                [run.run_id, list.length, result.created + result.updated + result.unchanged, result.rejected, result.created + result.updated,
+                 result.rejected ? `${result.rejected} record(s) rejected; see import job ${result.importJobId}.` : null]);
+            await pool.query('UPDATE ops.connectors SET last_run_at = now() WHERE connector_id = $1', [connectorId]);
+            return { run_id: run.run_id, ...result };
+        } catch (error) {
+            await pool.query(`UPDATE raw.connector_runs SET status = 'FAILED', error_summary = $2, completed_at = now() WHERE run_id = $1`, [run.run_id, error.message]);
+            await pool.query(
+                `INSERT INTO ops.notifications (notification_id, title, body, category, priority, color, icon, is_read, created_at)
+                 VALUES (gen_random_uuid(), $1, $2, 'SYSTEM', 'HIGH', 'red', 'database', false, now())`,
+                [`Connector failed: ${config.name}`, error.message]).catch(() => {});
+            throw error;
+        }
+    }
+
     /**
-     * Executes the 10-step connector run standard lifecycle (Page 8 & Section 7.2).
+     * Ingests canonical records. Raw evidence is stored before anything is derived; properties match on
+     * county + normalized parcel; events reuse existing cases; per-row outcomes are recorded on an import job.
      */
-    static runConnector(connectorId, { actor = 'SYSTEM' } = {}) {
-        const connectors = this.getRegistry();
-        const config = connectors.find(c => c.connector_id === connectorId);
-        if (!config) {
-            throw new Error(`Connector '${connectorId}' not found in registry`);
-        }
+    static async ingest({ records, countyCode, sourceSystem, connectorRunId = null, importType = 'EVENT', actor }) {
+        if (!Array.isArray(records) || !records.length) throw new HttpError(400, 'records must be a non-empty array.');
+        if (!countyCode || !sourceSystem) throw new HttpError(400, 'countyCode and sourceSystem are required.');
+        const { rows: [county] } = await pool.query('SELECT county_id, county_name, county_code FROM ref.counties WHERE county_code = $1', [String(countyCode).toUpperCase()]);
+        if (!county) throw new HttpError(400, `County '${countyCode}' is not in the county registry.`);
 
-        // STEP 1: Verify approval
-        if (config.approval_status !== 'APPROVED' || !config.enabled) {
-            throw new Error(`Connector '${connectorId}' is not approved for execution`);
-        }
+        const { rows: [job] } = await pool.query(
+            `INSERT INTO ops.import_jobs (source_system, county_id, import_type, created_by) VALUES ($1,$2,$3,$4) RETURNING import_job_id`,
+            [sourceSystem, county.county_id, importType, actor]);
+        const counts = { created: 0, updated: 0, unchanged: 0, rejected: 0, review: 0 };
+        const item = (i, outcome, entityId, message) => pool.query(
+            `INSERT INTO ops.import_job_items (import_job_id, row_number, outcome, entity_id, message) VALUES ($1,$2,$3,$4,$5)`,
+            [job.import_job_id, i + 1, outcome, entityId || null, message || null]);
 
-        // STEP 2: Open connector run
-        const runId = crypto.randomUUID();
-        const runRecord = {
-            run_id: runId,
-            connector_id: connectorId,
-            status: 'RUNNING',
-            cursor_watermark: new Date().toISOString(),
-            parser_version: config.parser_version,
-            records_fetched: 0,
-            records_parsed: 0,
-            records_quarantined: 0,
-            records_changed: 0,
-            error_summary: null,
-            started_at: new Date().toISOString(),
-            completed_at: null,
-        };
-        db.data.raw.connector_runs.unshift(runRecord);
+        for (let i = 0; i < records.length; i++) {
+            const r = records[i] || {};
+            try {
+                const parcel = r.parcel == null ? '' : String(r.parcel).trim(); // parcels stay text: leading zeros preserved
+                const externalId = r.externalId == null ? '' : String(r.externalId).trim();
+                if (!parcel || !externalId) { counts.rejected++; await item(i, 'REJECTED', null, 'parcel and externalId are required.'); continue; }
 
-        // STEP 3: Fetch live records from certified connector feed (Real-time only, no mock data)
-        const livePayloads = this.getRealFeedBatchForConnector(connectorId);
-        runRecord.records_fetched = livePayloads.length;
+                const payload = r.payload || r;
+                const payloadHash = crypto.createHash('sha256').update(JSON.stringify(payload)).digest('hex');
+                const parcelMatch = normalizeParcelMatch(parcel);
 
-        for (const item of livePayloads) {
-            // STEP 4: Store raw first (Compute SHA-256 BEFORE transformation)
-            const payloadStr = JSON.stringify(item);
-            const payloadHash = crypto.createHash('sha256').update(payloadStr).digest('hex');
+                const outcome = await withTransaction(async client => {
+                    const { rows: [existingSource] } = await client.query(
+                        `SELECT source_record_id, payload_hash FROM raw.source_records WHERE source_system = $1 AND jurisdiction = $2 AND source_external_id = $3`,
+                        [sourceSystem, county.county_name, externalId]);
+                    let sourceRecordId; let changed = true;
+                    if (existingSource) {
+                        sourceRecordId = existingSource.source_record_id;
+                        changed = existingSource.payload_hash !== payloadHash;
+                        if (changed) {
+                            await client.query('INSERT INTO raw.source_record_versions (source_record_id, payload, payload_hash) SELECT source_record_id, payload, payload_hash FROM raw.source_records WHERE source_record_id = $1', [sourceRecordId]);
+                            await client.query('UPDATE raw.source_records SET payload = $2, payload_hash = $3, observed_at = now() WHERE source_record_id = $1', [sourceRecordId, JSON.stringify(payload), payloadHash]);
+                        }
+                    } else {
+                        const { rows: [created] } = await client.query(
+                            `INSERT INTO raw.source_records (connector_run_id, source_system, jurisdiction, source_external_id, payload, payload_hash, parser_version)
+                             VALUES ($1,$2,$3,$4,$5,$6,'v1') RETURNING source_record_id`,
+                            [connectorRunId, sourceSystem, county.county_name, externalId, JSON.stringify(payload), payloadHash]);
+                        sourceRecordId = created.source_record_id;
+                    }
 
-            // STEP 5: Validate required fields (Quarantine malformed records!)
-            if (!item.parcel || !item.externalId) {
-                runRecord.records_quarantined += 1;
-                console.warn(`[Connector] Quarantined malformed record in run ${runId}`);
-                continue;
-            }
-
-            const sourceRecord = {
-                source_record_id: crypto.randomUUID(),
-                connector_run_id: runId,
-                source_system: connectorId,
-                jurisdiction: config.jurisdiction,
-                source_external_id: item.externalId,
-                observed_at: new Date().toISOString(),
-                source_url: `https://records.duvalcounty.fl.gov/${item.externalId}`,
-                payload: item,
-                payload_hash: payloadHash,
-                parser_version: config.parser_version,
-                created_at: new Date().toISOString(),
-            };
-            db.data.raw.source_records.unshift(sourceRecord);
-            runRecord.records_parsed += 1;
-
-            // STEP 6: Normalize into staging without changing raw evidence
-            const normalizedParcel = item.parcel.trim().toUpperCase().replace(/[\s-]/g, '');
-
-            // STEP 7: Match candidates
-            let matchedProp = db.data.core.properties.find(
-                p => p.parcel_match === normalizedParcel && p.county_code === 'DUV'
-            );
-
-            if (!matchedProp) {
-                // Insert new canonical property if valid parcel
-                matchedProp = {
-                    property_id: crypto.randomUUID(),
-                    county_id: 'c1111111-1111-1111-1111-111111111111',
-                    county_code: 'DUV',
-                    parcel_raw: item.parcel,
-                    parcel_match: normalizedParcel,
-                    address_line1: item.address || 'Jacksonville, FL',
-                    city: 'Jacksonville',
-                    state_code: 'FL',
-                    postal_code: item.zip || '32204',
-                    assessed_value: item.assessedValue || 220000,
-                    created_at: new Date().toISOString(),
-                    updated_at: new Date().toISOString(),
-                };
-                db.data.core.properties.push(matchedProp);
-                runRecord.records_changed += 1;
-            }
-
-            // STEP 8: Write canonical transactionally & emit outbox events
-            if (item.pillarCode) {
-                EventService.recordPillarEvent({
-                    propertyId: matchedProp.property_id,
-                    pillarCode: item.pillarCode,
-                    caseReference: item.externalId,
-                    externalEventId: item.externalId,
-                    eventStatus: 'OPEN',
-                    verificationStatus: 'CONFIRMED',
-                    eventDate: item.filingDate || new Date().toISOString().split('T')[0],
-                    filingAmount: item.amount || 0,
-                    sourceRecordId: sourceRecord.source_record_id,
-                    evidenceNotes: `Ingested via ${config.name}`,
-                    actor: `CONNECTOR_${connectorId}`,
+                    let { rows: [property] } = await client.query('SELECT property_id FROM core.properties WHERE county_id = $1 AND parcel_match = $2', [county.county_id, parcelMatch]);
+                    let propertyCreated = false;
+                    if (!property) {
+                        ({ rows: [property] } = await client.query(
+                            `INSERT INTO core.properties (county_id, parcel_raw, parcel_match, address_line1, city, postal_code)
+                             VALUES ($1,$2,$3,$4,$5,$6) RETURNING property_id`,
+                            [county.county_id, parcel, parcelMatch, r.address || null, r.city || null, r.zip || null]));
+                        propertyCreated = true;
+                    }
+                    return { sourceRecordId, propertyId: property.property_id, propertyCreated, changed: changed || propertyCreated };
                 });
+
+                let eventResult = null;
+                if (r.pillarCode) {
+                    eventResult = await EventService.recordPillarEvent({
+                        propertyId: outcome.propertyId, pillarCode: r.pillarCode, caseReference: r.caseReference || externalId, externalEventId: externalId,
+                        eventStatus: 'OPEN', verificationStatus: 'CONFIRMED', eventDate: r.filingDate || null,
+                        filingAmount: r.amount === undefined || r.amount === null || r.amount === '' ? null : Number(r.amount),
+                        sourceRecordId: outcome.sourceRecordId, evidenceNotes: `Ingested from ${sourceSystem}`, actor
+                    });
+                }
+                if (outcome.propertyCreated || eventResult?.isNew) { counts.created++; await item(i, 'CREATED', outcome.propertyId); }
+                else if (outcome.changed) { counts.updated++; await item(i, 'UPDATED', outcome.propertyId); }
+                else { counts.unchanged++; await item(i, 'UNCHANGED', outcome.propertyId); }
+            } catch (error) {
+                counts.rejected++;
+                await item(i, 'REJECTED', null, error.message);
             }
         }
 
-        // STEP 9: Record the run
-        runRecord.status = runRecord.records_quarantined > 0 ? 'COMPLETED_WITH_WARNINGS' : 'COMPLETED';
-        runRecord.completed_at = new Date().toISOString();
-        if (runRecord.records_quarantined > 0) {
-            runRecord.error_summary = `${runRecord.records_quarantined} malformed record(s) quarantined; preserved in raw logs.`;
-        }
-
-        // STEP 10: Alert if needed
-        db.logAudit({
-            actor,
-            action: 'CONNECTOR_RUN_EXECUTED',
-            entityType: 'CONNECTOR_RUN',
-            entityId: runId,
-            redactedDiff: {
-                connectorId,
-                fetched: runRecord.records_fetched,
-                parsed: runRecord.records_parsed,
-                quarantined: runRecord.records_quarantined,
-            },
-        });
-
-        db.persist();
-
-        return runRecord;
+        await pool.query(
+            `UPDATE ops.import_jobs SET status = 'COMPLETED', created_count=$2, updated_count=$3, unchanged_count=$4, rejected_count=$5, review_count=$6, completed_at = now()
+             WHERE import_job_id = $1`, [job.import_job_id, counts.created, counts.updated, counts.unchanged, counts.rejected, counts.review]);
+        await withTransaction(client => audit(client, { actor, action: 'IMPORT_COMPLETED', entityType: 'IMPORT_JOB', entityId: job.import_job_id, diff: { sourceSystem, ...counts } }));
+        return { importJobId: job.import_job_id, ...counts };
     }
 
-    static getRealFeedBatchForConnector(connectorId) {
-        // Certified Real Feeds for Duval County, FL
-        // Provides structured public domain records conforming to county recording formats
-        const feeds = {
-            DUVAL_COURT_CLERK: [
-                {
-                    parcel: '04-05-25-001230-001-00',
-                    address: '123 Main St',
-                    externalId: '16-2025-CA-008912-XXXX-MA',
-                    pillarCode: 'FC',
-                    filingDate: '2025-11-20',
-                    amount: 215000,
-                    zip: '32204'
-                },
-                {
-                    parcel: 'PODIO-3205084563',
-                    address: '2748 W 45th St',
-                    externalId: '16-2026-CA-004819-XXXX-MA',
-                    pillarCode: 'FC',
-                    filingDate: '2026-09-14',
-                    amount: 194500,
-                    zip: '32209'
-                },
-                {
-                    parcel: 'PODIO-3205082239',
-                    address: '3037 Broadway Ave',
-                    externalId: '16-2026-CA-003310-XXXX-MA',
-                    pillarCode: 'FC',
-                    filingDate: '2026-08-11',
-                    amount: 178000,
-                    zip: '32254'
-                }
-            ],
-            DUVAL_TAX_COLLECTOR: [
-                {
-                    parcel: 'PODIO-3205084563',
-                    address: '2748 W 45th St',
-                    externalId: 'TAX-2025-045912',
-                    pillarCode: 'TAX',
-                    filingDate: '2026-08-01',
-                    amount: 4320,
-                    zip: '32209'
-                },
-                {
-                    parcel: '04-05-25-008810-002-00',
-                    address: '881 Main St',
-                    externalId: 'TAX-2025-088102',
-                    pillarCode: 'TAX',
-                    filingDate: '2026-06-12',
-                    amount: 6140,
-                    zip: '32206'
-                },
-                {
-                    parcel: 'PODIO-3225969120',
-                    address: '10702 Arnez Rd',
-                    externalId: 'TAX-2025-107020',
-                    pillarCode: 'TAX',
-                    filingDate: '2026-07-22',
-                    amount: 5400,
-                    zip: '32218'
-                }
-            ],
-            DUVAL_CODE_ENFORCEMENT: [
-                {
-                    parcel: '04-05-25-032450-003-00',
-                    address: '3245 Main St',
-                    externalId: 'CE-2026-044910',
-                    pillarCode: 'CODE',
-                    filingDate: '2026-04-18',
-                    amount: 1500,
-                    zip: '32208'
-                },
-                {
-                    parcel: 'PODIO-3311140484',
-                    address: '270 E 46th St',
-                    externalId: 'CE-2026-019204',
-                    pillarCode: 'CODE',
-                    filingDate: '2026-05-12',
-                    amount: 2200,
-                    zip: '32208'
-                }
-            ],
-            DUVAL_PROBATE_COURT: [
-                {
-                    parcel: '04-05-25-008810-002-00',
-                    address: '881 Main St',
-                    externalId: '16-2026-CP-001204',
-                    pillarCode: 'PRB',
-                    filingDate: '2026-03-10',
-                    amount: 0,
-                    zip: '32206'
-                }
-            ]
-        };
+    static async listRuns(limit = 100) {
+        const { rows } = await pool.query('SELECT * FROM raw.connector_runs ORDER BY started_at DESC LIMIT $1', [Math.min(Number(limit) || 100, 500)]);
+        return rows;
+    }
 
-        return feeds[connectorId] || [];
+    static async listImports(limit = 50) {
+        const { rows } = await pool.query('SELECT j.*, c.county_code FROM ops.import_jobs j LEFT JOIN ref.counties c USING (county_id) ORDER BY started_at DESC LIMIT $1', [Math.min(Number(limit) || 50, 200)]);
+        return rows;
+    }
+
+    static async getImport(id) {
+        const { rows: [job] } = await pool.query('SELECT * FROM ops.import_jobs WHERE import_job_id = $1', [id]);
+        if (!job) throw new HttpError(404, 'Import job not found.');
+        const { rows: items } = await pool.query('SELECT * FROM ops.import_job_items WHERE import_job_id = $1 ORDER BY row_number LIMIT 1000', [id]);
+        return { job, items };
+    }
+
+    /** Connectors whose schedule has elapsed. Used by the scheduler. */
+    static async runDue() {
+        const { rows } = await pool.query(
+            `SELECT connector_id FROM ops.connectors
+             WHERE enabled AND approval_status = 'APPROVED' AND connector_type = 'HTTP_JSON' AND schedule_minutes IS NOT NULL
+               AND (last_run_at IS NULL OR last_run_at < now() - make_interval(mins => schedule_minutes))`);
+        const results = [];
+        for (const { connector_id } of rows) {
+            try { results.push({ connector_id, ok: true, ...(await this.runConnector(connector_id)) }); }
+            catch (error) { results.push({ connector_id, ok: false, error: error.message }); }
+        }
+        return results;
     }
 }

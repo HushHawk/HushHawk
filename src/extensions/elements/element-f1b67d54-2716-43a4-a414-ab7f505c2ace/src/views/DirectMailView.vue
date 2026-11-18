@@ -530,7 +530,7 @@ export default {
         format: '4x6 Postcard',
         quantity: 0,
         zips: '32208, 32209',
-        trackingPhone: '(904) 555-0144',
+        trackingPhone: '',
         copy: ''
       },
       mailBatches: []
@@ -760,7 +760,7 @@ export default {
         format: '4x6 Postcard',
         quantity: 2500,
         zips: '32208, 32209',
-        trackingPhone: '(904) 555-0144',
+        trackingPhone: '',
         copy: ''
       };
       this.showToast('Batch saved', `Campaign batch "${payload.name}" saved.`, 'success');

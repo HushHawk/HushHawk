@@ -7,7 +7,12 @@ import express from 'express';
 const databaseUrl = new URL(process.env.DATABASE_URL || 'postgresql://missing.invalid');
 assert.ok(['127.0.0.1', 'localhost'].includes(databaseUrl.hostname) || databaseUrl.hostname.includes('rds.amazonaws.com'), 'Use a valid PostgreSQL database');
 
+const { installTestAuth, assertDisposableDatabase } = await import('./helpers/auth.js');
+assertDisposableDatabase();
 const { apiRouter } = await import('../backend/src/routes/api.js');
+const { db } = await import('../backend/src/store/database.js');
+await db.load();
+const testAuth = await installTestAuth();
 const { pool } = await import('../backend/src/store/pgClient.js');
 const app = express();
 app.use(express.json());
@@ -85,5 +90,6 @@ try {
     console.log('Direct Mail scan attribution, callback conversion, and reporting passed.');
 } finally {
     await new Promise(resolve => server.close(resolve));
+    await testAuth.cleanup();
     await pool.end();
 }
