@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { pool, withTransaction } from '../store/pgClient.js';
+import { pool, withTransaction, audit } from '../store/pgClient.js';
 import { normalizeParcelMatch } from '../../../packages/crownkey/index.js';
 import { PodioService } from './podioService.js';
 import { db } from '../store/database.js';
@@ -268,8 +268,35 @@ export class PodioSyncService {
         for (const chunk of chunkArray(items, 15)) {
             await Promise.all(chunk.map(async it => { if (await this.upsertLeadItem(it)) count++; }));
         }
+        // Only trust the list when Podio returned a complete page (a full page may be truncated).
+        if (items.length > 0 && items.length < 500) {
+            await this.markRemovedLeads(items.map(it => String(it.item_id)));
+        }
         if (this._cachedStatus) this._cachedStatus.leadsCount = count;
         return count;
+    }
+
+    /**
+     * A lead whose Podio item no longer exists was deleted in Podio. It is kept (history is never erased) but moved to LOST with the
+     * reason recorded, and the change is audited. If the item comes back, the next sync restores its Podio status.
+     */
+    static async markRemovedLeads(currentItemIds) {
+        return withTransaction(async client => {
+            const { rows } = await client.query(
+                `SELECT l.lead_id, l.status, m.external_item_id
+                 FROM crm.external_sync_map m JOIN core.leads l ON l.lead_id = m.internal_uuid
+                 WHERE m.external_system = 'PODIO' AND m.internal_entity_type = 'LEAD' AND m.external_item_id <> ALL($1::text[]) AND l.status <> 'LOST'`,
+                [currentItemIds]);
+            for (const row of rows) {
+                await client.query(
+                    `UPDATE core.leads SET status = 'LOST', lost_reason = 'Removed in Podio', updated_at = now() WHERE lead_id = $1`, [row.lead_id]);
+                await client.query(
+                    `INSERT INTO crm.lead_stage_history (lead_id, from_stage, to_stage, changed_by, reason) VALUES ($1, $2, 'LOST', 'Podio sync', 'Item deleted in Podio')`,
+                    [row.lead_id, row.status]);
+                await audit(client, { actor: 'Podio sync', action: 'LEAD_REMOVED_IN_PODIO', entityType: 'LEAD', entityId: row.lead_id, diff: { podioItemId: row.external_item_id, previousStatus: row.status } });
+            }
+            return rows.length;
+        });
     }
 
     static async syncCommunications(limit = 100) {
