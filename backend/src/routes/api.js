@@ -22,6 +22,7 @@ import { PodioSyncService } from '../services/podioSyncService.js';
 import { DeliveryService } from '../services/deliveryService.js';
 import { MetaService, META_PLATFORMS } from '../services/metaService.js';
 import { LeadClassifierService } from '../services/leadClassifierService.js';
+import { BackupService } from '../services/backupService.js';
 import { CarrierDispatchService } from '../services/carrierDispatchService.js';
 import { renderCrownKey, validateCrownKeyFormat, normalizeParcelMatch } from '../../../packages/crownkey/index.js';
 import { RbacService, ALL_SECTIONS } from '../services/rbacService.js';
@@ -1781,6 +1782,14 @@ apiRouter.post('/webhooks/meta', async (req, res) => {
 
 apiRouter.get('/integrations/meta/status', (req, res) => {
     res.json({ ...MetaService.status(), webhookUrl: publicWebhookUrl('/api/v1/webhooks/meta'), channels: Object.keys(META_PLATFORMS) });
+});
+
+apiRouter.get('/admin/backups', async (req, res) => {
+    try { res.json(await BackupService.status()); } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+apiRouter.post('/admin/backups/run', async (req, res) => {
+    try { res.status(201).json(await BackupService.run({ actor: actorName(req) })); } catch (err) { res.status(503).json({ error: `Backup failed: ${err.message}` }); }
 });
 
 apiRouter.get('/integrations/smrtphone/status', async (req, res) => {

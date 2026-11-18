@@ -9,6 +9,7 @@ import { PodioSyncService } from './services/podioSyncService.js';
 import { LeadLinkService } from './services/leadLinkService.js';
 import { LeadClassifierService } from './services/leadClassifierService.js';
 import { CountyRollService } from './services/countyRollService.js';
+import { BackupService } from './services/backupService.js';
 import { ConnectorService } from './services/connectorService.js';
 import { GraphService } from './services/graphService.js';
 import { requireSession, bearerToken, loginRateLimit } from './middleware/auth.js';
@@ -109,6 +110,13 @@ function startScheduler() {
         const result = await CountyRollService.refreshAll();
         console.log(`[Scheduler:county-roll] ${JSON.stringify({ ...result, failed: result.failed.length })}`);
     });
+    // A compressed copy of the whole database goes to the private S3 bucket once a day (only when storage is configured).
+    if (process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY) {
+        schedule('db-backup', 60 * 60_000, async () => {
+            const result = await BackupService.runIfDue();
+            if (result) console.log(`[Scheduler:db-backup] ${result.key} ${result.bytes} bytes, ${result.rows} rows, pruned ${result.pruned}`);
+        });
+    }
     schedule('connectors', 5 * 60_000, async () => {
         const results = await ConnectorService.runDue();
         if (results.length) console.log(`[Scheduler:connectors] ran ${results.length} connector(s)`);

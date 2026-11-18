@@ -30,6 +30,12 @@ so nothing is dropped, then re-register the Podio hooks (`POST /api/v1/integrati
 to the BatchLeads and smrtPhone URLs, and finally remove `WEBHOOK_ALLOW_UNSIGNED`. The server also needs every `PODIO_*` variable in `.env`:
 the code no longer falls back to built-in app IDs or tokens, so a missing variable shows "Podio not configured on the server".
 
+## Backups and restore
+Once a day the API writes a compressed copy of every table (except sign-in sessions) to the private S3 bucket under `backups/db/`, encrypted (AES256), and keeps the last 30 days (at least the newest 7). This is on top of the database provider's own automated backups, which should also be switched on and checked in the AWS console.
+- Settings (optional): `BACKUP_EVERY_HOURS` (default 24), `BACKUP_RETENTION_DAYS` (default 30).
+- Status: `GET /api/v1/admin/backups`. Run one now (administrators only): `POST /api/v1/admin/backups/run`.
+- Restore into an EMPTY, freshly migrated database: download the file from S3, then `DATABASE_URL=... node database/restore_backup.js hushhawk-<time>.json.gz`. It refuses to run on a database that already has leads. A round trip of a populated test database restored all 75 tables with identical row counts.
+
 ## Meta channels (Messenger, Instagram, WhatsApp, Facebook Lead Ads)
 The Conversation Desk receives and answers these through Meta's official API. Nothing arrives until Meta is connected:
 1. In Meta for Developers create a Business app. Add the Messenger, Instagram and WhatsApp products (and Webhooks).

@@ -6,7 +6,7 @@
  * object lifecycle references, and seamless fallback for local/test environments.
  */
 
-import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 const AWS_REGION = process.env.AWS_REGION || 'us-east-2';
@@ -204,6 +204,18 @@ export class StorageService {
             storage_uri: `s3://${AWS_S3_BUCKET}/${objectKey}`,
             url: `https://${AWS_S3_BUCKET}.s3.${AWS_REGION}.amazonaws.com/${objectKey}`
         };
+    }
+
+    /** Lists objects under a prefix (newest last). Requires real credentials; returns [] without them. */
+    static async listObjects({ prefix }) {
+        if (!HAS_AWS_CREDS) return [];
+        const out = []; let token;
+        do {
+            const page = await s3Client.send(new ListObjectsV2Command({ Bucket: AWS_S3_BUCKET, Prefix: prefix, ContinuationToken: token }));
+            for (const o of page.Contents || []) out.push({ key: o.Key, size: o.Size, lastModified: o.LastModified });
+            token = page.IsTruncated ? page.NextContinuationToken : undefined;
+        } while (token);
+        return out.sort((x, y) => x.lastModified - y.lastModified);
     }
 
     /**
