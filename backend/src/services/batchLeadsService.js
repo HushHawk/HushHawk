@@ -10,6 +10,7 @@ import { CrmService } from './crmService.js';
 import { CrownKeyService } from './crownkeyService.js';
 import { EventService, HttpError } from './eventService.js';
 import { PodioService } from './podioService.js';
+import { ParcelLookupService } from './parcelLookupService.js';
 import { AutomationService } from './automationService.js';
 
 const clean = (val, fallback = '') => {
@@ -38,9 +39,21 @@ export class BatchLeadsService {
         const city = first(root.city, root.property_city, addr.city);
         const state = first(root.state, root.property_state, addr.state).toUpperCase();
         const zip = first(root.zip, root.zip_code, root.property_zip, root.postal_code, addr.zip, addr.postal_code);
-        const countyName = first(root.county, root.property_county, addr.county);
-        const parcelRaw = first(root.apn, root.parcel_number, root.parcel_id, root.parcel, root.parcel_raw);
-        if (!parcelRaw) throw new HttpError(422, 'The BatchLeads push did not include a parcel / APN.');
+        let countyName = first(root.county, root.property_county, addr.county);
+        let parcelRaw = first(root.apn, root.parcel_number, root.parcel_id, root.parcel, root.parcel_raw);
+        // A push with an address but no parcel: take the parcel from the county record, and only when the street address matches it.
+        let resolved = null;
+        if (!parcelRaw && address) {
+            const lookup = await ParcelLookupService.resolve({ line1: address, city, state: state || 'FL', zip });
+            if (lookup.found) {
+                resolved = lookup.parcel;
+                parcelRaw = resolved.parcelId;
+                countyName = countyName || resolved.countyCode;
+            } else {
+                throw new HttpError(422, `The BatchLeads push had no parcel / APN and none could be verified from the address: ${lookup.reason}`);
+            }
+        }
+        if (!parcelRaw) throw new HttpError(422, 'The BatchLeads push did not include a parcel / APN or a property address.');
         if (!countyName) throw new HttpError(422, 'The BatchLeads push did not include the property county.');
 
         const { rows: counties } = await pool.query('SELECT county_id, county_name, county_code FROM ref.counties');
@@ -90,9 +103,11 @@ export class BatchLeadsService {
             let propertyId = existing?.property_id;
             if (!propertyId) {
                 ({ rows: [{ property_id: propertyId }] } = await client.query(
-                    `INSERT INTO core.properties (county_id, parcel_raw, parcel_match, address_line1, city, state_code, postal_code)
-                     VALUES ($1,$2,$3,$4,$5,coalesce(nullif($6,''),'FL'),$7) RETURNING property_id`,
-                    [county.county_id, parcelRaw, parcelMatch, address || null, city || null, state, zip || null]));
+                    `INSERT INTO core.properties (county_id, parcel_raw, parcel_match, address_line1, city, state_code, postal_code, property_type, legal_description, assessed_value, metadata)
+                     VALUES ($1,$2,$3,$4,$5,coalesce(nullif($6,''),'FL'),$7,$8,$9,$10,$11::jsonb) RETURNING property_id`,
+                    [county.county_id, parcelRaw, parcelMatch, address || null, city || null, state, zip || null,
+                     resolved?.propertyType || null, resolved?.legalDescription || null, resolved?.justValue ?? null,
+                     JSON.stringify(resolved ? { parcel_source: resolved.source, parcel_verification: resolved.verification, parcel_resolved_at: new Date().toISOString(), county_owner_of_record: resolved.owner } : {})]));
             }
             const { rows: [source] } = await client.query(
                 `INSERT INTO raw.source_records (source_system, jurisdiction, source_external_id, payload, payload_hash, parser_version)
