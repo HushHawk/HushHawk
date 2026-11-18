@@ -380,3 +380,44 @@ test('Meta channels: signed webhooks only, deduplicated, first source kept, repl
     delete process.env.META_APP_SECRET;
     assert.equal((await post(payload, 'sha256=anything')).status, 503, 'without an app secret the webhook fails closed');
 });
+
+test('leads are classified from evidence, a person\'s choice sticks, and non-sellers stay out of the seller count', async () => {
+    const { classifyLead, LeadClassifierService } = await import('../backend/src/services/leadClassifierService.js');
+    const internalDomains = ['elitehomes1.com'];
+    const k = o => classifyLead({ internalDomains, source: 'EML', ...o }).kind;
+    assert.equal(k({ email: 'team@elitehomes1.com', name: 'Someone' }), 'INTERNAL');
+    assert.equal(k({ email: 'a@gmail.com', name: 'Darren Test' }), 'INTERNAL', 'a test record');
+    assert.equal(k({ email: 'noreply@mycusthelp.net' }), 'AUTOMATED');
+    assert.equal(k({ email: 'dse_na4@docusign.net' }), 'AUTOMATED');
+    assert.equal(k({ email: 'x@titleamerica.us' }), 'BUSINESS', 'company domain, email only');
+    assert.equal(k({ email: 'person@gmail.com' }), 'NEEDS_REVIEW', 'a personal address proves nothing either way');
+    assert.equal(k({ email: 'x@titleamerica.us', status: 'CONTRACT' }), 'SELLER', 'the team worked it');
+    assert.equal(k({ email: 'x@titleamerica.us', hasProperty: true }), 'SELLER', 'it has a property');
+    assert.equal(k({ email: 'x@y.com', source: 'COLD', phone: '+19045550123' }), 'SELLER');
+
+    const mk = async (email, source) => {
+        const personId = crypto.randomUUID(); const leadId = crypto.randomUUID();
+        await pool.query('INSERT INTO core.people (person_id, full_name, primary_email) VALUES ($1, $2, $3)', [personId, 'Kind Probe', email]);
+        await pool.query("INSERT INTO core.leads (lead_id, person_id, first_source_code, source_detail, status) VALUES ($1, $2, $3, 'test', 'NEW')", [leadId, personId, source]);
+        return leadId;
+    };
+    const robot = await mk(`noreply-${run}@docusign.net`, 'EML');
+    const unknown = await mk(`maybe-${run}@gmail.com`, 'EML');
+    await LeadClassifierService.classifyAll();
+    const kind = async id => (await pool.query('SELECT lead_kind, lead_kind_set_by FROM core.leads WHERE lead_id = $1', [id])).rows[0];
+    assert.equal((await kind(robot)).lead_kind, 'AUTOMATED');
+    assert.equal((await kind(unknown)).lead_kind, 'NEEDS_REVIEW');
+
+    const before = (await asJson(await json('GET', '/dashboard/metrics', undefined, auth.headers))).body;
+    await LeadClassifierService.setKind({ leadId: unknown, kind: 'BUSINESS', reason: 'A vendor, checked by hand', actor: 'Tester' });
+    await LeadClassifierService.classifyAll();
+    assert.deepEqual(await kind(unknown), { lead_kind: 'BUSINESS', lead_kind_set_by: 'Tester' }, 'rules never override a person');
+    const bad = await asJson(await json('PATCH', `/leads/${unknown}/kind`, { kind: 'WIZARD' }, auth.headers));
+    assert.equal(bad.status, 400);
+    const { rows: [counted] } = await pool.query("SELECT count(*)::int n FROM core.leads WHERE lead_kind IN ('SELLER','NEEDS_REVIEW')");
+    const { rows: [all] } = await pool.query('SELECT count(*)::int n FROM core.leads');
+    assert.ok(counted.n < all.n, 'non-sellers exist and are excluded from the seller count');
+    const sellerLeads = (await asJson(await json('GET', '/seller-leads', undefined, auth.headers))).body.leads;
+    const row = sellerLeads.find(l => l.id === robot);
+    assert.equal(row.leadKind, 'AUTOMATED', 'non-sellers are marked, not silently dropped');
+});

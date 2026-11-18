@@ -21,6 +21,7 @@ import { OutreachActionsService } from '../services/outreachActionsService.js';
 import { PodioSyncService } from '../services/podioSyncService.js';
 import { DeliveryService } from '../services/deliveryService.js';
 import { MetaService, META_PLATFORMS } from '../services/metaService.js';
+import { LeadClassifierService } from '../services/leadClassifierService.js';
 import { CarrierDispatchService } from '../services/carrierDispatchService.js';
 import { renderCrownKey, validateCrownKeyFormat, normalizeParcelMatch } from '../../../packages/crownkey/index.js';
 import { RbacService, ALL_SECTIONS } from '../services/rbacService.js';
@@ -1430,6 +1431,7 @@ const numberOrNull = v => (v === undefined || v === null || v === '' || Number.i
 
 apiRouter.get('/seller-leads', async (req, res) => {
     try {
+        // Every lead is returned with its kind so the page can filter; non-sellers are marked, never silently dropped.
         const leads = await CrmService.getLeads({ limit: req.query.limit || 2000 });
         const rows = leads.map(l => {
             const meta = l.metadata || {};
@@ -1454,7 +1456,10 @@ apiRouter.get('/seller-leads', async (req, res) => {
                 repairs: numberOrNull(meta.repairs),
                 mao: numberOrNull(meta.mao),
                 equity: numberOrNull(meta.equity),
-                tags: [prop?.county_code, sourceName].filter(Boolean),
+                tags: [prop?.county_code, sourceName, l.lead_kind === 'NEEDS_REVIEW' ? 'Needs review' : null].filter(Boolean),
+                leadKind: l.lead_kind,
+                leadKindReason: l.lead_kind_reason || '',
+                leadKindSetBy: l.lead_kind_set_by && l.lead_kind_set_by !== 'rule' ? l.lead_kind_set_by : null,
                 type: prop?.property_type || '',
                 photo: '',
                 score: l.priority_score,
@@ -1532,6 +1537,22 @@ apiRouter.post('/leads/purge-test-batch', async (req, res) => {
         res.json(await LeadImportService.purgeBatch({ leadIds: lead_ids || [], propertyIds: property_ids || [], personIds: person_ids || [], actor: actorName(req) }));
     } catch (err) {
         res.status(err.status || 500).json({ error: err.message });
+    }
+});
+
+apiRouter.patch('/leads/:id/kind', async (req, res) => {
+    try {
+        res.json(await LeadClassifierService.setKind({ leadId: req.params.id, kind: req.body?.kind, reason: req.body?.reason, actor: actorName(req) }));
+    } catch (err) {
+        res.status(err.status || 500).json({ error: err.message });
+    }
+});
+
+apiRouter.post('/leads/classify', async (req, res) => {
+    try {
+        res.json(await LeadClassifierService.classifyAll());
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
 });
 
@@ -2535,7 +2556,9 @@ apiRouter.get('/admin/sync-map', async (req, res) => {
 apiRouter.get('/reports/overview', async (req, res) => {
     try {
         const [{ rows: [k] }, { rows: attribution }, { rows: pillars }, { rows: stages }] = await Promise.all([
-            pool.query(`SELECT (SELECT count(*) FROM core.leads)::int AS unique_leads,
+            pool.query(`SELECT (SELECT count(*) FROM core.leads WHERE lead_kind IN ('SELLER','NEEDS_REVIEW'))::int AS unique_leads,
+                               (SELECT count(*) FROM core.leads WHERE lead_kind = 'NEEDS_REVIEW')::int AS leads_needing_review,
+                               (SELECT count(*) FROM core.leads WHERE lead_kind IN ('BUSINESS','AUTOMATED','INTERNAL'))::int AS non_seller_contacts,
                                (SELECT count(*) FROM core.properties)::int AS total_properties,
                                (SELECT count(*) FROM core.pillar_events)::int AS total_pillar_events,
                                (SELECT count(*) FROM core.people)::int AS unique_contacts,
@@ -2544,9 +2567,9 @@ apiRouter.get('/reports/overview', async (req, res) => {
                                (SELECT count(*) FROM crm.suppression_records)::int AS suppressed_contacts,
                                (SELECT count(*) FROM ops.outbox_events WHERE published_at IS NULL)::int AS outbox_pending,
                                coalesce((SELECT extract(epoch FROM now() - min(created_at))::int FROM ops.outbox_events WHERE published_at IS NULL), 0) AS outbox_oldest_pending_seconds`),
-            pool.query('SELECT coalesce(first_source_code, \'UNKNOWN\') AS key, count(*)::int AS n FROM core.leads GROUP BY 1 ORDER BY n DESC'),
+            pool.query("SELECT coalesce(first_source_code, 'UNKNOWN') AS key, count(*)::int AS n FROM core.leads WHERE lead_kind IN ('SELLER','NEEDS_REVIEW') GROUP BY 1 ORDER BY n DESC"),
             pool.query('SELECT pillar_code AS key, count(*)::int AS n FROM core.pillar_events GROUP BY 1 ORDER BY n DESC'),
-            pool.query('SELECT status AS key, count(*)::int AS n FROM core.leads GROUP BY 1 ORDER BY n DESC')
+            pool.query("SELECT status AS key, count(*)::int AS n FROM core.leads WHERE lead_kind IN ('SELLER','NEEDS_REVIEW') GROUP BY 1 ORDER BY n DESC")
         ]);
         const toMap = rows => Object.fromEntries(rows.map(r => [r.key, r.n]));
         res.json({ kpis: k, attribution_breakdown: toMap(attribution), pillar_event_breakdown: toMap(pillars), pipeline_stages_breakdown: toMap(stages), generated_at: new Date().toISOString() });
@@ -4625,7 +4648,7 @@ apiRouter.get('/dashboard/metrics', async (req, res) => {
     try {
         const money = n => '$' + Math.round(Number(n) || 0).toLocaleString('en-US');
         const [{ rows: [lead] }, { rows: [contact] }, { rows: [buyers] }, { rows: [funnel] }, { rows: counties }] = await Promise.all([
-            pool.query('SELECT count(*)::int AS total FROM core.leads'),
+            pool.query("SELECT count(*)::int AS total FROM core.leads WHERE lead_kind IN ('SELLER','NEEDS_REVIEW')"),
             pool.query(`SELECT count(DISTINCT lead_id) FILTER (WHERE direction = 'OUTBOUND')::int AS contacted FROM core.interactions WHERE lead_id IS NOT NULL`),
             pool.query('SELECT count(*)::int AS total FROM crm.cash_buyers'),
             pool.query(`SELECT count(*) FILTER (WHERE milestone_index = 2)::int AS appointments, count(*) FILTER (WHERE milestone_index = 3)::int AS offers,
@@ -4876,6 +4899,7 @@ apiRouter.get('/marketing', async (req, res) => {
             `SELECT l.first_source_code AS code, coalesce(s.source_name, l.first_source_code, 'Unknown') AS channel, count(*)::int AS leads,
                     count(*) FILTER (WHERE l.status IN ('CONTRACT','CLOSED'))::int AS contracts
              FROM core.leads l LEFT JOIN ref.lead_sources s ON s.source_code = l.first_source_code
+             WHERE l.lead_kind IN ('SELLER','NEEDS_REVIEW')
              GROUP BY l.first_source_code, s.source_name ORDER BY leads DESC`);
         const campaigns = db.data.marketing_campaigns || [];
         const spendFor = name => campaigns.filter(c => String(c.channel || '').toLowerCase() === String(name).toLowerCase()).reduce((sum, c) => sum + (Number(c.spend) || 0), 0);
@@ -4978,7 +5002,7 @@ apiRouter.get('/analytics', async (req, res) => {
 
         try {
             const [leadsCount, funnelStats, buyersStat] = await Promise.all([
-                pool.query('SELECT count(*)::int as count FROM core.leads'),
+                pool.query("SELECT count(*)::int as count FROM core.leads WHERE lead_kind IN ('SELLER','NEEDS_REVIEW')"),
                 pool.query(`
                     SELECT 
                         count(*)::int as total_deals,
@@ -4999,8 +5023,8 @@ apiRouter.get('/analytics', async (req, res) => {
             avgSpread = Math.round(Number(fRow?.avg_spread) || 0);
             buyersCount = buyersStat.rows[0]?.count || 0;
             const { rows: [steps] } = await pool.query(
-                `SELECT (SELECT count(*) FROM core.leads WHERE status IN ('QUALIFIED','OFFER','CONTRACT','CLOSED'))::int AS qualified,
-                        (SELECT count(*) FROM core.leads WHERE status IN ('OFFER','CONTRACT','CLOSED'))::int AS offers,
+                `SELECT (SELECT count(*) FROM core.leads WHERE lead_kind IN ('SELLER','NEEDS_REVIEW') AND status IN ('QUALIFIED','OFFER','CONTRACT','CLOSED'))::int AS qualified,
+                        (SELECT count(*) FROM core.leads WHERE lead_kind IN ('SELLER','NEEDS_REVIEW') AND status IN ('OFFER','CONTRACT','CLOSED'))::int AS offers,
                         (SELECT count(*) FROM crm.deal_funnel WHERE milestone_index >= 9)::int AS assigned`);
             funnelCounts = steps;
         } catch (dbErr) {
