@@ -1,3 +1,4 @@
+import { DeliveryService } from './deliveryService.js';
 /**
  * @file backend/src/services/leadDeskService.js
  * Canonical PostgreSQL Service for Lead Conversation Desk (v2)
@@ -198,32 +199,34 @@ export class LeadDeskService {
                     const trimmed = content.trim();
                     let carrierResult = null;
                     if (td.platform_id === 'email' && td.contact_email) {
-                        carrierResult = await CarrierDispatchService.dispatchEmail({
+                        carrierResult = await DeliveryService.email({
                             to: td.contact_email,
                             subject: `HushHawk Lead Outreach: Re ${td.property_address || 'Property'}`,
-                            text: trimmed
+                            text: trimmed, leadName: td.contact_name, propertyAddress: td.property_address
                         });
                     } else if (td.contact_phone) {
-                        carrierResult = await CarrierDispatchService.dispatchSms({
+                        carrierResult = await DeliveryService.text({
                             to: td.contact_phone,
-                            message: trimmed
+                            message: trimmed, leadName: td.contact_name, propertyAddress: td.property_address
                         });
                     }
 
                     const method = td.platform_id === 'email' ? 'EMAIL' : 'TEXT';
-                    const carrierNote = carrierResult?.liveCarrier 
-                        ? `[Live ${carrierResult.provider.toUpperCase()} SID: ${carrierResult.messageSid || carrierResult.messageId || 'OK'}]` 
-                        : `[Queue Status: ${carrierResult?.status || 'SAVED_TO_DB'}]`;
+                    const delivered = Boolean(carrierResult?.success);
+                    const carrierNote = delivered
+                        ? `[${carrierResult.provider.toUpperCase()} ${carrierResult.messageSid || carrierResult.messageId || carrierResult.itemId || 'OK'}]`
+                        : `[NOT DELIVERED: ${carrierResult?.status || 'NO_ADDRESS'}]`;
 
                     await pool.query(
                         `INSERT INTO core.interactions (interaction_id, property_id, method, direction, actor_id, result, notes, occurred_at)
-                         VALUES ($1, $2, $3, 'OUTBOUND', $4, 'SENT', $5, now())`,
+                         VALUES ($1, $2, $3, 'OUTBOUND', $4, $6, $5, now())`,
                         [
                             crypto.randomUUID(),
                             td.property_id || null,
                             method,
                             senderName,
-                            `Outbound message on ${td.platform_id} to ${td.contact_name}: "${trimmed.slice(0, 100)}" ${carrierNote}`
+                            `Outbound message on ${td.platform_id} to ${td.contact_name}: "${trimmed.slice(0, 100)}" ${carrierNote}`,
+                            delivered ? 'SENT' : 'NOT_DELIVERED'
                         ]
                     );
                 }

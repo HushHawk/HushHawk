@@ -232,3 +232,31 @@ test('a lead whose Podio item was deleted is marked LOST with a reason, and live
     const { rows: [h] } = await pool.query("SELECT count(*)::int n FROM crm.lead_stage_history WHERE lead_id = $1 AND reason = 'Item deleted in Podio'", [gone]);
     assert.equal(h.n, 1);
 });
+
+test('texts and emails hand off to Podio Feeds when no carrier is configured, and fail honestly when neither exists', async () => {
+    const { DeliveryService } = await import('../backend/src/services/deliveryService.js');
+    const { PodioSyncService } = await import('../backend/src/services/podioSyncService.js');
+    const saved = {};
+    const keys = ['PODIO_CLIENT_ID', 'PODIO_APP_TOKEN', 'PODIO_APP_ID', 'PODIO_FEEDS_APP_ID'];
+    keys.forEach(k => { saved[k] = process.env[k]; delete process.env[k]; });
+    const original = PodioSyncService.sendOutboundCommunication;
+    try {
+        const none = await DeliveryService.text({ to: '+15555550100', message: 'hi' });
+        assert.equal(none.success, false);
+        keys.forEach(k => { process.env[k] = 'x'; });
+        const calls = [];
+        PodioSyncService.sendOutboundCommunication = async args => { calls.push(args); return { itemId: 4242 }; };
+        const text = await DeliveryService.text({ to: '+15555550100', message: 'hi' });
+        assert.deepEqual([text.success, text.provider, text.status, text.itemId], [true, 'podio', 'HANDED_TO_PODIO', 4242]);
+        const mail = await DeliveryService.email({ to: 'a@example.com', subject: 's', text: 'b' });
+        assert.equal(mail.success, true);
+        assert.deepEqual(calls.map(c => c.type), ['TEXT', 'EMAIL']);
+        assert.ok(calls.every(c => c.recordLocally === false), 'the caller records the interaction, so Podio must not record a second one');
+        PodioSyncService.sendOutboundCommunication = async () => { throw new Error('boom'); };
+        const refused = await DeliveryService.text({ to: '+15555550100', message: 'hi' });
+        assert.deepEqual([refused.success, refused.status], [false, 'PODIO_REFUSED']);
+    } finally {
+        PodioSyncService.sendOutboundCommunication = original;
+        keys.forEach(k => { if (saved[k] === undefined) delete process.env[k]; else process.env[k] = saved[k]; });
+    }
+});
