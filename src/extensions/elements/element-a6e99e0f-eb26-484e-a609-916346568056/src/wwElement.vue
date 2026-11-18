@@ -302,7 +302,7 @@ export default {
          deals.value = fDeals.map((deal) => ({
            id: deal.id,
            address: deal.address,
-           zip: deal.zip || '32204',
+           zip: deal.zip || '',
            owner: deal.seller || 'Unknown Owner',
            phone: deal.phone || '—',
            email: deal.email || '—',

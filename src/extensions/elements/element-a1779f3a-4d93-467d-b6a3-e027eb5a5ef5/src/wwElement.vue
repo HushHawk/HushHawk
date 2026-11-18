@@ -1705,9 +1705,9 @@ async function loadDashboardData() {
     if (resLeads.ok) {
       const lData = await resLeads.json();
       if (lData.leads && lData.leads.length) {
-        leads.value = lData.leads.map(l => ({
+        leads.value = lData.leads.filter(l => !l.leadKind || l.leadKind === 'SELLER' || l.leadKind === 'NEEDS_REVIEW').map(l => ({
           name: l.name || 'Seller Lead',
-          address: l.address && l.address !== 'No Property Address on File' ? l.address : (l.email || 'Jacksonville, FL'),
+          address: l.address && l.address !== 'No Property Address on File' ? l.address : '',
           zip: l.zip || '',
           status: l.status || 'New',
           source: l.source || 'Unknown'
@@ -1720,7 +1720,7 @@ async function loadDashboardData() {
         if (lData.leads && lData.leads.length) {
           leads.value = lData.leads.map(l => ({
             name: l.name || l.author || 'Seller Lead',
-            address: l.propertyAddress || l.address || 'Jacksonville, FL',
+            address: l.propertyAddress || l.address || '',
             zip: l.zip || '',
             status: l.status || 'New',
             source: l.source || 'Unknown'
