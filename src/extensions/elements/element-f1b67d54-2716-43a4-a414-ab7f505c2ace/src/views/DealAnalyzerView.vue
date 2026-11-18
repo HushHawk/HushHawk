@@ -356,7 +356,7 @@ export default {
     },
     exportPdf() {
       try {
-        const addr = this.property.address || 'Jacksonville Property';
+        const addr = this.property.address || 'Property';
         const crownKey = this.property.crownKey || this.property.parcel || this.property.parcelId || '';
         const arvStr = Number(this.arv || 0).toLocaleString();
         const repairsStr = Number(this.totalRehab || 0).toLocaleString();
