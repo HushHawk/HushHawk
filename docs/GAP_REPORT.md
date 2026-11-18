@@ -1,42 +1,42 @@
-# HushHawk: gap report against the client spec (18 Nov 2026)
+# HushHawk: status against the client spec (updated 18 Nov 2026)
 
-Measured on the live system after the fake-data cleanup. "Working" means tested with real data. "Gap" means the spec asks for it and it is missing or unproven.
+Measured on the live system. "Working" means tested with real data. "Gap" means the spec asks for it and it is missing or unproven. No fake or demo data remains in the database that we know of.
 
 ## Working with real data
-- Sign-in, roles, audit trail; every route needs a session; webhooks need a secret.
-- Podio two-way sync: 70 leads, 7 cash buyers, the Feeds conversation log; deleted-in-Podio leads become LOST.
-- Seller Leads, Dashboard, Follow-ups, Tasks, Calendar, Cash Buyers, Contacts, Team, Settings, Vault (S3 configured), Analytics, Marketing, Dispositions, Contracts (all read and write tested).
-- Conversation Desk for Email, Podio and smrtPhone (fed from Podio Feeds).
-- Dictionaries: 42 pillars (29 enabled), 55 lead sources, 21 contact methods, 44 platforms.
+- Sign-in, roles enforced by the server, audit trail, per-account sign-in lockout, security headers, daily encrypted database backup to S3 with a tested restore.
+- Podio two-way sync: leads, cash buyers, properties, the Feeds conversation log; webhooks signed with a secret; leads deleted in Podio become LOST.
+- CrownKey property registry: 15 properties with real county parcels, owner of record, assessed value and legal description, found from the address by a county parcel lookup that accepts a parcel only when its street address matches. 9 Absentee Owner events from the county roll, each linked to the roll record as evidence.
+- Lead quality: every lead has a kind (seller, needs review, business contact, automated sender, internal or test) with the reason. Seller counts, dashboard, analytics and marketing use sellers plus needs-review only (24 of 76 today). A person can change a lead's kind and rules never override it.
+- Seller Leads, Dashboard, Follow-ups, Tasks, Calendar, Cash Buyers, Contacts, Team, Settings, Vault (S3), Analytics, Marketing, Dispositions, Contracts, Direct Mail (all read and write tested).
+- Conversation Desk: Email, Podio and smrtPhone receive real messages from Podio Feeds. Every tab shows whether it is connected and says why when empty.
+- Texts, emails and deal blasts hand off to Podio Feeds when no carrier is configured and are never reported as sent unless the hand-off succeeded.
+- Meta channels (Messenger, Instagram, WhatsApp, Facebook Lead Ads): intake, replies, lead creation and signature checks are built and tested with signed test webhooks. Not connected yet (see below).
 
-## Done since this report was first written
-- County parcel lookup (Florida DOR statewide roll, covers Duval, Clay, St. Johns, Nassau, Flagler, Polk): address is geocoded, the parcel is accepted only when its recorded street address matches, the county record is stored as evidence and the registration is audited.
+## Gaps that need something from the client or an account
 
-- Lead Conversation Desk tabs show a connected or not-connected dot and say why when empty, so an empty tab is never mistaken for a quiet inbox.
-- Meta channels: webhook intake (verify token and HMAC signature), deduplicated storage, lead creation with the platform as first source, and replies through the Graph API.
+| # | Gap | What is needed |
+|---|-----|----------------|
+| 1 | **County distress events are not fed.** Foreclosure, pre-foreclosure, tax, tax certificate, tax deed, code violation, municipal lien, probate, eviction, condemnation and the rest have no machine-readable source that software can reach. RealForeclose refuses automated access; the City's GIS server has no code or lien layers; its open data hub is private. | Records requests to the Duval Clerk, Tax Collector and Municipal Code Compliance, or a data vendor (letters in docs/RECORDS_REQUEST_PLAN.md). The Tax Collector's Delinquent Parcels and County-Held Tax Certificates reports can be downloaded by a person today and imported. |
+| 2 | **Meta channels are not connected.** No Meta app credentials are set, so no real social message has flowed. TikTok, X, LinkedIn, Reddit, YouTube and the listing sites have no messaging connection (most have no public API). | Meta developer app and the six values in docs/OPERATIONS.md. Decide with the client which other platforms matter. |
+| 3 | **Graph (Neo4j) is not configured.** Outbox messages are waiting. | A Neo4j instance and credentials. |
+| 4 | **Real message delivery is unproven.** No SMS or email carrier is configured; sends go to Podio Feeds and are untested end to end; calls are click-to-dial. | A real test to the team's own phone and email; optionally Twilio and SendGrid. |
+| 5 | **Skip tracing has no provider.** Phone, DNC and cost columns are empty. | A skip-trace vendor and a DNC source. |
+| 6 | **Deal Analyzer, ARV, repairs and MAO have no data source.** The acquisitions board shows dashes. | A comps or valuation source, or manual entry fields per lead. |
+| 7 | **AI assistant is not configured.** | A model key. |
+| 8 | **Contracts have no e-signature or title partner connection.** | An e-signature provider. |
+| 9 | **Direct mail has no print or mail vendor.** Tracking is built and shows zero pieces. | A mail vendor. |
 
-- Absentee Owner and Out-of-State Owner events from the county roll.
+## Gaps in the product that remain
 
-## Gaps, most important first
-
-| # | Gap | Why it matters | What fills it |
-|---|-----|----------------|---------------|
-| 1 | **Property registry is half filled.** Parcel lookup is live (see below): 14 of the 19 Podio properties are registered with a county parcel, owner of record, assessed value and legal description. The other 5 are not registrable (2 are in New York, 1 is the "9 Maple Ave" test property, 2 have addresses the geocoder could not match). Only 2 of the 75 leads link to a property because Podio lists a property on only 2 leads. | Leads without a property cannot get events or pillars. | Link leads to properties by matching the lead's own address when Podio has no relation. |
-| 2 | **Only two event types come from county records.** Absentee Owner and Out-of-State Owner are now created from the property appraiser roll (approved rules: owner mailing ZIP differs from site ZIP; owner mailing state is not FL), with the roll record as evidence, refreshed twice a day. Foreclosure, pre-foreclosure, tax, tax certificate, tax deed, code violation, municipal lien, probate, eviction, condemnation and the rest have **no free machine-readable source that could be reached**: Duval's foreclosure sales run on RealForeclose, which refuses automated access (HTTP 403); the City of Jacksonville GIS server exposes infrastructure layers only (no code enforcement, liens or tax data); its open data hub is private. | These distress events are what the system is meant to surface. | An official bulk data agreement or records request with the Duval Clerk (foreclosure, lis pendens, probate, eviction), the Tax Collector (delinquency, certificates, deeds) and Municipal Code Compliance (violations, liens), or a licensed data vendor. Once a feed exists the connector framework (Settings, Connectors) ingests it. |
-| 3 | **Meta channels are built but not connected.** Messenger, Instagram, WhatsApp and Facebook Lead Ads intake and replies are coded and tested with signed test webhooks, but no Meta app credentials are set, so no real message has flowed. TikTok, X, LinkedIn, Reddit, YouTube and the listing sites (Zillow, Trulia, Homes.com, Houzz, Yelp, Nextdoor) are still not connected. | Real social messages only arrive once the client's Meta app is connected. | Follow the Meta section of docs/OPERATIONS.md; decide with the client which other platforms matter (most have no public messaging API; their lead emails can be parsed instead). |
-| 4 | **Graph (Neo4j) is not configured.** 14 outbox messages are waiting. | The relationship graph, one of the two core stores in the spec, is not running. | A Neo4j instance and credentials; the outbox worker already exists. |
-| 5 | **Real message delivery is unproven.** No SMS or email carrier is configured. Sends go to Podio Feeds and are untested end to end. Calls are click-to-dial. | The client cannot yet rely on outbound messages. | A real test to the team's own phone and email; optionally Twilio and SendGrid. |
-| 6 | **Skip tracing has no provider.** Phone, DNC and cost columns are empty. | Contact data cannot be enriched or checked against do-not-call. | A skip-trace vendor and a DNC source. |
-| 7 | **Deal Analyzer, ARV, repairs and MAO have no data source.** The acquisitions board shows dashes. | Underwriting cannot be done from the system. | A comps or valuation source, or manual entry fields saved per lead. |
-| 8 | **AI assistant is not configured** (no model key). | HawkAI is a placeholder. | Add the key. |
-| 9 | **Contracts have no e-signature or title partner connection.** | Contracts can be tracked but not signed in the system. | An e-sign provider. |
-| 10 | **Direct mail has no print or mail vendor**, and the QR scan page shows 14 scans against 0 pieces mailed. | The scans may be test data. | Confirm and remove test scans; connect a mail vendor. |
-| 11 | **Lead quality.** 63 of 75 leads have source EML, and some are not sellers ("Contact Info", the company's own name). There is no duplicate merge. | The pipeline count is inflated. | Rules to ignore non-seller emails; a merge tool. |
+| # | Gap | Note |
+|---|-----|------|
+| 10 | **Only 2 of 76 leads link to a property.** Podio holds a property on only 2 leads and the rest carry no address anywhere. Leads link automatically when an address exists (Podio relation, a conversation that names a street address, or a BatchLeads push with an address). | The team needs to capture the property address on each lead. |
+| 11 | **Leads still need people.** 19 leads are "needs review" and 31 are classified as business contacts by rules that look at email domains; some will be wrong. There is no duplicate merge tool. | Review the lists with the Type selector on the Seller Leads page. A merge tool is not built. |
+| 12 | **5 of the 19 Podio properties cannot be registered** (2 in New York, the "9 Maple Ave" test property, 2 whose addresses did not match a parcel). | Correct the addresses in Podio or enter the parcels by hand. |
 
 ## Security and operations to finish
 - Rotate every credential that was pasted into chat (database, AWS, Podio, GitHub, and the Meta values once added). Make the GitHub repository private.
-- Vercel talks to the server over plain HTTP. Put HTTPS in front of the server.
+- Vercel talks to the server over plain HTTP. Put HTTPS in front of the server (needs a domain for the server). Restrict the server's firewall.
 - Turn off `WEBHOOK_ALLOW_UNSIGNED` once BatchLeads and smrtPhone use the signed URL.
-- Check that RDS automated backups are switched on (not verifiable with the current AWS keys) and add an external uptime alert on `/api/v1/health` (for example UptimeRobot).
-
-Done: roles enforced on the server, per-account sign-in lockout, security headers, error sanitising and log redaction; a daily encrypted database backup to S3 with a tested restore script; old unsigned Podio hooks removed; database certificate is verified (`DATABASE_SSL_CA`); the Team page no longer shows a password reveal control; `deploy-ec2.sh` now works on Amazon Linux; the S3 audit test waits for the audit rows instead of racing.
+- Check that RDS automated backups are switched on (not verifiable with the current AWS keys) and add an external uptime alert on `/api/v1/health`.
+- Delete the "Test Seller" and "Test" leads from live Podio.
