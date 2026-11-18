@@ -212,3 +212,23 @@ test('the unsigned-webhook transition switch is off by default, and a wrong secr
         delete process.env.WEBHOOK_ALLOW_UNSIGNED;
     }
 });
+
+test('a lead whose Podio item was deleted is marked LOST with a reason, and live ones are left alone', async () => {
+    const { PodioSyncService } = await import('../backend/src/services/podioSyncService.js');
+    const mk = async (item, status) => {
+        const { rows: [lead] } = await pool.query("INSERT INTO core.leads (first_source_code, source_detail, status) VALUES ('PODIO', 'Podio: test', $1) RETURNING lead_id", [status]);
+        await pool.query("INSERT INTO crm.external_sync_map (internal_entity_type, internal_uuid, external_system, external_app_id, external_item_id, status) VALUES ('LEAD', $1, 'PODIO', 'app', $2, 'SYNCED')", [lead.lead_id, item]);
+        return lead.lead_id;
+    };
+    const gone = await mk(`gone-${run}`, 'NEW');
+    const alive = await mk(`alive-${run}`, 'NEW');
+    const alreadyLost = await mk(`lost-${run}`, 'LOST');
+    const changed = await PodioSyncService.markRemovedLeads([`alive-${run}`]);
+    assert.ok(changed >= 1);
+    const status = async id => (await pool.query('SELECT status, lost_reason FROM core.leads WHERE lead_id = $1', [id])).rows[0];
+    assert.deepEqual(await status(gone), { status: 'LOST', lost_reason: 'Removed in Podio' });
+    assert.equal((await status(alive)).status, 'NEW');
+    assert.equal((await status(alreadyLost)).lost_reason, null, 'a lead that was already LOST is not touched again');
+    const { rows: [h] } = await pool.query("SELECT count(*)::int n FROM crm.lead_stage_history WHERE lead_id = $1 AND reason = 'Item deleted in Podio'", [gone]);
+    assert.equal(h.n, 1);
+});
