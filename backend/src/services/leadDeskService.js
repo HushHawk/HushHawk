@@ -1,4 +1,5 @@
 import { DeliveryService } from './deliveryService.js';
+import { MetaService, META_PLATFORMS } from './metaService.js';
 /**
  * @file backend/src/services/leadDeskService.js
  * Canonical PostgreSQL Service for Lead Conversation Desk (v2)
@@ -198,7 +199,9 @@ export class LeadDeskService {
                     const td = threadDetails.rows[0];
                     const trimmed = content.trim();
                     let carrierResult = null;
-                    if (td.platform_id === 'email' && td.contact_email) {
+                    if (META_PLATFORMS[td.platform_id]) {
+                        carrierResult = await MetaService.sendToThread(threadId, trimmed);
+                    } else if (td.platform_id === 'email' && td.contact_email) {
                         carrierResult = await DeliveryService.email({
                             to: td.contact_email,
                             subject: `HushHawk Lead Outreach: Re ${td.property_address || 'Property'}`,
@@ -211,7 +214,7 @@ export class LeadDeskService {
                         });
                     }
 
-                    const method = td.platform_id === 'email' ? 'EMAIL' : 'TEXT';
+                    const method = td.platform_id === 'whatsapp' ? 'WHATSAPP' : META_PLATFORMS[td.platform_id] ? 'DM' : td.platform_id === 'email' ? 'EMAIL' : 'TEXT';
                     const delivered = Boolean(carrierResult?.success);
                     const carrierNote = delivered
                         ? `[${carrierResult.provider.toUpperCase()} ${carrierResult.messageSid || carrierResult.messageId || carrierResult.itemId || 'OK'}]`

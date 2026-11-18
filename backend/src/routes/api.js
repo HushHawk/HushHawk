@@ -20,6 +20,7 @@ import { LeadDeskService } from '../services/leadDeskService.js';
 import { OutreachActionsService } from '../services/outreachActionsService.js';
 import { PodioSyncService } from '../services/podioSyncService.js';
 import { DeliveryService } from '../services/deliveryService.js';
+import { MetaService, META_PLATFORMS } from '../services/metaService.js';
 import { CarrierDispatchService } from '../services/carrierDispatchService.js';
 import { renderCrownKey, validateCrownKeyFormat, normalizeParcelMatch } from '../../../packages/crownkey/index.js';
 import { RbacService, ALL_SECTIONS } from '../services/rbacService.js';
@@ -1737,6 +1738,28 @@ apiRouter.post('/webhooks/smrtphone', async (req, res) => {
         console.error('[smrtPhone Webhook Error]', err);
         res.status(500).json({ error: err.message });
     }
+});
+
+apiRouter.get('/webhooks/meta', (req, res) => {
+    const check = MetaService.verifyHandshake(req.query);
+    if (!check.ok) return res.status(check.status).json({ error: check.error });
+    res.status(200).type('text/plain').send(check.challenge);
+});
+
+apiRouter.post('/webhooks/meta', async (req, res) => {
+    const check = MetaService.verifySignature(req.rawBody, req.get('x-hub-signature-256'));
+    if (!check.ok) return res.status(check.status).json({ error: check.error });
+    try {
+        const result = await MetaService.handleWebhook(req.body);
+        res.status(200).json({ received: true, ...result });
+    } catch (err) {
+        console.error('[Meta Webhook Error]', err.message);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+apiRouter.get('/integrations/meta/status', (req, res) => {
+    res.json({ ...MetaService.status(), webhookUrl: publicWebhookUrl('/api/v1/webhooks/meta'), channels: Object.keys(META_PLATFORMS) });
 });
 
 apiRouter.get('/integrations/smrtphone/status', async (req, res) => {
@@ -3921,14 +3944,14 @@ apiRouter.post('/communications/messages', async (req, res, next) => {
         if (!thread) return res.status(404).json({ error: 'Conversation not found.' });
         const isEmail = ['email', 'gmail'].includes(thread.platform_id) || (!thread.contact_phone && Boolean(thread.contact_email));
         const to = isEmail ? thread.contact_email : thread.contact_phone;
-        if (!to) return res.status(409).json({ error: 'This contact has no address or number for the selected channel.' });
+        if (!to && !META_PLATFORMS[thread.platform_id]) return res.status(409).json({ error: 'This contact has no address or number for the selected channel.' });
 
         const subject = 'Property update from HushHawk';
-        const carrier = await (isEmail
+        const carrier = await (META_PLATFORMS[thread.platform_id] ? MetaService.sendToThread(threadId, message) : isEmail
             ? DeliveryService.email({ to, subject, text: message, leadName: thread.contact_name, propertyAddress: thread.property_address })
             : DeliveryService.text({ to, message, leadName: thread.contact_name, propertyAddress: thread.property_address }));
         if (!carrier?.success) {
-            return res.status(503).json({ error: 'The delivery provider could not accept this message. Your draft was kept.' });
+            return res.status(503).json({ error: carrier?.provider === 'meta' && carrier.error ? `${carrier.error} Your draft was kept.` : 'The delivery provider could not accept this message. Your draft was kept.' });
         }
 
         const id = `msg-${crypto.randomUUID()}`;
@@ -3947,7 +3970,7 @@ apiRouter.post('/communications/messages', async (req, res, next) => {
                  INSERT INTO core.interactions (property_id, method, direction, actor_id, result, notes, occurred_at)
                  SELECT $6, $7, 'OUTBOUND', $8, 'ACCEPTED', $9, $5 FROM saved`,
                 [id, threadId, session.user.name, message, now, thread.property_id,
-                    isEmail ? 'EMAIL' : 'TEXT', session.user.id, `Accepted by ${carrier.provider}`]
+                    thread.platform_id === 'whatsapp' ? 'WHATSAPP' : META_PLATFORMS[thread.platform_id] ? 'DM' : isEmail ? 'EMAIL' : 'TEXT', session.user.id, `Accepted by ${carrier.provider}`]
             );
             historySaved = true;
         } catch (error) {

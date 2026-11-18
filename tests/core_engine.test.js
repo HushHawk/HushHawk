@@ -31,7 +31,7 @@ const asJson = async response => ({ status: response.status, body: await respons
 before(async () => {
     auth = await installTestAuth();
     const app = express();
-    app.use(express.json());
+    app.use(express.json({ verify: (req, res, buf) => { req.rawBody = buf; } }));
     app.use('/api/v1', apiRouter);
     server = app.listen(0, '127.0.0.1');
     await once(server, 'listening');
@@ -324,4 +324,59 @@ test('a lead is linked to a property through the address in its conversation, an
         const { rows: [src] } = await pool.query('SELECT first_source_code FROM core.leads WHERE lead_id = $1', [leadId]);
         assert.equal(src.first_source_code, 'PODIO', 'linking never changes the first source');
     } finally { ParcelLookupService.resolve = original; }
+});
+
+test('Meta channels: signed webhooks only, deduplicated, first source kept, replies honest', async () => {
+    process.env.META_APP_SECRET = 'meta-test-secret'; process.env.META_VERIFY_TOKEN = 'meta-verify';
+    delete process.env.META_PAGE_ACCESS_TOKEN; delete process.env.WHATSAPP_ACCESS_TOKEN; delete process.env.WHATSAPP_PHONE_NUMBER_ID;
+    const noAuth = { authorization: '' };
+    const sign = raw => `sha256=${crypto.createHmac('sha256', process.env.META_APP_SECRET).update(raw).digest('hex')}`;
+    const post = (payload, signature) => { const raw = JSON.stringify(payload); return fetch(`${base}/webhooks/meta`, { method: 'POST', headers: { 'Content-Type': 'application/json', ...noAuth, ...(signature === undefined ? { 'x-hub-signature-256': sign(raw) } : signature ? { 'x-hub-signature-256': signature } : {}) }, body: raw }); };
+
+    const good = await fetch(`${base}/webhooks/meta?hub.mode=subscribe&hub.verify_token=meta-verify&hub.challenge=12345`, { headers: noAuth });
+    assert.deepEqual([good.status, await good.text()], [200, '12345']);
+    assert.equal((await fetch(`${base}/webhooks/meta?hub.mode=subscribe&hub.verify_token=wrong&hub.challenge=1`, { headers: noAuth })).status, 403);
+
+    const psid = `psid-${run}`; const mid = `mid-${run}`;
+    const payload = { object: 'page', entry: [{ id: 'page', messaging: [{ sender: { id: psid }, recipient: { id: 'page' }, timestamp: Date.now(), message: { mid, text: 'Hi, do you buy houses?' } }] }] };
+    assert.equal((await post(payload, 'sha256=bad')).status, 401, 'a wrong signature is refused');
+    assert.equal((await post(payload, null)).status, 401, 'no signature is refused');
+    const ok = await asJson(await post(payload));
+    assert.deepEqual([ok.status, ok.body.messages], [200, 1]);
+    const again = await asJson(await post(payload));
+    assert.equal(again.body.messages, 0, 'the same message delivered twice is stored once');
+    const echo = await asJson(await post({ object: 'page', entry: [{ messaging: [{ sender: { id: 'page' }, message: { mid: `e-${run}`, text: 'ours', is_echo: true } }] }] }));
+    assert.equal(echo.body.messages, 0, 'our own echoed messages are not stored as inbound');
+
+    const { rows: [thread] } = await pool.query('SELECT * FROM core.conversation_desk_threads WHERE id = $1', [`messenger:${psid}`]);
+    assert.equal(thread.platform_id, 'messenger'); assert.equal(thread.unread_count, 1); assert.equal(thread.property_city, null, 'no invented city');
+    const { rows: [lead] } = await pool.query("SELECT first_source_code FROM core.leads WHERE lead_id IN (SELECT lead_id FROM core.leads WHERE source_detail = 'Messenger message' AND metadata->>'externalId' = $1)", [psid]);
+    assert.equal(lead.first_source_code, 'FB');
+
+    // WhatsApp from a number that already belongs to a lead: the lead keeps its original first source
+    const phone = `1904${Math.floor(1000000 + Math.random() * 8999999)}`;
+    const pid = crypto.randomUUID(); const lid = crypto.randomUUID();
+    await pool.query("INSERT INTO core.people (person_id, full_name, primary_phone) VALUES ($1, 'Existing Seller', $2)", [pid, `+${phone}`]);
+    await pool.query("INSERT INTO core.leads (lead_id, person_id, first_source_code, source_detail, status) VALUES ($1, $2, 'PODIO', 'Podio: test', 'NEW')", [lid, pid]);
+    const wa = await asJson(await post({ object: 'whatsapp_business_account', entry: [{ changes: [{ value: { contacts: [{ wa_id: phone, profile: { name: 'Existing Seller' } }], messages: [{ from: phone, id: `wamid-${run}`, timestamp: String(Math.floor(Date.now() / 1000)), type: 'text', text: { body: 'Is the offer still open?' } }] } }] }] }));
+    assert.equal(wa.body.messages, 1);
+    const { rows: leadsForPhone } = await pool.query("SELECT l.first_source_code FROM core.leads l JOIN core.people p USING (person_id) WHERE right(regexp_replace(p.primary_phone, '\\D', '', 'g'), 10) = right($1, 10)", [phone]);
+    assert.deepEqual(leadsForPhone.map(r => r.first_source_code), ['PODIO'], 'no duplicate lead, first source unchanged');
+
+    // replies
+    const { MetaService } = await import('../backend/src/services/metaService.js');
+    const none = await MetaService.sendToThread(`messenger:${psid}`, 'hello');
+    assert.deepEqual([none.success, none.status], [false, 'NOT_CONFIGURED']);
+    process.env.META_PAGE_ACCESS_TOKEN = 'page-token';
+    const realFetch = globalThis.fetch; let sent;
+    try {
+        globalThis.fetch = async (url, init) => { sent = { url: String(url), body: JSON.parse(init.body) }; return { ok: true, status: 200, json: async () => ({ message_id: 'm_1' }) }; };
+        const ok2 = await MetaService.sendToThread(`messenger:${psid}`, 'hello');
+        assert.deepEqual([ok2.success, ok2.messageId, sent.body.recipient.id, sent.body.message.text], [true, 'm_1', psid, 'hello']);
+        globalThis.fetch = async () => ({ ok: false, status: 400, json: async () => ({ error: { message: 'Outside the allowed window' } }) });
+        const refused = await MetaService.sendToThread(`messenger:${psid}`, 'hello');
+        assert.deepEqual([refused.success, refused.error], [false, 'Outside the allowed window']);
+    } finally { globalThis.fetch = realFetch; delete process.env.META_PAGE_ACCESS_TOKEN; }
+    delete process.env.META_APP_SECRET;
+    assert.equal((await post(payload, 'sha256=anything')).status, 503, 'without an app secret the webhook fails closed');
 });
