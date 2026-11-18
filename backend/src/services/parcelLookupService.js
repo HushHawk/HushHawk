@@ -34,6 +34,9 @@ export function sameStreetAddress(requested, recorded) {
     return short.slice(1).every(t => long.includes(t)) && extras.every(t => t.length <= 2 || /^\d+$/.test(t) && t.length <= 4);
 }
 
+/** Fields read from the county roll; the owner mailing fields drive the Absentee Owner and Out-of-State Owner events. */
+export const ROLL_FIELDS = 'CO_NO,PARCEL_ID,PHY_ADDR1,PHY_CITY,PHY_ZIPCD,OWN_NAME,OWN_ADDR1,OWN_ADDR2,OWN_CITY,OWN_STATE,OWN_ZIPCD,DOR_UC,JV,ACT_YR_BLT,TOT_LVG_AR,LND_SQFOOT,S_LEGAL,ASMNT_YR,SALE_PRC1,SALE_YR1,SALE_MO1';
+
 let queue = Promise.resolve();
 const throttled = fn => { const run = queue.then(fn, fn); queue = run.then(() => new Promise(r => setTimeout(r, 350)), () => new Promise(r => setTimeout(r, 350))); return run; };
 
@@ -44,6 +47,17 @@ async function getJson(url, params) {
 }
 
 export class ParcelLookupService {
+    /** Reads one parcel's current roll record by county and parcel number. Returns null when the roll has no such parcel. */
+    static fetchRollRecord(countyCode, parcelId) {
+        const countyNo = Object.entries(DOR_COUNTY_TO_CODE).find(([, code]) => code === countyCode)?.[0];
+        if (!countyNo) return Promise.resolve(null);
+        return throttled(async () => {
+            const data = await getJson(`${PARCEL_LAYER}/query`, { where: `CO_NO=${Number(countyNo)} AND PARCEL_ID='${String(parcelId).replace(/'/g, "''")}'`, outFields: ROLL_FIELDS, returnGeometry: 'false', f: 'json' });
+            if (data.error) throw new Error(`Parcel service error: ${data.error.message}`);
+            return data.features?.[0]?.attributes || null;
+        });
+    }
+
     /**
      * @returns {Promise<{found:boolean, reason?:string, parcel?:object}>}
      */
@@ -68,7 +82,7 @@ export class ParcelLookupService {
         try {
             data = await getJson(`${PARCEL_LAYER}/query`, {
                 geometry: `${x - pad},${y - pad},${x + pad},${y + pad}`, geometryType: 'esriGeometryEnvelope', inSR: '4326', spatialRel: 'esriSpatialRelIntersects',
-                outFields: 'CO_NO,PARCEL_ID,PHY_ADDR1,PHY_CITY,PHY_ZIPCD,OWN_NAME,DOR_UC,JV,ACT_YR_BLT,TOT_LVG_AR,LND_SQFOOT,S_LEGAL,ASMNT_YR',
+                outFields: ROLL_FIELDS,
                 returnGeometry: 'false', f: 'json'
             });
         } catch (e) {
