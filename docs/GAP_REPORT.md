@@ -36,6 +36,6 @@ Measured on the live system after the fake-data cleanup. "Working" means tested 
 - Rotate every credential that was pasted into chat (database, AWS, Podio, GitHub, and the Meta values once added). Make the GitHub repository private.
 - Vercel talks to the server over plain HTTP. Put HTTPS in front of the server.
 - Turn off `WEBHOOK_ALLOW_UNSIGNED` once BatchLeads and smrtPhone use the signed URL.
-- Add a scheduled database backup and an uptime alert (the RDS automated backup setting was not checked).
+- Check that RDS automated backups are switched on (not verifiable with the current AWS keys) and add an external uptime alert on `/api/v1/health` (for example UptimeRobot).
 
-Done: old unsigned Podio hooks removed; database certificate is verified (`DATABASE_SSL_CA`); the Team page no longer shows a password reveal control; `deploy-ec2.sh` now works on Amazon Linux; the S3 audit test waits for the audit rows instead of racing.
+Done: a daily encrypted database backup to S3 with a tested restore script; old unsigned Podio hooks removed; database certificate is verified (`DATABASE_SSL_CA`); the Team page no longer shows a password reveal control; `deploy-ec2.sh` now works on Amazon Linux; the S3 audit test waits for the audit rows instead of racing.
