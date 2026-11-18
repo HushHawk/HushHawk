@@ -40,13 +40,55 @@ export const ROLL_FIELDS = 'CO_NO,PARCEL_ID,PHY_ADDR1,PHY_CITY,PHY_ZIPCD,OWN_NAM
 let queue = Promise.resolve();
 const throttled = fn => { const run = queue.then(fn, fn); queue = run.then(() => new Promise(r => setTimeout(r, 350)), () => new Promise(r => setTimeout(r, 350))); return run; };
 
-async function getJson(url, params) {
-    const res = await fetch(`${url}?${new URLSearchParams(params)}`, { signal: AbortSignal.timeout(45000) });
+async function getJson(url, params, timeoutMs = 45000) {
+    const res = await fetch(`${url}?${new URLSearchParams(params)}`, { signal: AbortSignal.timeout(timeoutMs) });
     if (!res.ok) throw new Error(`HTTP ${res.status} from ${new URL(url).host}`);
     return res.json();
 }
 
 export class ParcelLookupService {
+    /** Coordinates for an address from the US Census geocoder, or null when it cannot be located. */
+    static geocode(address) {
+        return throttled(async () => {
+            const geo = await getJson(GEOCODER, { address, benchmark: 'Public_AR_Current', format: 'json' });
+            const m = geo?.result?.addressMatches?.[0];
+            return m ? { lon: m.coordinates.x, lat: m.coordinates.y, matched: m.matchedAddress } : null;
+        });
+    }
+
+    /**
+     * Recent qualified sales of similar homes near a point, read from the county roll (sale price, date, qualification code and living area
+     * are on each parcel). Similar means the same land-use code, living area within 30% of the subject, an arm's-length sale ('01') of an
+     * improved parcel in the last 18 months. Returns the comparable sales and an ARV estimate (median price per square foot times the
+     * subject's living area) only when at least three comparables exist; otherwise no estimate is made.
+     */
+    static fetchComps({ lat, lon, countyCode, useCode, sqft, parcelId, now = new Date() }) {
+        const countyNo = Object.entries(DOR_COUNTY_TO_CODE).find(([, code]) => code === countyCode)?.[0];
+        if (!countyNo) return Promise.resolve({ comps: [], estimate: null, reason: 'This county is not covered by the sales data.' });
+        if (!(sqft > 0)) return Promise.resolve({ comps: [], estimate: null, reason: 'The subject\'s living area is not known, so sales cannot be compared.' });
+        return throttled(async () => {
+            const pad = 0.0065; // about half a mile
+            const sinceYear = now.getUTCFullYear() - 2; // fetched generously, narrowed to 18 months below
+            const data = await getJson(`${PARCEL_LAYER}/query`, {
+                geometry: `${lon - pad},${lat - pad},${lon + pad},${lat + pad}`, geometryType: 'esriGeometryEnvelope', inSR: '4326', spatialRel: 'esriSpatialRelIntersects',
+                where: `SALE_YR1>=${sinceYear}`, outFields: 'CO_NO,PARCEL_ID,PHY_ADDR1,PHY_ZIPCD,DOR_UC,TOT_LVG_AR,ACT_YR_BLT,SALE_PRC1,SALE_YR1,SALE_MO1,QUAL_CD1,VI_CD1', returnGeometry: 'false', f: 'json'
+            }, 120000);
+            if (data.error) throw new Error(`Sales service error: ${data.error.message}`);
+            const cutoff = new Date(now); cutoff.setUTCMonth(cutoff.getUTCMonth() - 18);
+            const comps = (data.features || []).map(f => f.attributes).filter(a =>
+                String(a.CO_NO) === countyNo && a.PARCEL_ID !== parcelId && String(a.DOR_UC).padStart(3, '0') === String(useCode).padStart(3, '0')
+                && a.QUAL_CD1 === '01' && a.VI_CD1 === 'I' && a.SALE_PRC1 >= 20000 && a.TOT_LVG_AR >= sqft * 0.7 && a.TOT_LVG_AR <= sqft * 1.3
+                && new Date(Date.UTC(a.SALE_YR1, Number(a.SALE_MO1) - 1, 15)) >= cutoff)
+                .map(a => ({ address: [a.PHY_ADDR1, a.PHY_ZIPCD].filter(Boolean).join(' '), parcelId: a.PARCEL_ID, soldPrice: a.SALE_PRC1, soldDate: `${a.SALE_YR1}-${String(a.SALE_MO1).padStart(2, '0')}`, sqft: a.TOT_LVG_AR, yearBuilt: a.ACT_YR_BLT || null, pricePerSqft: Math.round(a.SALE_PRC1 / a.TOT_LVG_AR) }))
+                .sort((x, y) => y.soldDate.localeCompare(x.soldDate));
+            if (comps.length < 3) return { comps, estimate: null, reason: `Only ${comps.length} similar qualified sale(s) in the last 18 months within about half a mile; at least 3 are needed for an estimate.` };
+            const ppsf = comps.map(c => c.pricePerSqft).sort((a, b) => a - b);
+            const pick = q => ppsf[Math.min(ppsf.length - 1, Math.floor(q * (ppsf.length - 1) + 0.5))];
+            const median = ppsf.length % 2 ? ppsf[(ppsf.length - 1) / 2] : (ppsf[ppsf.length / 2 - 1] + ppsf[ppsf.length / 2]) / 2;
+            return { comps, estimate: { arv: Math.round(median * sqft / 1000) * 1000, low: Math.round(pick(0.25) * sqft / 1000) * 1000, high: Math.round(pick(0.75) * sqft / 1000) * 1000, medianPricePerSqft: Math.round(median), count: comps.length } };
+        });
+    }
+
     /** Reads one parcel's current roll record by county and parcel number. Returns null when the roll has no such parcel. */
     static fetchRollRecord(countyCode, parcelId) {
         const countyNo = Object.entries(DOR_COUNTY_TO_CODE).find(([, code]) => code === countyCode)?.[0];

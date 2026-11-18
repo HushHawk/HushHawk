@@ -22,6 +22,7 @@ import { PodioSyncService } from '../services/podioSyncService.js';
 import { DeliveryService } from '../services/deliveryService.js';
 import { MetaService, META_PLATFORMS } from '../services/metaService.js';
 import { LeadClassifierService } from '../services/leadClassifierService.js';
+import { ParcelLookupService } from '../services/parcelLookupService.js';
 import { BackupService } from '../services/backupService.js';
 import { HealthService } from '../services/healthService.js';
 import { CarrierDispatchService } from '../services/carrierDispatchService.js';
@@ -187,6 +188,36 @@ apiRouter.put('/properties/:id', async (req, res) => {
 // ============================================================================
 // 4b. Property Photos (Secure S3 Upload & Metadata)
 // ============================================================================
+// Comparable sales and an ARV estimate from real nearby sales on the county roll. Nothing is estimated unless at least three comparables exist.
+apiRouter.get('/properties/:propertyId/comps', async (req, res) => {
+    try {
+        const { propertyId } = req.params;
+        const { rows: [p] } = await pool.query(
+            `SELECT p.property_id, p.parcel_raw, p.address_line1, p.city, p.postal_code, p.assessed_value, p.metadata, c.county_code
+             FROM core.properties p JOIN ref.counties c USING (county_id) WHERE p.property_id = $1`, [propertyId]);
+        if (!p) return res.status(404).json({ error: 'Property not found.' });
+        const key = `comps:${propertyId}`;
+        if (!req.query.refresh) {
+            const { rows: [hit] } = await pool.query("SELECT value FROM ops.kv_store WHERE key = $1 AND updated_at > now() - interval '7 days'", [key]);
+            if (hit) return res.json({ ...hit.value, cached: true });
+        }
+        let sqft = Number(p.metadata?.living_area_sqft) || 0; let useCode = p.metadata?.land_use_code || null; let yearBuilt = p.metadata?.year_built || null;
+        if (!sqft || !useCode) {
+            const roll = await ParcelLookupService.fetchRollRecord(p.county_code, p.parcel_raw);
+            if (roll) { sqft = roll.TOT_LVG_AR || 0; useCode = roll.DOR_UC || null; yearBuilt = roll.ACT_YR_BLT || null; }
+        }
+        const subject = { address: [p.address_line1, p.city, p.postal_code].filter(Boolean).join(', '), parcelId: p.parcel_raw, sqft, useCode, yearBuilt, assessedValue: Number(p.assessed_value) || null };
+        const where = await ParcelLookupService.geocode([p.address_line1, p.city, 'FL', p.postal_code].filter(Boolean).join(', '));
+        if (!where) return res.json({ subject, comps: [], estimate: null, reason: 'The address could not be located on the map.', source: 'County property appraiser roll' });
+        const result = await ParcelLookupService.fetchComps({ lat: where.lat, lon: where.lon, countyCode: p.county_code, useCode, sqft, parcelId: p.parcel_raw });
+        const out = { subject, ...result, source: 'Qualified sales on the county property appraiser roll (Florida Department of Revenue statewide layer)', generatedAt: new Date().toISOString() };
+        await pool.query(`INSERT INTO ops.kv_store (key, value, updated_at) VALUES ($1, $2::jsonb, now()) ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = now()`, [key, JSON.stringify(out)]);
+        res.json(out);
+    } catch (err) {
+        res.status(502).json({ error: `Comparable sales are unavailable right now: ${err.message}` });
+    }
+});
+
 apiRouter.get('/properties/:propertyId/photos', async (req, res) => {
     const { propertyId } = req.params;
     try {
@@ -1761,8 +1792,8 @@ apiRouter.post('/webhooks/smrtphone', async (req, res) => {
         ).catch(() => {});
         res.status(201).json(result);
     } catch (err) {
-        console.error('[smrtPhone Webhook Error]', err);
-        res.status(500).json({ error: err.message });
+        console.error('[smrtPhone Webhook Error]', err.message);
+        res.status(err.status || 500).json({ error: err.message });
     }
 });
 
@@ -2476,6 +2507,14 @@ apiRouter.post('/compliance/evaluate', async (req, res) => {
 
 apiRouter.get('/compliance/suppression', async (req, res) => {
     try { res.json({ records: await ComplianceService.listSuppression() }); } catch (err) { sendError(res, err); }
+});
+
+apiRouter.post('/compliance/suppression/import', async (req, res) => {
+    try {
+        const b = req.body || {};
+        const entries = Array.isArray(b.entries) ? b.entries : String(b.text || '').split(/[\r\n,;]+/).map(s => s.trim()).filter(Boolean);
+        res.status(201).json(await ComplianceService.importSuppression({ entries, reason: b.reason, source: b.source, actor: actorName(req) }));
+    } catch (err) { sendError(res, err); }
 });
 
 apiRouter.post('/compliance/suppression', async (req, res) => {
