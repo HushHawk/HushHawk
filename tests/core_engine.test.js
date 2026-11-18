@@ -293,3 +293,35 @@ test('parcel lookup accepts only an address-verified parcel', async () => {
     } finally { globalThis.fetch = realFetch; }
     assert.equal(DOR_COUNTY_TO_CODE[26], 'DUV');
 });
+
+test('a lead is linked to a property through the address in its conversation, and only when the parcel is verified', async () => {
+    const { LeadLinkService } = await import('../backend/src/services/leadLinkService.js');
+    const { ParcelLookupService } = await import('../backend/src/services/parcelLookupService.js');
+    assert.deepEqual(LeadLinkService.parseStreet('2323 Soutel Dr d, Jacksonville, FL 32208, USA'), { line1: '2323 Soutel Dr d', city: 'Jacksonville', state: 'FL', zip: '32208' });
+    assert.equal(LeadLinkService.parseStreet('Jacksonville Metro, FL'), null, 'a place name is not a street address');
+
+    const email = `link-${run}@example.test`;
+    const personId = crypto.randomUUID(); const leadId = crypto.randomUUID(); const threadId = `thr-${run}`;
+    const street = `${900000 + Math.floor(Math.random() * 99999)} Linker Test Rd`;
+    await pool.query("INSERT INTO core.people (person_id, full_name, primary_email) VALUES ($1, 'Link Test', $2)", [personId, email]);
+    await pool.query("INSERT INTO core.leads (lead_id, person_id, first_source_code, source_detail, status) VALUES ($1, $2, 'PODIO', 'Podio: test', 'NEW')", [leadId, personId]);
+    await pool.query("INSERT INTO core.conversation_desk_platforms (platform_id, name, color) VALUES ('email', 'Email Center', '#f5cf72') ON CONFLICT (platform_id) DO NOTHING");
+    await pool.query("INSERT INTO core.conversation_desk_threads (id, platform_id, contact_name, contact_email, property_address, status) VALUES ($1, 'email', 'Link Test', $2, $3, 'OPEN')", [threadId, email, `${street}, Jacksonville, FL 32209, USA`]);
+
+    const original = ParcelLookupService.resolve;
+    try {
+        ParcelLookupService.resolve = async () => ({ found: false, reason: 'No parcel near this address has a matching recorded street address.' });
+        const miss = await LeadLinkService.linkFromConversations();
+        assert.ok(miss.notFound.some(n => n.address.startsWith(street)));
+        assert.equal((await pool.query('SELECT property_id FROM core.leads WHERE lead_id = $1', [leadId])).rows[0].property_id, null, 'an unverified address links nothing');
+        await pool.query('DELETE FROM ops.kv_store WHERE key LIKE $1', ['parcel-lookup:thread:%']);
+
+        ParcelLookupService.resolve = async parts => ({ found: true, parcel: { parcelId: `LNK${run}`.slice(0, 18), countyCode: 'DUV', propertyType: 'Single Family', justValue: 90000, legalDescription: 'TEST LEGAL', owner: 'TEST OWNER', source: 'test', verification: 'test', raw: { PARCEL_ID: `LNK${run}` }, situsAddress: parts.line1 } });
+        const hit = await LeadLinkService.linkFromConversations();
+        assert.ok(hit.leadsLinked >= 1);
+        const { rows: [lead] } = await pool.query('SELECT l.property_id, p.address_line1 FROM core.leads l JOIN core.properties p USING (property_id) WHERE l.lead_id = $1', [leadId]);
+        assert.equal(lead.address_line1, street);
+        const { rows: [src] } = await pool.query('SELECT first_source_code FROM core.leads WHERE lead_id = $1', [leadId]);
+        assert.equal(src.first_source_code, 'PODIO', 'linking never changes the first source');
+    } finally { ParcelLookupService.resolve = original; }
+});
