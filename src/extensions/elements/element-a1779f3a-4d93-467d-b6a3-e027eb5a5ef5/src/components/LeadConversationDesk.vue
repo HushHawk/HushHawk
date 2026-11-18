@@ -25,7 +25,8 @@
         :key="platform.platform_id"
         type="button"
         class="platform-tab"
-        :class="{ active: activePlatformId === platform.platform_id }"
+        :class="{ active: activePlatformId === platform.platform_id, 'not-connected': platform.connection && platform.connection.status !== 'CONNECTED' }"
+        :title="platform.connection ? platform.name + ': ' + platform.connection.note : platform.name"
         @click="selectPlatform(platform.platform_id)"
       >
         <span
@@ -45,6 +46,7 @@
         ></span>
         <span class="platform-name">{{ platform.name }}</span>
         <span class="platform-count">({{ platform.lead_count }})</span>
+        <span v-if="platform.connection" class="platform-dot" :class="platform.connection.status === 'CONNECTED' ? 'on' : 'off'" aria-hidden="true"></span>
       </button>
     </nav>
 
@@ -102,7 +104,10 @@
           <span class="spinner-dot"></span> Loading real-time threads…
         </div>
         <div v-else-if="threads.length === 0" class="threads-state empty">
-          No {{ selectedPriority !== 'All' ? selectedPriority : '' }} threads found for {{ currentPlatform?.name }}.
+          <template v-if="currentPlatform?.connection && currentPlatform.connection.status !== 'CONNECTED'">
+            <strong>{{ currentPlatform.name }} is not connected.</strong><br>{{ currentPlatform.connection.note }}
+          </template>
+          <template v-else>No {{ selectedPriority !== 'All' ? selectedPriority : '' }} threads found for {{ currentPlatform?.name }}.</template>
         </div>
         <div v-else class="threads-scroll-container">
           <article
@@ -739,6 +744,10 @@ onUnmounted(() => {
 }
 
 /* 16 Platforms Ribbon */
+.platform-dot { width: 7px; height: 7px; border-radius: 50%; margin-left: 5px; flex: none; }
+.platform-dot.on { background: #2ecc71; }
+.platform-dot.off { background: #7d8a99; }
+.platform-tab.not-connected { opacity: 0.72; }
 .platforms-ribbon {
   display: flex;
   align-items: center;

@@ -11,7 +11,32 @@ import { pool } from '../store/pgClient.js';
 import { db } from '../store/database.js';
 import { CarrierDispatchService } from './carrierDispatchService.js';
 
+const PODIO_CHANNELS = new Set(['email', 'podio', 'smrtphone']);
+const META_STATUS_KEY = { messenger: 'messenger', instagram: 'instagram', whatsapp: 'whatsapp', facebook: 'leadAds' };
+
 export class LeadDeskService {
+    /**
+     * Whether messages can really arrive on a channel right now, so an empty tab is never mistaken for a quiet inbox.
+     *  CONNECTED     messages flow in (Podio Feeds for email, calls and texts; Meta for its channels once configured)
+     *  NOT_CONNECTED the channel is supported but its credentials are not set yet
+     *  NOT_AVAILABLE no messaging connection exists for this platform
+     */
+    static connectionFor(platformId) {
+        if (PODIO_CHANNELS.has(platformId)) {
+            const ready = ['PODIO_CLIENT_ID', 'PODIO_APP_TOKEN', 'PODIO_FEEDS_APP_ID'].every(n => Boolean(process.env[n]));
+            return ready
+                ? { status: 'CONNECTED', note: 'Messages arrive from Podio Feeds.' }
+                : { status: 'NOT_CONNECTED', note: 'Podio is not connected on this server.' };
+        }
+        if (META_STATUS_KEY[platformId]) {
+            const ready = MetaService.status()[META_STATUS_KEY[platformId]] === 'READY';
+            const note = platformId === 'facebook' ? 'Facebook Lead Ad forms arrive here once the Meta app is connected.' : `${META_PLATFORMS[platformId].name} messages arrive here once the Meta app is connected.`;
+            return ready ? { status: 'CONNECTED', note } : { status: 'NOT_CONNECTED', note: `Not connected yet. ${note}` };
+        }
+        if (platformId === 'sms') return { status: 'NOT_AVAILABLE', note: 'Texts appear under Podio and smrtPhone.' };
+        return { status: 'NOT_AVAILABLE', note: 'This platform has no messaging connection. Its lead emails arrive under Email through Podio.' };
+    }
+
     /**
      * Get all 16 platforms with live lead counts and unread tallies dynamically computed from PostgreSQL
      */
@@ -30,7 +55,7 @@ export class LeadDeskService {
                 GROUP BY p.platform_id, p.name, p.color, p.updated_at
                 ORDER BY COUNT(t.id) DESC, p.name ASC;
             `);
-            return res.rows;
+            return res.rows.map(row => ({ ...row, connection: this.connectionFor(row.platform_id) }));
         } catch (err) {
             console.warn('[LeadDeskService] getPlatforms DB fallback:', err.message);
             return [];

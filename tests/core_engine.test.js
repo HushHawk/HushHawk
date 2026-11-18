@@ -500,3 +500,22 @@ test('sign-in is locked per account after repeated failures, and security header
         assert.equal(sent.error, 'Name is required', 'deliberate messages are untouched');
     } finally { if (previous === undefined) delete process.env.NODE_ENV; else process.env.NODE_ENV = previous; }
 });
+
+test('desk channels report whether messages can really arrive', async () => {
+    const { LeadDeskService } = await import('../backend/src/services/leadDeskService.js');
+    const keys = ['PODIO_CLIENT_ID', 'PODIO_APP_TOKEN', 'PODIO_FEEDS_APP_ID', 'META_APP_SECRET', 'META_VERIFY_TOKEN', 'META_PAGE_ACCESS_TOKEN', 'WHATSAPP_ACCESS_TOKEN', 'WHATSAPP_PHONE_NUMBER_ID'];
+    const saved = Object.fromEntries(keys.map(k => [k, process.env[k]])); keys.forEach(k => delete process.env[k]);
+    try {
+        assert.equal(LeadDeskService.connectionFor('email').status, 'NOT_CONNECTED');
+        assert.equal(LeadDeskService.connectionFor('messenger').status, 'NOT_CONNECTED');
+        assert.equal(LeadDeskService.connectionFor('zillow').status, 'NOT_AVAILABLE');
+        assert.equal(LeadDeskService.connectionFor('sms').status, 'NOT_AVAILABLE');
+        ['PODIO_CLIENT_ID', 'PODIO_APP_TOKEN', 'PODIO_FEEDS_APP_ID'].forEach(k => { process.env[k] = 'x'; });
+        assert.deepEqual(['email', 'podio', 'smrtphone'].map(p => LeadDeskService.connectionFor(p).status), ['CONNECTED', 'CONNECTED', 'CONNECTED']);
+        Object.assign(process.env, { META_APP_SECRET: 's', META_VERIFY_TOKEN: 'v', META_PAGE_ACCESS_TOKEN: 't' });
+        assert.deepEqual(['messenger', 'instagram', 'facebook', 'whatsapp'].map(p => LeadDeskService.connectionFor(p).status), ['CONNECTED', 'CONNECTED', 'CONNECTED', 'NOT_CONNECTED']);
+        const { status, body } = await asJson(await json('GET', '/lead-desk/platforms'));
+        assert.equal(status, 200);
+        assert.ok(body.platforms.every(p => p.connection && ['CONNECTED', 'NOT_CONNECTED', 'NOT_AVAILABLE'].includes(p.connection.status)));
+    } finally { keys.forEach(k => { if (saved[k] === undefined) delete process.env[k]; else process.env[k] = saved[k]; }); }
+});

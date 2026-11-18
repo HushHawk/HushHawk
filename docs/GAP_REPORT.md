@@ -12,6 +12,7 @@ Measured on the live system after the fake-data cleanup. "Working" means tested 
 ## Done since this report was first written
 - County parcel lookup (Florida DOR statewide roll, covers Duval, Clay, St. Johns, Nassau, Flagler, Polk): address is geocoded, the parcel is accepted only when its recorded street address matches, the county record is stored as evidence and the registration is audited.
 
+- Lead Conversation Desk tabs show a connected or not-connected dot and say why when empty, so an empty tab is never mistaken for a quiet inbox.
 - Meta channels: webhook intake (verify token and HMAC signature), deduplicated storage, lead creation with the platform as first source, and replies through the Graph API.
 
 - Absentee Owner and Out-of-State Owner events from the county roll.
