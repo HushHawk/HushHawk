@@ -260,3 +260,36 @@ test('texts and emails hand off to Podio Feeds when no carrier is configured, an
         keys.forEach(k => { if (saved[k] === undefined) delete process.env[k]; else process.env[k] = saved[k]; });
     }
 });
+
+test('parcel lookup accepts only an address-verified parcel', async () => {
+    const { sameStreetAddress, ParcelLookupService, DOR_COUNTY_TO_CODE } = await import('../backend/src/services/parcelLookupService.js');
+    assert.ok(sameStreetAddress('1636 W 36th St', '1636 W 36TH ST'));
+    assert.ok(sameStreetAddress('1411 Wilcox St j', '1411 WILCOX ST'), 'a trailing unit letter is tolerated');
+    assert.ok(sameStreetAddress('270 East 46th Street', '270 E 46TH ST'));
+    assert.ok(!sameStreetAddress('10725 Meadowlea Dr', '10725 MEADOW LEA CIR N'), 'a different street is never accepted');
+    assert.ok(!sameStreetAddress('1636 W 36th St', '1638 W 36TH ST'), 'a different number is never accepted');
+    assert.ok(!sameStreetAddress('Maple Ave', 'MAPLE AVE'), 'no street number, no match');
+
+    const realFetch = globalThis.fetch;
+    const respond = body => ({ ok: true, status: 200, json: async () => body });
+    const attrs = (id, addr, co = 26) => ({ attributes: { CO_NO: co, PARCEL_ID: id, PHY_ADDR1: addr, PHY_CITY: 'JACKSONVILLE', OWN_NAME: 'OWNER', DOR_UC: '001', JV: 100000 } });
+    try {
+        let features = [attrs('A1', '12 OAK ST'), attrs('B2', '14 OAK ST')];
+        globalThis.fetch = async url => String(url).includes('geocoding') ? respond({ result: { addressMatches: [{ coordinates: { x: -81.7, y: 30.3 } }] } }) : respond({ features });
+        const hit = await ParcelLookupService._resolve({ line1: '12 Oak St', city: 'Jacksonville', state: 'FL', zip: '32209' });
+        assert.deepEqual([hit.found, hit.parcel.parcelId, hit.parcel.countyCode, hit.parcel.propertyType], [true, 'A1', 'DUV', 'Single Family']);
+        features = [attrs('B2', '14 OAK ST')];
+        const wrong = await ParcelLookupService._resolve({ line1: '12 Oak St', city: 'Jacksonville', state: 'FL' });
+        assert.equal(wrong.found, false, 'a neighbouring parcel is not used');
+        features = [attrs('A1', '12 OAK ST'), attrs('A2', '12 OAK ST')];
+        const ambiguous = await ParcelLookupService._resolve({ line1: '12 Oak St', city: 'Jacksonville', state: 'FL' });
+        assert.equal(ambiguous.found, false);
+        assert.equal(ambiguous.ambiguous.length, 2);
+        features = [attrs('Z9', '12 OAK ST', 99)];
+        assert.equal((await ParcelLookupService._resolve({ line1: '12 Oak St', city: 'X', state: 'FL' })).found, false, 'counties HushHawk does not cover are ignored');
+        globalThis.fetch = async () => { throw new Error('offline'); };
+        const down = await ParcelLookupService._resolve({ line1: '12 Oak St', city: 'X', state: 'FL' });
+        assert.deepEqual([down.found, down.retry], [false, true]);
+    } finally { globalThis.fetch = realFetch; }
+    assert.equal(DOR_COUNTY_TO_CODE[26], 'DUV');
+});

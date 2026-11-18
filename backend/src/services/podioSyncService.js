@@ -2,6 +2,7 @@ import crypto from 'crypto';
 import { pool, withTransaction, audit } from '../store/pgClient.js';
 import { normalizeParcelMatch } from '../../../packages/crownkey/index.js';
 import { PodioService } from './podioService.js';
+import { ParcelLookupService } from './parcelLookupService.js';
 import { db } from '../store/database.js';
 
 function toDeterministicUuid(str) {
@@ -113,14 +114,34 @@ export class PodioSyncService {
     }
 
     /** Upserts one Podio property item: 'synced', 'skipped' (no parcel/county yet) or 'failed'. */
+    /** Parcel lookup with a memory: a failed lookup for the same address is not repeated every sync. Returns the parcel or null. */
+    static async resolveParcel(itemId, { line1, city, state, zip }) {
+        const key = `parcel-lookup:${itemId}`;
+        const address = [line1, city, state, zip].join('|');
+        const { rows: [prev] } = await pool.query('SELECT value, updated_at FROM ops.kv_store WHERE key = $1', [key]);
+        if (prev?.value?.address === address) {
+            const ageMs = Date.now() - new Date(prev.updated_at).getTime();
+            if (ageMs < (prev.value.retry ? 3600e3 : 7 * 86400e3)) return null;
+        }
+        const result = await ParcelLookupService.resolve({ line1, city, state, zip });
+        if (!result.found) {
+            await pool.query(
+                `INSERT INTO ops.kv_store (key, value, updated_at) VALUES ($1, $2::jsonb, now()) ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = now()`,
+                [key, JSON.stringify({ address, status: 'NOT_FOUND', reason: result.reason, retry: Boolean(result.retry), ambiguous: result.ambiguous || null })]);
+            return null;
+        }
+        await pool.query('DELETE FROM ops.kv_store WHERE key = $1', [key]);
+        return result.parcel;
+    }
+
     static async upsertPropertyItem(it, counties) {
         const norm = t => t.toUpperCase().replace(/\.$/, '').replace(/^ST\.? /, 'ST ');
         const f = {};
         (it.fields || []).forEach(field => { f[field.label] = field.values?.[0]?.value; });
-        const parcelRaw = firstOf(f, 'Parcel Number', 'Parcel ID', 'Parcel', 'APN', 'Tax ID', 'Parcel # (Tax ID)');
+        let parcelRaw = firstOf(f, 'Parcel Number', 'Parcel ID', 'Parcel', 'APN', 'Tax ID', 'Parcel # (Tax ID)');
         const countyName = firstOf(f, 'County', 'Property County');
         const { line1, city, state, zip } = parseAddress(firstOf(f, 'Property Address', 'Property Address (DND)') || it.title || '');
-        const county = countyName ? counties.find(c => norm(c.county_name) === norm(countyName) || norm(c.county_name) === `${norm(countyName)} COUNTY` || c.county_code === countyName.toUpperCase()) : null;
+        let county = countyName ? counties.find(c => norm(c.county_name) === norm(countyName) || norm(c.county_name) === `${norm(countyName)} COUNTY` || c.county_code === countyName.toUpperCase()) : null;
 
         try {
             // Raw evidence first, always.
@@ -132,17 +153,40 @@ export class PodioSyncService {
                  DO UPDATE SET payload = EXCLUDED.payload, payload_hash = EXCLUDED.payload_hash, observed_at = now()`,
                 [county?.county_name || 'UNKNOWN', String(it.item_id), JSON.stringify(it), payloadHash]);
 
+            // No parcel in Podio: look it up from the county record. Only an address-verified parcel is ever used.
+            let found = null;
+            if (!parcelRaw && line1) {
+                found = await this.resolveParcel(it.item_id, { line1, city, state, zip });
+                if (found) {
+                    parcelRaw = found.parcelId;
+                    county = counties.find(c => c.county_code === found.countyCode) || null;
+                }
+            }
             if (!parcelRaw || !county) return 'skipped';
             const parcelMatch = normalizeParcelMatch(parcelRaw);
             const { rows: [prop] } = await pool.query(
-                `INSERT INTO core.properties (county_id, parcel_raw, parcel_match, address_line1, city, state_code, postal_code, property_type, legal_description)
-                 VALUES ($1,$2,$3,$4,$5,coalesce(nullif($6,''),'FL'),$7,$8,$9)
+                `INSERT INTO core.properties (county_id, parcel_raw, parcel_match, address_line1, city, state_code, postal_code, property_type, legal_description, assessed_value, metadata)
+                 VALUES ($1,$2,$3,$4,$5,coalesce(nullif($6,''),'FL'),$7,$8,$9,$10,$11::jsonb)
                  ON CONFLICT (county_id, parcel_match) DO UPDATE
-                   SET address_line1 = coalesce(nullif(EXCLUDED.address_line1,''), core.properties.address_line1),
+                   SET assessed_value = coalesce(EXCLUDED.assessed_value, core.properties.assessed_value),
+                       metadata = coalesce(core.properties.metadata, '{}'::jsonb) || EXCLUDED.metadata,
+                       legal_description = coalesce(core.properties.legal_description, EXCLUDED.legal_description),
+                       address_line1 = coalesce(nullif(EXCLUDED.address_line1,''), core.properties.address_line1),
                        city = coalesce(EXCLUDED.city, core.properties.city), postal_code = coalesce(EXCLUDED.postal_code, core.properties.postal_code),
                        property_type = coalesce(EXCLUDED.property_type, core.properties.property_type), updated_at = now()
                  RETURNING property_id`,
-                [county.county_id, parcelRaw, parcelMatch, line1 || null, city || null, state, zip || null, f['Property Type']?.text || null, firstOf(f, 'Legal Description') || null]);
+                [county.county_id, parcelRaw, parcelMatch, line1 || null, city || null, state, zip || null, f['Property Type']?.text || found?.propertyType || null,
+                 firstOf(f, 'Legal Description') || found?.legalDescription || null, found?.justValue ?? null,
+                 JSON.stringify(found ? { parcel_source: found.source, parcel_verification: found.verification, parcel_resolved_at: new Date().toISOString(), county_owner_of_record: found.owner, year_built: found.yearBuilt, living_area_sqft: found.livingAreaSqFt, land_sqft: found.landSqFt, land_use_code: found.landUseCode, assessment_year: found.assessmentYear } : {})]);
+            if (found) {
+                await pool.query(
+                    `INSERT INTO raw.source_records (source_system, jurisdiction, source_external_id, payload, payload_hash, parser_version)
+                     VALUES ('FL_DOR_CADASTRAL', $1, $2, $3, $4, 'parcel-lookup-v1')
+                     ON CONFLICT (source_system, jurisdiction, source_external_id) WHERE source_external_id IS NOT NULL
+                     DO UPDATE SET payload = EXCLUDED.payload, payload_hash = EXCLUDED.payload_hash, observed_at = now()`,
+                    [county.county_name, found.parcelId, JSON.stringify(found.raw), crypto.createHash('sha256').update(JSON.stringify(found.raw)).digest('hex')]);
+                await audit(pool, { actor: 'Parcel lookup', action: 'PARCEL_RESOLVED', entityType: 'PROPERTY', entityId: prop.property_id, diff: { podioItemId: String(it.item_id), parcel: found.parcelId, county: county.county_name, address: line1 } });
+            }
             await pool.query(
                 `INSERT INTO crm.external_sync_map (internal_entity_type, internal_uuid, external_system, external_app_id, external_item_id, last_sync_at, status)
                  VALUES ('PROPERTY', $1, 'PODIO', $2, $3, NOW(), 'SYNCED')
