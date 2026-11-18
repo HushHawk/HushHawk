@@ -1,14 +1,18 @@
 #!/usr/bin/env bash
 set -e
 
-echo "=== [1/7] Upgrading to Node.js 22 LTS ==="
-curl -fsSL https://rpm.nodesource.com/setup_22.x | sudo bash -
-sudo dnf install -y git nodejs npm nginx
-
+echo "=== [1/7] Checking Node.js 22 ==="
+if [ "$(node -p 'process.versions.node.split(".")[0]' 2>/dev/null || echo 0)" -lt 22 ]; then
+  # Amazon Linux ships Node 18 as RPMs that conflict with NodeSource's build, so remove them first.
+  curl -fsSL https://rpm.nodesource.com/setup_22.x | sudo bash -
+  sudo dnf remove -y nodejs nodejs-npm nodejs-libs nodejs-docs nodejs-full-i18n || true
+  sudo dnf install -y nodejs
+fi
+sudo dnf install -y git nginx
 echo "Node version: $(node -v)"
 
 echo "=== [2/7] Installing PM2 process manager ==="
-sudo npm install -g pm2
+sudo npm install -g pm2 --prefix /usr
 
 echo "=== [3/7] Setting up HushHawk codebase ==="
 cd /home/ec2-user
@@ -35,8 +39,9 @@ done
 export NODE_ENV=production
 export PORT=3001
 
-echo "=== [6/7] Building Frontend Production Dist ==="
-npm run build
+echo "=== [6/7] Frontend ==="
+# The built site (dist/) is committed and the public site is served by Vercel, so the server does not rebuild it
+# (the build tool does not install reliably on this small instance).
 chmod 755 /home/ec2-user
 chmod -R 755 /home/ec2-user/hushhawk/dist
 
