@@ -46,7 +46,7 @@
             <div class="channel-bar-fill" :style="{ width: ch.percent + '%' }"></div>
           </div>
           <div class="channel-bottom">
-            <span>Spend: {{ formatCurrency(ch.spend) }}</span>
+            <span>Spend: {{ formatCurrency(Number(ch.spend) || 0) }}</span>
             <strong>{{ ch.leads }} leads · {{ ch.deals }} deals</strong>
           </div>
         </div>

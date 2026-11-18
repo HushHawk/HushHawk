@@ -2593,10 +2593,22 @@ apiRouter.post('/cash-buyers', handlePostBuyer);
 
 const handleDeleteBuyer = async (req, res) => {
     try {
-        const { rows: [row] } = await pool.query('DELETE FROM crm.cash_buyers WHERE id = $1 RETURNING id, full_name', [req.params.id]);
+        const { rows: [row] } = await pool.query('DELETE FROM crm.cash_buyers WHERE id = $1 RETURNING id, full_name, podio_item_id', [req.params.id]);
         if (!row) return res.status(404).json({ error: 'Buyer not found' });
+        // A buyer that lives in Podio must be removed there too, otherwise the next sync brings it back.
+        const podioItemId = row.podio_item_id || (/^b-\d+$/.test(row.id) ? row.id.slice(2) : null);
+        let podio = { removed: false };
+        if (podioItemId && configured('PODIO_CLIENT_ID', 'PODIO_APP_TOKEN')) {
+            try {
+                const auth = await PodioService.authenticateApp(PodioSyncService.LEADS_APP_ID, PodioSyncService.APP_TOKEN);
+                await PodioService.deleteItem(auth.access_token, podioItemId);
+                podio = { removed: true };
+            } catch (podioErr) {
+                podio = { removed: false, error: podioErr.message };
+            }
+        }
         await audit(pool, { actor: actorName(req), action: 'BUYER_DELETED', entityType: 'BUYER', entityId: crypto.randomUUID(), diff: { buyerId: row.id, name: row.full_name } });
-        res.json({ success: true, deleted: row.id });
+        res.json({ success: true, deleted: row.id, podio });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

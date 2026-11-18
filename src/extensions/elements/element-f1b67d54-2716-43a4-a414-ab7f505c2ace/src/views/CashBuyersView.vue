@@ -10,7 +10,7 @@
           <span class="metric-label">{{ m.label }}</span>
           <strong class="metric-val">{{ m.value }}</strong>
           <span class="metric-change" :class="{ positive: m.change.includes('+') }">
-            {{ m.change }} <em>network growth</em>
+            {{ m.change }}
           </span>
         </div>
       </div>
@@ -521,8 +521,8 @@ export default {
         { label: 'Total Cash Buyers', value: String(total), change: 'Live', icon: 'users' },
         { label: 'Active VIP Buyers', value: String(active), change: 'Active', icon: 'phone' },
         { label: 'Tier 1 Buyers', value: String(tier1), change: 'Live', icon: 'crown' },
-        { label: 'Avg. Response Rate', value: total ? '85%' : '0%', change: 'Live', icon: 'chart' },
-        { label: 'Buying Capacity', value: capStr, change: 'Real', icon: 'badgeDollar' }
+        { label: 'Avg. Response Rate', value: '—', change: 'Not tracked yet', icon: 'chart' },
+        { label: 'Buying Capacity', value: capStr, change: 'Sum of max prices', icon: 'badgeDollar' }
       ];
     });
 
