@@ -650,3 +650,17 @@ test('county records show the county roll owner and only recorded distress, with
     const plain = body.records.find(r => r.owner === null);
     if (plain) assert.equal(plain.ownerType, null, 'no owner claim without a roll record');
 });
+
+
+test('CSV exports write missing values as empty, escape quotes and neutralise spreadsheet formulas', async () => {
+    const { csvCell, toCsv } = await import('../src/extensions/elements/element-f1b67d54-2716-43a4-a414-ab7f505c2ace/src/csv.js');
+    assert.equal(csvCell(null), ''); assert.equal(csvCell(undefined), '');
+    assert.equal(csvCell('Jo "JJ" Smith'), '"Jo ""JJ"" Smith"');
+    assert.equal(csvCell('=HYPERLINK("http://x")'), '"\'=HYPERLINK(""http://x"")"');
+    assert.equal(csvCell('@cmd'), '"\'@cmd"');
+    assert.equal(csvCell('-cmd'), '"\'-cmd"');
+    assert.equal(csvCell('+19045550100'), '"+19045550100"', 'a phone number is left alone');
+    assert.equal(csvCell('-5'), '"-5"', 'a negative number is left alone');
+    assert.equal(csvCell(0), '"0"');
+    assert.equal(toCsv(['A', 'B'], [['x', null], ['y', 'z']]), '"A","B"\r\n"x",\r\n"y","z"');
+});

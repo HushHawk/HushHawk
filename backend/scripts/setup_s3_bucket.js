@@ -123,7 +123,9 @@ async function runS3Setup() {
                             'http://localhost:3000',
                             'https://*.weweb.io',
                             'https://hushhawk.com',
-                            'https://*.hushhawk.com'
+                            'https://*.hushhawk.com',
+                            // The address people actually use (the Vercel site); without it the browser blocks photo and file uploads.
+                            ...String(process.env.PUBLIC_APP_ORIGIN || 'https://hushhawk-kohl.vercel.app').split(',').map(o => o.trim()).filter(Boolean)
                         ],
                         ExposeHeaders: ['ETag', 'x-amz-server-side-encryption'],
                         MaxAgeSeconds: 3600

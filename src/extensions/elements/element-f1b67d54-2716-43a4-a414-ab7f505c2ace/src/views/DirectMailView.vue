@@ -494,6 +494,7 @@
 <script>
 import QRCode from 'qrcode';
 import { icons } from '../icons.js';
+import { toCsv, downloadCsv as saveCsv } from '../csv.js';
 
 export default {
   name: 'DirectMailView',
@@ -712,15 +713,9 @@ export default {
     },
     downloadCsv(b) {
       try {
-        const csvContent = `Batch Code,Campaign Name,Format,Pieces,Delivered,Status,Target ZIPs\n"${b.batchCode}","${b.name}","${b.format}",${b.pieceCount},${b.delivered},"${b.status}","${b.zips}"\n`;
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.setAttribute('href', url);
-        link.setAttribute('download', `${b.batchCode}_address_list.csv`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        const headers = ['Batch Code', 'Campaign Name', 'Format', 'Pieces', 'Delivered', 'Status', 'Target ZIPs'];
+        const zips = Array.isArray(b.zips) ? b.zips.join('; ') : (b.zips || '');
+        saveCsv(`${b.batchCode}_batch_summary.csv`, toCsv(headers, [[b.batchCode, b.name, b.format, b.pieceCount, b.delivered, b.status, zips]]));
         this.showToast('CSV Exported', `Address list for ${b.batchCode} downloaded successfully.`, 'success');
       } catch (e) {
         this.showToast('CSV Exported', `Address list exported for ${b.batchCode}.`, 'success');
