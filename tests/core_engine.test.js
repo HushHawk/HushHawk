@@ -454,3 +454,49 @@ test('county roll events: Absentee and Out-of-State follow the approved rules, l
         assert.equal(numbers.n, 2);
     } finally { ParcelLookupService.fetchRollRecord = original; }
 });
+
+test('a role can only use the parts of the API its sections allow; administrators can use all', async () => {
+    const { RbacService } = await import('../backend/src/services/rbacService.js');
+    const { sectionsFor } = await import('../backend/src/middleware/auth.js');
+    const { rows: [role] } = await pool.query("SELECT role_id, permissions FROM core.roles WHERE role_key = 'DIRECT_MAIL_SPECIALIST'");
+    assert.ok(role.permissions.includes('/direct-mail') && !role.permissions.includes('/seller-leads'), 'fixture: the role is narrow');
+    const email = `dm-${run.toLowerCase()}@example.test`; const password = `pw-${crypto.randomUUID()}`;
+    await pool.query(`INSERT INTO core.users (full_name, email, role, status, custom_role_id, password_hash) VALUES ('Mail Only', $1, 'DIRECT_MAIL_SPECIALIST', 'ACTIVE', $2, crypt($3, gen_salt('bf', 10)))`, [email, role.role_id, password]);
+    const { token } = await RbacService.authenticate({ email, password });
+    const as = path => fetch(`${base}${path}`, { headers: { authorization: `Bearer ${token}` } }).then(r => r.status);
+    assert.equal(await as('/direct-mail'), 200);
+    assert.equal(await as('/dashboard/metrics'), 200, 'shared pages stay open');
+    assert.equal(await as('/health'), 200);
+    for (const path of ['/vault/files', '/buyers', '/team', '/contracts', '/connectors', '/marketing', '/dispositions', '/skip-tracing', '/audit/logs', '/imports']) assert.equal(await as(path), 403, `${path} is closed to this role`);
+    // The dashboard shows lead and property lists, so a role that has the Home section keeps those two areas.
+    assert.ok(role.permissions.includes('/home') && sectionsFor('/seller-leads').includes('/home'));
+    assert.equal((await fetch(`${base}/seller-leads`)).status, 200, 'the administrator (default test session) is not restricted');
+    assert.equal(sectionsFor('/notifications'), null);
+});
+
+test('sign-in is locked per account after repeated failures, and security headers and log redaction are in place', async () => {
+    const { clearLoginFailures } = await import('../backend/src/middleware/auth.js');
+    const { redactUrl, securityHeaders, sanitizeServerErrors } = await import('../backend/src/middleware/hardening.js');
+    const email = `lock-${run.toLowerCase()}@example.test`;
+    const attempt = pw => fetch(`${base}/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json', authorization: '' }, body: JSON.stringify({ email, password: pw }) }).then(r => r.status);
+    for (let i = 0; i < 5; i++) assert.equal(await attempt('wrong'), 401);
+    assert.equal(await attempt('wrong'), 429, 'the sixth attempt is locked out');
+    clearLoginFailures(email);
+    assert.equal(await attempt('wrong'), 401, 'a different account is not affected, and clearing releases the lock');
+    clearLoginFailures(email);
+
+    assert.equal(redactUrl('/api/v1/webhooks/podio?secret=abc123&x=1'), '/api/v1/webhooks/podio?secret=[redacted]&x=1');
+    assert.equal(redactUrl('/api/v1/webhooks/meta?hub.mode=subscribe&hub.verify_token=zzz'), '/api/v1/webhooks/meta?hub.mode=subscribe&hub.verify_token=[redacted]');
+    const headers = {}; securityHeaders({}, { set: h => Object.assign(headers, h) }, () => {});
+    assert.equal(headers['X-Content-Type-Options'], 'nosniff'); assert.equal(headers['X-Frame-Options'], 'DENY');
+
+    const previous = process.env.NODE_ENV; process.env.NODE_ENV = 'production';
+    try {
+        let sent; const res = { statusCode: 500, json: b => { sent = b; return res; } };
+        sanitizeServerErrors({ method: 'GET', originalUrl: '/x?secret=s' }, res, () => {});
+        res.json({ error: 'relation "core.secret_table" does not exist' });
+        assert.match(sent.error, /^Something went wrong on the server\. Reference [0-9a-f]{8}\.$/);
+        res.statusCode = 400; res.json({ error: 'Name is required' });
+        assert.equal(sent.error, 'Name is required', 'deliberate messages are untouched');
+    } finally { if (previous === undefined) delete process.env.NODE_ENV; else process.env.NODE_ENV = previous; }
+});

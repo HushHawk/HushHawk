@@ -30,6 +30,14 @@ so nothing is dropped, then re-register the Podio hooks (`POST /api/v1/integrati
 to the BatchLeads and smrtPhone URLs, and finally remove `WEBHOOK_ALLOW_UNSIGNED`. The server also needs every `PODIO_*` variable in `.env`:
 the code no longer falls back to built-in app IDs or tokens, so a missing variable shows "Podio not configured on the server".
 
+## Security controls
+- Every API route needs a signed-in session, except health, login and the signed webhooks (Podio, BatchLeads, smrtPhone use `WEBHOOK_SECRET`; Meta uses its own verify token and HMAC signature).
+- Roles are enforced on the server, not only in the menus: a user whose role lacks a section cannot call that section's API (see `SECTION_RULES` in `backend/src/middleware/auth.js`). Administrators are not restricted. Shared areas (dashboard, notifications, chat, search, outreach actions) are open to every signed-in user.
+- Sign-in: sessions last 12 hours, are stored hashed, and end on logout, suspension and password change. After 5 failed sign-ins for one account (from anywhere) that account is locked for 15 minutes; each address is also limited to 30 attempts per 15 minutes.
+- API responses carry `nosniff`, no-framing, no-referrer and a restrictive content policy. The site (Vercel) carries `nosniff`, same-origin framing only, a strict referrer policy and HSTS.
+- In production an unexpected server error returns a short reference instead of the raw message; the real message is in the server log with that reference. Webhook secrets in query strings are redacted from the request log.
+- Still open: put HTTPS in front of the server (Vercel reaches it over plain HTTP), rotate every credential that was shared in chat, and restrict the server's firewall.
+
 ## Backups and restore
 Once a day the API writes a compressed copy of every table (except sign-in sessions) to the private S3 bucket under `backups/db/`, encrypted (AES256), and keeps the last 30 days (at least the newest 7). This is on top of the database provider's own automated backups, which should also be switched on and checked in the AWS console.
 - Settings (optional): `BACKUP_EVERY_HOURS` (default 24), `BACKUP_RETENTION_DAYS` (default 30).

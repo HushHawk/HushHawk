@@ -38,4 +38,4 @@ Measured on the live system after the fake-data cleanup. "Working" means tested 
 - Turn off `WEBHOOK_ALLOW_UNSIGNED` once BatchLeads and smrtPhone use the signed URL.
 - Check that RDS automated backups are switched on (not verifiable with the current AWS keys) and add an external uptime alert on `/api/v1/health` (for example UptimeRobot).
 
-Done: a daily encrypted database backup to S3 with a tested restore script; old unsigned Podio hooks removed; database certificate is verified (`DATABASE_SSL_CA`); the Team page no longer shows a password reveal control; `deploy-ec2.sh` now works on Amazon Linux; the S3 audit test waits for the audit rows instead of racing.
+Done: roles enforced on the server, per-account sign-in lockout, security headers, error sanitising and log redaction; a daily encrypted database backup to S3 with a tested restore script; old unsigned Podio hooks removed; database certificate is verified (`DATABASE_SSL_CA`); the Team page no longer shows a password reveal control; `deploy-ec2.sh` now works on Amazon Linux; the S3 audit test waits for the audit rows instead of racing.
