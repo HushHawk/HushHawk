@@ -568,3 +568,47 @@ test('health reports stale syncs and overdue backups, and repeated job failures 
     assert.equal((await pool.query("SELECT count(*)::int n FROM ops.notifications WHERE title = 'Automatic task failing: probe'")).rows[0].n, before + 1, 'the third failure alerts once, not on every failure');
     await AlertService.jobResult('probe', null);
 });
+
+test('opt-out replies and imported lists fill the do-not-contact list, and the outbound gate blocks those people', async () => {
+    const { isOptOutMessage, ComplianceService } = await import('../backend/src/services/complianceService.js');
+    for (const t of ['STOP', 'stop.', 'Unsubscribe', 'Please stop texting me', 'do not call me again', 'Remove me from your list', 'QUIT']) assert.equal(isOptOutMessage(t, 'TEXT'), true, t);
+    for (const t of ['Can you stop by tomorrow?', 'What is the end date?', 'I want to cancel the appointment time and move it', 'Yes, interested', '']) assert.equal(isOptOutMessage(t, 'TEXT'), false, t);
+    assert.equal(isOptOutMessage('STOP', 'EMAIL'), false, 'a bare keyword is only a text opt-out');
+    assert.equal(isOptOutMessage('Footer: to unsubscribe click here. View in browser.', 'EMAIL'), false, 'a newsletter footer is not an opt-out');
+    assert.equal(isOptOutMessage('Please unsubscribe me from this list', 'EMAIL'), true);
+
+    const phone = `904${Math.floor(1000000 + Math.random() * 8999999)}`;
+    assert.equal(await ComplianceService.recordOptOut({ phone: `+1${phone}`, text: 'STOP' }), 1);
+    assert.equal(await ComplianceService.recordOptOut({ phone, text: 'STOP' }), 0, 'the same number is not listed twice');
+    const gate = await ComplianceService.evaluateOutboundRequest({ channel: 'TEXT', recipientPhone: phone });
+    assert.equal(gate.checks.find(c => c.step === 1).passed, false, 'a 10-digit number matches the stored +1 number');
+
+    const listed = `904${Math.floor(1000000 + Math.random() * 8999999)}`;
+    const result = await ComplianceService.importSuppression({ entries: [listed, `(${listed.slice(0, 3)}) ${listed.slice(3, 6)}-${listed.slice(6)}`, 'person@example.test', 'not a number', '123'], reason: 'National Do Not Call registry, test file', actor: 'Tester' });
+    assert.deepEqual([result.added, result.alreadyListed, result.rejected.length], [2, 1, 2]);
+    const viaApi = await asJson(await json('POST', '/compliance/suppression/import', { text: `${listed}\n905${listed.slice(3)}`, reason: 'second file' }));
+    assert.equal(viaApi.status, 201); assert.deepEqual([viaApi.body.added, viaApi.body.alreadyListed], [1, 1]);
+    assert.equal((await asJson(await json('POST', '/compliance/suppression/import', { entries: [listed] }))).status, 400, 'a reason is required');
+});
+
+test('comparable sales estimate an ARV only from enough similar recent qualified sales', async () => {
+    const { ParcelLookupService } = await import('../backend/src/services/parcelLookupService.js');
+    const realFetch = globalThis.fetch;
+    const now = new Date(Date.UTC(2026, 10, 18));
+    const sale = (id, price, sqft, extra = {}) => ({ attributes: { CO_NO: 26, PARCEL_ID: id, PHY_ADDR1: `${id} TEST ST`, PHY_ZIPCD: 32209, DOR_UC: '001', TOT_LVG_AR: sqft, ACT_YR_BLT: 1980, SALE_PRC1: price, SALE_YR1: 2026, SALE_MO1: '03', QUAL_CD1: '01', VI_CD1: 'I', ...extra } });
+    try {
+        let features = [sale('A', 100000, 1000), sale('B', 120000, 1000), sale('C', 140000, 1000), sale('D', 90000, 1000, { QUAL_CD1: '11' }), sale('E', 500000, 1000, { DOR_UC: '004' }),
+            sale('F', 110000, 1000, { SALE_YR1: 2024 }), sale('G', 110000, 2500), sale('SELF', 120000, 1000), sale('H', 15000, 1000), sale('I', 110000, 1000, { VI_CD1: 'V' })];
+        globalThis.fetch = async () => ({ ok: true, status: 200, json: async () => ({ features }) });
+        const base = { lat: 30.3, lon: -81.7, countyCode: 'DUV', useCode: '001', sqft: 1000, parcelId: 'SELF', now };
+        const result = await ParcelLookupService.fetchComps(base);
+        assert.deepEqual(result.comps.map(c => c.parcelId).sort(), ['A', 'B', 'C'], 'unqualified, other use, old, wrong size, tiny, vacant and the subject itself are excluded');
+        assert.equal(result.estimate.arv, 120000); assert.equal(result.estimate.count, 3); assert.equal(result.estimate.medianPricePerSqft, 120);
+        features = features.slice(0, 2);
+        const few = await ParcelLookupService.fetchComps(base);
+        assert.equal(few.estimate, null, 'two comparables are not enough to estimate'); assert.match(few.reason, /at least 3/);
+        const noSqft = await ParcelLookupService.fetchComps({ ...base, sqft: 0 });
+        assert.equal(noSqft.estimate, null); assert.match(noSqft.reason, /living area/);
+        assert.equal((await ParcelLookupService.fetchComps({ ...base, countyCode: 'XXX' })).estimate, null);
+    } finally { globalThis.fetch = realFetch; }
+});

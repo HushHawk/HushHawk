@@ -3,6 +3,7 @@ import { pool, withTransaction, audit } from '../store/pgClient.js';
 import { normalizeParcelMatch } from '../../../packages/crownkey/index.js';
 import { PodioService } from './podioService.js';
 import { ParcelLookupService } from './parcelLookupService.js';
+import { ComplianceService, isOptOutMessage } from './complianceService.js';
 import { db } from '../store/database.js';
 
 function toDeterministicUuid(str) {
@@ -482,6 +483,11 @@ export class PodioSyncService {
                         content,
                         itemDate
                     ]);
+
+                    // A reply that asks to stop is a legal opt-out: add the sender to the do-not-contact list so the outbound gate blocks them.
+                    if (isInbound && method !== 'CALL' && isOptOutMessage(content, method)) {
+                        await ComplianceService.recordOptOut({ phone, email, text: content }).catch(error => console.error('[PodioSync] opt-out not recorded:', error.message));
+                    }
 
                     // Upsert interaction in core.interactions
                     const interactionUuid = toDeterministicUuid(`podio-int-${it.item_id}`);

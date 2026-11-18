@@ -38,6 +38,14 @@ the code no longer falls back to built-in app IDs or tokens, so a missing variab
 - In production an unexpected server error returns a short reference instead of the raw message; the real message is in the server log with that reference. Webhook secrets in query strings are redacted from the request log.
 - Still open: put HTTPS in front of the server (Vercel reaches it over plain HTTP), rotate every credential that was shared in chat, and restrict the server's firewall.
 
+## Do-not-contact list
+- Replies that ask to stop (STOP, QUIT, UNSUBSCRIBE and plain phrases such as "stop texting me") are detected in Podio conversations and the sender is added to the list automatically. Newsletter footers that merely contain the word "unsubscribe" are ignored. The outbound gate matches on the last 10 digits, so +1 and local formats both match.
+- To load a list (for example the national Do Not Call registry download for your area codes, or your own list): `POST /api/v1/compliance/suppression/import` with `{ "text": "<one number or email per line>", "reason": "National Do Not Call registry, downloaded <date>" }`. It reports how many were added, already listed or rejected. Registering for the national registry and downloading the file needs your own account at telemarketing.donotcall.gov.
+
+## Deal analyzer
+- Pick a registered property and the analyzer reads the county roll for its living area, then finds similar qualified sales within about half a mile in the last 18 months (same land use, living area within 30%, improved, arm's length). With at least three it suggests an ARV (median price per square foot times the home's living area) and shows the sales and the 25th to 75th percentile range. With fewer than three it makes no estimate and says why. Repairs, the buy-box percentage, the fee and the title buffer are yours to enter; the percentage and fee start from Settings, Underwriting. Results are cached for 7 days per property.
+- Limits: the roll has no bedrooms or bathrooms, no condition and no renovation history, and sale prices include investor purchases of damaged homes, so the range can be wide. Treat the figure as a starting point.
+
 ## Monitoring and alerts
 - `GET /api/v1/health` answers with `status` (ONLINE when the database is reachable) and `degraded` (true when the Podio sync has failed or stopped, or the daily backup is overdue), plus a `checks` block of yes/no states. Point an uptime monitor at it and alert on a non-200 reply or on `"degraded":true`.
 - Scheduled tasks that fail three times in a row raise a notification in the app (and an email when `ALERT_EMAIL` is set), at most once every six hours per problem.

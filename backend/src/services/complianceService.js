@@ -15,7 +15,69 @@ const intEnv = (name, fallback) => {
     return Number.isFinite(n) && n > 0 ? n : fallback;
 };
 
+/**
+ * Whether an inbound message is a request to stop being contacted. Text replies are judged on the standard carrier keywords (the whole
+ * message) and a few unmistakable phrases. Emails need an explicit phrase about the sender, because newsletters carry the word
+ * "unsubscribe" in their footers and must not count.
+ */
+const STOP_KEYWORDS = /^\s*(stop|stopall|stop all|end|quit|cancel|unsubscribe|optout|opt out|revoke)\s*[.!]*\s*$/i;
+const STOP_PHRASES = /\b(stop (texting|calling|emailing|contacting|messaging) me|do not (call|text|contact|email|message) me|don'?t (call|text|contact|email|message) me|remove me from (your|the|this) (list|lists|contacts)|take me off (your|the|this) (list|lists)|unsubscribe me|opt me out)\b/i;
+export function isOptOutMessage(text, channel = 'TEXT') {
+    const t = String(text || '').trim();
+    if (!t) return false;
+    if (channel !== 'EMAIL' && STOP_KEYWORDS.test(t)) return true;
+    return STOP_PHRASES.test(t.slice(0, 600));
+}
+
 export class ComplianceService {
+    /** Records an opt-out once per identifier. Safe to call for every inbound message. */
+    static async recordOptOut({ phone = null, email = null, text, actor = 'Opt-out detector' }) {
+        const quote = String(text || '').replace(/\s+/g, ' ').trim().slice(0, 120);
+        const targets = [];
+        if (digits(phone).length >= 10) targets.push(['PHONE', String(phone).startsWith('+') ? String(phone).trim() : `+${digits(phone)}`]);
+        if (email && String(email).includes('@')) targets.push(['EMAIL', String(email).trim().toLowerCase()]);
+        let added = 0;
+        for (const [type, value] of targets) {
+            const { rows: [exists] } = await pool.query(
+                type === 'PHONE'
+                    ? `SELECT 1 FROM crm.suppression_records WHERE identifier_type = 'PHONE' AND right(regexp_replace(identifier_value, '\\D', '', 'g'), 10) = right($1, 10) LIMIT 1`
+                    : `SELECT 1 FROM crm.suppression_records WHERE identifier_type = 'EMAIL' AND lower(identifier_value) = lower($1) LIMIT 1`,
+                [type === 'PHONE' ? digits(value) : value]);
+            if (exists) continue;
+            await this.addSuppression({ type, value, reason: `Asked to stop: "${quote}"`, source: 'INBOUND_OPT_OUT', actor });
+            added++;
+        }
+        return added;
+    }
+
+    /**
+     * Loads a do-not-contact list (for example the national Do Not Call registry download for your area codes, or a client's own list).
+     * Accepts phone numbers or emails, skips ones already listed, and reports exactly what happened to each line.
+     */
+    static async importSuppression({ entries, reason, source = 'DNC_LIST_IMPORT', actor }) {
+        if (!Array.isArray(entries) || !entries.length) throw new HttpError(400, 'entries must be a non-empty list.');
+        if (entries.length > 100000) throw new HttpError(400, 'Import at most 100,000 entries at a time.');
+        if (typeof reason !== 'string' || !reason.trim()) throw new HttpError(400, 'reason is required (for example "National Do Not Call registry, downloaded 2026-11-18").');
+        const out = { added: 0, alreadyListed: 0, rejected: [] };
+        for (const raw of entries) {
+            const value = String(raw ?? '').trim();
+            const isEmail = value.includes('@');
+            const phoneDigits = digits(value);
+            if (!isEmail && phoneDigits.length !== 10 && !(phoneDigits.length === 11 && phoneDigits.startsWith('1'))) { out.rejected.push(value.slice(0, 60)); continue; }
+            const type = isEmail ? 'EMAIL' : 'PHONE';
+            const stored = isEmail ? value.toLowerCase() : `+1${phoneDigits.slice(-10)}`;
+            const { rows: [exists] } = await pool.query(
+                isEmail
+                    ? `SELECT 1 FROM crm.suppression_records WHERE identifier_type = 'EMAIL' AND lower(identifier_value) = $1 LIMIT 1`
+                    : `SELECT 1 FROM crm.suppression_records WHERE identifier_type = 'PHONE' AND right(regexp_replace(identifier_value, '\\D', '', 'g'), 10) = $1 LIMIT 1`,
+                [isEmail ? stored : phoneDigits.slice(-10)]);
+            if (exists) { out.alreadyListed++; continue; }
+            await this.addSuppression({ type, value: stored, reason, source, actor });
+            out.added++;
+        }
+        return out;
+    }
+
     /**
      * Six-step gate that runs before any outbound contact. Every step is evaluated against stored data
      * or configuration; a step that does not apply is reported as skipped, never as passed.
@@ -33,13 +95,13 @@ export class ComplianceService {
         // 1. Suppression / opt-out
         const { rows: suppressed } = await pool.query(
             `SELECT identifier_type, reason FROM crm.suppression_records
-             WHERE (identifier_type = 'PHONE' AND $1 <> '' AND regexp_replace(identifier_value, '\\D', '', 'g') = $1)
+             WHERE (identifier_type = 'PHONE' AND length($1) >= 10 AND right(regexp_replace(identifier_value, '\\D', '', 'g'), 10) = right($1, 10))
                 OR (identifier_type = 'EMAIL' AND $2::text IS NOT NULL AND lower(identifier_value) = $2)
                 OR (identifier_type = 'MAILING_ADDRESS' AND $3::text IS NOT NULL AND lower(identifier_value) = lower($3))
              LIMIT 1`, [phone, email, recipientAddress || null]);
         const { rows: flagged } = await pool.query(
             `SELECT 1 FROM core.people WHERE is_suppressed
-               AND (person_id = $1::uuid OR ($2 <> '' AND regexp_replace(coalesce(primary_phone,''), '\\D', '', 'g') = $2)
+               AND (person_id = $1::uuid OR (length($2) >= 10 AND right(regexp_replace(coalesce(primary_phone,''), '\\D', '', 'g'), 10) = right($2, 10))
                     OR ($3::text IS NOT NULL AND lower(primary_email) = $3)) LIMIT 1`, [personId, phone, email]);
         if (suppressed.length) push(1, 'Suppression & opt-out', 'FAIL', `Recipient is on the suppression list (${suppressed[0].reason}).`);
         else if (flagged.length) push(1, 'Suppression & opt-out', 'FAIL', 'Recipient is flagged as suppressed.');

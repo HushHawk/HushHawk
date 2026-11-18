@@ -62,13 +62,17 @@
                 <strong class="text-gold font-mono">${{ arv.toLocaleString() }}</strong>
               </label>
               <input v-model.number="arv" type="number" step="5000" />
+              <small v-if="arvNote" style="display:block;margin-top:4px;opacity:.75;font-size:.72rem;">{{ arvNote }}</small>
+              <small v-else-if="compsState === 'loading'" style="display:block;margin-top:4px;opacity:.75;font-size:.72rem;">Looking up recent nearby sales on the county roll… this can take up to a minute.</small>
+              <small v-else-if="compsReason" style="display:block;margin-top:4px;opacity:.75;font-size:.72rem;">{{ compsReason }} Enter an ARV yourself.</small>
+              <small v-else style="display:block;margin-top:4px;opacity:.75;font-size:.72rem;">Pick a property to estimate from nearby sales, or enter an ARV yourself.</small>
             </div>
             <div class="form-group full">
               <label class="label-with-val">
                 <span>Investor Buy-Box Formula (%)</span>
-                <strong class="text-cyan font-mono">{{ investorDiscount }}%</strong>
+                <strong class="text-cyan font-mono">{{ investorDiscount ? investorDiscount + '%' : 'not set' }}</strong>
               </label>
-              <input v-model.number="investorDiscount" type="range" min="60" max="85" step="1" />
+              <input v-model.number="investorDiscount" type="number" min="1" max="100" step="1" placeholder="Set your percentage (also saved in Settings)" />
             </div>
           </div>
         </div>
@@ -126,8 +130,10 @@
         <!-- Main MAO Output Banner -->
         <div class="mao-banner">
           <span class="mao-sub">Maximum Allowable Offer (MAO)</span>
-          <strong class="mao-price">${{ calculatedMAO.toLocaleString() }}</strong>
-          <span class="mao-formula">
+          <strong v-if="!ready" class="mao-price">—</strong>
+          <span v-if="!ready" class="mao-formula">Enter an ARV and your buy-box percentage to see the maximum offer.</span>
+          <strong v-if="ready" class="mao-price">${{ calculatedMAO.toLocaleString() }}</strong>
+          <span v-if="ready" class="mao-formula">
             Calculated as: (${{ arv.toLocaleString() }} &times; {{ investorDiscount }}%) &minus; ${{ totalRehab.toLocaleString() }} rehab &minus; ${{ targetWholesaleFee.toLocaleString() }} fee &minus; ${{ closingCostsBuffer.toLocaleString() }} costs
           </span>
         </div>
@@ -165,48 +171,16 @@
           </div>
         </div>
 
-        <!-- Exit Strategy Matrix Comparison -->
-        <div class="strategies-card">
-          <h4>Alternative Exit Comparison</h4>
-          <div class="strategy-boxes">
-            <!-- Strategy 1: Wholesale Assignment -->
-            <div class="strat-box highlight">
-              <div class="strat-top">
-                <span class="strat-title">Wholesale Assignment</span>
-                <span class="strat-badge green">Recommended</span>
-              </div>
-              <strong class="strat-profit text-gold">+${{ targetWholesaleFee.toLocaleString() }}</strong>
-              <div class="strat-metrics">
-                <span>Capital Required: <strong>$2,500 EMD</strong></span>
-                <span>Time to Wire: <strong>14 Days</strong></span>
-                <span>Market Risk: <strong>0% (No Debt)</strong></span>
-              </div>
-            </div>
-
-            <!-- Strategy 2: Wholetail / Quick Flip -->
-            <div class="strat-box">
-              <div class="strat-top">
-                <span class="strat-title">Wholetail / Trashout Flip</span>
-                <span class="strat-badge">Light Touch</span>
-              </div>
-              <strong class="strat-profit text-cyan">+${{ Math.round(targetWholesaleFee * 1.8).toLocaleString() }}</strong>
-              <div class="strat-metrics">
-                <span>Capital Required: <strong>${{ Math.round(calculatedMAO * 0.15).toLocaleString() }}</strong></span>
-                <span>Time to Close: <strong>45 Days</strong></span>
-                <span>Market Risk: <strong>Moderate</strong></span>
-              </div>
-            </div>
-          </div>
-        </div>
-
         <!-- Recent Comps Panel -->
         <div class="comps-card">
-          <h4>Recent MLS &amp; Cash Comps (0.5 Mile Radius)</h4>
+          <h4>Recent Qualified Sales Nearby (county roll, last 18 months)</h4>
+          <div v-if="compsState === 'loading'" class="comp-info" style="padding:12px;">Searching…</div>
+          <div v-else-if="!comps.length" class="comp-info" style="padding:12px;opacity:.75;">{{ compsReason || 'Pick a property to see similar sales within about half a mile.' }}</div>
           <div class="comps-list">
-            <div v-for="c in comps" :key="c.address" class="comp-item">
+            <div v-for="c in comps" :key="c.address + c.dist" class="comp-item">
               <div class="comp-info">
                 <strong>{{ c.address }}</strong>
-                <span class="comp-specs">{{ c.bedsBaths }} • {{ c.sqft }} sqft • {{ c.dist }}</span>
+                <span class="comp-specs">{{ c.sqft }} sqft • {{ c.dist }}</span>
               </div>
               <div class="comp-price-col">
                 <span class="comp-price font-mono">${{ c.soldPrice.toLocaleString() }}</span>
@@ -242,14 +216,6 @@
               <div><span>Est. Net Profit:</span> <strong class="text-green">${{ Math.round(arv - investorPurchaseCeiling - totalRehab).toLocaleString() }}</strong></div>
             </div>
           </div>
-          <div class="form-group">
-            <label>Recipient Buyer Pool</label>
-            <select>
-              <option>All Tier 1 Jacksonville Cash Buyers (142 contacts)</option>
-              <option>Duval SFR Flip Specialists Only (48 contacts)</option>
-              <option>Download Raw PDF Document</option>
-            </select>
-          </div>
         </div>
         <div class="modal-footer">
           <button class="btn btn-secondary" @click="isExportModalOpen = false">Close</button>
@@ -278,30 +244,17 @@ export default {
       isExportModalOpen: false,
       availableProperties: [],
       selectedPropertyId: '',
-      arv: 285000,
-      investorDiscount: 70,
-      targetWholesaleFee: 20000,
-      closingCostsBuffer: 6000,
-      property: {
-        address: '7840 Atlantic Blvd, Jacksonville, FL 32211',
-        sqft: 1740,
-        bedsBaths: '3 / 2'
-      },
-      rehabItems: [
-        { name: 'Roof Replacement', desc: 'Architectural shingle tear-off & deck repair', cost: 9500 },
-        { name: 'HVAC System', desc: '3-Ton 14 SEER Heat Pump & Ducts', cost: 6800 },
-        { name: 'Kitchen Remodel', desc: 'Shaker cabinets, granite counters, sink, hardware', cost: 8500 },
-        { name: 'Bathrooms', desc: 'Tile surrounds, vanities, fixtures & plumbing trim', cost: 5500 },
-        { name: 'Flooring (LVP)', desc: 'Luxury vinyl plank across all living areas', cost: 4500 },
-        { name: 'Paint & Prep', desc: 'Full interior/exterior prime & paint', cost: 3500 },
-        { name: 'Plumbing & Electrical', desc: 'Panel & supply line upgrades, modern switches', cost: 2500 },
-        { name: 'Contingency / Misc', desc: 'Permits, cleanout, and inspection buffer', cost: 2500 }
-      ],
-      comps: [
-        { address: '7912 Atlantic Blvd, Jacksonville, FL', bedsBaths: '3 / 2', sqft: 1680, dist: '0.1 mi', soldPrice: 290000 },
-        { address: '1524 Saint Johns Bluff Rd, Jacksonville, FL', bedsBaths: '3 / 2', sqft: 1810, dist: '0.3 mi', soldPrice: 298000 },
-        { address: '8014 Merrill Rd, Jacksonville, FL', bedsBaths: '4 / 2', sqft: 1920, dist: '0.4 mi', soldPrice: 312000 }
-      ]
+      arv: 0,
+      arvNote: '',
+      investorDiscount: 0,
+      targetWholesaleFee: 0,
+      closingCostsBuffer: 0,
+      property: { address: '', sqft: 0, bedsBaths: '' },
+      rehabItems: [],
+      comps: [],
+      compsState: 'idle',
+      compsReason: '',
+      compsEstimate: null
     };
   },
   computed: {
@@ -313,52 +266,39 @@ export default {
     },
     calculatedMAO() {
       return Math.max(0, this.investorPurchaseCeiling - this.targetWholesaleFee);
+    },
+    ready() {
+      return this.arv > 0 && this.investorDiscount > 0;
     }
   },
   methods: {
     addStandardRehabItems() {
-      this.rehabItems = [
-        { name: 'Roof Replacement', desc: 'Architectural shingle tear-off & deck repair', cost: 9500 },
-        { name: 'HVAC System', desc: '3-Ton 14 SEER Heat Pump & Ducts', cost: 6800 },
-        { name: 'Kitchen Remodel', desc: 'Shaker cabinets, granite counters, sink, hardware', cost: 8500 },
-        { name: 'Bathrooms', desc: 'Tile surrounds, vanities, fixtures & plumbing trim', cost: 5500 },
-        { name: 'Flooring (LVP)', desc: 'Luxury vinyl plank across all living areas', cost: 4500 },
-        { name: 'Paint & Prep', desc: 'Full interior/exterior prime & paint', cost: 3500 },
-        { name: 'Plumbing & Electrical', desc: 'Panel & supply line upgrades, modern switches', cost: 2500 },
-        { name: 'Contingency / Misc', desc: 'Permits, cleanout, and inspection buffer', cost: 2500 }
-      ];
+      // Line items to price, with no costs filled in: only you know what this house needs.
+      this.rehabItems = ['Roof', 'HVAC', 'Kitchen', 'Bathrooms', 'Flooring', 'Paint', 'Plumbing & electrical', 'Contingency'].map(name => ({ name, desc: '', cost: 0 }));
     },
-    onPropertySelect() {
+    async onPropertySelect() {
       if (!this.selectedPropertyId) return;
       const prop = this.availableProperties.find(p => p.property_id === this.selectedPropertyId);
       if (!prop) return;
-
-      const addr = prop.address_line1 || prop.address || '';
-      const city = prop.city || 'Jacksonville';
-      const zip = prop.postal_code || 'FL';
-      this.property.address = `${addr}, ${city}, FL ${zip}`.trim();
-      
-      const assessed = Number(prop.assessed_value) || 180000;
-      this.arv = Math.round(assessed * 1.35);
-      this.property.sqft = prop.sqft || 1720;
-      this.property.bedsBaths = prop.bedsBaths || '3 / 2';
-
-      const otherProps = this.availableProperties.filter(p => p.property_id !== prop.property_id);
-      if (otherProps.length >= 3) {
-        this.comps = otherProps.slice(0, 3).map((op, idx) => {
-          const compAssessed = Number(op.assessed_value) || 190000;
-          const compSold = Math.round(compAssessed * 1.32);
-          const dists = ['0.1 mi', '0.25 mi', '0.4 mi'];
-          return {
-            address: `${op.address_line1 || op.address}, ${op.city}, FL`,
-            bedsBaths: '3 / 2',
-            sqft: 1650 + (idx * 90),
-            dist: dists[idx] || '0.5 mi',
-            soldPrice: compSold
-          };
-        });
+      this.property.address = [prop.address_line1 || prop.address, prop.city, prop.postal_code ? 'FL ' + prop.postal_code : 'FL'].filter(Boolean).join(', ');
+      this.property.sqft = 0; this.property.bedsBaths = '';
+      this.arv = 0; this.arvNote = ''; this.comps = []; this.compsEstimate = null; this.compsReason = ''; this.compsState = 'loading';
+      try {
+        const res = await fetch('/api/v1/properties/' + encodeURIComponent(prop.property_id) + '/comps');
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Comparable sales are unavailable.');
+        this.property.sqft = data.subject?.sqft || 0;
+        this.comps = (data.comps || []).map(c => ({ address: c.address, bedsBaths: '', sqft: c.sqft, dist: 'sold ' + c.soldDate, soldPrice: c.soldPrice }));
+        this.compsEstimate = data.estimate || null;
+        this.compsReason = data.reason || '';
+        if (data.estimate) {
+          this.arv = data.estimate.arv;
+          this.arvNote = `Estimated from ${data.estimate.count} similar qualified sales (${'$' + data.estimate.low.toLocaleString()} to ${'$' + data.estimate.high.toLocaleString()}). Change it if you know better.`;
+        }
+        this.compsState = 'done';
+      } catch (err) {
+        this.compsState = 'error'; this.compsReason = err.message;
       }
-      this.showToast('Property Loaded', `Underwriting loaded for ${addr}`, 'info');
     },
     showToast(title, message, type = 'info') {
       if (typeof window !== 'undefined') {
@@ -398,34 +338,32 @@ export default {
         this.showToast('Error', err.message, 'error');
       }
     },
-    resetToDefaults() {
-      this.arv = 285000;
-      this.investorDiscount = 70;
-      this.targetWholesaleFee = 20000;
-      this.closingCostsBuffer = 6000;
-      this.property = {
-        address: '7840 Atlantic Blvd, Jacksonville, FL 32211',
-        sqft: 1740,
-        bedsBaths: '3 / 2'
-      };
-      this.addStandardRehabItems();
-      this.comps = [
-        { address: '7912 Atlantic Blvd, Jacksonville, FL', bedsBaths: '3 / 2', sqft: 1680, dist: '0.1 mi', soldPrice: 290000 },
-        { address: '1524 Saint Johns Bluff Rd, Jacksonville, FL', bedsBaths: '3 / 2', sqft: 1810, dist: '0.3 mi', soldPrice: 298000 },
-        { address: '8014 Merrill Rd, Jacksonville, FL', bedsBaths: '4 / 2', sqft: 1920, dist: '0.4 mi', soldPrice: 312000 }
-      ];
-      this.showToast('Formula Reset', 'Underwriting parameters reset to 70% rule baseline.', 'info');
+    async resetToDefaults() {
+      this.arv = 0; this.arvNote = ''; this.comps = []; this.compsEstimate = null; this.compsReason = ''; this.compsState = 'idle'; this.selectedPropertyId = '';
+      this.property = { address: '', sqft: 0, bedsBaths: '' };
+      this.rehabItems = [];
+      await this.loadUnderwritingDefaults();
+      this.showToast('Cleared', 'The worksheet is empty. Your saved underwriting settings were reloaded.', 'info');
+    },
+    async loadUnderwritingDefaults() {
+      try {
+        const res = await fetch('/api/v1/settings');
+        if (!res.ok) return;
+        const u = (await res.json()).underwriting || {};
+        this.investorDiscount = Number(u.maoDiscount) || 0;
+        this.targetWholesaleFee = Number(u.minSpread) || 0;
+      } catch (e) { /* the inputs simply stay empty */ }
     },
     exportPdf() {
       try {
         const addr = this.property.address || 'Jacksonville Property';
         const crownKey = this.property.crownKey || this.property.parcel || this.property.parcelId || '';
-        const arvStr = Number(this.arv || 240000).toLocaleString();
-        const repairsStr = Number(this.totalRepairs || 35000).toLocaleString();
-        const maoStr = Number(this.calculatedMAO || 133000).toLocaleString();
-        const feeStr = Number(this.targetWholesaleFee || 20000).toLocaleString();
-        const ceilingStr = Number(this.investorPurchaseCeiling || 153000).toLocaleString();
-        const discountStr = this.investorDiscount || 70;
+        const arvStr = Number(this.arv || 0).toLocaleString();
+        const repairsStr = Number(this.totalRehab || 0).toLocaleString();
+        const maoStr = Number(this.calculatedMAO || 0).toLocaleString();
+        const feeStr = Number(this.targetWholesaleFee || 0).toLocaleString();
+        const ceilingStr = Number(this.investorPurchaseCeiling || 0).toLocaleString();
+        const discountStr = this.investorDiscount || 0;
 
         const printWindow = window.open('', '_blank', 'width=900,height=1000');
         if (printWindow) {
@@ -599,6 +537,7 @@ export default {
     }
   },
   async mounted() {
+    await this.loadUnderwritingDefaults();
     try {
       const res = await fetch('/api/v1/properties');
       if (res.ok) {
@@ -606,20 +545,6 @@ export default {
         const list = Array.isArray(data) ? data : (data.properties || []);
         if (list.length > 0) {
           this.availableProperties = list;
-          if (list.length >= 3) {
-            this.comps = list.slice(1, 4).map((p, idx) => {
-              const compAssessed = Number(p.assessed_value) || 190000;
-              const compSold = Math.round(compAssessed * 1.32);
-              const dists = ['0.1 mi', '0.25 mi', '0.4 mi'];
-              return {
-                address: `${p.address_line1 || p.address}, ${p.city}, FL`,
-                bedsBaths: '3 / 2',
-                sqft: 1650 + (idx * 90),
-                dist: dists[idx] || '0.5 mi',
-                soldPrice: compSold
-              };
-            });
-          }
         }
       }
     } catch (e) {
