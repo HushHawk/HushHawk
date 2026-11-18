@@ -10,6 +10,8 @@ import { LeadLinkService } from './services/leadLinkService.js';
 import { LeadClassifierService } from './services/leadClassifierService.js';
 import { CountyRollService } from './services/countyRollService.js';
 import { BackupService } from './services/backupService.js';
+import { AlertService } from './services/alertService.js';
+import { HealthService } from './services/healthService.js';
 import { securityHeaders, sanitizeServerErrors, redactUrl } from './middleware/hardening.js';
 import { ConnectorService } from './services/connectorService.js';
 import { GraphService } from './services/graphService.js';
@@ -90,7 +92,7 @@ function schedule(name, intervalMs, job) {
     const tick = async () => {
         if (running.has(name)) return;
         running.add(name);
-        try { await job(); } catch (error) { console.error(`[Scheduler:${name}] failed:`, error.message); } finally { running.delete(name); }
+        try { await job(); await AlertService.jobResult(name, null); } catch (error) { console.error(`[Scheduler:${name}] failed:`, error.message); await AlertService.jobResult(name, error).catch(() => {}); } finally { running.delete(name); }
     };
     setTimeout(tick, 15_000);
     return setInterval(tick, intervalMs).unref();
@@ -101,7 +103,19 @@ function startScheduler() {
     const podioEvery = minutes('PODIO_SYNC_INTERVAL_MIN');
     if (podioEvery && process.env.PODIO_CLIENT_ID && process.env.PODIO_APP_TOKEN) {
         schedule('podio-sync', podioEvery * 60_000, async () => {
-            const result = await PodioSyncService.syncAll();
+            let result;
+            try {
+                result = await PodioSyncService.syncAll();
+            } catch (error) {
+                await HealthService.recordSync('podio', false, error).catch(() => {});
+                throw error;
+            }
+            if (!result.ok) {
+                const error = new Error('Podio sync could not read leads, properties or conversations. Check the Podio connection.');
+                await HealthService.recordSync('podio', false, error).catch(() => {});
+                throw error;
+            }
+            await HealthService.recordSync('podio', true).catch(() => {});
             console.log(`[Scheduler:podio-sync] ${JSON.stringify(result.counts)}`);
             await LeadClassifierService.classifyAll().catch(error => console.error('[Scheduler:lead-classify]', error.message));
             const linked = await LeadLinkService.linkFromConversations().catch(error => ({ error: error.message }));

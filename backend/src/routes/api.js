@@ -23,6 +23,7 @@ import { DeliveryService } from '../services/deliveryService.js';
 import { MetaService, META_PLATFORMS } from '../services/metaService.js';
 import { LeadClassifierService } from '../services/leadClassifierService.js';
 import { BackupService } from '../services/backupService.js';
+import { HealthService } from '../services/healthService.js';
 import { CarrierDispatchService } from '../services/carrierDispatchService.js';
 import { renderCrownKey, validateCrownKeyFormat, normalizeParcelMatch } from '../../../packages/crownkey/index.js';
 import { RbacService, ALL_SECTIONS } from '../services/rbacService.js';
@@ -48,12 +49,15 @@ apiRouter.use(requireSession);
 // ============================================================================
 apiRouter.get('/health', async (req, res) => {
     const pgHealth = await checkDatabaseHealth();
+    const checks = pgHealth.status === 'ONLINE' ? await HealthService.checks().catch(() => ({ degraded: false })) : { degraded: true };
     res.status(pgHealth.status === 'ONLINE' ? 200 : 503).json({
         status: pgHealth.status === 'ONLINE' ? 'ONLINE' : 'DEGRADED',
         platform: 'HushHawk A-to-Z Property Intelligence Platform',
         version: '1.0.0',
         canonical_db: `AWS-RDS-PostgreSQL (${pgHealth.status})`,
         db_details: { status: pgHealth.status },
+        degraded: Boolean(checks.degraded),
+        checks,
         time: new Date().toISOString(),
     });
 });
