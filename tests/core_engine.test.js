@@ -175,3 +175,28 @@ test('audit trail is append-only and attributed to the signed-in user', async ()
     assert.equal(row.actor, 'Test Admin');
     await assert.rejects(() => pool.query("DELETE FROM audit.audit_events WHERE action = 'LEAD_CREATED'"), /append-only/);
 });
+
+test('contracts live in the deal funnel: create, assign a buyer, reject unknown ids, delete', async () => {
+    const invalid = await asJson(await json('POST', '/contracts', { address: `${run} Oak`, seller: 'S' }));
+    assert.equal(invalid.status, 400, 'a price is required');
+    const created = await asJson(await json('POST', '/contracts', { address: `${run} Oak Ave`, seller: 'Seller A', buyPrice: 90000, city: 'Jacksonville', state: 'FL', zip: '32202' }));
+    assert.equal(created.status, 201);
+    const id = created.body.id;
+    assert.equal((await asJson(await json('PATCH', `/contracts/${id}`, { buyer: 'Buyer B', status: 'Buyer Selected', fee: 15000 }))).status, 200);
+    const list = await asJson(await json('GET', '/contracts'));
+    const row = list.body.contracts.find(c => c.id === id);
+    assert.equal(row.buyer, 'Buyer B');
+    assert.equal(row.milestoneIndex, 9, 'selecting a buyer moves the deal to the buyer-chosen milestone');
+    assert.ok(!row.titleAgency, 'no title company is invented');
+    assert.equal((await json('PATCH', '/contracts/does-not-exist', {})).status, 404);
+    assert.equal((await json('DELETE', `/contracts/${id}`)).status, 200);
+});
+
+test('a deal blast reports exactly what happened and never claims a send that did not occur', async () => {
+    await pool.query("INSERT INTO crm.cash_buyers (id, full_name, email) VALUES ($1, 'Test Buyer', 'buyer@example.test') ON CONFLICT DO NOTHING", [`b-${run}`]);
+    const { status, body } = await asJson(await json('POST', '/dispositions/blast', { address: `${run} Oak Ave` }));
+    assert.equal(status, 502, 'no email transport is configured in tests');
+    assert.equal(body.sent, 0);
+    assert.ok(body.results.every(r => r.outcome !== 'SENT'));
+    await pool.query('DELETE FROM crm.cash_buyers WHERE id = $1', [`b-${run}`]);
+});

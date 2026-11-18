@@ -145,9 +145,9 @@
                   <strong>{{ sub.zip }}</strong> - <span class="text-muted">{{ sub.area }}</span>
                 </td>
                 <td>{{ sub.deals }}</td>
-                <td class="text-gold">${{ formatNumber(sub.avgSpread) }}</td>
-                <td><strong>${{ formatNumber(sub.totalRev) }}</strong></td>
-                <td>{{ sub.dom }} days</td>
+                <td class="text-gold">{{ sub.avgSpread == null ? '—' : '$' + formatNumber(sub.avgSpread) }}</td>
+                <td><strong>{{ sub.totalRev == null ? '—' : '$' + formatNumber(sub.totalRev) }}</strong></td>
+                <td>{{ sub.dom == null ? '—' : sub.dom + ' days' }}</td>
               </tr>
             </tbody>
           </table>
@@ -190,8 +190,8 @@
                 </td>
                 <td>${{ formatNumber(ch.spend) }}</td>
                 <td>{{ ch.leads }}</td>
-                <td class="text-gold">${{ formatNumber(ch.cpc) }}</td>
-                <td><strong>${{ formatNumber(ch.revenue) }}</strong></td>
+                <td class="text-gold">{{ ch.cpc == null ? '—' : '$' + formatNumber(ch.cpc) }}</td>
+                <td><strong>{{ ch.revenue == null ? '—' : '$' + formatNumber(ch.revenue) }}</strong></td>
                 <td><span class="roi-badge">{{ ch.roi }}</span></td>
               </tr>
             </tbody>
@@ -297,19 +297,19 @@ export default {
             this.submarkets = data.submarkets.map(s => {
               const zipMatch = (s.area || '').match(/\b\d{5}\b/);
               return {
-                zip: s.zip || (zipMatch ? zipMatch[0] : '32204'),
-                area: s.area || 'Jacksonville Core',
+                zip: s.zip || (zipMatch ? zipMatch[0] : ''),
+                area: s.area || '',
                 deals: Number(s.deals || 0),
-                avgSpread: Number(s.avgSpread || 28000),
-                totalRev: Number(s.totalRev || s.volume || (Number(s.deals || 1) * 32000)),
-                dom: Number(s.dom || 14)
+                avgSpread: s.avgSpread == null ? null : Number(s.avgSpread),
+                totalRev: s.totalRev != null ? Number(s.totalRev) : (s.volume != null ? Number(s.volume) : null),
+                dom: s.dom == null ? null : Number(s.dom)
               };
             });
           }
           const repsSource = (data.reps && data.reps.length) ? data.reps : (data.leaderboard || []);
           if (repsSource.length) {
             this.reps = repsSource.map(r => ({
-              name: r.name || 'Acquisitions Specialist',
+              name: r.name || '',
               role: r.role || '',
               contracts: Number(r.contracts || r.deals || 0),
               assigned: r.assigned ?? '—',
@@ -319,13 +319,13 @@ export default {
           }
           if (data.marketingChannels && Array.isArray(data.marketingChannels)) {
             this.marketingChannels = data.marketingChannels.map(ch => ({
-              channel: ch.channel || 'Direct Mail',
+              channel: ch.channel || '',
               icon: ch.icon || 'megaphone',
-              spend: Number(ch.spend ? String(ch.spend).replace(/[^0-9.]/g, '') : 1500),
+              spend: ch.spend && /\d/.test(String(ch.spend)) ? Number(String(ch.spend).replace(/[^0-9.]/g, '')) : null,
               leads: Number(ch.leads || 0),
-              cpc: Number(ch.cpc ? String(ch.cpc).replace(/[^0-9.]/g, '') : 45),
-              revenue: Number(ch.revenue ? String(ch.revenue).replace(/[^0-9.]/g, '') : 32000),
-              roi: ch.roi || '320%'
+              cpc: ch.cpl && /\d/.test(String(ch.cpl)) ? Number(String(ch.cpl).replace(/[^0-9.]/g, '')) : null,
+              revenue: null,
+              roi: ch.roi && /\d/.test(String(ch.roi)) ? ch.roi : '—'
             }));
           }
           return;

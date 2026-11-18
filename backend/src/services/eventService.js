@@ -10,7 +10,7 @@ export class HttpError extends Error {
 async function findExisting(client, { propertyId, pillarCode, caseReference, externalEventId }) {
     const { rows: [row] } = await client.query(
         `SELECT * FROM core.pillar_events
-         WHERE property_id = $1 AND pillar_code = $2
+         WHERE property_id = $1 AND pillar_code = $2 AND verification_status <> 'REJECTED'
            AND ( ($3::text IS NOT NULL AND upper(btrim(case_reference)) = upper(btrim($3)))
               OR ($4::text IS NOT NULL AND upper(btrim(external_event_id)) = upper(btrim($4))) )
          LIMIT 1`,

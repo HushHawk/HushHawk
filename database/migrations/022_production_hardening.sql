@@ -119,7 +119,7 @@ DO $$
 BEGIN
     CREATE UNIQUE INDEX IF NOT EXISTS uq_pillar_events_case
         ON core.pillar_events (property_id, pillar_code, upper(btrim(case_reference)))
-        WHERE case_reference IS NOT NULL AND btrim(case_reference) <> '';
+        WHERE case_reference IS NOT NULL AND btrim(case_reference) <> '' AND verification_status <> 'REJECTED';
 EXCEPTION WHEN unique_violation THEN
     RAISE NOTICE 'Duplicate case references exist in core.pillar_events; uq_pillar_events_case not created.';
 END $$;
@@ -128,7 +128,7 @@ DO $$
 BEGIN
     CREATE UNIQUE INDEX IF NOT EXISTS uq_pillar_events_external
         ON core.pillar_events (property_id, pillar_code, upper(btrim(external_event_id)))
-        WHERE external_event_id IS NOT NULL AND btrim(external_event_id) <> '';
+        WHERE external_event_id IS NOT NULL AND btrim(external_event_id) <> '' AND verification_status <> 'REJECTED';
 EXCEPTION WHEN unique_violation THEN
     RAISE NOTICE 'Duplicate external event ids exist in core.pillar_events; uq_pillar_events_external not created.';
 END $$;
