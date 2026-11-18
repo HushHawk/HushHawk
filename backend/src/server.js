@@ -7,6 +7,7 @@ import { db } from './store/database.js';
 import { pool } from './store/pgClient.js';
 import { PodioSyncService } from './services/podioSyncService.js';
 import { LeadLinkService } from './services/leadLinkService.js';
+import { LeadClassifierService } from './services/leadClassifierService.js';
 import { ConnectorService } from './services/connectorService.js';
 import { GraphService } from './services/graphService.js';
 import { requireSession, bearerToken, loginRateLimit } from './middleware/auth.js';
@@ -97,6 +98,7 @@ function startScheduler() {
         schedule('podio-sync', podioEvery * 60_000, async () => {
             const result = await PodioSyncService.syncAll();
             console.log(`[Scheduler:podio-sync] ${JSON.stringify(result.counts)}`);
+            await LeadClassifierService.classifyAll().catch(error => console.error('[Scheduler:lead-classify]', error.message));
             const linked = await LeadLinkService.linkFromConversations().catch(error => ({ error: error.message }));
             console.log(`[Scheduler:lead-link] ${JSON.stringify({ ...linked, notFound: linked.notFound?.length })}`);
         });
