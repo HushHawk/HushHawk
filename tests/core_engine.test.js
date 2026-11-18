@@ -529,3 +529,42 @@ test('the dashboard seller count explains itself against the total number of con
     assert.equal(card.note, `of ${n.everyone} contacts · ${n.everyone - n.sellers} not sellers`);
     assert.match(card.help, /business contacts/);
 });
+
+test('health reports stale syncs and overdue backups, and repeated job failures raise one alert', async () => {
+    const { HealthService } = await import('../backend/src/services/healthService.js');
+    const { AlertService } = await import('../backend/src/services/alertService.js');
+    const keys = ['PODIO_CLIENT_ID', 'PODIO_APP_TOKEN', 'PODIO_SYNC_INTERVAL_MIN', 'AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY'];
+    const saved = Object.fromEntries(keys.map(k => [k, process.env[k]]));
+    try {
+        keys.forEach(k => delete process.env[k]);
+        let c = await HealthService.checks();
+        assert.deepEqual([c.podioSync, c.backup, c.degraded], ['NOT_CONFIGURED', 'NOT_CONFIGURED', false]);
+        Object.assign(process.env, { PODIO_CLIENT_ID: 'x', PODIO_APP_TOKEN: 'x', PODIO_SYNC_INTERVAL_MIN: '10', AWS_ACCESS_KEY_ID: 'x', AWS_SECRET_ACCESS_KEY: 'x' });
+        await pool.query("DELETE FROM ops.kv_store WHERE key IN ('sync:podio', 'backup:last')");
+        c = await HealthService.checks();
+        assert.deepEqual([c.podioSync, c.backup, c.degraded], ['WAITING', 'WAITING', false]);
+        await HealthService.recordSync('podio', true);
+        await pool.query(`INSERT INTO ops.kv_store (key, value) VALUES ('backup:last', $1::jsonb)`, [JSON.stringify({ at: new Date().toISOString() })]);
+        c = await HealthService.checks();
+        assert.deepEqual([c.podioSync, c.backup, c.degraded], ['OK', 'OK', false]);
+        await pool.query("UPDATE ops.kv_store SET value = jsonb_set(value, '{at}', to_jsonb(now() - interval '2 hours')::jsonb) WHERE key = 'sync:podio'");
+        await pool.query("UPDATE ops.kv_store SET value = jsonb_set(value, '{at}', to_jsonb(now() - interval '2 days')::jsonb) WHERE key = 'backup:last'");
+        c = await HealthService.checks();
+        assert.deepEqual([c.podioSync, c.backup, c.degraded], ['STALE', 'OVERDUE', true]);
+        await HealthService.recordSync('podio', false, new Error('token rejected'));
+        assert.equal((await HealthService.checks()).podioSync, 'FAILING');
+        const health = await asJson(await json('GET', '/health'));
+        assert.equal(health.status, 200); assert.equal(typeof health.body.degraded, 'boolean'); assert.ok(health.body.checks);
+    } finally {
+        keys.forEach(k => { if (saved[k] === undefined) delete process.env[k]; else process.env[k] = saved[k]; });
+        await pool.query("DELETE FROM ops.kv_store WHERE key IN ('sync:podio', 'backup:last')");
+    }
+
+    await pool.query("DELETE FROM ops.kv_store WHERE key = 'alert:job:probe'");
+    const before = (await pool.query("SELECT count(*)::int n FROM ops.notifications WHERE title = 'Automatic task failing: probe'")).rows[0].n;
+    await AlertService.jobResult('probe', new Error('one')); await AlertService.jobResult('probe', new Error('two'));
+    assert.equal((await pool.query("SELECT count(*)::int n FROM ops.notifications WHERE title = 'Automatic task failing: probe'")).rows[0].n, before, 'two failures are not yet an alert');
+    await AlertService.jobResult('probe', new Error('three')); await AlertService.jobResult('probe', new Error('four'));
+    assert.equal((await pool.query("SELECT count(*)::int n FROM ops.notifications WHERE title = 'Automatic task failing: probe'")).rows[0].n, before + 1, 'the third failure alerts once, not on every failure');
+    await AlertService.jobResult('probe', null);
+});

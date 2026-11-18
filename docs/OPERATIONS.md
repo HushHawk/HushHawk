@@ -38,11 +38,17 @@ the code no longer falls back to built-in app IDs or tokens, so a missing variab
 - In production an unexpected server error returns a short reference instead of the raw message; the real message is in the server log with that reference. Webhook secrets in query strings are redacted from the request log.
 - Still open: put HTTPS in front of the server (Vercel reaches it over plain HTTP), rotate every credential that was shared in chat, and restrict the server's firewall.
 
+## Monitoring and alerts
+- `GET /api/v1/health` answers with `status` (ONLINE when the database is reachable) and `degraded` (true when the Podio sync has failed or stopped, or the daily backup is overdue), plus a `checks` block of yes/no states. Point an uptime monitor at it and alert on a non-200 reply or on `"degraded":true`.
+- Scheduled tasks that fail three times in a row raise a notification in the app (and an email when `ALERT_EMAIL` is set), at most once every six hours per problem.
+- The server keeps its logs rotated daily (20 MB per file, 14 kept, compressed) with pm2-logrotate.
+- Known limitation: the build tools (Vite, vue-router) depend on `picomatch`, which has a published ReDoS issue with no fixed release yet. It only runs at build time on our own file patterns. Re-run `npm audit` periodically.
+
 ## Backups and restore
 Once a day the API writes a compressed copy of every table (except sign-in sessions) to the private S3 bucket under `backups/db/`, encrypted (AES256), and keeps the last 30 days (at least the newest 7). This is on top of the database provider's own automated backups, which should also be switched on and checked in the AWS console.
 - Settings (optional): `BACKUP_EVERY_HOURS` (default 24), `BACKUP_RETENTION_DAYS` (default 30).
 - Status: `GET /api/v1/admin/backups`. Run one now (administrators only): `POST /api/v1/admin/backups/run`.
-- Restore into an EMPTY, freshly migrated database: download the file from S3, then `DATABASE_URL=... node database/restore_backup.js hushhawk-<time>.json.gz`. It refuses to run on a database that already has leads. A round trip of a populated test database restored all 75 tables with identical row counts.
+- Restore into an EMPTY, freshly migrated database: download the file from S3, then `DATABASE_URL=... node database/restore_backup.js hushhawk-<time>.json.gz`. It refuses to run on a database that already has leads. Rehearsed end to end with the real file from S3: it restored all 75 tables (1,361 rows) into a fresh database.
 
 ## Meta channels (Messenger, Instagram, WhatsApp, Facebook Lead Ads)
 The Conversation Desk receives and answers these through Meta's official API. Nothing arrives until Meta is connected:
