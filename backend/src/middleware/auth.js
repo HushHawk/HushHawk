@@ -33,11 +33,18 @@ function safeEqual(a, b) {
 /** Webhooks must present WEBHOOK_SECRET via header or ?secret=. Fails closed when the secret is not configured. */
 export function verifyWebhook(req) {
     const secret = process.env.WEBHOOK_SECRET;
-    if (!secret) return { ok: false, status: 503, error: 'WEBHOOK_SECRET is not configured on the server.' };
     const supplied = req.get('x-webhook-secret') || req.query.secret;
+    // Transition switch: WEBHOOK_ALLOW_UNSIGNED=true accepts senders that cannot send the secret yet (existing Podio hooks, BatchLeads,
+    // smrtPhone). A secret that IS supplied must still be correct. Turn this off once every sender uses the signed URL.
+    if (process.env.WEBHOOK_ALLOW_UNSIGNED === 'true' && !supplied) {
+        if (!unsignedWarned) { unsignedWarned = true; console.warn('[Webhooks] WEBHOOK_ALLOW_UNSIGNED=true: unsigned webhooks are being accepted. Update the senders and remove this setting.'); }
+        return { ok: true, unsigned: true };
+    }
+    if (!secret) return { ok: false, status: 503, error: 'WEBHOOK_SECRET is not configured on the server.' };
     if (!safeEqual(supplied, secret)) return { ok: false, status: 401, error: 'Invalid webhook secret.' };
     return { ok: true };
 }
+let unsignedWarned = false;
 
 export function webhookUrl(path) {
     const base = process.env.PUBLIC_API_URL;

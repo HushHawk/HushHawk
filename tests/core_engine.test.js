@@ -200,3 +200,15 @@ test('a deal blast reports exactly what happened and never claims a send that di
     assert.ok(body.results.every(r => r.outcome !== 'SENT'));
     await pool.query('DELETE FROM crm.cash_buyers WHERE id = $1', [`b-${run}`]);
 });
+
+test('the unsigned-webhook transition switch is off by default, and a wrong secret is never accepted', async () => {
+    const post = (url, headers = {}) => fetch(`${base}${url}`, { method: 'POST', headers: { 'Content-Type': 'application/json', authorization: '', ...headers }, body: '{}' });
+    assert.equal((await post('/webhooks/smrtphone')).status, 401, 'unsigned is rejected by default');
+    process.env.WEBHOOK_ALLOW_UNSIGNED = 'true';
+    try {
+        assert.notEqual((await post('/webhooks/smrtphone')).status, 401, 'unsigned allowed while migrating');
+        assert.equal((await post('/webhooks/smrtphone?secret=wrong')).status, 401, 'a wrong secret still fails');
+    } finally {
+        delete process.env.WEBHOOK_ALLOW_UNSIGNED;
+    }
+});
