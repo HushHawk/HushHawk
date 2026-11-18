@@ -519,3 +519,13 @@ test('desk channels report whether messages can really arrive', async () => {
         assert.ok(body.platforms.every(p => p.connection && ['CONNECTED', 'NOT_CONNECTED', 'NOT_AVAILABLE'].includes(p.connection.status)));
     } finally { keys.forEach(k => { if (saved[k] === undefined) delete process.env[k]; else process.env[k] = saved[k]; }); }
 });
+
+test('the dashboard seller count explains itself against the total number of contacts', async () => {
+    const { status, body } = await asJson(await json('GET', '/dashboard/metrics'));
+    assert.equal(status, 200);
+    const card = body.metrics.find(m => m.label === 'Total Seller Leads');
+    const { rows: [n] } = await pool.query("SELECT count(*)::int everyone, count(*) FILTER (WHERE lead_kind IN ('SELLER','NEEDS_REVIEW'))::int sellers FROM core.leads");
+    assert.equal(card.value, String(n.sellers));
+    assert.equal(card.note, `of ${n.everyone} contacts · ${n.everyone - n.sellers} not sellers`);
+    assert.match(card.help, /business contacts/);
+});

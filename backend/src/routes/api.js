@@ -4665,7 +4665,12 @@ apiRouter.get('/dashboard/metrics', async (req, res) => {
     try {
         const money = n => '$' + Math.round(Number(n) || 0).toLocaleString('en-US');
         const [{ rows: [lead] }, { rows: [contact] }, { rows: [buyers] }, { rows: [funnel] }, { rows: counties }] = await Promise.all([
-            pool.query("SELECT count(*)::int AS total FROM core.leads WHERE lead_kind IN ('SELLER','NEEDS_REVIEW')"),
+            pool.query(`SELECT count(*) FILTER (WHERE lead_kind IN ('SELLER','NEEDS_REVIEW'))::int AS total, count(*)::int AS everyone,
+                               count(*) FILTER (WHERE lead_kind = 'SELLER')::int AS sellers, count(*) FILTER (WHERE lead_kind = 'NEEDS_REVIEW')::int AS review,
+                               count(*) FILTER (WHERE lead_kind = 'BUSINESS')::int AS business, count(*) FILTER (WHERE lead_kind = 'AUTOMATED')::int AS automated,
+                               count(*) FILTER (WHERE lead_kind = 'INTERNAL')::int AS internal,
+                               count(*) FILTER (WHERE lost_reason = 'Removed in Podio')::int AS removed_in_podio,
+                               count(*) FILTER (WHERE NOT EXISTS (SELECT 1 FROM crm.external_sync_map m WHERE m.internal_uuid = core.leads.lead_id AND m.external_system = 'PODIO'))::int AS only_here FROM core.leads`),
             pool.query(`SELECT count(DISTINCT lead_id) FILTER (WHERE direction = 'OUTBOUND')::int AS contacted FROM core.interactions WHERE lead_id IS NOT NULL`),
             pool.query('SELECT count(*)::int AS total FROM crm.cash_buyers'),
             pool.query(`SELECT count(*) FILTER (WHERE milestone_index = 2)::int AS appointments, count(*) FILTER (WHERE milestone_index = 3)::int AS offers,
@@ -4679,7 +4684,9 @@ apiRouter.get('/dashboard/metrics', async (req, res) => {
         const contactRate = lead.total ? `${Math.round((contact.contacted / lead.total) * 100)}%` : '0%';
         res.json({
             metrics: [
-                { iconKey: 'users', label: 'Total Seller Leads', value: String(lead.total), change: 'Live', href: '/seller-leads' },
+                { iconKey: 'users', label: 'Total Seller Leads', value: String(lead.total), change: 'Live', href: '/seller-leads',
+                  note: `of ${lead.everyone} contacts · ${lead.everyone - lead.total} not sellers`,
+                  help: `${lead.sellers} confirmed sellers and ${lead.review} contacts to review are counted. Not counted: ${lead.business} business contacts, ${lead.automated} automated senders and ${lead.internal} internal or test records. The ${lead.everyone} contacts are the live Podio items plus ${lead.removed_in_podio} deleted in Podio (kept as Lost) and ${lead.only_here} created only in HushHawk. Change a contact's type on the Seller Leads page.` },
                 { iconKey: 'phone', label: 'Contact Rate', value: contactRate, change: 'Live', href: '/communications' },
                 { iconKey: 'calendar', label: 'Appointments Set', value: String(funnel.appointments), change: 'Live', href: '/calendar' },
                 { iconKey: 'file', label: 'Offers Pending', value: String(funnel.offers), change: 'Live', href: '/acquisitions' },
