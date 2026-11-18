@@ -148,7 +148,7 @@ export class MetaService {
             });
             await client.query(
                 `INSERT INTO core.conversation_desk_threads (id, platform_id, contact_name, contact_phone, property_address, property_city, property_state, property_zip, lead_score, priority, status, unread_count, last_message_preview, last_message_at)
-                 VALUES ($1,$2,$3,$4,'',NULL,NULL,NULL,0,'Normal','New Lead',1,$5,$6)
+                 VALUES ($1,$2,$3,$4,'',NULL,NULL,NULL,NULL,'Normal','New Lead',1,$5,$6)
                  ON CONFLICT (id) DO UPDATE SET unread_count = core.conversation_desk_threads.unread_count + 1, last_message_preview = EXCLUDED.last_message_preview,
                     last_message_at = EXCLUDED.last_message_at, updated_at = now()`,
                 [threadId, platform, contactName, phone ? `+${digits(phone)}` : null, text.slice(0, 200), at]);
