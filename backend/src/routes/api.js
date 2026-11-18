@@ -2961,7 +2961,7 @@ apiRouter.get('/contracts', async (req, res) => {
     try {
         const pgContracts = await pool.query(`
             SELECT 
-                id, code, address, zip, 
+                id, code, address, city, state, zip, 
                 CASE WHEN milestone_index >= 10 THEN 'Assignment' ELSE 'PSA' END as type,
                 seller, 
                 COALESCE(buyer, '—') as buyer,
@@ -2996,7 +2996,7 @@ apiRouter.get('/contracts', async (req, res) => {
             ],
             milestones: [
                 { name: 'Purchase & Sale Executed', detail: 'Signed & verified', completed: true },
-                { name: 'Seller EMD Verified', detail: '$2,000 in escrow', completed: c.milestoneIndex >= 6 },
+                { name: 'Seller EMD Verified', detail: 'EMD verified', completed: c.milestoneIndex >= 6 },
                 { name: 'Title Commitment & Municipal Lien Search', detail: 'Title cleared', completed: c.milestoneIndex >= 7 },
                 { name: 'Assignment of Contract Executed', detail: 'Assigned to cash buyer', completed: c.milestoneIndex >= 10 },
                 { name: 'Buyer EMD Received & Closing Funded', detail: 'Closed & fee disbursed', completed: c.milestoneIndex >= 11 }
@@ -3106,41 +3106,15 @@ apiRouter.post('/offers', async (req, res) => {
     }
 });
 
+// Contracts are deal-funnel rows (milestone 4 and above). Every change is recorded in the deal history and the audit log.
 apiRouter.patch('/contracts/:id/milestone', async (req, res) => {
     try {
-        const { id } = req.params;
-        const { milestoneIndex, completed } = req.body;
-
-        // 1. Check in PostgreSQL crm.deal_funnel
-        try {
-            const pgDeal = await pool.query('SELECT * FROM crm.deal_funnel WHERE id = $1', [id]);
-            if (pgDeal.rows.length) {
-                const deal = pgDeal.rows[0];
-                let history = deal.history || [];
-                if (!Array.isArray(history)) history = [];
-                history.push({ action: 'MILESTONE_TOGGLE', milestoneIndex, completed, at: new Date().toISOString() });
-                
-                await pool.query('UPDATE crm.deal_funnel SET history = $1, updated_at = NOW() WHERE id = $2', [JSON.stringify(history), id]);
-                return res.json({ id, milestoneIndex, completed, success: true });
-            }
-        } catch (_) {}
-
-        // 2. Check in in-memory
-        const contract = (db.data.crm.contracts || []).find(c => c.id === id);
-        if (contract) {
-            if (contract.milestones && contract.milestones[milestoneIndex] !== undefined) {
-                contract.milestones[milestoneIndex].completed = completed;
-                const allDone = contract.milestones.every(m => m.completed);
-                if (allDone) {
-                    contract.status = 'Clear to Close';
-                    contract.statusClass = 'status-clear';
-                }
-                db.persist();
-            }
-            return res.json(contract);
-        }
-
-        res.json({ id, milestoneIndex, completed, success: true });
+        const { milestoneIndex, completed } = req.body || {};
+        const { rows: [deal] } = await pool.query(
+            `UPDATE crm.deal_funnel SET history = coalesce(history, '[]'::jsonb) || $2::jsonb, updated_at = now() WHERE id = $1 RETURNING id`,
+            [req.params.id, JSON.stringify([{ action: 'MILESTONE_TOGGLE', milestoneIndex, completed: Boolean(completed), actor: actorName(req), at: new Date().toISOString() }])]);
+        if (!deal) return res.status(404).json({ error: 'Contract not found' });
+        res.json({ id: deal.id, milestoneIndex, completed: Boolean(completed), success: true });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -3148,35 +3122,21 @@ apiRouter.patch('/contracts/:id/milestone', async (req, res) => {
 
 apiRouter.patch('/contracts/:id', async (req, res) => {
     try {
-        const { id } = req.params;
-        const updates = req.body || {};
-
-        // 1. Check in PostgreSQL crm.deal_funnel
-        try {
-            const pgDeal = await pool.query('SELECT * FROM crm.deal_funnel WHERE id = $1', [id]);
-            if (pgDeal.rows.length) {
-                await pool.query(`
-                    UPDATE crm.deal_funnel 
-                    SET buyer = COALESCE($1, buyer),
-                        fee = COALESCE($2, fee),
-                        title_agency = COALESCE($3, title_agency),
-                        updated_at = NOW()
-                    WHERE id = $4
-                `, [updates.buyer || null, updates.fee ? Number(updates.fee) : null, updates.titleAgency || null, id]);
-                return res.json({ id, ...updates, success: true });
-            }
-        } catch (_) {}
-
-        // 2. Check in in-memory
-        const contracts = db.data.crm.contracts || [];
-        const contract = contracts.find(c => c.id === id);
-        if (contract) {
-            Object.assign(contract, updates);
-            db.persist();
-            return res.json(contract);
-        }
-
-        res.json({ id, ...updates, success: true });
+        const u = req.body || {};
+        const num = v => (v === undefined || v === null || v === '' || Number.isNaN(Number(v)) ? null : Number(v));
+        const selected = u.status === 'Buyer Selected';
+        const { rows: [deal] } = await pool.query(
+            `UPDATE crm.deal_funnel SET
+                buyer = coalesce($2, buyer), fee = coalesce($3, fee), title_agency = coalesce($4, title_agency), file_number = coalesce($5, file_number),
+                milestone_index = CASE WHEN $6 THEN greatest(milestone_index, 9) ELSE milestone_index END,
+                history = CASE WHEN $6 THEN coalesce(history, '[]'::jsonb) || $7::jsonb ELSE history END,
+                updated_at = now()
+             WHERE id = $1 RETURNING *`,
+            [req.params.id, u.buyer || null, num(u.fee), u.titleAgency || null, u.fileNumber || null, selected,
+             JSON.stringify([{ action: 'BUYER_SELECTED', buyer: u.buyer || null, actor: actorName(req), at: new Date().toISOString() }])]);
+        if (!deal) return res.status(404).json({ error: 'Contract not found' });
+        await audit(pool, { actor: actorName(req), action: 'CONTRACT_UPDATED', entityType: 'DEAL', entityId: crypto.randomUUID(), diff: { dealId: deal.id, fields: Object.keys(u) } });
+        res.json({ id: deal.id, success: true });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -3184,17 +3144,10 @@ apiRouter.patch('/contracts/:id', async (req, res) => {
 
 apiRouter.delete('/contracts/:id', async (req, res) => {
     try {
-        const { id } = req.params;
-        try {
-            await pool.query('DELETE FROM crm.deal_funnel WHERE id = $1', [id]);
-        } catch (dbErr) {
-            console.warn('[Contract Delete PG Warn]', dbErr.message);
-        }
-        if (db.data.crm?.contracts) {
-            db.data.crm.contracts = db.data.crm.contracts.filter(c => c.id !== id);
-            db.persist();
-        }
-        res.json({ success: true, deleted: id });
+        const { rows: [deal] } = await pool.query('DELETE FROM crm.deal_funnel WHERE id = $1 RETURNING id, code, address', [req.params.id]);
+        if (!deal) return res.status(404).json({ error: 'Contract not found' });
+        await audit(pool, { actor: actorName(req), action: 'CONTRACT_DELETED', entityType: 'DEAL', entityId: crypto.randomUUID(), diff: { dealId: deal.id, code: deal.code, address: deal.address } });
+        res.json({ success: true, deleted: deal.id });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

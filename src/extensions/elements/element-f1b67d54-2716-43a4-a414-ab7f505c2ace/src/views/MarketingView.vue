@@ -157,7 +157,7 @@
                 <strong>{{ c.contracts }}</strong> contracts
               </td>
               <td>
-                <span class="roi-tag">{{ c.roi }}%</span>
+                <span class="roi-tag">{{ c.roi == null ? '—' : c.roi + '%' }}</span>
               </td>
               <td>
                 <span class="status-chip" :class="c.status.toLowerCase()">{{ c.status }}</span>
@@ -233,7 +233,7 @@
               </div>
               <div class="kpi-box">
                 <small>Return on Investment (ROI)</small>
-                <strong class="roi-val">{{ selectedCampaignDossier.roi }}%</strong>
+                <strong class="roi-val">{{ selectedCampaignDossier.roi == null ? '—' : selectedCampaignDossier.roi + '%' }}</strong>
               </div>
             </div>
           </div>
@@ -418,29 +418,29 @@ export default {
           if (data && data.campaigns) {
             campaigns.value = data.campaigns.map(c => {
               const leads = Number(c.leadsCount || c.leads || 0);
-              const spend = Number(c.budget || c.spend || 1500);
+              const spend = Number(c.budget || c.spend || 0);
               const cpl = leads > 0 ? (spend / leads) : (Number(c.costPerLead) || 0);
-              const contracts = Number(c.contracts || c.deals || (leads > 20 ? Math.floor(leads / 15) : (leads > 0 ? 1 : 0)));
-              const estimatedRevenue = contracts * 32000;
-              const roi = spend > 0 ? Math.round(((estimatedRevenue - spend) / spend) * 100) : 0;
+              const contracts = Number(c.contracts || c.deals || 0);
+              // ROI needs real revenue per campaign, which is not tracked yet, so it is left empty rather than estimated.
+              const roi = c.roi != null && !Number.isNaN(Number(c.roi)) ? Number(c.roi) : null;
               return {
                 ...c,
-                channel: c.channel || c.type || 'Direct Mail',
+                channel: c.channel || c.type || '',
                 leads: leads,
                 spend: spend,
                 cpl: Number(cpl) || 0,
                 contracts: contracts,
-                roi: roi > 0 ? roi : (c.roi || 0),
-                targetAudience: c.targetAudience || (c.type === 'Cold Calling' ? 'Jacksonville Absentee & High Equity List' : 'Jacksonville Motivated Sellers (Duval County)'),
-                dateRange: c.dateRange || 'Q3-Q4 Active Pacing',
-                status: c.status || 'Active'
+                roi,
+                targetAudience: c.targetAudience || '',
+                dateRange: c.dateRange || '',
+                status: c.status || ''
               };
             });
             channelStats.value = data.channelStats || [];
           }
         }
       } catch (err) {
-        console.warn('[Marketing] Using local fallback:', err.message);
+        console.error('[Marketing] could not load:', err.message);
       }
     }
 
@@ -453,8 +453,8 @@ export default {
       const payload = {
         name: newCampaign.value.name,
         channel: newCampaign.value.channel,
-        targetAudience: newCampaign.value.targetAudience || 'Target Jacksonville Homeowners',
-        budget: Number(newCampaign.value.budget) || 2500
+        targetAudience: newCampaign.value.targetAudience || '',
+        budget: Number(newCampaign.value.budget) || 0
       };
       try {
         const res = await fetch('/api/v1/marketing', {
@@ -495,24 +495,6 @@ export default {
           dateRange: 'Just Launched'
         });
       }
-      showAddModal.value = false;
-    }
-
-    function _oldSaveNewCampaign() {
-      if (!newCampaign.value.name) return;
-      campaigns.value.unshift({
-        id: 'm-' + Date.now(),
-        name: newCampaign.value.name,
-        channel: newCampaign.value.channel,
-        targetAudience: newCampaign.value.targetAudience || 'Target Jacksonville Homeowners',
-        spend: Number(newCampaign.value.budget) || 2500,
-        leads: 0,
-        cpl: 0,
-        contracts: 0,
-        roi: 0,
-        status: 'Active',
-        dateRange: 'Just Launched'
-      });
       showAddModal.value = false;
     }
 

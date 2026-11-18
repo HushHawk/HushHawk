@@ -117,7 +117,7 @@
                 <td>
                   <div class="property-cell">
                     <strong>{{ c.address }}</strong>
-                    <small>Jacksonville, FL {{ c.zip }}</small>
+                    <small>{{ [c.city, c.state].filter(Boolean).join(', ') }} {{ c.zip }}</small>
                   </div>
                 </td>
                 <td>
@@ -422,7 +422,7 @@ export default {
           if (!selectedContract.value && data.contracts.length) selectedContract.value = data.contracts[0];
         }
       } catch (err) {
-        console.warn('[Contracts] Using local cache:', err.message);
+        showToast('Contracts unavailable', err.message, 'danger');
       }
     }
 
@@ -440,7 +440,7 @@ export default {
     const docFileInput = ref(null);
     const selectedUploadFile = ref(null);
     const isUploadingDoc = ref(false);
-    const newForm = ref({ type: 'PSA', address: '', seller: '', buyPrice: 90000, titleAgency: 'First American Title Jax', closingDate: '' });
+    const newForm = ref({ type: 'PSA', address: '', seller: '', buyPrice: '', titleAgency: '', closingDate: '' });
 
     const hasActiveFilters = computed(() => searchQuery.value || typeFilter.value || milestoneFilter.value || sortBy.value !== 'closingAsc');
 
@@ -501,67 +501,29 @@ export default {
     }
 
     async function saveContract() {
-      if (!newForm.value.address) return;
+      if (!newForm.value.address || !newForm.value.seller || !(Number(newForm.value.buyPrice) > 0)) {
+        showToast('Missing details', 'An address, seller and purchase price are required.', 'danger');
+        return;
+      }
       const payload = {
         address: newForm.value.address,
         type: newForm.value.type,
-        seller: newForm.value.seller || 'Seller of Record',
-        buyer: '',
-        buyPrice: Number(newForm.value.buyPrice) || 90000,
-        fee: 28000,
-        titleAgency: newForm.value.titleAgency || 'First American Title Jax',
-        fileNumber: 'FAT-2026-0' + (contracts.value.length + 101),
-        closingDate: newForm.value.closingDate || '2026-05-25'
+        seller: newForm.value.seller,
+        buyPrice: Number(newForm.value.buyPrice),
+        titleAgency: newForm.value.titleAgency || null,
+        closingDate: newForm.value.closingDate || null
       };
       try {
-        const res = await fetch(API_BASE + '/contracts', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        if (res.ok) {
-          const saved = await res.json();
-          contracts.value.unshift(saved);
-          selectedContract.value = saved;
-        } else {
-          contracts.value.unshift({
-            id: 'c-' + Date.now(),
-            code: `${payload.type}-2026-0${contracts.value.length + 1}`,
-            ...payload,
-            zip: '32208',
-            status: 'In Escrow',
-            statusClass: 'status-escrow',
-            milestones: [
-              { name: 'Purchase & Sale Executed', detail: 'Signed', completed: true },
-              { name: 'Seller EMD Verified', detail: 'Held in escrow', completed: true },
-              { name: 'Title Commitment & Municipal Lien Search', detail: 'In progress', completed: false },
-              { name: 'Assignment of Contract Executed', detail: 'Pending', completed: false }
-            ],
-            docs: [{ name: 'Drafted_Contract.pdf' }]
-          });
-          selectedContract.value = contracts.value[0];
-        }
+        const res = await fetch(API_BASE + '/contracts', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        const saved = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(saved.error || `HTTP ${res.status}`);
+        await loadContracts();
+        selectedContract.value = contracts.value.find(c => c.id === saved.id) || contracts.value[0] || null;
+        showToast('Contract saved', `${payload.address} is now under contract.`, 'success');
+        newForm.value = { type: 'PSA', address: '', seller: '', buyPrice: '', titleAgency: '', closingDate: '' };
+        closeModal();
       } catch (err) {
-        contracts.value.unshift({
-          id: 'c-' + Date.now(),
-          code: `${payload.type}-2026-0${contracts.value.length + 1}`,
-          ...payload,
-          zip: '32208',
-          status: 'In Escrow',
-          statusClass: 'status-escrow',
-          milestones: [
-            { name: 'Purchase & Sale Executed', detail: 'Signed', completed: true },
-            { name: 'Seller EMD Verified', detail: 'Held in escrow', completed: true },
-            { name: 'Title Commitment & Municipal Lien Search', detail: 'In progress', completed: false },
-            { name: 'Assignment of Contract Executed', detail: 'Pending', completed: false }
-          ],
-          docs: [{ name: 'Drafted_Contract.pdf' }]
-        });
-        selectedContract.value = contracts.value[0];
-      }
-      closeModal();
-      if (typeof window.showHushHawkToast === 'function') {
-        window.showHushHawkToast('Contract Drafted', `Wholesale contract for ${payload.address} saved.`, 'success');
+        showToast('Contract not saved', err.message, 'danger');
       }
     }
 

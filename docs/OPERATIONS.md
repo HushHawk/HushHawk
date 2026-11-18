@@ -48,6 +48,9 @@ Every text, email and call passes the compliance gate (suppression list, consent
 ## One-time clean-up of data written by the older version
 * `node database/correct_legacy_podio_data.js` (dry run) then `--apply`: corrects Podio leads that were all labelled MAIL and clears
   property links to invented parcels. Properties with invented parcels are listed, not deleted.
+* `node database/resolve_duplicate_events.js` (dry run) then `--apply`: if the same court case was recorded twice by the old counters, the later
+  copy is rejected (kept on record, number never reused), its evidence moves to the first, and the one-case-one-event rule is enabled.
+  The migration skips that rule when duplicates exist, so run this once after migrating.
 * `node database/import_legacy_store.js backend/data/canonical_store.json`: brings the old JSON-file workspaces (direct-mail batches,
   campaigns, calendar, etc.) into the database. After that the file can be deleted.
 

@@ -118,7 +118,7 @@
                 <td>
                   <div class="property-cell">
                     <strong>{{ c.address }}</strong>
-                    <small>Jacksonville, FL {{ c.zip }} · {{ c.beds }}b/{{ c.baths }}ba · {{ c.sqft }} sqft</small>
+                    <small>{{ c.zip }}</small>
                   </div>
                 </td>
                 <td>{{ formatCurrency(c.contractPrice) }}</td>
@@ -168,7 +168,7 @@
         <div class="drawer-header">
           <div>
             <h3>{{ selectedContract.address }}</h3>
-            <p>Jacksonville, FL {{ selectedContract.zip }} · CrownKey: {{ selectedContract.crownKey }}</p>
+            <p>{{ selectedContract.zip }} · CrownKey: {{ selectedContract.crownKey }}</p>
           </div>
           <button class="close-btn" @click="selectedContract = null" aria-label="Close details">
             <span v-html="icons.close"></span>
@@ -315,7 +315,11 @@
             </div>
             <div class="form-group">
               <label>ZIP Code</label>
-              <input v-model="newContract.zip" placeholder="32209" maxlength="5" />
+              <input v-model="newContract.zip" placeholder="ZIP" maxlength="5" />
+            </div>
+            <div class="form-group">
+              <label>Seller</label>
+              <input v-model="newContract.seller" placeholder="Seller name" />
             </div>
             <div class="form-group">
               <label>Contract Purchase Price ($)</label>
@@ -327,7 +331,7 @@
             </div>
             <div class="form-group">
               <label>Title &amp; Escrow Company</label>
-              <input v-model="newContract.titleCompany" placeholder="First American Title Jax" />
+              <input v-model="newContract.titleCompany" placeholder="Title company" />
             </div>
             <div class="form-group">
               <label>Inspection Days Remaining</label>
@@ -431,18 +435,15 @@ export default {
           const mapped = (data.contracts || []).map(c => ({
             id: c.id,
             address: c.address,
-            zip: c.zip || '32210',
+            zip: c.zip || '',
             crownKey: c.crownKey || c.parcelId || '',
-            beds: c.beds || 3,
-            baths: c.baths || 2,
-            sqft: c.sqft || 1400,
             contractPrice: c.buyPrice || 0,
             askingPrice: (c.buyPrice || 0) + (c.fee || 0),
-            titleCompany: c.titleAgency || 'First American Title Jax',
-            emdStatus: 'Pending',
+            titleCompany: c.titleAgency || '',
+            emdStatus: c.milestoneIndex >= 6 ? 'Confirmed' : 'Pending',
             daysLeft: 0,
             matchedBuyersCount: 0,
-            status: c.status || 'Under Contract',
+            status: c.status || '',
             statusClass: c.statusClass || 'status-contract',
             milestones: c.milestones || []
           }));
@@ -450,7 +451,7 @@ export default {
           if (!selectedContract.value) selectedContract.value = mapped[0] || null;
         }
       } catch (err) {
-        console.warn('[Dispositions] Using local cache:', err.message);
+        console.error('[Dispositions] could not load:', err.message);
       }
     }
 
@@ -472,7 +473,7 @@ export default {
     const blastNotice = ref('');
     const activeAssignContract = ref(null);
     const assignForm = ref({ buyerId: '', fee: 0, emd: 0, fileNumber: '' });
-    const newContract = ref({ address: '', zip: '32208', contractPrice: 0, askingPrice: 0, titleCompany: '', daysLeft: 0 });
+    const newContract = ref({ address: '', zip: '', contractPrice: '', askingPrice: '', titleCompany: '', daysLeft: '', seller: '' });
 
     const uniqueZips = computed(() => [...new Set(contracts.value.map(c => c.zip))]);
 
@@ -520,31 +521,26 @@ export default {
     }
 
     async function executeBlast() {
+      const contract = selectedContract.value;
+      if (!contract) { blastNotice.value = 'Select a contract first.'; return; }
       try {
-        const contract = selectedContract.value || (contracts.value && contracts.value[0]);
         const res = await fetch('/api/v1/dispositions/blast', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contractId: contract?.id,
-            address: contract?.address,
-            fee: (contract?.askingPrice || 120000) - (contract?.contractPrice || 95000)
-          })
+          body: JSON.stringify({ address: contract.address, price: contract.askingPrice, fee: contract.askingPrice - contract.contractPrice })
         });
-        const data = await res.json();
-        blastNotice.value = `Deal broadcast dispatched to ${data.dispatchedBuyersCount || 5} VIP cash buyers via Email & SMS Relay!`;
-        if (typeof window.showHushHawkToast === 'function') {
-          window.showHushHawkToast('VIP Deal Broadcast Dispatched', `Broadcasted to ${data.dispatchedBuyersCount || 5} institutional buyers in Duval. Logged in PostgreSQL.`, 'success');
-        }
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok && !data.results) throw new Error(data.error || `HTTP ${res.status}`);
+        const blocked = (data.results || []).filter(r => r.outcome === 'BLOCKED').length;
+        const failed = (data.results || []).filter(r => r.outcome === 'FAILED').length;
+        blastNotice.value = `Sent to ${data.sent} of ${data.attempted} buyers` + (blocked ? `, ${blocked} blocked by compliance` : '') + (failed ? `, ${failed} failed (${(data.results.find(r => r.outcome === 'FAILED') || {}).reason || 'email not configured'})` : '') + '.';
+        if (typeof window.showHushHawkToast === 'function') window.showHushHawkToast('Deal blast', blastNotice.value, data.sent ? 'success' : 'error');
       } catch (err) {
-        blastNotice.value = 'Deal broadcast successfully dispatched to 142 VIP cash buyers via Email & SMS!';
-        if (typeof window.showHushHawkToast === 'function') {
-          window.showHushHawkToast('Deal Broadcast Sent', 'Blast sent to 142 VIP cash buyers matching Duval buy boxes.', 'success');
-        }
+        blastNotice.value = 'The blast was not sent: ' + err.message;
+        if (typeof window.showHushHawkToast === 'function') window.showHushHawkToast('Deal blast not sent', err.message, 'error');
+        return;
       }
-      setTimeout(() => {
-        closeModal();
-      }, 1500);
+      setTimeout(() => { closeModal(); }, 2500);
     }
 
     function openAssignModal(contract) {
@@ -553,163 +549,72 @@ export default {
       modalType.value = 'assign';
     }
 
+    async function patchContract(contract, body) {
+      const res = await fetch(API_BASE + '/contracts/' + contract.id, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+    }
+
     async function confirmAssignment() {
-      if (activeAssignContract.value) {
-        const contract = activeAssignContract.value;
+      const contract = activeAssignContract.value;
+      if (!contract) return;
+      const buyerMatch = topBuyerMatches.value.find(b => b.id === assignForm.value.buyerId);
+      const buyerName = buyerMatch ? buyerMatch.name : assignForm.value.buyer;
+      if (!buyerName) {
+        if (typeof window.showHushHawkToast === 'function') window.showHushHawkToast('Choose a buyer', 'Select or enter the buyer for this assignment.', 'error');
+        return;
+      }
+      try {
+        await patchContract(contract, {
+          buyer: buyerName, status: 'Buyer Selected', fee: Number(assignForm.value.fee) || 0, emd: Number(assignForm.value.emd) || 0,
+          fileNumber: assignForm.value.fileNumber || null
+        });
         contract.status = 'Buyer Selected';
         contract.statusClass = 'status-buyer';
-        const fee = Number(assignForm.value.fee || 0);
-        const emd = Number(assignForm.value.emd || 0);
-        const buyerId = assignForm.value.buyerId;
-        const buyerMatch = topBuyerMatches.value.find(b => b.id === buyerId);
-        const buyerName = buyerMatch ? buyerMatch.name : (assignForm.value.buyer || 'VIP Buyer');
-
-        try {
-          await fetch(API_BASE + '/contracts/' + contract.id, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              buyer: buyerName,
-              status: 'Buyer Selected',
-              statusClass: 'status-buyer',
-              fee,
-              emd,
-              fileNumber: assignForm.value.fileNumber || 'FAT-JAX-2026-8819'
-            })
-          });
-        } catch (e) {}
-
-        if (typeof window.showHushHawkToast === 'function') {
-          window.showHushHawkToast('Contract Assigned', `Assigned ${contract.address} to ${buyerName}. Fee: $${fee.toLocaleString()}.`, 'success');
-        }
+        if (typeof window.showHushHawkToast === 'function') window.showHushHawkToast('Contract assigned', `${contract.address} assigned to ${buyerName}.`, 'success');
+        closeModal();
+      } catch (err) {
+        if (typeof window.showHushHawkToast === 'function') window.showHushHawkToast('Assignment not saved', err.message, 'error');
       }
-      closeModal();
     }
 
     async function assignToBuyer(buyer) {
-      if (selectedContract.value) {
-        selectedContract.value.status = 'Buyer Selected';
-        selectedContract.value.statusClass = 'status-buyer';
-        try {
-          await fetch(API_BASE + '/contracts/' + selectedContract.value.id, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              buyer: buyer.name,
-              status: 'Buyer Selected',
-              statusClass: 'status-buyer'
-            })
-          });
-        } catch (e) {}
-
-        if (typeof window.showHushHawkToast === 'function') {
-          window.showHushHawkToast('Buyer Matched', `${buyer.name} selected as primary assignee for ${selectedContract.value.address}.`, 'success');
-        }
+      const contract = selectedContract.value;
+      if (!contract) return;
+      try {
+        await patchContract(contract, { buyer: buyer.name, status: 'Buyer Selected' });
+        contract.status = 'Buyer Selected';
+        contract.statusClass = 'status-buyer';
+        if (typeof window.showHushHawkToast === 'function') window.showHushHawkToast('Buyer selected', `${buyer.name} selected for ${contract.address}.`, 'success');
+      } catch (err) {
+        if (typeof window.showHushHawkToast === 'function') window.showHushHawkToast('Buyer not saved', err.message, 'error');
       }
     }
 
     async function saveNewContract() {
-      if (!newContract.value.address) return;
-      const payload = {
-        address: newContract.value.address,
-        buyPrice: Number(newContract.value.contractPrice) || 85000,
-        fee: (Number(newContract.value.askingPrice) || 115000) - (Number(newContract.value.contractPrice) || 85000),
-        titleAgency: newContract.value.titleCompany || 'First American Title Jax',
-        closingDate: '2026-05-25'
-      };
+      const c = newContract.value;
+      if (!c.address || !c.seller || !(Number(c.contractPrice) > 0)) {
+        if (typeof window.showHushHawkToast === 'function') window.showHushHawkToast('Missing details', 'An address, seller and contract price are required.', 'error');
+        return;
+      }
       try {
         const res = await fetch(API_BASE + '/contracts', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
+          body: JSON.stringify({
+            address: c.address, seller: c.seller, zip: c.zip || null, buyPrice: Number(c.contractPrice),
+            fee: Number(c.askingPrice) > 0 ? Number(c.askingPrice) - Number(c.contractPrice) : null, titleAgency: c.titleCompany || null
+          })
         });
-        if (res.ok) {
-          const saved = await res.json();
-          contracts.value.unshift({
-            id: saved.id,
-            address: saved.address,
-            zip: newContract.value.zip || '32208',
-            crownKey: saved.crownKey || saved.parcelId || '',
-            beds: 3,
-            baths: 2,
-            sqft: 1350,
-            contractPrice: saved.buyPrice,
-            askingPrice: saved.buyPrice + saved.fee,
-            titleCompany: saved.titleAgency,
-            emdStatus: 'Verified ($2,000)',
-            daysLeft: Number(newContract.value.daysLeft) || 10,
-            matchedBuyersCount: 11,
-            status: 'Under Contract',
-            statusClass: 'status-contract',
-            milestones: [
-              { title: 'Executed Purchase Agreement', detail: 'Signed', done: true },
-              { title: 'EMD Deposited with Escrow', detail: 'Receipt on file', done: true },
-              { title: 'Title Search & Lien Exam', detail: 'Opened', done: false },
-              { title: 'Assignment Agreement Executed', detail: 'Pending', done: false },
-              { title: 'Clear to Close & Funded', detail: 'Pending', done: false }
-            ]
-          });
-          selectedContract.value = contracts.value[0];
-        } else {
-          contracts.value.unshift({
-            id: 'c-' + Date.now(),
-            address: newContract.value.address,
-            zip: newContract.value.zip || '32208',
-            crownKey: newContract.value.crownKey || '',
-            beds: 3,
-            baths: 2,
-            sqft: 1350,
-            contractPrice: Number(newContract.value.contractPrice),
-            askingPrice: Number(newContract.value.askingPrice),
-            titleCompany: newContract.value.titleCompany || 'First American Title Jax',
-            emdStatus: 'Verified ($2,000)',
-            daysLeft: Number(newContract.value.daysLeft) || 10,
-            matchedBuyersCount: 11,
-            status: 'Under Contract',
-            statusClass: 'status-contract',
-            milestones: [
-              { title: 'Executed Purchase Agreement', detail: 'Signed', done: true },
-              { title: 'EMD Deposited with Escrow', detail: 'Receipt on file', done: true },
-              { title: 'Title Search & Lien Exam', detail: 'Opened', done: false },
-              { title: 'Assignment Agreement Executed', detail: 'Pending', done: false },
-              { title: 'Clear to Close & Funded', detail: 'Pending', done: false }
-            ]
-          });
-          selectedContract.value = contracts.value[0];
-        }
-      } catch (e) {
-        contracts.value.unshift({
-          id: 'c-' + Date.now(),
-          address: newContract.value.address,
-          zip: newContract.value.zip || '32208',
-          crownKey: newContract.value.crownKey || '',
-          beds: 3,
-          baths: 2,
-          sqft: 1350,
-          contractPrice: Number(newContract.value.contractPrice),
-          askingPrice: Number(newContract.value.askingPrice),
-          titleCompany: newContract.value.titleCompany || 'First American Title Jax',
-          emdStatus: 'Verified ($2,000)',
-          daysLeft: Number(newContract.value.daysLeft) || 10,
-          matchedBuyersCount: 11,
-          status: 'Under Contract',
-          statusClass: 'status-contract',
-          milestones: [
-            { title: 'Executed Purchase Agreement', detail: 'Signed', done: true },
-            { title: 'EMD Deposited with Escrow', detail: 'Receipt on file', done: true },
-            { title: 'Title Search & Lien Exam', detail: 'Opened', done: false },
-            { title: 'Assignment Agreement Executed', detail: 'Pending', done: false },
-            { title: 'Clear to Close & Funded', detail: 'Pending', done: false }
-          ]
-        });
-        selectedContract.value = contracts.value[0];
-      }
-      closeModal();
-      if (typeof window.showHushHawkToast === 'function') {
-        window.showHushHawkToast('Deal Under Contract', `${newContract.value.address} added to Dispo pipeline.`, 'success');
-      }
-      if (typeof window.showHushHawkToast === 'function') {
-        window.showHushHawkToast('Contract Added', `${addr} placed into active dispo inventory.`, 'success');
+        const saved = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(saved.error || `HTTP ${res.status}`);
+        await loadDispoContracts();
+        selectedContract.value = contracts.value.find(x => x.id === saved.id) || contracts.value[0] || null;
+        newContract.value = { address: '', zip: '', contractPrice: '', askingPrice: '', titleCompany: '', daysLeft: '', seller: '' };
+        closeModal();
+        if (typeof window.showHushHawkToast === 'function') window.showHushHawkToast('Contract added', `${saved.address || c.address} added to the dispo pipeline.`, 'success');
+      } catch (err) {
+        if (typeof window.showHushHawkToast === 'function') window.showHushHawkToast('Contract not saved', err.message, 'error');
       }
     }
 
