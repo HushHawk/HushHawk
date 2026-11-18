@@ -30,6 +30,18 @@ so nothing is dropped, then re-register the Podio hooks (`POST /api/v1/integrati
 to the BatchLeads and smrtPhone URLs, and finally remove `WEBHOOK_ALLOW_UNSIGNED`. The server also needs every `PODIO_*` variable in `.env`:
 the code no longer falls back to built-in app IDs or tokens, so a missing variable shows "Podio not configured on the server".
 
+## Meta channels (Messenger, Instagram, WhatsApp, Facebook Lead Ads)
+The Conversation Desk receives and answers these through Meta's official API. Nothing arrives until Meta is connected:
+1. In Meta for Developers create a Business app. Add the Messenger, Instagram and WhatsApp products (and Webhooks).
+2. Choose a long random string and set it as `META_VERIFY_TOKEN`. Copy the app secret into `META_APP_SECRET`.
+3. Webhook callback URL: `<PUBLIC_API_URL>/api/v1/webhooks/meta` (it must be https), verify token = `META_VERIFY_TOKEN`.
+   Subscribe the Page to `messages` and `leadgen`, Instagram to `messages`, WhatsApp to `messages`.
+4. Page token: `META_PAGE_ID` and `META_PAGE_ACCESS_TOKEN` (a long-lived Page token with `pages_messaging`, `pages_manage_metadata`, `leads_retrieval`; Instagram messages need `instagram_manage_messages` on the linked account).
+5. WhatsApp: `WHATSAPP_PHONE_NUMBER_ID` and `WHATSAPP_ACCESS_TOKEN` from the WhatsApp Business account.
+6. Restart the API and open `GET /api/v1/integrations/meta/status` to see which channels are READY.
+Notes: Meta only lets you reply within 24 hours of the person's last message (WhatsApp needs an approved template after that); the desk shows Meta's own refusal text and keeps the draft. Going live with real people needs Meta app review and business verification.
+Every inbound message is stored once, a new sender becomes a lead whose first source is the platform (Facebook, Instagram, WhatsApp, or Facebook Lead Ad), and a sender who already matches a lead by phone or email is added to that lead instead of duplicated.
+
 ## Podio
 Set the `PODIO_*` variables and `PODIO_SYNC_INTERVAL_MIN` (minutes). The API then syncs on that schedule and also reacts to webhooks.
 Register the webhooks once: `POST /api/v1/integrations/podio/register-all-webhooks` as an administrator.

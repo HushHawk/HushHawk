@@ -5,7 +5,8 @@ import { RbacService } from '../services/rbacService.js';
  * Paths (relative to the /api or /api/v1 mount) that are reachable without a user session.
  * Webhook paths are NOT open: they are protected by verifyWebhook() below.
  */
-const PUBLIC_EXACT = new Set(['/health', '/auth/login', '/auth/get-session']);
+// /webhooks/meta is public because Meta cannot send our secret; the route itself checks Meta's verify token (GET) and HMAC signature (POST).
+const PUBLIC_EXACT = new Set(['/health', '/auth/login', '/auth/get-session', '/webhooks/meta']);
 const PUBLIC_PREFIXES = ['/track/']; // mailer QR landing pages visited by property owners
 const WEBHOOK_PATTERNS = [
     /^\/webhooks\/(podio|smrtphone|batchleads)$/,

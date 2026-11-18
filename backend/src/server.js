@@ -18,7 +18,7 @@ const PORT = process.env.PORT || 3001;
 const allowedOrigins = (process.env.CORS_ORIGINS || '').split(',').map(o => o.trim()).filter(Boolean);
 app.use(cors({ origin: (origin, cb) => cb(null, !origin || allowedOrigins.includes(origin)) }));
 app.disable('x-powered-by');
-app.use(express.json({ limit: '10mb' }));
+app.use(express.json({ limit: '10mb', verify: (req, res, buf) => { req.rawBody = buf; } })); // the raw body is needed to check Meta's webhook signature
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Request logger

@@ -12,13 +12,15 @@ Measured on the live system after the fake-data cleanup. "Working" means tested 
 ## Done since this report was first written
 - County parcel lookup (Florida DOR statewide roll, covers Duval, Clay, St. Johns, Nassau, Flagler, Polk): address is geocoded, the parcel is accepted only when its recorded street address matches, the county record is stored as evidence and the registration is audited.
 
+- Meta channels: webhook intake (verify token and HMAC signature), deduplicated storage, lead creation with the platform as first source, and replies through the Graph API.
+
 ## Gaps, most important first
 
 | # | Gap | Why it matters | What fills it |
 |---|-----|----------------|---------------|
 | 1 | **Property registry is half filled.** Parcel lookup is live (see below): 14 of the 19 Podio properties are registered with a county parcel, owner of record, assessed value and legal description. The other 5 are not registrable (2 are in New York, 1 is the "9 Maple Ave" test property, 2 have addresses the geocoder could not match). Only 2 of the 75 leads link to a property because Podio lists a property on only 2 leads. | Leads without a property cannot get events or pillars. | Link leads to properties by matching the lead's own address when Podio has no relation. |
 | 2 | **No county event connectors** (foreclosure, tax, code, probate, vacancy). The parcel lookup uses the statewide parcel roll only. | No automatic distress events. | A connector per county source: field mapping, schedule, raw record storage, event creation with evidence. |
-| 3 | **Social platforms in the Conversation Desk are not connected.** 17 of 20 tabs are empty; the spec lists 30 platforms and the desk has 20. | Messages from Facebook, Instagram, Messenger, WhatsApp and others never arrive. | Meta app and page access (Facebook, Instagram, Messenger, WhatsApp). Email intake for the listing sites. Decide with the client which other platforms matter. |
+| 3 | **Meta channels are built but not connected.** Messenger, Instagram, WhatsApp and Facebook Lead Ads intake and replies are coded and tested with signed test webhooks, but no Meta app credentials are set, so no real message has flowed. TikTok, X, LinkedIn, Reddit, YouTube and the listing sites (Zillow, Trulia, Homes.com, Houzz, Yelp, Nextdoor) are still not connected. | Real social messages only arrive once the client's Meta app is connected. | Follow the Meta section of docs/OPERATIONS.md; decide with the client which other platforms matter (most have no public messaging API; their lead emails can be parsed instead). |
 | 4 | **Graph (Neo4j) is not configured.** 14 outbox messages are waiting. | The relationship graph, one of the two core stores in the spec, is not running. | A Neo4j instance and credentials; the outbox worker already exists. |
 | 5 | **Real message delivery is unproven.** No SMS or email carrier is configured. Sends go to Podio Feeds and are untested end to end. Calls are click-to-dial. | The client cannot yet rely on outbound messages. | A real test to the team's own phone and email; optionally Twilio and SendGrid. |
 | 6 | **Skip tracing has no provider.** Phone, DNC and cost columns are empty. | Contact data cannot be enriched or checked against do-not-call. | A skip-trace vendor and a DNC source. |
