@@ -237,7 +237,7 @@
             </button>
           </div>
         </header>
-        <div class="metrics"><a v-for="m in metrics" :key="m.label" :href="m.href" @click="guard" class="metric"><span class="metric-icon" v-html="icons[m.iconKey] || icons.house"></span><div><span class="metric-label">{{m.label}}</span><strong>{{m.value}}</strong></div></a></div>
+        <div class="metrics"><a v-for="m in metrics" :key="m.label" :href="m.href" :title="m.help" @click="guard" class="metric"><span class="metric-icon" v-html="icons[m.iconKey] || icons.house"></span><div><span class="metric-label">{{m.label}}</span><strong>{{m.value}}</strong><span v-if="m.note" class="metric-note">{{m.note}}</span></div></a></div>
         <!-- Fully Functional Deal-Flow Funnel (12 Milestones) -->
         <article class="panel pipeline hushhawk-funnel-card">
           <div class="panel-title funnel-header">
@@ -2873,6 +2873,7 @@ return{icons,uid,feedMode,isEditing,metrics,query,zip,checked,tasks,imports,filt
   margin-bottom: 3px;
 }
 
+.metric-note { display: block; font-size: 11px; opacity: 0.72; margin-top: 2px; letter-spacing: 0.02em; }
 .metric small {
   font-size: 11px;
   color: #22c55e;
