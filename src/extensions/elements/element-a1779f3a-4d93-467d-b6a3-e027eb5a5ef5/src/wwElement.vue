@@ -1790,7 +1790,7 @@ if(isEditing.value)return;
 const doc=wwLib.getFrontDocument(),host=marketHost.value;if(!host)return;
 const widget=doc.createElement('div');widget.className='tradingview-widget-container__widget';host.appendChild(widget);
 const script=doc.createElement('script');script.type='text/javascript';script.src='https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js';script.async=true;
-script.textContent=JSON.stringify({symbols:[{proName:'NASDAQ:NVDA',title:'NVIDIA'},{proName:'NASDAQ:AAPL',title:'Apple'},{proName:'NASDAQ:MSFT',title:'Microsoft'},{proName:'NASDAQ:TSLA',title:'Tesla'},{proName:'AMEX:SPY',title:'S&P 500 ETF'},{proName:'AMEX:VNQ',title:'Real Estate ETF'},{proName:'BITSTAMP:BTCUSD',title:'Bitcoin'}],colorTheme:'dark',locale:'en',isTransparent:true,showSymbolLogo:true,displayMode:'adaptive'});
+script.textContent=JSON.stringify({symbols:[{proName:'NASDAQ:NVDA',title:'NVIDIA'},{proName:'NASDAQ:AAPL',title:'Apple'},{proName:'NASDAQ:MSFT',title:'Microsoft'},{proName:'NASDAQ:TSLA',title:'Tesla'},{proName:'AMEX:SPY',title:'S&P 500 ETF'},{proName:'AMEX:VNQ',title:'Real Estate ETF'},{proName:'BITSTAMP:BTCUSD',title:'Bitcoin'}],colorTheme:'dark',locale:'en',isTransparent:false,backgroundColor:'#0b1220',showSymbolLogo:true,displayMode:'adaptive'});
 script.onerror=()=>marketError.value=true;host.appendChild(script);
 marketTimer=setTimeout(()=>{if(!host.querySelector('iframe'))marketError.value=true;},15000);
 });
@@ -4269,6 +4269,8 @@ td a { color: var(--hh-link, #f5cf72) !important; }
 .tape em { color: #4ade80; font-style: normal; font-size: 8.5px; }
 
 .market-tape { margin-top: 8px; border-top: 1px solid rgba(255, 255, 255, 0.08); }
+.market-tape .tradingview-widget-container, .market-tape .tradingview-widget-container__widget, .market-tape iframe { background: #0b1220 !important; color-scheme: dark; }
+.market-placeholder { color: #94a3b8; font-size: 11px; padding: 8px 4px; }
 .market-label { display: flex; align-items: center; gap: 10px; padding: 6px 4px; font-size: 7.5px; color: #94a3b8; }
 .market-label b { color: #f5cf72; letter-spacing: 1px; font-size: 8.5px; }
 .market-label a { margin-left: auto; color: #edcf7c; }
