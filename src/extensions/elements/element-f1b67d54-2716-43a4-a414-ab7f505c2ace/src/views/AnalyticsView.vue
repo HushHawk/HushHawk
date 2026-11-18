@@ -161,7 +161,7 @@
             <span v-html="icons.megaphone"></span>
             Marketing Channel Cost Per Contract (CPC)
           </h3>
-          <span class="tag-gold">1,154% Blended ROI</span>
+          <span class="tag-gold">{{ blendedRoiLabel }}</span>
         </div>
         <div class="table-container">
           <table class="data-table">
@@ -254,6 +254,10 @@ export default {
     };
   },
   computed: {
+    blendedRoiLabel() {
+      const numbers = (this.marketingChannels || []).map(ch => parseFloat(String(ch.roi).replace(/[^0-9.-]/g, ''))).filter(n => Number.isFinite(n));
+      return numbers.length ? `${Math.round(numbers.reduce((a, b) => a + b, 0) / numbers.length).toLocaleString()}% Blended ROI` : 'ROI needs marketing spend';
+    },
     currentMetrics() {
       return this.metricsData[this.timeRange] || this.metricsData['30D'];
     },

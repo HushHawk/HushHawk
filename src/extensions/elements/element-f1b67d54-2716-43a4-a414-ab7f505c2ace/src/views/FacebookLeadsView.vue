@@ -371,7 +371,7 @@ export default {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             recipientPhone: l.phone,
-            actor: 'Alex Richard (HushHawk)',
+            
             notes: `Outbound call to Facebook Lead ${l.name} regarding ${l.address || 'Jacksonville property'}`
           })
         });

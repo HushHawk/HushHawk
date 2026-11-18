@@ -175,7 +175,7 @@
         <button v-for="deal in (visible || []).filter(d=>d.stage===index)" :key="deal.id" class="deal-card" :class="{selected:selected?.id===deal.id}" :draggable="!isEditing" @dragstart="startDrag($event,deal)" @dragend="dragged=''" @click="selectDeal(deal)" :aria-pressed="selected?.id===deal.id">
          <img v-if="photo(deal)" :src="photo(deal)" alt="House exterior" @error="imageFailed">
          <div v-else class="card-photo-placeholder"><span class="icon" v-html="icons.house"></span></div>
-         <div class="card-body"><h3>{{deal.address}}</h3><p>Jacksonville, FL {{deal.zip}}</p>
+         <div class="card-body"><h3>{{deal.address}}</h3><p>{{ deal.owner && deal.address === 'No Property Address on File' ? deal.owner : [deal.city, deal.zip].filter(Boolean).join(' ') }}</p>
           <dl><div><dt>ARV</dt><dd>{{money(deal.arv)}}</dd></div><div><dt>Repairs</dt><dd>{{money(deal.repairs)}}</dd></div><div><dt>MAO</dt><dd>{{money(deal.mao)}}</dd></div><div><dt>Est. Fee</dt><dd>{{money(deal.fee)}}</dd></div></dl>
           <div class="card-end"><span class="stage-badge">{{shortStage(index)}}</span><span v-if="deal.id==='deal-0-0'" class="hot">Hot</span><span v-else class="agent"><i>{{deal.agent.charAt(0)}}</i>{{deal.agent}}</span></div>
          </div>
@@ -188,7 +188,7 @@
     <div class="activity"><strong><span class="icon" v-html="icons.pin"></span>Today's Activity</strong><div v-for="a in activities" :key="a.label"><span class="icon" v-html="icons[a.icon]"></span><span><small>{{a.label}}</small><b>{{a.value}} <em>↑ {{a.change}}</em></b></span></div><button @click="openDialog('activity')">View All Activity →</button></div>
    </div>
    <aside v-if="selected" class="detail" aria-label="Selected property detail">
-    <div class="detail-heading"><span class="icon" v-html="icons.calendar"></span><div><h2>{{selected.address}}</h2><p>Jacksonville, FL {{selected.zip}}</p></div><button @click="openDialog('deal')" aria-label="Deal actions">•••</button><button @click="closeDetail" aria-label="Close property details">×</button></div>
+    <div class="detail-heading"><span class="icon" v-html="icons.calendar"></span><div><h2>{{selected.address}}</h2><p>{{ [selected.city, selected.zip].filter(Boolean).join(' ') }}</p></div><button @click="openDialog('deal')" aria-label="Deal actions">•••</button><button @click="closeDetail" aria-label="Close property details">×</button></div>
     <div class="photo-layout"><div class="main-photo"><img v-if="photo(selected)" :src="photo(selected)" alt="Property exterior" @error="imageFailed"><div v-else class="photo-placeholder"><span class="icon" v-html="icons.house"></span><span>No Property Photo</span></div><small v-if="photo(selected)">Property Photo</small></div><div class="photo-side"><span class="outline-badge" :style="{'--stage':stages[selected.stage].color}">{{stages[selected.stage].name}}</span><span class="potential">◆ Wholesale Lead</span><img v-if="photo(selected)" :src="photo(selected)" alt="Current property preview" @error="imageFailed"><div v-else class="photo-placeholder-side"><span class="icon" v-html="icons.house"></span></div><small v-if="photo(selected)">1 / 1</small></div></div>
     <div class="deal-metrics"><div v-for="m in [['ARV','arv'],['Repairs','repairs'],['MAO','mao'],['Est. Assignment Fee','fee']]" :key="m[1]"><small>{{m[0]}}</small><b>{{money(selected[m[1]])}}</b></div></div>
     <div class="address-row"><span class="icon" v-html="icons.pin"></span><span>{{selected.address}}, Jacksonville, FL {{selected.zip}}</span><a :href="'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(selected.address+', Jacksonville FL '+selected.zip)" target="_blank" rel="noopener noreferrer" @click="guard">View on Map</a></div>
@@ -223,7 +223,7 @@ import "@/assets/css/hushhawk-gold.css";
 import {ref,computed,watch,nextTick,onMounted,onBeforeUnmount} from 'vue';
 import HushHawkNotificationDropdown from '@/_front/components/HushHawkNotificationDropdown.vue';
 import { useNotifications } from '@/_common/use/useNotifications.js';
-import {navigation,iconDefaults,stages,samples} from './data.js';
+import {navigation,iconDefaults,stages} from './data.js';
 import { icons as masterIcons } from '../../element-f1b67d54-2716-43a4-a414-ab7f505c2ace/src/icons.js';
 export default {
  components:{HushHawkThemeToggle,HushHawkNotificationDropdown},
@@ -333,6 +333,7 @@ export default {
            id: lead.crownKey || ('lead-' + i),
            address: lead.address || 'No Property Address on File',
            zip: lead.zip || '',
+           city: lead.city || '',
            owner: lead.ownerName || lead.name || 'Unknown Owner',
            phone: lead.phone || '—',
            email: lead.email || '—',
@@ -517,20 +518,22 @@ export default {
    const address = newAddress.value.trim();
    const zip = newZip.value.trim();
    const d = {
-     ...samples[0],
      id: 'deal-' + Date.now(),
      address,
      zip,
-     owner: 'Pending Intake',
-     phone: '(904) 555-0100',
-     email: 'seller@example.com',
-     arv: 245000,
-     repairs: 45000,
-     mao: 126500,
-     fee: 25000,
+     city: '',
+     owner: '',
+     phone: '—',
+     email: '—',
+     arv: null,
+     repairs: null,
+     mao: null,
+     fee: null,
      stage: 0,
-     note: 'Newly added off-market deal',
-     agent: activeUserName.value || 'Marcus Vance',
+     note: '',
+     source: '',
+     photo: '',
+     agent: activeUserName.value || 'Unassigned',
      completed: false
    };
    try {
@@ -540,9 +543,7 @@ export default {
        body: JSON.stringify({
          property_address: address,
          zip,
-         seller_name: d.owner,
-         est_arv: d.arv,
-         target_offer: d.mao
+         seller_name: d.owner || null
        })
      });
    } catch(e) {}

@@ -1478,7 +1478,7 @@ apiRouter.get('/seller-leads', async (req, res) => {
                 id: l.lead_id,
                 crownKey: l.crownKey,
                 name: l.person?.full_name || '',
-                address: prop?.address_line1 || meta.address || '',
+                address: prop?.address_line1 || (typeof meta.address === 'string' && !meta.address.includes('@') ? meta.address : ''),
                 city: prop?.city || meta.city || '',
                 zip: prop?.postal_code || meta.zip || '',
                 phone: l.person?.primary_phone || '',
@@ -3780,93 +3780,56 @@ apiRouter.post('/direct-mail/simulate-scan', (req, res) => {
 // --- County Records ---
 apiRouter.get('/county-records', async (req, res) => {
     try {
-        let records = [];
-        try {
-            const { rows } = await pool.query(`
-                SELECT
-                    p.property_id, p.parcel_raw, p.parcel_match, p.address_line1, p.city, p.state_code, p.postal_code,
-                    p.assessed_value, p.legal_description, p.property_type, p.created_at,
-                    c.county_code, c.county_name,
-                    per.full_name AS owner_name,
-                    per.primary_phone AS owner_phone,
-                    per.primary_email AS owner_email,
-                    per.mailing_address AS owner_mailing_address,
-                    pe.pillar_code AS distress_pillar,
-                    pe.filing_amount AS delinquent_amount,
-                    pe.event_date AS last_filing_date
-                FROM core.properties p
-                LEFT JOIN ref.counties c ON p.county_id = c.county_id
-                LEFT JOIN core.leads l ON l.property_id = p.property_id
-                LEFT JOIN core.people per ON l.person_id = per.person_id
-                LEFT JOIN core.pillar_events pe ON pe.property_id = p.property_id
-                ORDER BY p.created_at DESC
-            `);
-            if (rows && rows.length > 0) {
-                const seen = new Set();
-                records = rows
-                    .filter(r => {
-                        if (seen.has(r.property_id)) return false;
-                        seen.add(r.property_id);
-                        return true;
-                    })
-                    .map((r, idx) => {
-                        const assessed = Number(r.assessed_value) || 0;
-                        // Market value and equity need an AVM and mortgage balance; neither is available, so they are not estimated.
-                        const estValue = null;
-                        const equity = null;
-                        const countyName = r.county_name || r.county_code || '';
-                        const ownerName = r.owner_name || null;
-                        const PILLAR_LABELS = {
-                            FC: 'Foreclosure',
-                            PFC: 'Pre-Foreclosure',
-                            TAX: 'Tax Delinquency',
-                            CODE: 'Code Violation',
-                            PRB: 'Probate / Estate',
-                            VAC: 'Vacant Property',
-                            ML: 'Municipal Lien',
-                            EVICT: 'Eviction / Landlord',
-                            ABS: 'Absentee High Equity'
-                        };
-                        const distressLabel = r.distress_pillar ? (PILLAR_LABELS[r.distress_pillar] || r.distress_pillar) : null;
-                        const tags = [];
-                        if (ownerName) tags.push('Absentee Owner');
-                        if (equity > 50000) tags.push('High Equity');
-                        if (distressLabel) tags.push(distressLabel);
-
-                        return {
-                            id: r.property_id || `rec-${idx}`,
-                            crownKey: `${r.county_code || 'DUV'}-${r.parcel_raw || 'PARCEL-' + idx}`,
-                            parcel: r.parcel_raw || r.parcel_match,
-                            address: r.address_line1 || '',
-                            city: r.city || '',
-                            county: countyName,
-                            zip: r.postal_code || '',
-                            owner: ownerName,
-                            ownerType: ownerName ? 'Absentee Owner' : null,
-                            mailingAddress: r.owner_mailing_address || null,
-                            assessedValue: assessed || null,
-                            estimatedValue: estValue || null,
-                            equity: equity || null,
-                            equityPercent: (assessed > 0 && equity > 0) ? Math.round((equity / assessed) * 100) : null,
-                            legalDescription: r.legal_description || null,
-                            distress: distressLabel,
-                            distressClass: r.distress_pillar ? `distress-${r.distress_pillar.toLowerCase()}` : 'distress-tax',
-                            delinquentAmount: r.delinquent_amount ? Number(r.delinquent_amount) : null,
-                            lastFiling: r.last_filing_date ? new Date(r.last_filing_date).toISOString().split('T')[0] : null,
-                            skipStatus: r.owner_phone ? 'Enriched' : 'Unskipped',
-                            status: 'Active Record',
-                            tags: tags,
-                            phone: r.owner_phone || null,
-                            email: r.owner_email || null
-                        };
-                    });
-            }
-        } catch (dbErr) {
-            console.warn('[County Records RDS Fallback]:', dbErr.message);
-        }
-        if (!records.length) {
-            records = db.data.crm.county_records || [];
-        }
+        // One row per registered property. Owner and mailing address are the county roll's own (stored when the parcel was found);
+        // distress labels come from recorded events only. Value, equity and filing amounts are shown only when they exist.
+        const { rows } = await pool.query(`
+            SELECT p.property_id, p.parcel_raw, p.parcel_match, p.address_line1, p.city, p.postal_code, p.assessed_value, p.legal_description, p.property_type,
+                   p.metadata, p.created_at, c.county_code, c.county_name,
+                   coalesce((SELECT array_agg(DISTINCT e.pillar_code ORDER BY e.pillar_code) FROM core.pillar_events e WHERE e.property_id = p.property_id), '{}') AS pillars,
+                   (SELECT max(e.filing_amount) FROM core.pillar_events e WHERE e.property_id = p.property_id AND e.pillar_code IN ('TAX', 'TCERT', 'TDEED', 'FC', 'PFC')) AS delinquent_amount,
+                   (SELECT max(e.event_date) FROM core.pillar_events e WHERE e.property_id = p.property_id) AS last_filing_date,
+                   contact.primary_phone AS owner_phone, contact.primary_email AS owner_email
+            FROM core.properties p
+            LEFT JOIN ref.counties c ON p.county_id = c.county_id
+            LEFT JOIN LATERAL (SELECT pe.primary_phone, pe.primary_email FROM core.leads l JOIN core.people pe ON pe.person_id = l.person_id
+                               WHERE l.property_id = p.property_id ORDER BY l.created_at LIMIT 1) contact ON TRUE
+            ORDER BY p.created_at DESC`);
+        const LABELS = { FC: 'Foreclosure', PFC: 'Pre-Foreclosure', TAX: 'Tax Delinquency', TCERT: 'Tax Certificate', TDEED: 'Tax Deed', CODE: 'Code Violation', PRB: 'Probate / Estate',
+            INH: 'Inherited', VAC: 'Vacant Property', ML: 'Municipal Lien', EVI: 'Eviction', ABS: 'Absentee Owner', OOS: 'Out-of-State Owner' };
+        const records = rows.map(r => {
+            const meta = r.metadata || {};
+            const assessed = Number(r.assessed_value) || null;
+            const pillars = r.pillars || [];
+            const labels = pillars.map(code => LABELS[code] || code);
+            const ownerType = pillars.includes('OOS') ? 'Out-of-State Owner' : pillars.includes('ABS') ? 'Absentee Owner' : (meta.owner_mailing ? 'Owner Occupied' : null);
+            const first = pillars[0];
+            return {
+                id: r.property_id,
+                crownKey: `${r.county_code}-${r.parcel_raw}`,
+                parcel: r.parcel_raw || r.parcel_match,
+                address: r.address_line1 || '',
+                city: r.city || '',
+                county: r.county_name || r.county_code || '',
+                zip: r.postal_code || '',
+                owner: meta.county_owner_of_record || null,
+                ownerType,
+                mailingAddress: meta.owner_mailing || null,
+                assessedValue: assessed,
+                estimatedValue: null,
+                equity: null,
+                equityPercent: null,
+                legalDescription: r.legal_description || null,
+                distress: labels.length ? labels.join(', ') : null,
+                distressClass: first ? `distress-${first.toLowerCase()}` : '',
+                delinquentAmount: r.delinquent_amount ? Number(r.delinquent_amount) : null,
+                lastFiling: r.last_filing_date ? new Date(r.last_filing_date).toISOString().split('T')[0] : null,
+                skipStatus: r.owner_phone ? 'Enriched' : 'Unskipped',
+                status: 'Active Record',
+                tags: labels,
+                phone: r.owner_phone || null,
+                email: r.owner_email || null
+            };
+        });
         res.json({ total: records.length, records });
     } catch (err) {
         res.status(500).json({ error: err.message });

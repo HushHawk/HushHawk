@@ -2342,7 +2342,7 @@ export default {
     openEditModal() {
       this.editProp = {
         address_line1: this.selectedProperty.address_line1 || '',
-        city: this.selectedProperty.city || 'Jacksonville',
+        city: this.selectedProperty.city || '',
         state_code: this.selectedProperty.state_code || 'FL',
         postal_code: this.selectedProperty.postal_code || '',
         county_code: this.selectedProperty.county_code || 'DUV',

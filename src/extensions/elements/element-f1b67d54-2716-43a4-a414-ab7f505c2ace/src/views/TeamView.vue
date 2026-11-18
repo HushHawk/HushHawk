@@ -73,8 +73,8 @@
           <div class="metric-icon-wrap purple"><span v-html="icons.key"></span></div>
           <div class="metric-info">
             <span class="metric-label">Security &amp; Auth Ledger</span>
-            <strong class="metric-val">{{ auditMetrics.securityEvents }} Verified</strong>
-            <span class="metric-change">Passkeys &amp; Role Integrity</span>
+            <strong class="metric-val">{{ auditMetrics.securityEvents }} Events</strong>
+            <span class="metric-change">Sign-ins, role and password changes</span>
           </div>
         </div>
       </div>
@@ -158,7 +158,6 @@
                   <th class="col-phone">Phone Number</th>
                   <th class="col-email">Email Address</th>
                   <th class="col-workspaces">Workspaces</th>
-                  <th class="col-password">Password</th>
                   <th class="col-status">Status</th>
                   <th class="col-actions actions-col">Actions</th>
                 </tr>

@@ -631,3 +631,22 @@ test('desk threads carry no invented score or place, and the property card shows
     assert.equal(linked.propertyFacts, 'Single Family • 1,063 sqft • Built 1950 • County value $91,234');
     assert.equal(linked.propertyImage, null, 'no photo is invented');
 });
+
+test('county records show the county roll owner and only recorded distress, with no invented equity or fallbacks', async () => {
+    const { rows: [county] } = await pool.query("SELECT county_id FROM ref.counties WHERE county_code = 'DUV'");
+    const parcel = `CTY${run}`;
+    const { rows: [prop] } = await pool.query(
+        `INSERT INTO core.properties (county_id, parcel_raw, parcel_match, address_line1, city, postal_code, state_code, assessed_value, metadata)
+         VALUES ($1, $2, $2, '9 County Rd', 'Jacksonville', '32209', 'FL', 80000, '{"county_owner_of_record":"ROLL OWNER","owner_mailing":"1 ELSEWHERE ST, TAMPA, FL, 33601"}'::jsonb) RETURNING property_id`, [county.county_id, parcel]);
+    const { EventService } = await import('../backend/src/services/eventService.js');
+    const { rows: [src] } = await pool.query("INSERT INTO raw.source_records (source_system, jurisdiction, source_external_id, payload, payload_hash, parser_version) VALUES ('TEST', 'Duval County', $1, '{}'::jsonb, $1, 't') RETURNING source_record_id", [parcel]);
+    await EventService.recordPillarEvent({ propertyId: prop.property_id, pillarCode: 'ABS', externalEventId: `T:${parcel}`, verificationStatus: 'CONFIRMED', sourceRecordId: src.source_record_id, actor: 'Tester' });
+    const { status, body } = await asJson(await json('GET', '/county-records'));
+    assert.equal(status, 200);
+    const rec = body.records.find(r => r.parcel === parcel);
+    assert.deepEqual([rec.owner, rec.ownerType, rec.distress, rec.mailingAddress], ['ROLL OWNER', 'Absentee Owner', 'Absentee Owner', '1 ELSEWHERE ST, TAMPA, FL, 33601']);
+    assert.deepEqual([rec.equity, rec.estimatedValue, rec.equityPercent], [null, null, null]);
+    assert.ok(!body.records.some(r => (r.tags || []).includes('High Equity') || /High Equity/.test(r.distress || '')));
+    const plain = body.records.find(r => r.owner === null);
+    if (plain) assert.equal(plain.ownerType, null, 'no owner claim without a roll record');
+});

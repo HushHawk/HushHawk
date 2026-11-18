@@ -72,7 +72,7 @@
             <option value="Tax Delinquent">Tax Delinquent (2+ Years)</option>
             <option value="Probate">Probate / Inherited</option>
             <option value="Code Violation">Code Violations &amp; Liens</option>
-            <option value="Absentee">High Equity Absentee Owner</option>
+            <option value="Absentee">Absentee Owner</option>
             <option value="Pre-Foreclosure">Lis Pendens / Pre-Foreclosure</option>
           </select>
         </div>
@@ -129,14 +129,14 @@
               <td>
                 <div class="property-cell">
                   <strong>{{ r.address }}</strong>
-                  <small>{{ r.city || 'Jacksonville' }}, FL {{ r.zip }}</small>
+                  <small>{{ [r.city, 'FL ' + (r.zip || '')].filter(Boolean).join(', ') }}</small>
                 </div>
               </td>
               <td>
                 <div class="owner-cell">
-                  <span>{{ r.owner }}</span>
+                  <span>{{ r.owner || '—' }}</span>
                   <small :class="{ absentee: r.isAbsentee }">
-                    {{ r.isAbsentee ? 'Absentee Owner (Out of State)' : 'Owner Occupied' }}
+                    {{ r.ownerType || '' }}
                   </small>
                 </div>
               </td>
@@ -255,7 +255,7 @@ export default {
       const readyForSkip = list.filter(r => !r.phone || r.phone === '—').length;
       return [
         { label: 'County Records Indexed', value: total ? total.toLocaleString() : '0', change: 'Live', icon: 'database' },
-        { label: 'High-Equity Absentee', value: absentee ? absentee.toLocaleString() : '0', change: 'Live', icon: 'users' },
+        { label: 'Absentee Owners', value: absentee ? absentee.toLocaleString() : '0', change: 'Live', icon: 'users' },
         { label: 'Tax Delinquent Records', value: taxDelinquent ? taxDelinquent.toLocaleString() : '0', change: 'Live', icon: 'badgeDollar' },
         { label: 'Pre-Foreclosure / Lis Pendens', value: lisPendens ? lisPendens.toLocaleString() : '0', change: 'Live', icon: 'file' },
         { label: 'Ready for Skip Trace', value: readyForSkip ? readyForSkip.toLocaleString() : '0', change: 'Live', icon: 'search' }
@@ -276,7 +276,7 @@ export default {
             distressClass: r.distressClass || 'distress-tax',
             lastFiling: r.lastFiling || r.last_filing || null,
             skipStatus: r.skipStatus || r.skip_status || '',
-            mailingAddress: r.mailingAddress || r.mailing_address || r.address || '',
+            mailingAddress: r.mailingAddress || r.mailing_address || '',
             delinquentAmount: r.delinquentAmount || r.delinquent_amount || null,
             legalDescription: r.legalDescription || r.legal_description || ''
           }));
