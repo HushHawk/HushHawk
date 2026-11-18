@@ -173,7 +173,7 @@
           </div>
           <div class="ov-card">
             <span class="ov-label">Estimated Equity</span>
-            <span class="ov-value gold">${{ Number(selectedProperty.estimated_equity || Math.round((Number(selectedProperty.assessed_value) || 200000) * 0.45)).toLocaleString() }}</span>
+            <span class="ov-value gold">{{ selectedProperty.estimated_equity ? '$' + Number(selectedProperty.estimated_equity).toLocaleString() : '—' }}</span>
           </div>
           <div class="ov-card">
             <span class="ov-label">Parcel ID</span>
