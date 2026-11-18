@@ -28,7 +28,7 @@ import { renderCrownKey, validateCrownKeyFormat, normalizeParcelMatch } from '..
 import { RbacService, ALL_SECTIONS } from '../services/rbacService.js';
 import { BatchLeadsService } from '../services/batchLeadsService.js';
 import { AutomationService } from '../services/automationService.js';
-import { requireSession, loginRateLimit, webhookUrl as signedWebhookUrl, publicWebhookUrl, actorName } from '../middleware/auth.js';
+import { requireSession, loginRateLimit, accountLocked, recordLoginFailure, clearLoginFailures, webhookUrl as signedWebhookUrl, publicWebhookUrl, actorName } from '../middleware/auth.js';
 
 export const apiRouter = Router();
 
@@ -4623,7 +4623,15 @@ apiRouter.delete('/team/:id', async (req, res) => {
 apiRouter.post('/auth/login', loginRateLimit, async (req, res) => {
     try {
         const { email, password } = req.body;
-        const result = await RbacService.authenticate({ email, password });
+        if (accountLocked(email)) return res.status(429).json({ ok: false, error: 'Too many failed sign-ins for this account. Try again in 15 minutes.' });
+        let result;
+        try {
+            result = await RbacService.authenticate({ email, password });
+        } catch (err) {
+            recordLoginFailure(email);
+            throw err;
+        }
+        clearLoginFailures(email);
         res.json({ ok: true, ...result });
     } catch (err) {
         res.status(401).json({ ok: false, error: err.message });

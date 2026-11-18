@@ -10,6 +10,7 @@ import { LeadLinkService } from './services/leadLinkService.js';
 import { LeadClassifierService } from './services/leadClassifierService.js';
 import { CountyRollService } from './services/countyRollService.js';
 import { BackupService } from './services/backupService.js';
+import { securityHeaders, sanitizeServerErrors, redactUrl } from './middleware/hardening.js';
 import { ConnectorService } from './services/connectorService.js';
 import { GraphService } from './services/graphService.js';
 import { requireSession, bearerToken, loginRateLimit } from './middleware/auth.js';
@@ -21,6 +22,8 @@ const PORT = process.env.PORT || 3001;
 const allowedOrigins = (process.env.CORS_ORIGINS || '').split(',').map(o => o.trim()).filter(Boolean);
 app.use(cors({ origin: (origin, cb) => cb(null, !origin || allowedOrigins.includes(origin)) }));
 app.disable('x-powered-by');
+app.use(securityHeaders);
+app.use(sanitizeServerErrors);
 app.use(express.json({ limit: '10mb', verify: (req, res, buf) => { req.rawBody = buf; } })); // the raw body is needed to check Meta's webhook signature
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
@@ -30,7 +33,7 @@ app.use((req, res, next) => {
     res.on('finish', () => {
         const duration = Date.now() - start;
         if (!req.url.startsWith('/favicon')) {
-            console.log(`[API] ${req.method} ${req.url} -> ${res.statusCode} (${duration}ms)`);
+            console.log(`[API] ${req.method} ${redactUrl(req.url)} -> ${res.statusCode} (${duration}ms)`);
         }
     });
     next();

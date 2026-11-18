@@ -13,6 +13,41 @@ const WEBHOOK_PATTERNS = [
     /^\/integrations\/batchleads\/webhook$/
 ];
 
+/**
+ * Which sections of the app (as listed in a role's permissions) may use which part of the API. Built from the API calls each page makes.
+ * Administrators bypass this. A path that matches no rule (dashboard, notifications, chat, search, outreach actions, health, auth) is open
+ * to every signed-in user. Shared data areas list every section whose page needs them.
+ */
+export const SECTION_RULES = [
+    [/^\/(seller-leads|leads)(\/|$)/, ['/seller-leads', '/acquisitions', '/home', '/deal-analyzer']],
+    [/^\/properties(\/|$)/, ['/properties', '/vault', '/deal-analyzer', '/home']],
+    [/^\/vault(\/|$)/, ['/vault', '/properties', '/contracts']],
+    [/^\/deal-funnel(\/|$)/, ['/acquisitions', '/home', '/dispositions', '/contracts']],
+    [/^\/deal-analysis(\/|$)/, ['/deal-analyzer', '/seller-leads']],
+    [/^\/dispositions(\/|$)/, ['/dispositions']],
+    [/^\/(buyers|cash-buyers)(\/|$)/, ['/cash-buyers', '/dispositions']],
+    [/^\/marketing(\/|$)/, ['/marketing']],
+    [/^\/contracts(\/|$)/, ['/contracts', '/dispositions']],
+    [/^\/follow-ups(\/|$)/, ['/follow-ups']],
+    [/^\/(analytics|reports)(\/|$)/, ['/analytics', '/home']],
+    [/^\/automations(\/|$)/, ['/automations']],
+    [/^\/calendar(\/|$)/, ['/calendar']],
+    [/^\/(communications|lead-desk)(\/|$)/, ['/communications', '/home']],
+    [/^\/contacts(\/|$)/, ['/contacts']],
+    [/^\/skip-tracing(\/|$)/, ['/skip-tracing']],
+    [/^\/facebook-leads(\/|$)/, ['/facebook-leads', '/home']],
+    [/^\/direct-mail(\/|$)/, ['/direct-mail']],
+    [/^\/tasks(\/|$)/, ['/tasks', '/properties', '/home']],
+    [/^\/county-records(\/|$)/, ['/county-data', '/properties', '/home']],
+    [/^\/(team|rbac|roles|audit)(\/|$)/, ['/team']],
+    [/^\/integrations(\/|$)/, ['/settings', '/communications', '/home']],
+    [/^\/(connectors|imports|events|review|graph|compliance)(\/|$)/, ['/settings']]
+];
+
+export function sectionsFor(path) {
+    return SECTION_RULES.find(([pattern]) => pattern.test(path))?.[1] || null;
+}
+
 /** Endpoints only a SUPER_ADMIN may call. */
 const ADMIN_ONLY = [
     { method: 'POST', pattern: /^\/settings$/ },
@@ -80,6 +115,12 @@ export async function requireSession(req, res, next) {
                 if (key in req.body) req.body[key] = session.user.name;
             }
         }
+        if (!session.user.isAdmin) {
+            const needed = sectionsFor(path);
+            if (needed && !needed.some(section => (session.user.permissions || []).includes(section))) {
+                return res.status(403).json({ error: 'Your role does not include this part of the system.' });
+            }
+        }
         const adminRule = ADMIN_ONLY.find(r => (r.method === 'ALL' || r.method === req.method) && r.pattern.test(path));
         if (adminRule && !session.user.isAdmin) {
             return res.status(403).json({ error: 'Administrator access is required.' });
@@ -101,13 +142,32 @@ export function publicWebhookUrl(path) {
 
 // Login attempts are limited per client address to slow down password guessing.
 const attempts = new Map();
+/** The real caller behind Vercel and nginx; req.ip would be the proxy for everyone. */
+export function clientAddress(req) {
+    return String(req.get('x-vercel-forwarded-for') || req.get('x-real-ip') || req.ip || 'unknown').split(',')[0].trim();
+}
 export function loginRateLimit(req, res, next) {
-    const key = req.ip;
+    const key = clientAddress(req);
     const now = Date.now();
     const recent = (attempts.get(key) || []).filter(t => now - t < 15 * 60_000);
-    if (recent.length >= 10) return res.status(429).json({ ok: false, error: 'Too many sign-in attempts. Try again in a few minutes.' });
+    if (recent.length >= 30) return res.status(429).json({ ok: false, error: 'Too many sign-in attempts. Try again in a few minutes.' });
     recent.push(now);
     attempts.set(key, recent);
     next();
 }
 
+
+// Failed sign-ins are also counted per account, whatever address they come from, so rotating addresses cannot be used to guess a password.
+const failures = new Map();
+const LOCK_AFTER = 5; const LOCK_MS = 15 * 60_000;
+const emailKey = email => String(email || '').trim().toLowerCase();
+export function accountLocked(email) {
+    const f = failures.get(emailKey(email));
+    return Boolean(f && f.count >= LOCK_AFTER && Date.now() - f.last < LOCK_MS);
+}
+export function recordLoginFailure(email) {
+    const key = emailKey(email); const f = failures.get(key);
+    const fresh = !f || Date.now() - f.last >= LOCK_MS;
+    failures.set(key, { count: fresh ? 1 : f.count + 1, last: Date.now() });
+}
+export function clearLoginFailures(email) { failures.delete(emailKey(email)); }
