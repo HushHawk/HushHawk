@@ -222,7 +222,7 @@
               :title="'Podio Live CRM · ' + podioStatusText + ' · Click to refresh all feeds'"
             >
               <span class="sync-dot" :class="{ spinning: isRefreshingAll || isSyncingPodio, warn: hasFetchIssue }"></span>
-              <span>{{ (isRefreshingAll || isSyncingPodio) ? 'Syncing Feeds…' : (hasFetchIssue ? 'Podio Warning · Click to Retry' : (podioConnected ? 'Podio Live (' + (podioLeadsCount ?? 0) + ' Leads)' : 'Podio not connected')) }}</span>
+              <span>{{ (isRefreshingAll || isSyncingPodio) ? 'Syncing Feeds…' : (hasFetchIssue ? 'Podio Warning · Click to Retry' : (podioConnected ? 'Podio Live (' + (podioLeadsCount ?? 0) + ' Leads)' : podioProblem)) }}</span>
             </button>
             <button
               type="button"
@@ -1078,6 +1078,7 @@ const isAddDealOpen = ref(false);
 const isSyncingPodio = ref(false);
 const podioLeadsCount = ref(null);
 const podioConnected = ref(false);
+const podioProblem = ref('Podio not connected');
 const podioStatusText = ref('Checking Podio…');
 
 async function checkPodioStatus() {
@@ -1091,11 +1092,13 @@ async function checkPodioStatus() {
         podioStatusText.value = `Connected (${data.leadsCount ?? 0} leads, ${data.propertiesCount ?? 0} properties, ${data.propertiesAwaitingParcel ?? 0} awaiting parcel)`;
       } else {
         podioStatusText.value = data.error || 'Not connected';
+        podioProblem.value = data.status === 'NOT_CONFIGURED' ? 'Podio not configured on the server' : (data.status === 'ERROR' ? 'Podio error: ' + (data.error || 'unreachable') : 'Podio not connected');
       }
     }
   } catch (e) {
     podioConnected.value = false;
     podioStatusText.value = 'Podio status unavailable';
+    podioProblem.value = 'Podio status unavailable (server unreachable or signed out)';
   }
 }
 

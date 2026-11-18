@@ -24,6 +24,12 @@
 * Only the 29 pillars from the CrownKey guide are live. Any other pillar needs an administrator to approve and enable it
   (Settings, CrownKey Control, Dictionary).
 
+## Upgrading a server that already receives webhooks
+Podio hooks, BatchLeads and smrtPhone were registered without the secret. Until each one uses the signed URL, set `WEBHOOK_ALLOW_UNSIGNED=true`
+so nothing is dropped, then re-register the Podio hooks (`POST /api/v1/integrations/podio/register-all-webhooks`), add `?secret=<WEBHOOK_SECRET>`
+to the BatchLeads and smrtPhone URLs, and finally remove `WEBHOOK_ALLOW_UNSIGNED`. The server also needs every `PODIO_*` variable in `.env`:
+the code no longer falls back to built-in app IDs or tokens, so a missing variable shows "Podio not configured on the server".
+
 ## Podio
 Set the `PODIO_*` variables and `PODIO_SYNC_INTERVAL_MIN` (minutes). The API then syncs on that schedule and also reacts to webhooks.
 Register the webhooks once: `POST /api/v1/integrations/podio/register-all-webhooks` as an administrator.
