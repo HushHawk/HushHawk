@@ -4686,7 +4686,7 @@ apiRouter.get('/dashboard/metrics', async (req, res) => {
             metrics: [
                 { iconKey: 'users', label: 'Total Seller Leads', value: String(lead.total), change: 'Live', href: '/seller-leads',
                   note: `of ${lead.everyone} contacts · ${lead.everyone - lead.total} not sellers`,
-                  help: `${lead.sellers} confirmed sellers and ${lead.review} contacts to review are counted. Not counted: ${lead.business} business contacts, ${lead.automated} automated senders and ${lead.internal} internal or test records. The ${lead.everyone} contacts are the live Podio items plus ${lead.removed_in_podio} deleted in Podio (kept as Lost) and ${lead.only_here} created only in HushHawk. Change a contact's type on the Seller Leads page.` },
+                  help: `${lead.sellers} confirmed sellers and ${lead.review} contacts to review are counted. Not counted: ${lead.business} business contacts, ${lead.automated} automated senders and ${lead.internal} internal or test records. The ${lead.everyone} contacts are everything synced from Podio, including contacts since deleted there (kept as Lost, never erased), plus ${lead.only_here} created only in HushHawk. Change a contact's type on the Seller Leads page.` },
                 { iconKey: 'phone', label: 'Contact Rate', value: contactRate, change: 'Live', href: '/communications' },
                 { iconKey: 'calendar', label: 'Appointments Set', value: String(funnel.appointments), change: 'Live', href: '/calendar' },
                 { iconKey: 'file', label: 'Offers Pending', value: String(funnel.offers), change: 'Live', href: '/acquisitions' },
