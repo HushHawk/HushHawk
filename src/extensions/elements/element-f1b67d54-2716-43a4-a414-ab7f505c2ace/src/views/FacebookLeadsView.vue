@@ -129,25 +129,25 @@
                 </td>
                 <td>
                   <span class="camp-pill">{{ l.campaign }}</span>
-                  <span class="ad-id font-mono">Ad #{{ l.adSet }}</span>
+                  <span v-if="l.adSet" class="ad-id font-mono">Ad #{{ l.adSet }}</span>
                 </td>
                 <td>
-                  <span class="tf-badge" :class="l.timeframe.toLowerCase().includes('immediate') ? 'urgent' : ''">
+                  <span class="tf-badge" :class="(l.timeframe || '').toLowerCase().includes('immediate') ? 'urgent' : ''">
                     {{ l.timeframe }}
                   </span>
                 </td>
                 <td>
-                  <span class="repair-val text-gold">${{ l.repairs.toLocaleString() }}</span>
+                  <span class="repair-val text-gold">{{ money(l.repairs) }}</span>
                   <span class="occupancy-sub">{{ l.occupancy }}</span>
                 </td>
                 <td>
                   <div class="mortgage-col">
-                    <span>{{ l.mortgage ? '$' + l.mortgage.toLocaleString() : 'Free & Clear' }}</span>
+                    <span>{{ money(l.mortgage) }}</span>
                     <span class="sub-equity text-green" v-if="l.equity">{{ l.equity }}% Equity</span>
                   </div>
                 </td>
                 <td>
-                  <span class="status-chip" :class="l.stage.toLowerCase().replace(/\s+/g, '-')">
+                  <span class="status-chip" :class="(l.stage || '').toLowerCase().replace(/\s+/g, '-')">
                     {{ l.stage }}
                   </span>
                 </td>
@@ -221,7 +221,7 @@
             </div>
             <div class="info-row">
               <span class="k">Self-Reported Repairs:</span>
-              <span class="v text-gold">${{ selectedLead.repairs.toLocaleString() }} ({{ selectedLead.repairDetails }})</span>
+              <span class="v text-gold">{{ money(selectedLead.repairs) }}{{ selectedLead.repairDetails ? ' (' + selectedLead.repairDetails + ')' : '' }}</span>
             </div>
             <div class="info-row">
               <span class="k">Current Occupancy:</span>
@@ -229,7 +229,7 @@
             </div>
             <div class="info-row">
               <span class="k">Mortgage Balance:</span>
-              <span class="v">{{ selectedLead.mortgage ? '$' + selectedLead.mortgage.toLocaleString() : 'Paid Off / Free & Clear' }}</span>
+              <span class="v">{{ money(selectedLead.mortgage) }}</span>
             </div>
           </div>
 
@@ -241,11 +241,11 @@
             </div>
             <div class="info-row">
               <span class="k">Estimated ARV:</span>
-              <span class="v">${{ selectedLead.arv.toLocaleString() }}</span>
+              <span class="v">{{ money(selectedLead.arv) }}</span>
             </div>
             <div class="info-row">
               <span class="k">Calculated MAO (70%):</span>
-              <span class="v">${{ Math.round(selectedLead.arv * 0.7 - selectedLead.repairs - 15000).toLocaleString() }}</span>
+              <span class="v">{{ selectedLead.arv && selectedLead.repairs != null ? money(Math.round(selectedLead.arv * 0.7 - selectedLead.repairs - 15000)) : '—' }}</span>
             </div>
           </div>
 
@@ -316,10 +316,10 @@ export default {
         if (this.searchQuery) {
           const q = this.searchQuery.toLowerCase();
           return (
-            l.name.toLowerCase().includes(q) ||
-            l.address.toLowerCase().includes(q) ||
+            (l.name || '').toLowerCase().includes(q) ||
+            (l.address || '').toLowerCase().includes(q) ||
             l.phone.includes(q) ||
-            l.campaign.toLowerCase().includes(q)
+            (l.campaign || '').toLowerCase().includes(q)
           );
         }
         return true;
@@ -331,6 +331,7 @@ export default {
     this.loadFacebookLeads();
   },
   methods: {
+    money(v) { return v === null || v === undefined || v === '' || Number.isNaN(Number(v)) ? '—' : '$' + Number(v).toLocaleString(); },
     async loadFacebookLeads() {
       try {
         const res = await fetch('/api/v1/facebook-leads');
