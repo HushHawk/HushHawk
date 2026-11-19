@@ -754,3 +754,101 @@ test('Podio email feed items keep the full body and links, and an older cut-off 
         globalThis.fetch = originalFetch; PodioService.authenticateApp = originalAuth;
     }
 });
+
+test('in-house mailing: audience checks, runs, touch order, and the letters + envelopes + list package', async () => {
+    const Mail = await import('../backend/src/services/inHouseMailService.js');
+    const { PDFDocument, StandardFonts } = await import('pdf-lib');
+    const { unzipSync, strFromU8 } = await import('fflate');
+    const { rows: [county] } = await pool.query("SELECT county_id FROM ref.counties WHERE county_code = 'DUV'");
+    const tag = `MQ${Date.now() % 100000}`;
+    const mk = async (parcel, meta, address = '1 Mail St') => {
+        const { rows: [p] } = await pool.query(
+            `INSERT INTO core.properties (county_id, parcel_raw, parcel_match, address_line1, city, postal_code, state_code, metadata) VALUES ($1, $2, $2, $3, 'Jacksonville', '32202', 'FL', $4) RETURNING property_id`,
+            [county.county_id, parcel, address, JSON.stringify(meta)]);
+        await pool.query("INSERT INTO core.pillar_events (property_id, pillar_code, event_number, verification_status, event_status) VALUES ($1, 'ABS', 1, 'CONFIRMED', 'OPEN')", [p.property_id]);
+        return p.property_id;
+    };
+    const good = { county_owner_of_record: 'ANN OWNER', owner_mailing: '10 Elsewhere St, Tampa, FL, 33601' };
+    const a = await mk(`${tag}A`, good, '11 Alpha St');
+    const b = await mk(`${tag}B`, { county_owner_of_record: 'BOB OWNER', owner_mailing: '20 Other Rd, Miami, FL, 33101' }, '22 Beta St');
+    const noOwner = await mk(`${tag}C`, { owner_mailing: '30 Some Rd, Miami, FL, 33101' });
+    const noAddr = await mk(`${tag}D`, { county_owner_of_record: 'NO ADDRESS', owner_mailing: 'PO BOX' });
+    const dup = await mk(`${tag}E`, good, '12 Alpha Ct');
+    const lead = await mk(`${tag}F`, { county_owner_of_record: 'LEAD OWNER', owner_mailing: '40 Lead Ln, Tampa, FL, 33602' });
+    await pool.query("INSERT INTO core.leads (property_id, first_source_code, status, lead_kind) VALUES ($1, 'COUNTY', 'NEW', 'SELLER')", [lead]);
+    const mine = [a, b, noOwner, noAddr, dup, lead];
+
+    // addresses
+    assert.deepEqual(Mail.parseMailingAddress('10 Elsewhere St, Tampa, FL, 33601').lines, ['10 Elsewhere St', 'Tampa, FL 33601']);
+    assert.equal(Mail.parseMailingAddress('PO BOX'), null);
+
+    let audience = await Mail.buildAudience({ touch: 1 });
+    const eligibleIds = new Set(audience.eligible.map(e => e.propertyId));
+    assert.ok(eligibleIds.has(a) && eligibleIds.has(b));
+    assert.ok(![noOwner, noAddr, dup, lead].some(id => eligibleIds.has(id)), 'owner, address, duplicate and lead checks hold');
+    assert.ok(audience.reasons['Already a lead in the pipeline'] >= 1 && audience.reasons['No deliverable mailing address'] >= 1);
+    const keys = audience.eligible.map(e => e.crownKey);
+    assert.ok(keys.length >= 2);
+
+    // a run needs both templates for the touch
+    await assert.rejects(Mail.createRun({ touch: 1, propertyIds: [a], actor: 't' }), /Upload the First outreach letter/);
+
+    // two small template PDFs held in memory instead of S3
+    const makePdf = async (w, h, label) => { const d = await PDFDocument.create(); const pg = d.addPage([w, h]); pg.drawText(label, { x: 20, y: h - 30, size: 14, font: await d.embedFont(StandardFonts.Helvetica) }); return Buffer.from(await d.save()); };
+    const store = new Map([['mail-templates/t1-letter.pdf', await makePdf(612, 792, 'LETTER ART')], ['mail-templates/t1-env.pdf', await makePdf(684, 297, 'ENVELOPE ART')], ['mail-templates/bad.pdf', Buffer.from('not a pdf')]]);
+    const originalLoad = Mail.templateStore.load;
+    Mail.templateStore.load = async key => { if (!store.has(key)) throw new Error('missing'); return store.get(key); };
+    try {
+        await assert.rejects(Mail.registerTemplate({ touch: 1, kind: 'LETTER', objectKey: 'mail-templates/bad.pdf', filename: 'bad.pdf', actor: 't' }), /PDF, PNG or JPG/);
+        await assert.rejects(Mail.registerTemplate({ touch: 1, kind: 'LETTER', objectKey: 'somewhere/else.pdf', filename: 'x.pdf', actor: 't' }), /template area/);
+        const letter = await Mail.registerTemplate({ touch: 1, kind: 'LETTER', objectKey: 'mail-templates/t1-letter.pdf', filename: 'first letter.pdf', actor: 't' });
+        const env = await Mail.registerTemplate({ touch: 1, kind: 'ENVELOPE', objectKey: 'mail-templates/t1-env.pdf', filename: 'first envelope.pdf', actor: 't' });
+        assert.equal(letter.pages, 1);
+        const placed = await asJson(await json('PUT', `/direct-mail/inhouse/templates/${env.template_id}/placement`, { addressXIn: 4.1, addressYIn: 1.8, fontPt: 12 }));
+        assert.equal(placed.status, 200); assert.equal(placed.body.placement.addressXIn, 4.1);
+
+        const run = await Mail.createRun({ touch: 1, propertyIds: [a, b], label: 'test', actor: 't' });
+        assert.equal(run.pieceCount, 2);
+        const again = await Mail.buildAudience({ touch: 1 });
+        assert.ok(!again.eligible.some(e => [a, b].includes(e.propertyId)), 'nobody is sent the same touch twice');
+        assert.ok(again.reasons['Already sent this touch'] >= 2);
+
+        const pkg = await json('GET', `/direct-mail/inhouse/runs/${run.runId}/download/package.zip`);
+        assert.equal(pkg.status, 200);
+        const files = unzipSync(new Uint8Array(await pkg.arrayBuffer()));
+        const names = Object.keys(files).map(n => n.split('/').pop()).sort();
+        assert.deepEqual(names, ['README.txt', 'envelopes.pdf', 'letters.pdf', 'mailing_list.csv']);
+        const get = n => files[Object.keys(files).find(k => k.endsWith(n))];
+        const csv = strFromU8(get('mailing_list.csv'));
+        const rows = csv.replace('﻿', '').split('\r\n');
+        assert.equal(rows.length, 3);
+        assert.match(rows[1], /HH-\d{9}/); assert.match(rows[1], /T1-[A-Z2-9]{4}/);
+        assert.ok(csv.includes('ANN OWNER') && csv.includes('BOB OWNER') && csv.includes('Tampa'));
+        assert.equal((await PDFDocument.load(get('letters.pdf'))).getPageCount(), 2);
+        const envDoc = await PDFDocument.load(get('envelopes.pdf'));
+        assert.equal(envDoc.getPageCount(), 2); assert.equal(Math.round(envDoc.getPage(0).getWidth()), 684);
+        // the pieces are recorded with the QR address that the scan page understands
+        const { rows: pieces } = await pool.query('SELECT mailpiece_id, token, status, qr_tracking_url, touch, crown_key FROM core.direct_mail_pieces WHERE run_id = $1', [run.runId]);
+        assert.equal(pieces.length, 2);
+        assert.ok(pieces.every(p => p.status === 'PRINTED' && p.touch === 1 && /\/api\/v1\/track\/qr\/DUV-/.test(p.qr_tracking_url)));
+
+        // touch order: nobody gets touch 2 until touch 1 is marked mailed and the gap has passed
+        await Mail.markMailed(run.runId, 't').then(r => assert.equal(r.marked, 2));
+        assert.ok(!(await Mail.buildAudience({ touch: 2, gapDays: 14 })).eligible.some(e => e.propertyId === a), 'waits for the gap');
+        const soon = await Mail.buildAudience({ touch: 2, gapDays: 0 });
+        assert.ok(soon.eligible.some(e => e.propertyId === a) && soon.eligible.some(e => e.propertyId === b));
+        // returned mail is never mailed again
+        await Mail.setPieceStatus({ mailpieceId: pieces[0].mailpiece_id, status: 'RETURNED', actor: 't' });
+        const after = await Mail.buildAudience({ touch: 2, gapDays: 0 });
+        assert.equal(after.eligible.filter(e => [a, b].includes(e.propertyId)).length, 1);
+        await assert.rejects(Mail.setPieceStatus({ mailpieceId: 'HH-000000000', status: 'RETURNED' }), /No mail piece/);
+
+        const preview = await json('GET', '/direct-mail/inhouse/preview?touch=1&kind=ENVELOPE');
+        assert.equal(preview.status, 200); assert.equal(preview.headers.get('content-type'), 'application/pdf');
+        const tracking = await asJson(await json('GET', '/direct-mail/inhouse/tracking'));
+        assert.equal(tracking.status, 200); assert.ok(tracking.body.touches[0].pieces >= 2 && tracking.body.touches[0].mailed + tracking.body.touches[0].problems >= 2 && tracking.body.touches[0].problems >= 1);
+    } finally {
+        Mail.templateStore.load = originalLoad;
+    }
+    assert.ok(mine.length === 6);
+});
