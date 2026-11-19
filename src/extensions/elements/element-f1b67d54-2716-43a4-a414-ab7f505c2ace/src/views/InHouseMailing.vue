@@ -15,10 +15,13 @@
     </header>
 
     <nav class="ihm-steps" aria-label="Steps">
-      <div class="ihm-line"><div class="ihm-line-fill" :style="{ width: ((step - 1) / 3 * 100) + '%' }"></div></div>
-      <button v-for="s in steps" :key="s.n" class="ihm-step" :class="{ on: step === s.n, done: step > s.n }" @click="goStep(s.n)">
-        <span class="ihm-step-n">{{ step > s.n ? '✓' : '0' + s.n }}</span><span class="ihm-step-l">{{ s.label }}</span>
-      </button>
+      <template v-for="(s, i) in steps" :key="s.n">
+        <button class="ihm-step" :class="{ on: step === s.n, done: step > s.n }" :aria-current="step === s.n ? 'step' : null" @click="goStep(s.n)">
+          <span class="ihm-step-n"><b v-if="step > s.n">✓</b><b v-else>0{{ s.n }}</b></span>
+          <span class="ihm-step-l">{{ s.label }}</span>
+        </button>
+        <span v-if="i < steps.length - 1" class="ihm-conn" :class="{ done: step > s.n, now: step === s.n }" aria-hidden="true"><i></i></span>
+      </template>
     </nav>
 
     <p v-if="error" class="ihm-error" role="alert">{{ error }}</p>
@@ -66,7 +69,32 @@
       <!-- 2. TEMPLATES -->
       <div v-else-if="step === 2" key="s2" class="ihm-panel">
         <h3>T0{{ touch }} · {{ touchName }}: letter and matching envelope</h3>
-        <p class="ihm-muted">Upload a PDF, PNG or JPG (up to 12 MB). Each touch has its own letter and its own envelope, so they always match. A new upload replaces the old one for future runs; earlier runs keep theirs.</p>
+        <div class="ihm-design">
+          <div class="ihm-design-head">
+            <div><span class="ihm-label">Ready-made</span><h4>HushHawk premium design</h4></div>
+            <span class="ihm-seal" aria-hidden="true">✦</span>
+          </div>
+          <p>A matching navy-and-gold letter and envelope for each touch, with the company name, return address and contact details you save below. The owner's name, address, mailpiece ID and response QR are added for every piece.</p>
+          <div class="ihm-row">
+            <button class="ihm-btn" @click="previewDesign('LETTER')">Preview T0{{ touch }} letter</button>
+            <button class="ihm-btn" @click="previewDesign('ENVELOPE')">Preview T0{{ touch }} envelope</button>
+            <button class="ihm-btn gold" :disabled="applying" @click="applyDesign([touch])">{{ applying ? 'Setting up…' : 'Use for T0' + touch }}</button>
+            <button class="ihm-btn gold" :disabled="applying" @click="applyDesign([1, 2, 3])">Use for all three touches</button>
+          </div>
+          <p class="ihm-muted">Using it replaces the current letter and envelope for future runs. Runs already built keep theirs. You can upload your own designs below at any time.</p>
+          <details class="ihm-identity" :open="identityOpen" @toggle="identityOpen = $event.target.open">
+            <summary>Mailing identity <small>(printed on the premium designs)</small></summary>
+            <div class="ihm-form">
+              <label>Company name <input type="text" maxlength="60" v-model="identity.companyName" /></label>
+              <label>Return address (up to 3 lines) <textarea rows="3" maxlength="220" v-model="identity.returnAddress" placeholder="Street&#10;City, ST ZIP"></textarea></label>
+              <label>Phone <input type="text" maxlength="30" v-model="identity.phone" /></label>
+              <label>Website <input type="text" maxlength="60" v-model="identity.website" /></label>
+              <label>Letter sign-off name (optional) <input type="text" maxlength="50" v-model="identity.signOff" placeholder="Defaults to the company name" /></label>
+            </div>
+            <div class="ihm-row"><button class="ihm-btn" @click="saveIdentity">Save identity</button><small class="ihm-muted">Saved details appear the next time you press "Use". Nothing is printed for a field you leave empty.</small></div>
+          </details>
+        </div>
+        <p class="ihm-muted">Or upload your own: a PDF, PNG or JPG (up to 12 MB). Each touch has its own letter and its own envelope, so they always match. A new upload replaces the old one for future runs; earlier runs keep theirs.</p>
         <div class="ihm-slots">
           <div v-for="kind in ['letter', 'envelope']" :key="kind" class="ihm-slot" :class="{ filled: slot(kind) }">
             <div class="ihm-slot-head"><b>{{ kind === 'letter' ? 'Letter' : 'Envelope' }}</b><span class="ihm-badge" :class="slot(kind) ? 'ok' : 'warn'">{{ slot(kind) ? 'Uploaded' : 'Needed' }}</span></div>
@@ -221,6 +249,9 @@ export default {
     const returnId = ref('');
     const stageIdx = ref(0);
     const shownEligible = ref(0);
+    const identity = reactive({ companyName: '', returnAddress: '', phone: '', website: '', signOff: '' });
+    const identityOpen = ref(false);
+    const applying = ref(false);
     const place = reactive({ envelope: { addressXIn: null, addressYIn: null, fontPt: 11 }, letter: { printName: false, nameXIn: 1, nameYIn: 2, fontPt: 11, qr: true } });
     let stageTimer = null, countTimer = null;
 
@@ -263,6 +294,43 @@ export default {
       Object.assign(place.envelope, { addressXIn: null, addressYIn: null, fontPt: 11 }, e ? e.placement : {});
       Object.assign(place.letter, { printName: false, nameXIn: 1, nameYIn: 2, fontPt: 11, qr: true }, l ? l.placement : {});
     }
+    async function loadIdentity() {
+      await guard(async () => {
+        const { identity: i } = await api('/identity');
+        Object.assign(identity, { companyName: i.companyName, returnAddress: (i.returnAddress || []).join('\n'), phone: i.phone, website: i.website, signOff: i.signOff });
+      });
+    }
+    async function saveIdentity() {
+      await guard(async () => {
+        const { identity: i } = await api('/identity', { method: 'PUT', body: JSON.stringify({ ...identity }) });
+        Object.assign(identity, { companyName: i.companyName, returnAddress: i.returnAddress.join('\n'), phone: i.phone, website: i.website, signOff: i.signOff });
+        notice.value = 'Mailing identity saved. Press "Use" to put it on the premium designs.';
+      });
+    }
+    async function previewDesign(kind) {
+      error.value = '';
+      const win = window.open('', '_blank');
+      try {
+        const { blob } = await fetchBlob(`${API}/designs/preview?touch=${touch.value}&kind=${kind}`, 'design.pdf');
+        const objectUrl = URL.createObjectURL(blob);
+        if (win) win.location.href = objectUrl; else window.open(objectUrl, '_blank');
+        setTimeout(() => URL.revokeObjectURL(objectUrl), 120000);
+      } catch (e) { if (win) win.close(); error.value = e.message; }
+    }
+    async function applyDesign(list) {
+      const names = list.length === 3 ? 'all three touches' : `T0${list[0]}`;
+      if (!window.confirm(`Use the premium letter and envelope for ${names}? This replaces the current ones for future runs.`)) return;
+      applying.value = true; notice.value = '';
+      await guard(async () => {
+        await saveIdentityQuiet();
+        await api('/designs/apply', { method: 'POST', body: JSON.stringify({ touches: list }) });
+        notice.value = `The premium design is set for ${names}. Use Preview on each to check the address position.`;
+        await loadStatus();
+      });
+      applying.value = false;
+    }
+    // the identity on screen is what gets printed, so it is saved before the designs are made
+    async function saveIdentityQuiet() { await api('/identity', { method: 'PUT', body: JSON.stringify({ ...identity }) }); }
     async function loadStatus() { await guard(async () => { status.value = await api('/status'); syncPlacement(); }); }
 
     function countUp(to) {
@@ -360,11 +428,11 @@ export default {
     }
     const barWidth = n => { const max = Math.max(1, ...(tracking.value.touches || []).map(t => t.pieces)); return Math.round((n / max) * 100); };
 
-    onMounted(async () => { await loadStatus(); await loadAudience(); });
+    onMounted(async () => { await loadStatus(); await loadAudience(); loadIdentity(); });
     onBeforeUnmount(() => { clearInterval(stageTimer); clearInterval(countTimer); });
 
     return { touches, steps, stages, step, touch, touchName, gapDays, includePossible, pillarPick, audience, runs, tracking, loading, building, uploading, error, notice, lastRun, runLabel, returnId, stageIdx,
-      shownEligible, place, fmtDate, getFile, templatesReady, slot, selectTouch, goStep, togglePillar, loadAudience, loadTracking, upload, savePlacement, preview, build, markMailed, setStatus, barWidth };
+      shownEligible, place, identity, identityOpen, applying, saveIdentity, previewDesign, applyDesign, fmtDate, getFile, templatesReady, slot, selectTouch, goStep, togglePillar, loadAudience, loadTracking, upload, savePlacement, preview, build, markMailed, setStatus, barWidth };
   }
 };
 </script>
@@ -384,14 +452,30 @@ export default {
 .ihm-touch.on { border-color: #edcf7c; background: #12304f; color: #fff; box-shadow: 0 0 0 1px rgba(237, 207, 124, .35); }
 .ihm-dot { position: absolute; top: 10px; right: 10px; width: 8px; height: 8px; border-radius: 50%; }
 .ihm-dot.ok { background: #35c58a; } .ihm-dot.wait { background: #e0a93b; }
-.ihm-steps { position: relative; display: flex; justify-content: space-between; margin: 22px 0 18px; }
-.ihm-line { position: absolute; left: 24px; right: 24px; top: 17px; height: 2px; background: #1c4468; }
-.ihm-line-fill { height: 100%; background: #edcf7c; transition: width .5s ease; }
-.ihm-step { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; background: none; border: 0; cursor: pointer; color: #7f97b2; }
-.ihm-step-n { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; border: 1px solid #1c4468; background: #071a2e; font-size: 12px; font-weight: 700; transition: all .3s; }
-.ihm-step-l { font-size: 11px; font-weight: 600; }
-.ihm-step.on { color: #fff; } .ihm-step.on .ihm-step-n { border-color: #edcf7c; color: #edcf7c; transform: scale(1.12); box-shadow: 0 0 14px rgba(237, 207, 124, .35); }
+.ihm-steps { display: flex; align-items: flex-start; margin: 24px 0 20px; padding: 0 4px; }
+.ihm-step { flex: none; display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 64px; background: none; border: 0; cursor: pointer; color: #7f97b2; font: inherit; }
+.ihm-step-n { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 50%; border: 2px solid #24517d; background: #071a2e; font-size: 12px; font-weight: 800; transition: all .35s ease; }
+.ihm-step-n b { font-weight: 800; }
+.ihm-step-l { font-size: 11px; font-weight: 700; text-align: center; letter-spacing: .02em; }
+.ihm-step.on { color: #fff; }
+.ihm-step.on .ihm-step-n { border-color: #edcf7c; color: #edcf7c; background: #0d2640; transform: scale(1.1); box-shadow: 0 0 0 5px rgba(237, 207, 124, .13), 0 0 18px rgba(237, 207, 124, .35); }
+.ihm-step.done { color: #edcf7c; }
 .ihm-step.done .ihm-step-n { background: #edcf7c; color: #04101d; border-color: #edcf7c; }
+.ihm-conn { flex: 1 1 24px; min-width: 18px; height: 4px; margin: 17px -2px 0; border-radius: 999px; background: #123252; position: relative; overflow: hidden; }
+.ihm-conn i { position: absolute; inset: 0; width: 0; border-radius: inherit; background: linear-gradient(90deg, #c9a448, #edcf7c); transition: width .6s ease; }
+.ihm-conn.done i { width: 100%; }
+.ihm-conn.now i { width: 100%; background: repeating-linear-gradient(90deg, rgba(237, 207, 124, .75) 0 8px, transparent 8px 16px); background-size: 16px 100%; animation: ihm-flow 1s linear infinite; opacity: .8; }
+@keyframes ihm-flow { to { background-position: 16px 0; } }
+.ihm-design { margin: 0 0 18px; padding: 16px; border: 1px solid rgba(237, 207, 124, .45); border-radius: 12px; background: linear-gradient(135deg, rgba(237, 207, 124, .09), rgba(11, 32, 56, .6)); }
+.ihm-design h4 { margin: 2px 0 6px; color: #fff; font-size: 16px; letter-spacing: 0; text-transform: none; font-family: Georgia, 'Times New Roman', serif; }
+.ihm-design-head { display: flex; justify-content: space-between; align-items: flex-start; }
+.ihm-seal { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; border: 1px solid #edcf7c; color: #edcf7c; font-size: 15px; }
+.ihm-identity { margin-top: 12px; border-top: 1px solid rgba(237, 207, 124, .25); padding-top: 10px; }
+.ihm-identity summary { cursor: pointer; font-size: 13px; font-weight: 700; color: #edcf7c; } .ihm-identity summary small { color: #8fa7c2; font-weight: 500; }
+.ihm-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin: 12px 0; }
+.ihm-form label { display: flex; flex-direction: column; gap: 4px; font-size: 11px; color: #8fa7c2; }
+.ihm-form input, .ihm-form textarea { padding: 7px 9px; border: 1px solid #1c4468; border-radius: 8px; background: #0b2038; color: #fff; font-size: 13px; font-family: inherit; box-sizing: border-box; width: 100%; resize: vertical; }
+@media (max-width: 560px) { .ihm-step { min-width: 54px; } .ihm-step-l { font-size: 10px; } .ihm-step-n { width: 34px; height: 34px; } .ihm-conn { margin-top: 15px; } }
 .ihm-panel { animation: ihm-in .35s both; padding: 18px; border: 1px solid #12304f; border-radius: 12px; background: #06182b; }
 .ihm-error { padding: 10px 12px; border: 1px solid #a8433f; border-radius: 8px; background: rgba(168, 67, 63, .15); color: #ffb4ae !important; }
 .ihm-ok { color: #6fe0ae !important; }
@@ -438,7 +522,7 @@ export default {
 .ihm-upload { display: inline-block; margin-top: 10px; padding: 8px 14px; border: 1px solid #edcf7c; border-radius: 9px; color: #edcf7c; font-size: 12px; font-weight: 700; cursor: pointer; position: relative; overflow: hidden; }
 .ihm-upload input { position: absolute; inset: 0; opacity: 0; cursor: pointer; } .ihm-upload.busy { opacity: .6; animation: ihm-pulse 1s infinite; }
 .ihm-produce { display: grid; grid-template-columns: minmax(240px, 1fr) minmax(240px, 1fr); gap: 20px; }
-@media (max-width: 720px) { .ihm-produce { grid-template-columns: 1fr; } .ihm-line { display: none; } }
+@media (max-width: 720px) { .ihm-produce { grid-template-columns: 1fr; } }
 .ihm-sum small { display: block; margin: 8px 0; color: #7f97b2; font-size: 11px; }
 .ihm-stages { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; align-content: center; }
 .ihm-stages li { display: flex; gap: 10px; align-items: center; font-size: 13px; color: #5f7893; transition: color .3s; }

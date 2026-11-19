@@ -12,6 +12,7 @@ import { zipSync, strToU8 } from 'fflate';
 import { pool, withTransaction, audit } from '../store/pgClient.js';
 import { StorageService } from './storageService.js';
 import { HttpError } from './eventService.js';
+import { buildEnvelopeDesign, buildLetterDesign, normalizeIdentity, DESIGN_PLACEMENT, DESIGN_TOUCHES } from './mailDesignService.js';
 
 export const TOUCHES = { 1: 'First outreach', 2: 'Follow-up', 3: 'Final courtesy' };
 export const MAX_PIECES_PER_RUN = 1500;
@@ -28,7 +29,8 @@ export const pillarLabel = code => PILLAR_LABELS[code] || code;
 
 /** Replaces this when testing, so templates can come from memory. */
 export const templateStore = {
-    load: objectKey => StorageService.getObjectBuffer({ objectKey })
+    load: objectKey => StorageService.getObjectBuffer({ objectKey }),
+    save: (objectKey, buffer) => StorageService.uploadBuffer({ objectKey, buffer, contentType: 'application/pdf', requireStorage: true })
 };
 
 // ---------- addresses ----------
@@ -459,4 +461,47 @@ export async function buildPreview({ touch, kind }) {
     return kind === 'ENVELOPE'
         ? buildEnvelopesPdf([sample], { bytes, placement: row.placement })
         : buildLettersPdf([sample], { bytes, placement: row.placement });
+}
+
+
+// ---------- mailing identity and the premium designs ----------
+export async function getIdentity() {
+    const { rows: [row] } = await pool.query('SELECT company_name, return_address, phone, website, sender_name FROM crm.mail_settings WHERE id = 1');
+    return normalizeIdentity(row ? { companyName: row.company_name, returnAddress: row.return_address, phone: row.phone, website: row.website, signOff: row.sender_name } : {});
+}
+
+export async function saveIdentity(body = {}, actor) {
+    const id = normalizeIdentity(body);
+    await pool.query(
+        `INSERT INTO crm.mail_settings (id, company_name, return_address, phone, website, sender_name, updated_by, updated_at) VALUES (1, $1, $2, $3, $4, $5, $6, now())
+         ON CONFLICT (id) DO UPDATE SET company_name = $1, return_address = $2, phone = $3, website = $4, sender_name = $5, updated_by = $6, updated_at = now()`,
+        [id.companyName, id.returnAddress.join('\n'), id.phone, id.website, id.signOff, actor || null]);
+    await audit(pool, { actor, action: 'MAIL_IDENTITY_SAVED', entityType: 'MAIL_SETTINGS', entityId: crypto.randomUUID(), diff: { companyName: id.companyName, hasAddress: id.returnAddress.length > 0, hasPhone: Boolean(id.phone), hasWebsite: Boolean(id.website) } });
+    return id;
+}
+
+export async function designPreview({ touch, kind }) {
+    touch = Number(touch);
+    if (!DESIGN_TOUCHES[touch]) throw new HttpError(400, 'touch must be 1, 2 or 3.');
+    const identity = await getIdentity();
+    return kind === 'ENVELOPE' ? buildEnvelopeDesign({ touch, identity }) : buildLetterDesign({ touch, identity });
+}
+
+/** Creates the premium letter and envelope for each touch from the saved identity and makes them the active templates. */
+export async function applyDesigns({ touches = [1, 2, 3], actor }) {
+    const wanted = [...new Set((touches || []).map(Number))].filter(n => DESIGN_TOUCHES[n]);
+    if (!wanted.length) throw new HttpError(400, 'Choose at least one touch.');
+    const identity = await getIdentity();
+    const done = [];
+    for (const touch of wanted) {
+        for (const kind of ['LETTER', 'ENVELOPE']) {
+            const bytes = Buffer.from(kind === 'LETTER' ? await buildLetterDesign({ touch, identity }) : await buildEnvelopeDesign({ touch, identity }));
+            const objectKey = `mail-templates/premium/touch-${touch}-${kind.toLowerCase()}-${Date.now()}.pdf`;
+            await templateStore.save(objectKey, bytes);
+            const row = await registerTemplate({ touch, kind, objectKey, filename: `HushHawk premium ${kind.toLowerCase()} (T0${touch}).pdf`, size: bytes.length, actor });
+            await savePlacement(row.template_id, DESIGN_PLACEMENT[kind], actor);
+            done.push({ touch, kind, templateId: row.template_id });
+        }
+    }
+    return { applied: done };
 }
