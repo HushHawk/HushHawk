@@ -864,3 +864,52 @@ test('in-house mailing: audience checks, runs, touch order, and the letters + en
     }
     assert.ok(mine.length === 6);
 });
+
+test('premium mail designs: identity, previews, and one-click setup of matching letter and envelope per touch', async () => {
+    const Mail = await import('../backend/src/services/inHouseMailService.js');
+    const { buildEnvelopeDesign, buildLetterDesign, normalizeIdentity } = await import('../backend/src/services/mailDesignService.js');
+    const { PDFDocument } = await import('pdf-lib');
+
+    // identity: nothing is invented, empty fields stay empty, newlines become address lines
+    const empty = normalizeIdentity({});
+    assert.equal(empty.companyName, 'Elite Homes USA Group'); assert.deepEqual(empty.returnAddress, []); assert.equal(empty.phone, '');
+    assert.equal(normalizeIdentity({ website: 'https://example.test' }).website, 'example.test');
+    const saved = await asJson(await json('PUT', '/direct-mail/inhouse/identity', { companyName: 'Test Homes LLC', returnAddress: '1 Test Way\nJacksonville, FL 32202\n\n', phone: '(904) 555-0100', website: 'https://test.example', signOff: 'Pat Sender' }));
+    assert.equal(saved.status, 200); assert.deepEqual(saved.body.identity.returnAddress, ['1 Test Way', 'Jacksonville, FL 32202']);
+    const read = await asJson(await json('GET', '/direct-mail/inhouse/identity'));
+    assert.equal(read.body.identity.signOff, 'Pat Sender');
+
+    // every touch gets a #10 envelope and a letter page, with and without an identity
+    for (const touch of [1, 2, 3]) {
+        const env = await PDFDocument.load(await buildEnvelopeDesign({ touch, identity: read.body.identity }));
+        const letter = await PDFDocument.load(await buildLetterDesign({ touch, identity: normalizeIdentity({}) }));
+        assert.deepEqual([env.getPageCount(), Math.round(env.getPage(0).getWidth()), Math.round(env.getPage(0).getHeight())], [1, 684, 297]);
+        assert.deepEqual([letter.getPageCount(), Math.round(letter.getPage(0).getWidth()), Math.round(letter.getPage(0).getHeight())], [1, 612, 792]);
+    }
+    const preview = await json('GET', '/direct-mail/inhouse/designs/preview?touch=2&kind=ENVELOPE');
+    assert.equal(preview.status, 200); assert.equal(preview.headers.get('content-type'), 'application/pdf');
+    assert.equal((await json('GET', '/direct-mail/inhouse/designs/preview?touch=9&kind=LETTER')).status, 400);
+
+    // one-click setup with templates held in memory instead of S3
+    const store = new Map();
+    const original = { load: Mail.templateStore.load, save: Mail.templateStore.save };
+    Mail.templateStore.load = async key => { if (!store.has(key)) throw new Error('missing'); return store.get(key); };
+    Mail.templateStore.save = async (key, buf) => { store.set(key, buf); };
+    try {
+        const applied = await asJson(await json('POST', '/direct-mail/inhouse/designs/apply', { touches: [2, 3] }));
+        assert.equal(applied.status, 201); assert.equal(applied.body.applied.length, 4);
+        const status = await asJson(await json('GET', '/direct-mail/inhouse/status'));
+        for (const n of [2, 3]) {
+            const row = status.body.touches.find(t => t.touch === n);
+            assert.match(row.letter.filename, /premium letter/); assert.match(row.envelope.filename, /premium envelope/);
+            assert.equal(row.letter.placement.printName, true); assert.equal(row.envelope.placement.addressXIn, 3.95);
+        }
+        assert.equal((await asJson(await json('POST', '/direct-mail/inhouse/designs/apply', { touches: [] }))).status, 400);
+        // applying again replaces the active pair, so there is still exactly one letter and one envelope per touch
+        await json('POST', '/direct-mail/inhouse/designs/apply', { touches: [2] });
+        const { rows } = await pool.query("SELECT count(*)::int n FROM crm.mail_templates WHERE touch = 2 AND active");
+        assert.equal(rows[0].n, 2);
+    } finally {
+        Mail.templateStore.load = original.load; Mail.templateStore.save = original.save;
+    }
+});

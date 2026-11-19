@@ -3810,6 +3810,27 @@ apiRouter.get('/direct-mail/inhouse/status', async (req, res) => {
     } catch (err) { mailFail(res, err); }
 });
 
+apiRouter.get('/direct-mail/inhouse/identity', async (req, res) => {
+    try { res.json({ identity: await InHouseMail.getIdentity() }); } catch (err) { mailFail(res, err); }
+});
+
+apiRouter.put('/direct-mail/inhouse/identity', async (req, res) => {
+    try { res.json({ identity: await InHouseMail.saveIdentity(req.body || {}, actorName(req)) }); } catch (err) { mailFail(res, err); }
+});
+
+apiRouter.get('/direct-mail/inhouse/designs/preview', async (req, res) => {
+    try {
+        const kind = String(req.query.kind || 'LETTER').toUpperCase();
+        if (![1, 2, 3].includes(Number(req.query.touch)) || !['LETTER', 'ENVELOPE'].includes(kind)) return res.status(400).json({ error: 'Choose a touch (1-3) and letter or envelope.' });
+        const pdf = await InHouseMail.designPreview({ touch: req.query.touch, kind });
+        res.set({ 'Content-Type': 'application/pdf', 'Content-Disposition': 'inline; filename="design.pdf"', 'Cache-Control': 'no-store' }).send(Buffer.from(pdf));
+    } catch (err) { mailFail(res, err); }
+});
+
+apiRouter.post('/direct-mail/inhouse/designs/apply', async (req, res) => {
+    try { res.status(201).json(await InHouseMail.applyDesigns({ touches: req.body?.touches, actor: actorName(req) })); } catch (err) { mailFail(res, err); }
+});
+
 apiRouter.post('/direct-mail/inhouse/templates/upload-url', async (req, res) => {
     try {
         const { touch, kind, filename, contentType, size } = req.body || {};
