@@ -36,6 +36,13 @@ export function parseMailingAddress(raw) {
     const text = String(raw || '').replace(/\s+/g, ' ').trim();
     if (!text) return null;
     const parts = text.split(',').map(s => s.trim()).filter(Boolean);
+    // "STREET, CITY, ST 12345" (state and ZIP together, as we print and save it)
+    const combined = parts.length >= 3 && /^([A-Za-z]{2})\s+(\d{5}(?:-\d{4})?)$/.exec(parts[parts.length - 1]);
+    if (combined) {
+        const city = parts[parts.length - 2];
+        const street = parts.slice(0, -2).join(', ');
+        if (street && city) return { street, city, state: combined[1].toUpperCase(), zip: combined[2], lines: [street, `${city}, ${combined[1].toUpperCase()} ${combined[2]}`] };
+    }
     if (parts.length >= 3) {
         const zip = parts[parts.length - 1];
         const state = parts[parts.length - 2];

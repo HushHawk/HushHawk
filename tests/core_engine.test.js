@@ -781,6 +781,10 @@ test('in-house mailing: audience checks, runs, touch order, and the letters + en
     // addresses
     assert.deepEqual(Mail.parseMailingAddress('10 Elsewhere St, Tampa, FL, 33601').lines, ['10 Elsewhere St', 'Tampa, FL 33601']);
     assert.equal(Mail.parseMailingAddress('PO BOX'), null);
+    // the form we save ("STREET, CITY, ST ZIP") must read back the same way
+    const saved = Mail.parseMailingAddress('4850 APPLE VALLEY AVE, BEVERLY HILLS, FL 34465');
+    assert.deepEqual([saved.street, saved.city, saved.state, saved.zip], ['4850 APPLE VALLEY AVE', 'BEVERLY HILLS', 'FL', '34465']);
+    assert.deepEqual(Mail.parseMailingAddress(saved.lines.join(', ')).lines, saved.lines);
 
     let audience = await Mail.buildAudience({ touch: 1 });
     const eligibleIds = new Set(audience.eligible.map(e => e.propertyId));
@@ -824,6 +828,8 @@ test('in-house mailing: audience checks, runs, touch order, and the letters + en
         assert.equal(rows.length, 3);
         assert.match(rows[1], /HH-\d{9}/); assert.match(rows[1], /T1-[A-Z2-9]{4}/);
         assert.ok(csv.includes('ANN OWNER') && csv.includes('BOB OWNER') && csv.includes('Tampa'));
+        const cells = rows[1].split('","').map(c => c.replace(/^"|"$/g, ''));
+        assert.deepEqual(cells.slice(7, 11), ['10 Elsewhere St', 'Tampa', 'FL', '33601'], 'street, city, state and ZIP are separate columns');
         assert.equal((await PDFDocument.load(get('letters.pdf'))).getPageCount(), 2);
         const envDoc = await PDFDocument.load(get('envelopes.pdf'));
         assert.equal(envDoc.getPageCount(), 2); assert.equal(Math.round(envDoc.getPage(0).getWidth()), 684);
