@@ -23,7 +23,8 @@
 
     <p v-if="error" class="ihm-error" role="alert">{{ error }}</p>
 
-    <transition name="ihm-slide" mode="out-in">
+    <!-- The step panel swaps at once and fades in with a CSS animation (no wait on a leave transition, which could stall). -->
+    <div class="ihm-stage">
       <!-- 1. VERIFY -->
       <div v-if="step === 1" key="s1" class="ihm-panel">
         <h3>Verify the person, the parcel and the delivery address</h3>
@@ -186,7 +187,7 @@
         </div>
         <div class="ihm-actions"><button class="ihm-btn" @click="goStep(3)">← Back</button><button class="ihm-btn" @click="loadTracking">Refresh</button></div>
       </div>
-    </transition>
+    </div>
   </section>
 </template>
 
@@ -391,7 +392,7 @@ export default {
 .ihm-step-l { font-size: 11px; font-weight: 600; }
 .ihm-step.on { color: #fff; } .ihm-step.on .ihm-step-n { border-color: #edcf7c; color: #edcf7c; transform: scale(1.12); box-shadow: 0 0 14px rgba(237, 207, 124, .35); }
 .ihm-step.done .ihm-step-n { background: #edcf7c; color: #04101d; border-color: #edcf7c; }
-.ihm-panel { padding: 18px; border: 1px solid #12304f; border-radius: 12px; background: #06182b; }
+.ihm-panel { animation: ihm-in .35s both; padding: 18px; border: 1px solid #12304f; border-radius: 12px; background: #06182b; }
 .ihm-error { padding: 10px 12px; border: 1px solid #a8433f; border-radius: 8px; background: rgba(168, 67, 63, .15); color: #ffb4ae !important; }
 .ihm-ok { color: #6fe0ae !important; }
 .ihm-muted { color: #7f97b2 !important; font-size: 12px !important; }
@@ -452,7 +453,6 @@ export default {
 .ihm-bars { margin-bottom: 14px; } .ihm-bar-row { display: grid; grid-template-columns: 150px 1fr 50px; gap: 10px; align-items: center; margin: 8px 0; font-size: 12px; } .ihm-bar-row b { text-align: right; color: #edcf7c; }
 .ihm-bar { height: 8px; border-radius: 999px; background: #0f2a45; overflow: hidden; } .ihm-bar-fill { height: 100%; background: linear-gradient(90deg, #c9a448, #edcf7c); transition: width .7s ease; }
 .ihm-return { padding: 14px; border: 1px solid #12304f; border-radius: 12px; background: #081f35; } .ihm-return b { font-size: 13px; } .ihm-return .ihm-row input { max-width: 260px; }
-.ihm-slide-enter-active, .ihm-slide-leave-active { transition: all .28s ease; } .ihm-slide-enter-from { opacity: 0; transform: translateX(24px); } .ihm-slide-leave-to { opacity: 0; transform: translateX(-24px); }
 .ihm-pop-enter-active { animation: ihm-in .5s both; }
 @keyframes ihm-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 @keyframes ihm-pulse { 50% { opacity: .45; } }
