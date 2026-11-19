@@ -44,6 +44,9 @@ Photos and documents go straight from the browser to the private S3 bucket using
 ## Exports
 CSV exports (cash buyers, team roster, audit log, analytics, mail batches) use one shared writer: missing values are empty, quotes are escaped, and values that start with = or @ are neutralised so a spreadsheet cannot run them as formulas.
 
+## Skip tracing (BatchLeads)
+Traces are run inside BatchLeads. On the Skip Tracing page, "Export queue for BatchLeads" downloads the parcels waiting for a trace (owner, address, city, state, ZIP, county, parcel). Upload that file to BatchLeads and run the trace there. In BatchLeads, point the push/webhook at `/api/v1/integrations/batchleads/webhook`; phones and emails then arrive on the lead. Queued parcels are marked as automated, so they are not counted as seller leads until a trace brings in a real contact.
+
 ## Do-not-contact list
 - Replies that ask to stop (STOP, QUIT, UNSUBSCRIBE and plain phrases such as "stop texting me") are detected in Podio conversations and the sender is added to the list automatically. Newsletter footers that merely contain the word "unsubscribe" are ignored. The outbound gate matches on the last 10 digits, so +1 and local formats both match.
 - To load a list (for example the national Do Not Call registry download for your area codes, or your own list): `POST /api/v1/compliance/suppression/import` with `{ "text": "<one number or email per line>", "reason": "National Do Not Call registry, downloaded <date>" }`. It reports how many were added, already listed or rejected. Registering for the national registry and downloading the file needs your own account at telemarketing.donotcall.gov.

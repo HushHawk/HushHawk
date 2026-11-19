@@ -30,7 +30,7 @@
           <div class="header-actions">
             <button class="btn btn-secondary" @click="openModal('batch')">
               <span v-html="icons.download"></span>
-              Batch Upload CSV
+              Export queue for BatchLeads
             </button>
             <button class="btn btn-primary" @click="openModal('single')">
               <span v-html="icons.plus"></span>
@@ -107,7 +107,7 @@
             <tbody>
               <tr v-if="filteredTraces.length === 0">
                 <td colspan="8" style="text-align: center; color: #64748b; padding: 36px;">
-                  No skip traces found. Batch upload a CSV or run a single search to enrich contacts.
+                  No skip traces yet. Export the queue for BatchLeads, or run a single search.
                 </td>
               </tr>
               <tr
@@ -330,17 +330,18 @@
           </button>
         </div>
         <div class="modal-body">
-          <p>Batch contact verification requires a configured provider.</p>
+          <p>Skip traces run in BatchLeads. Download the queue below, upload it to BatchLeads and run the trace there. Phones and emails come back here by themselves through the BatchLeads webhook.</p>
           <div class="upload-dropzone">
             <span v-html="icons.file"></span>
-            <p>Upload CSV containing: First Name, Last Name, Address, City, State, ZIP</p>
+            <p>The file has owner, address, city, state, ZIP, county and parcel for every property waiting for a trace.</p>
           </div>
+          <p v-if="webhookUrl">In BatchLeads, send results to: <code>{{ webhookUrl }}</code></p>
           <div v-if="batchNotice" class="alert-success">{{ batchNotice }}</div>
         </div>
         <div class="modal-footer">
           <button class="btn btn-secondary" @click="closeModal">Cancel</button>
           <button class="btn btn-primary" @click="runBatchLookup">
-            Start Batch Trace
+            Download queue (CSV)
           </button>
         </div>
       </div>
@@ -352,6 +353,7 @@
 <script>
 import { ref, computed, onMounted } from 'vue';
 import { icons } from '../icons.js';
+import { toCsv, downloadCsv } from '../csv.js';
 
 export default {
   name: 'SkipTracingView',
@@ -482,13 +484,19 @@ export default {
       }
     }
 
+    const webhookUrl = ref('');
     async function runBatchLookup() {
       try {
-        const res = await fetch('/api/v1/skip-tracing/batch', { method: 'POST' });
-        const result = await res.json();
-        batchNotice.value = result.error || 'Batch lookup status unavailable.';
-      } catch {
-        batchNotice.value = 'Could not connect to batch lookup.';
+        const res = await fetch('/api/v1/skip-tracing/queue-export');
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'HTTP ' + res.status);
+        webhookUrl.value = data.webhookUrl || '';
+        if (!data.rows.length) { batchNotice.value = 'The queue is empty. Push county records to skip tracing first.'; return; }
+        const headers = ['Owner Name', 'Property Address', 'City', 'State', 'ZIP', 'County', 'Parcel (APN)'];
+        downloadCsv(`skip_trace_queue_${new Date().toISOString().slice(0, 10)}.csv`, toCsv(headers, data.rows.map(r => [r.ownerName, r.address, r.city, r.state, r.zip, r.county, r.parcel])));
+        batchNotice.value = `Downloaded ${data.rows.length} propert${data.rows.length === 1 ? 'y' : 'ies'}. Upload the file to BatchLeads and run the trace there.`;
+      } catch (err) {
+        batchNotice.value = 'Could not export the queue: ' + err.message;
       }
     }
 
@@ -555,6 +563,7 @@ export default {
       closeModal,
       runSingleLookup,
       runBatchLookup,
+      webhookUrl,
       quickDial,
       openSmsModal
     };

@@ -664,3 +664,23 @@ test('CSV exports write missing values as empty, escape quotes and neutralise sp
     assert.equal(csvCell(0), '"0"');
     assert.equal(toCsv(['A', 'B'], [['x', null], ['y', 'z']]), '"A","B"\r\n"x",\r\n"y","z"');
 });
+
+test('county records pushed to skip tracing are queued, exported for BatchLeads, and not counted as sellers', async () => {
+    const { rows: [county] } = await pool.query("SELECT county_id FROM ref.counties WHERE county_code = 'DUV'");
+    const parcel = `SKQ${run}`;
+    const { rows: [prop] } = await pool.query(
+        `INSERT INTO core.properties (county_id, parcel_raw, parcel_match, address_line1, city, postal_code, state_code) VALUES ($1, $2, $2, '7 Queue Ln', 'Jacksonville', '32210', 'FL') RETURNING property_id`, [county.county_id, parcel]);
+    const pushed = await asJson(await json('POST', '/county-records/push-to-skip-trace', { recordIds: [prop.property_id] }));
+    assert.equal(pushed.status, 200, JSON.stringify(pushed.body));
+    const { status, body } = await asJson(await json('GET', '/skip-tracing/queue-export'));
+    assert.equal(status, 200);
+    const row = body.rows.find(r => r.parcel === parcel);
+    assert.deepEqual([row.address, row.city, row.state, row.zip], ['7 Queue Ln', 'Jacksonville', 'FL', '32210']);
+    assert.ok(row.county);
+    assert.match(body.webhookUrl, /integrations\/batchleads\/webhook$/);
+    const sellers = await asJson(await json('GET', '/seller-leads'));
+    const queued = sellers.body.leads?.find?.(l => l.address === '7 Queue Ln') || (Array.isArray(sellers.body) ? sellers.body.find(l => l.address === '7 Queue Ln') : null);
+    assert.ok(queued && queued.leadKind === 'AUTOMATED', 'a queued parcel is marked, so it is not counted as a seller lead');
+    const batch = await json('POST', '/skip-tracing/batch');
+    assert.equal(batch.status, 503);
+});
