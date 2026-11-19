@@ -715,6 +715,9 @@ test('incoming email: links are kept with their wording, text is complete, unsaf
     r = extractEmail(`<a href="${long}">Open listing</a>`);
     assert.equal(r.links[0].url, 'https://track.test/c?u=' + 'a'.repeat(300) + '&utm_source=email&x=1&y=2');
     assert.equal(r.links[0].text, 'Open listing');
+    // senders that encode twice still give a working address, and a link shown both as a button and as text is listed once
+    r = extractEmail('<a href="https://www.dropbox.com/scl/fo/x/y?rlkey=z&amp;amp;st=b&amp;amp;dl=0">https://www.dropbox.com/scl/fo/x/y?rlkey=z&amp;amp;st=b&amp;amp;dl=0</a>');
+    assert.deepEqual(r.links, [{ text: 'dropbox.com', url: 'https://www.dropbox.com/scl/fo/x/y?rlkey=z&st=b&dl=0' }]);
     // 8. plain-text email with a written-out address
     r = extractEmail('Photos here: https://share.test/album/9.\nThanks');
     assert.deepEqual(r.links, [{ text: 'share.test', url: 'https://share.test/album/9' }]);
