@@ -684,3 +684,70 @@ test('county records pushed to skip tracing are queued, exported for BatchLeads,
     const batch = await json('POST', '/skip-tracing/batch');
     assert.equal(batch.status, 503);
 });
+
+test('incoming email: links are kept with their wording, text is complete, unsafe links are dropped', async () => {
+    const { extractEmail, safeUrl } = await import('../backend/src/services/emailContent.js');
+
+    // 1. plain text, no links
+    assert.deepEqual(extractEmail('Hello there\nSecond line'), { text: 'Hello there\nSecond line', links: [] });
+    // 2. one link in HTML, wording preserved
+    let r = extractEmail('<p>Deal at <b>1382 Labelle St</b></p><p><a href="https://photos.example.com/deal/1">View property photos</a></p>');
+    assert.deepEqual(r.links, [{ text: 'View property photos', url: 'https://photos.example.com/deal/1' }]);
+    assert.match(r.text, /Deal at 1382 Labelle St\nView property photos/);
+    // 3. several links, duplicates collapsed
+    r = extractEmail('<a href="https://a.test/x">One</a> <a href=\'https://b.test/y\'>Two</a> <a href="https://a.test/x">One again</a>');
+    assert.deepEqual(r.links.map(l => l.url), ['https://a.test/x', 'https://b.test/y']);
+    // 4. a button made from a styled link, with nested markup
+    r = extractEmail('<table><tr><td><a href="https://drive.test/f" style="padding:10px"><span><strong>VIEW PHOTOS</strong></span></a></td></tr></table>');
+    assert.deepEqual(r.links, [{ text: 'VIEW PHOTOS', url: 'https://drive.test/f' }]);
+    // 5. a linked image uses its alt text, or the site name when there is none
+    r = extractEmail('<a href="https://img.test/a"><img src="x.png" alt="Front of house"></a><a href="https://www.img.test/b"><img src="y.png"></a>');
+    assert.deepEqual(r.links.map(l => l.text), ['Front of house', 'img.test']);
+    // 6. unsafe schemes are dropped, mail and phone links are not made clickable
+    r = extractEmail('<a href="javascript:alert(1)">bad</a><a href="data:text/html,x">bad2</a><a href="file:///etc/passwd">bad3</a><a href="mailto:a@b.test">mail</a><a href="  JaVaScRiPt:alert(1)">bad4</a><a href="https://ok.test">ok</a>');
+    assert.deepEqual(r.links.map(l => l.url), ['https://ok.test/']);
+    assert.equal(safeUrl('java\nscript:alert(1)'), null);
+    // scripts and styles never reach the text
+    r = extractEmail('<style>.a{}</style><script>steal()</script><p>Visible</p>');
+    assert.equal(r.text, 'Visible');
+    // 7. a long tracking URL is kept whole
+    const long = 'https://track.test/c?u=' + 'a'.repeat(300) + '&utm_source=email&x=1&amp;y=2';
+    r = extractEmail(`<a href="${long}">Open listing</a>`);
+    assert.equal(r.links[0].url, 'https://track.test/c?u=' + 'a'.repeat(300) + '&utm_source=email&x=1&y=2');
+    assert.equal(r.links[0].text, 'Open listing');
+    // 8. plain-text email with a written-out address
+    r = extractEmail('Photos here: https://share.test/album/9.\nThanks');
+    assert.deepEqual(r.links, [{ text: 'share.test', url: 'https://share.test/album/9' }]);
+});
+
+test('Podio email feed items keep the full body and links, and an older cut-off message is updated', async () => {
+    const { PodioSyncService } = await import('../backend/src/services/podioSyncService.js');
+    const { PodioService } = await import('../backend/src/services/podioService.js');
+    const itemId = 990000000 + (Date.now() % 1000000);
+    const email = `link-test-${Date.now()}@example.test`;
+    const html = `<p>${'Deal details. '.repeat(40)}</p><p><a href="https://photos.test/p?utm=1&amp;x=2">View property photos</a></p><a href="javascript:alert(1)">bad</a>`;
+    const field = (label, value) => ({ label, values: [{ value }] });
+    const item = { item_id: itemId, app_item_id: itemId, title: 'Link Test', created_on: new Date().toISOString(),
+        fields: [field('Mode', { text: 'Inbound' }), field('Type', { text: 'Email' }), field('From Email', email), field('Caller Name', 'Link Test'), field('Email Subject', 'Off-market deal'), field('Email Body', html)] };
+    const originalFetch = globalThis.fetch, originalAuth = PodioService.authenticateApp;
+    PodioService.authenticateApp = async () => ({ access_token: 'test' });
+    globalThis.fetch = async (url, init) => String(url).startsWith('https://api.podio.com/item/app/')
+        ? new Response(JSON.stringify({ items: [item] }), { status: 200, headers: { 'content-type': 'application/json' } })
+        : originalFetch(url, init);
+    try {
+        // an older sync stored this email cut off at 180 characters with no links
+        await PodioSyncService.syncCommunications(1);
+        const { rows: [msg] } = await pool.query('SELECT thread_id, content, links FROM core.conversation_desk_messages WHERE id = $1', [`msg-podio-${itemId}`]);
+        assert.ok(msg, 'the email was saved');
+        assert.ok(msg.content.length > 400, 'the body is not cut at 180 characters');
+        assert.deepEqual(msg.links, [{ text: 'View property photos', url: 'https://photos.test/p?utm=1&x=2' }]);
+        await pool.query("UPDATE core.conversation_desk_messages SET content = 'Subject: Old — cut off', links = NULL WHERE id = $1", [`msg-podio-${itemId}`]);
+        await PodioSyncService.syncCommunications(1);
+        const detail = await asJson(await json('GET', `/lead-desk/threads/${msg.thread_id}`));
+        const shown = detail.body.messages.find(m => m.id === `msg-podio-${itemId}`);
+        assert.deepEqual(shown.links, [{ text: 'View property photos', url: 'https://photos.test/p?utm=1&x=2' }]);
+        assert.ok(shown.content.length > 400);
+    } finally {
+        globalThis.fetch = originalFetch; PodioService.authenticateApp = originalAuth;
+    }
+});

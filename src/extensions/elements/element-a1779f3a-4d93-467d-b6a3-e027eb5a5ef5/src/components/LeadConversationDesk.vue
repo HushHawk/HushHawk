@@ -185,6 +185,9 @@
             >
               <div class="message-bubble">
                 <p class="bubble-text">{{ msg.content }}</p>
+                <div v-if="safeLinks(msg).length" class="bubble-links">
+                  <a v-for="(link, li) in safeLinks(msg)" :key="li" class="bubble-link" :href="link.url" target="_blank" rel="noopener noreferrer nofollow" :title="link.url">🔗 {{ link.text }}</a>
+                </div>
                 <div class="bubble-footer">
                   <span class="bubble-check" v-if="msg.senderType === 'rep'">✓ </span>
                   <span class="bubble-timestamp">{{ msg.time || formatShortTime(msg.sentAt) }}</span>
@@ -326,6 +329,13 @@ function getScoreClass(score) {
   if (score >= 90) return 'score-high';
   if (score >= 80) return 'score-med';
   return 'score-normal';
+}
+
+// Only plain http(s) links are ever shown as clickable; anything else (javascript:, data:, file:) is dropped here as well as on the server.
+function safeLinks(msg) {
+  return (Array.isArray(msg && msg.links) ? msg.links : []).filter(l => {
+    try { return l && /^https?:$/.test(new URL(String(l.url)).protocol) && l.text; } catch (e) { return false; }
+  }).slice(0, 25);
 }
 
 function formatShortTime(timestamp) {
@@ -1234,6 +1244,21 @@ onUnmounted(() => {
   white-space: pre-wrap;
   word-break: break-word;
 }
+
+.bubble-links { display: flex; flex-direction: column; gap: 4px; margin-top: 8px; }
+.bubble-link {
+  display: block;
+  padding: 6px 10px;
+  border: 1px solid rgba(237, 207, 124, 0.45);
+  border-radius: 8px;
+  background: rgba(237, 207, 124, 0.08);
+  color: #edcf7c;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: underline;
+  overflow-wrap: anywhere;
+}
+.bubble-link:hover { background: rgba(237, 207, 124, 0.18); }
 
 .bubble-footer {
   margin-top: 4px;
