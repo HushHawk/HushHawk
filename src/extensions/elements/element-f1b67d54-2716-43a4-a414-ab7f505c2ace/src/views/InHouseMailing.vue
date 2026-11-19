@@ -124,10 +124,10 @@
             <div class="ihm-ready-body">
               <b>{{ lastRun.runCode }} is ready · {{ lastRun.pieceCount }} pieces</b>
               <div class="ihm-row">
-                <a class="ihm-btn gold" :href="dl(lastRun.runId, 'package.zip')">Download everything (ZIP)</a>
-                <a class="ihm-btn" :href="dl(lastRun.runId, 'mailing_list.csv')">Spreadsheet (CSV)</a>
-                <a class="ihm-btn" :href="dl(lastRun.runId, 'letters.pdf', true)" target="_blank" rel="noopener">Open letters to print</a>
-                <a class="ihm-btn" :href="dl(lastRun.runId, 'envelopes.pdf', true)" target="_blank" rel="noopener">Open envelopes to print</a>
+                <button class="ihm-btn gold" @click="getFile(lastRun.runId, 'package.zip')">Download everything (ZIP)</button>
+                <button class="ihm-btn" @click="getFile(lastRun.runId, 'mailing_list.csv')">Spreadsheet (CSV)</button>
+                <button class="ihm-btn" @click="getFile(lastRun.runId, 'letters.pdf', true)">Open letters to print</button>
+                <button class="ihm-btn" @click="getFile(lastRun.runId, 'envelopes.pdf', true)">Open envelopes to print</button>
               </div>
               <small>After the pieces are mailed, mark the run as mailed below so the next touch can be planned.</small>
             </div>
@@ -142,7 +142,7 @@
                 <td class="mono">{{ r.run_code }}<small v-if="r.label"> · {{ r.label }}</small></td><td>T0{{ r.touch }}</td><td>{{ r.piece_count }}</td>
                 <td><span class="ihm-badge" :class="r.status === 'MAILED' ? 'ok' : 'warn'">{{ r.status === 'MAILED' ? 'Mailed' : 'Ready to print' }}</span></td>
                 <td>{{ fmtDate(r.created_at) }}</td>
-                <td class="ihm-links"><a :href="dl(r.run_id, 'package.zip')">ZIP</a><a :href="dl(r.run_id, 'mailing_list.csv')">CSV</a><a :href="dl(r.run_id, 'letters.pdf', true)" target="_blank" rel="noopener">Letters</a><a :href="dl(r.run_id, 'envelopes.pdf', true)" target="_blank" rel="noopener">Envelopes</a></td>
+                <td class="ihm-links"><a href="#" @click.prevent="getFile(r.run_id, 'package.zip')">ZIP</a><a href="#" @click.prevent="getFile(r.run_id, 'mailing_list.csv')">CSV</a><a href="#" @click.prevent="getFile(r.run_id, 'letters.pdf', true)">Letters</a><a href="#" @click.prevent="getFile(r.run_id, 'envelopes.pdf', true)">Envelopes</a></td>
                 <td><button v-if="r.status !== 'MAILED'" class="ihm-btn sm" @click="markMailed(r)">Mark as mailed</button></td>
               </tr>
             </tbody>
@@ -225,7 +225,25 @@ export default {
 
     const touchName = computed(() => touches.find(t => t.n === touch.value)?.name || '');
     const fmtDate = d => (d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '');
-    const dl = (id, what, inline) => `${API}/runs/${id}/download/${what}${inline ? '?inline=1' : ''}`;
+    // The sign-in travels with each request the page makes (not as a cookie), so files are fetched here and then saved or opened;
+    // a plain link to the address would be refused with "Sign in again".
+    async function fetchBlob(url, fallbackName) {
+      const res = await fetch(url);
+      if (!res.ok) { const d = await res.json().catch(() => ({})); throw new Error(d.error || `The file could not be created (${res.status}).`); }
+      const name = /filename="([^"]+)"/.exec(res.headers.get('content-disposition') || '')?.[1] || fallbackName;
+      return { blob: await res.blob(), name };
+    }
+    async function getFile(id, what, openIt) {
+      error.value = '';
+      const win = openIt ? window.open('', '_blank') : null; // opened first so the browser allows it
+      try {
+        const { blob, name } = await fetchBlob(`${API}/runs/${id}/download/${what}${openIt ? '?inline=1' : ''}`, what);
+        const objectUrl = URL.createObjectURL(blob);
+        if (openIt) { if (win) win.location.href = objectUrl; else window.open(objectUrl, '_blank'); }
+        else { const a = document.createElement('a'); a.href = objectUrl; a.download = name; document.body.appendChild(a); a.click(); a.remove(); }
+        setTimeout(() => URL.revokeObjectURL(objectUrl), 120000);
+      } catch (e) { if (win) win.close(); error.value = e.message; }
+    }
 
     async function api(path, options = {}) {
       const res = await fetch(API + path, { ...options, headers: { 'Content-Type': 'application/json', ...(options.headers || {}) } });
@@ -304,7 +322,16 @@ export default {
         await loadStatus();
       });
     }
-    function preview(kind) { window.open(`${API}/preview?touch=${touch.value}&kind=${kind.toUpperCase()}`, '_blank', 'noopener'); }
+    async function preview(kind) {
+      error.value = '';
+      const win = window.open('', '_blank');
+      try {
+        const { blob } = await fetchBlob(`${API}/preview?touch=${touch.value}&kind=${kind.toUpperCase()}`, 'preview.pdf');
+        const objectUrl = URL.createObjectURL(blob);
+        if (win) win.location.href = objectUrl; else window.open(objectUrl, '_blank');
+        setTimeout(() => URL.revokeObjectURL(objectUrl), 120000);
+      } catch (e) { if (win) win.close(); error.value = e.message; }
+    }
 
     async function build() {
       building.value = true; lastRun.value = null; stageIdx.value = 0;
@@ -336,7 +363,7 @@ export default {
     onBeforeUnmount(() => { clearInterval(stageTimer); clearInterval(countTimer); });
 
     return { touches, steps, stages, step, touch, touchName, gapDays, includePossible, pillarPick, audience, runs, tracking, loading, building, uploading, error, notice, lastRun, runLabel, returnId, stageIdx,
-      shownEligible, place, fmtDate, dl, templatesReady, slot, selectTouch, goStep, togglePillar, loadAudience, loadTracking, upload, savePlacement, preview, build, markMailed, setStatus, barWidth };
+      shownEligible, place, fmtDate, getFile, templatesReady, slot, selectTouch, goStep, togglePillar, loadAudience, loadTracking, upload, savePlacement, preview, build, markMailed, setStatus, barWidth };
   }
 };
 </script>
