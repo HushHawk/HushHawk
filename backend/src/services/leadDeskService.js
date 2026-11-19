@@ -143,7 +143,7 @@ export class LeadDeskService {
 
             // Fetch messages in chronological order
             const msgRes = await pool.query(`
-                SELECT id, sender_type, sender_name, content, sent_at
+                SELECT id, sender_type, sender_name, content, links, sent_at
                 FROM core.conversation_desk_messages
                 WHERE thread_id = $1
                 ORDER BY sent_at ASC
@@ -191,6 +191,7 @@ export class LeadDeskService {
                     senderType: m.sender_type,
                     senderName: m.sender_name,
                     content: m.content,
+                    links: Array.isArray(m.links) ? m.links : [],
                     sentAt: m.sent_at,
                     time: new Date(m.sent_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })
                 }))
@@ -381,6 +382,7 @@ export class LeadDeskService {
                     senderType: m.sender_type,
                     senderName: m.sender_name,
                     content: m.content,
+                    links: Array.isArray(m.links) ? m.links : [],
                     sentAt: m.sent_at,
                     time: new Date(m.sent_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })
                 })),

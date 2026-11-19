@@ -5,6 +5,7 @@ import { PodioService } from './podioService.js';
 import { ParcelLookupService } from './parcelLookupService.js';
 import { ComplianceService, isOptOutMessage } from './complianceService.js';
 import { db } from '../store/database.js';
+import { extractEmail } from './emailContent.js';
 
 function toDeterministicUuid(str) {
     const hash = crypto.createHash('md5').update(str).digest('hex');
@@ -407,6 +408,7 @@ export class PodioSyncService {
                     const emailBody = fMap['Email Body'];
 
                     let content = '';
+                    let links = [];
                     let platformId = 'podio';
                     let method = 'TEXT';
 
@@ -419,8 +421,11 @@ export class PodioSyncService {
                     } else if (typeText.toLowerCase().includes('email')) {
                         method = 'EMAIL';
                         platformId = 'email';
-                        const cleanBody = emailBody ? emailBody.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim() : '';
-                        content = emailSubject ? `Subject: ${emailSubject} — ${cleanBody.slice(0, 180)}` : cleanBody.slice(0, 180);
+                        // Keep the whole readable body and the links in it (the old code flattened the HTML and cut it at 180 characters, which dropped every link).
+                        const parsed = extractEmail(emailBody);
+                        links = parsed.links;
+                        const cleanBody = parsed.text.slice(0, 20000);
+                        content = emailSubject ? `Subject: ${emailSubject} — ${cleanBody}` : cleanBody;
                     } else {
                         method = 'TEXT';
                         platformId = 'podio';
@@ -472,16 +477,17 @@ export class PodioSyncService {
                     // Upsert message in core.conversation_desk_messages
                     await pool.query(`
                         INSERT INTO core.conversation_desk_messages
-                        (id, thread_id, sender_type, sender_name, content, sent_at, created_at)
-                        VALUES ($1, $2, $3, $4, $5, $6, $6)
-                        ON CONFLICT (id) DO NOTHING
+                        (id, thread_id, sender_type, sender_name, content, sent_at, created_at, links)
+                        VALUES ($1, $2, $3, $4, $5, $6, $6, $7)
+                        ON CONFLICT (id) DO UPDATE SET content = EXCLUDED.content, links = EXCLUDED.links
                     `, [
                         msgId,
                         threadId,
                         isInbound ? 'lead' : 'agent',
                         isInbound ? callerName : 'Podio user',
                         content,
-                        itemDate
+                        itemDate,
+                        links.length ? JSON.stringify(links) : null
                     ]);
 
                     // A reply that asks to stop is a legal opt-out: add the sender to the do-not-contact list so the outbound gate blocks them.
