@@ -838,6 +838,12 @@ test('in-house mailing: audience checks, runs, touch order, and the letters + en
         assert.equal(pieces.length, 2);
         assert.ok(pieces.every(p => p.status === 'PRINTED' && p.touch === 1 && /\/api\/v1\/track\/qr\/DUV-/.test(p.qr_tracking_url)));
 
+        // the QR printed on the letter records a scan for that exact piece (the printed CrownKey is DUV-parcel-PILLAR-001)
+        const asked = await json('GET', pieces[0].qr_tracking_url.replace(/^https?:\/\/[^/]+\/api\/v1/, ''), undefined, { Accept: 'application/json' });
+        assert.equal(asked.status, 200, 'the QR address is recognised');
+        const { rows: [scanned] } = await pool.query('SELECT scans_count FROM core.direct_mail_pieces WHERE mailpiece_id = $1', [pieces[0].mailpiece_id]);
+        assert.equal(scanned.scans_count, 1);
+
         // touch order: nobody gets touch 2 until touch 1 is marked mailed and the gap has passed
         await Mail.markMailed(run.runId, 't').then(r => assert.equal(r.marked, 2));
         assert.ok(!(await Mail.buildAudience({ touch: 2, gapDays: 14 })).eligible.some(e => e.propertyId === a), 'waits for the gap');
