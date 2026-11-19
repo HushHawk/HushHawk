@@ -1,5 +1,11 @@
 <template>
   <div class="view-container">
+    <div class="mail-tabs" role="tablist">
+      <button role="tab" :aria-selected="mailTab === 'inhouse'" class="mail-tab" :class="{ on: mailTab === 'inhouse' }" @click="mailTab = 'inhouse'">In-House Mailing</button>
+      <button role="tab" :aria-selected="mailTab === 'batches'" class="mail-tab" :class="{ on: mailTab === 'batches' }" @click="mailTab = 'batches'">Batches &amp; QR tracking</button>
+    </div>
+    <InHouseMailing v-if="mailTab === 'inhouse'" />
+    <div v-show="mailTab === 'batches'">
     <!-- Top Metrics -->
     <div class="metrics-grid">
       <div v-for="(m, i) in metrics" :key="m.label" class="metric-card">
@@ -234,6 +240,7 @@
       </div>
     </div>
 
+    </div>
     <!-- Modals Teleported to body -->
     <Teleport to="body">
     <!-- New Mail Batch Modal -->
@@ -495,15 +502,18 @@
 import QRCode from 'qrcode';
 import { icons } from '../icons.js';
 import { toCsv, downloadCsv as saveCsv } from '../csv.js';
+import InHouseMailing from './InHouseMailing.vue';
 
 export default {
   name: 'DirectMailView',
+  components: { InHouseMailing },
   props: {
     content: { type: Object, default: () => ({}) }
   },
   data() {
     return {
       icons,
+      mailTab: 'inhouse',
       generatedQrDataUrl: '',
       searchQuery: '',
       statusFilter: '',
@@ -765,6 +775,10 @@ export default {
 </script>
 
 <style scoped>
+.mail-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+.mail-tab { padding: 9px 18px; border: 1px solid #1c4468; border-radius: 10px; background: #0b2038; color: #9fb4cc; font-size: 13px; font-weight: 700; cursor: pointer; transition: all .2s; }
+.mail-tab.on { border-color: #edcf7c; color: #edcf7c; background: #12304f; }
+
 .view-container {
   display: flex;
   flex-direction: column;

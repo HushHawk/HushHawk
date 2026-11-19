@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import { db } from '../store/database.js';
 import { pool, checkDatabaseHealth, withTransaction, audit, emitOutbox } from '../store/pgClient.js';
 import { CrownKeyService } from '../services/crownkeyService.js';
-import { EventService } from '../services/eventService.js';
+import { EventService, HttpError } from '../services/eventService.js';
 import { IdentityService } from '../services/identityService.js';
 import { ConnectorService } from '../services/connectorService.js';
 import { GraphService } from '../services/graphService.js';
@@ -14,6 +14,7 @@ import { processAdminAIQuery, getMissingDataAudit, SYSTEM_SECTIONS } from '../se
 import { LeadImportService } from '../services/leadImportService.js';
 import { StorageService } from '../services/storageService.js';
 import { DirectMailTrackerService } from '../services/directMailTrackerService.js';
+import * as InHouseMail from '../services/inHouseMailService.js';
 import { SmrtPhoneService } from '../services/smrtPhoneService.js';
 import { DealFunnelService } from '../services/dealFunnelService.js';
 import { LeadDeskService } from '../services/leadDeskService.js';
@@ -3789,6 +3790,119 @@ apiRouter.post('/direct-mail/generate-piece', async (req, res) => {
         batchCode: batchCode || undefined, propertyId, origin
     });
     res.status(201).json({ ok: true, piece });
+});
+
+// ============================================================================
+// In-house mailing: our own letters and envelopes, printed and packed by us
+// ============================================================================
+const mailUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const mailFail = (res, err) => res.status(err instanceof HttpError ? err.status : 500).json({ error: err instanceof HttpError ? err.message : 'The mailing request could not be completed.' });
+const pillarList = value => (Array.isArray(value) ? value : String(value || '').split(',')).map(s => String(s).trim().toUpperCase()).filter(s => /^[A-Z]{2,6}$/.test(s));
+
+apiRouter.get('/direct-mail/inhouse/status', async (req, res) => {
+    try {
+        const templates = await InHouseMail.listTemplates();
+        res.json({ touches: Object.entries(InHouseMail.TOUCHES).map(([n, name]) => ({
+            touch: Number(n), name,
+            letter: templates.find(x => x.touch === Number(n) && x.kind === 'LETTER') || null,
+            envelope: templates.find(x => x.touch === Number(n) && x.kind === 'ENVELOPE') || null
+        })), maxPiecesPerRun: InHouseMail.MAX_PIECES_PER_RUN });
+    } catch (err) { mailFail(res, err); }
+});
+
+apiRouter.post('/direct-mail/inhouse/templates/upload-url', async (req, res) => {
+    try {
+        const { touch, kind, filename, contentType, size } = req.body || {};
+        if (![1, 2, 3].includes(Number(touch)) || !['LETTER', 'ENVELOPE'].includes(String(kind).toUpperCase())) return res.status(400).json({ error: 'Choose a touch (1-3) and letter or envelope.' });
+        if (!['application/pdf', 'image/png', 'image/jpeg'].includes(contentType)) return res.status(400).json({ error: 'Upload a PDF, PNG or JPG.' });
+        if (Number(size) > 12 * 1024 * 1024) return res.status(400).json({ error: 'The file is over 12 MB.' });
+        const presigned = await StorageService.getPresignedUploadUrl({ entityType: 'mail-templates', category: `touch-${Number(touch)}-${String(kind).toLowerCase()}`, filename: filename || 'template', contentType, fileSizeBytes: Number(size) || 0 });
+        res.json(presigned);
+    } catch (err) { mailFail(res, err); }
+});
+
+apiRouter.post('/direct-mail/inhouse/templates', async (req, res) => {
+    try {
+        const { touch, kind, objectKey, filename, size } = req.body || {};
+        const row = await InHouseMail.registerTemplate({ touch, kind, objectKey, filename, size, actor: actorName(req) });
+        res.status(201).json({ template: { templateId: row.template_id, touch: row.touch, kind: row.kind, filename: row.filename, pages: row.pages } });
+    } catch (err) { mailFail(res, err); }
+});
+
+apiRouter.put('/direct-mail/inhouse/templates/:id/placement', async (req, res) => {
+    try {
+        if (!mailUuid.test(req.params.id)) return res.status(400).json({ error: 'Invalid template.' });
+        res.json({ placement: await InHouseMail.savePlacement(req.params.id, req.body || {}, actorName(req)) });
+    } catch (err) { mailFail(res, err); }
+});
+
+apiRouter.get('/direct-mail/inhouse/preview', async (req, res) => {
+    try {
+        const kind = String(req.query.kind || 'LETTER').toUpperCase();
+        if (![1, 2, 3].includes(Number(req.query.touch)) || !['LETTER', 'ENVELOPE'].includes(kind)) return res.status(400).json({ error: 'Choose a touch (1-3) and letter or envelope.' });
+        const pdf = await InHouseMail.buildPreview({ touch: req.query.touch, kind });
+        res.set({ 'Content-Type': 'application/pdf', 'Content-Disposition': 'inline; filename="preview.pdf"', 'Cache-Control': 'no-store' }).send(Buffer.from(pdf));
+    } catch (err) { mailFail(res, err); }
+});
+
+apiRouter.get('/direct-mail/inhouse/audience', async (req, res) => {
+    try {
+        const audience = await InHouseMail.buildAudience({ touch: req.query.touch, pillars: pillarList(req.query.pillars), gapDays: req.query.gapDays ?? 14, includePossible: req.query.includePossible === '1' });
+        const { eligible, ...summary } = audience;
+        res.json({ ...summary, sample: eligible.slice(0, 50).map(e => ({ propertyId: e.propertyId, crownKey: e.crownKey, pillar: e.pillar, pillarName: e.pillarName, ownerName: e.ownerName, mailing: e.mailing.lines.join(', '), propertyAddress: e.propertyAddress })) });
+    } catch (err) { mailFail(res, err); }
+});
+
+apiRouter.post('/direct-mail/inhouse/runs', async (req, res) => {
+    try {
+        const b = req.body || {};
+        const run = await InHouseMail.createRun({ touch: b.touch, pillars: pillarList(b.pillars), gapDays: b.gapDays ?? 14, includePossible: Boolean(b.includePossible), limit: b.limit, label: b.label, actor: actorName(req) });
+        res.status(201).json({ run });
+    } catch (err) { mailFail(res, err); }
+});
+
+apiRouter.get('/direct-mail/inhouse/runs', async (req, res) => {
+    try { res.json({ runs: await InHouseMail.listRuns() }); } catch (err) { mailFail(res, err); }
+});
+
+apiRouter.get('/direct-mail/inhouse/runs/:id/download/:what', async (req, res) => {
+    try {
+        const { id, what } = req.params;
+        if (!mailUuid.test(id) || !['package.zip', 'letters.pdf', 'envelopes.pdf', 'mailing_list.csv'].includes(what)) return res.status(404).json({ error: 'Not found.' });
+        const { rows: [run] } = await pool.query('SELECT * FROM crm.mail_runs WHERE run_id = $1', [id]);
+        if (!run) return res.status(404).json({ error: 'Run not found.' });
+        const pieces = await InHouseMail.loadRunPieces(id);
+        const base = `${run.run_code}_T${run.touch}`;
+        const inline = req.query.inline === '1';
+        const send = (type, name, body) => res.set({ 'Content-Type': type, 'Content-Disposition': `${inline && type === 'application/pdf' ? 'inline' : 'attachment'}; filename="${name}"`, 'Cache-Control': 'no-store' }).send(Buffer.from(body));
+        if (what === 'mailing_list.csv') return send('text/csv; charset=utf-8', `${base}_mailing_list.csv`, InHouseMail.buildMailingListCsv(pieces));
+        const templates = await InHouseMail.loadRunTemplates(run);
+        if (what === 'letters.pdf') return send('application/pdf', `${base}_letters.pdf`, await InHouseMail.buildLettersPdf(pieces, templates.letter));
+        if (what === 'envelopes.pdf') return send('application/pdf', `${base}_envelopes.pdf`, await InHouseMail.buildEnvelopesPdf(pieces, templates.envelope));
+        await audit(pool, { actor: actorName(req), action: 'MAIL_RUN_PACKAGE_DOWNLOADED', entityType: 'MAIL_RUN', entityId: id, diff: { pieces: pieces.length } });
+        return send('application/zip', `${base}.zip`, await InHouseMail.buildPackage({ run, pieces, ...templates }));
+    } catch (err) { mailFail(res, err); }
+});
+
+apiRouter.post('/direct-mail/inhouse/runs/:id/mailed', async (req, res) => {
+    try {
+        if (!mailUuid.test(req.params.id)) return res.status(400).json({ error: 'Invalid run.' });
+        res.json(await InHouseMail.markMailed(req.params.id, actorName(req)));
+    } catch (err) { mailFail(res, err); }
+});
+
+apiRouter.post('/direct-mail/inhouse/pieces/status', async (req, res) => {
+    try { res.json(await InHouseMail.setPieceStatus({ mailpieceId: req.body?.mailpieceId, status: req.body?.status, actor: actorName(req) })); } catch (err) { mailFail(res, err); }
+});
+
+apiRouter.get('/direct-mail/inhouse/tracking', async (req, res) => {
+    try {
+        const summary = await InHouseMail.trackingSummary();
+        // Live counts for the next touches, after a fresh check
+        const next = {};
+        for (const t of [2, 3]) { const a = await InHouseMail.buildAudience({ touch: t }); next[t] = a.eligibleCount; }
+        res.json({ ...summary, eligibleAfterFreshCheck: next });
+    } catch (err) { mailFail(res, err); }
 });
 
 apiRouter.post('/direct-mail/simulate-scan', (req, res) => {

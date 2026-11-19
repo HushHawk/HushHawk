@@ -206,6 +206,15 @@ export class StorageService {
         };
     }
 
+    /** Reads an object into memory (used for the mailing templates). */
+    static async getObjectBuffer({ objectKey, maxBytes = 15 * 1024 * 1024 }) {
+        if (!objectKey) throw new Error('Object key is required');
+        const out = await s3Client.send(new GetObjectCommand({ Bucket: AWS_S3_BUCKET, Key: objectKey }));
+        const chunks = []; let size = 0;
+        for await (const chunk of out.Body) { size += chunk.length; if (size > maxBytes) throw new Error('File is too large'); chunks.push(chunk); }
+        return Buffer.concat(chunks);
+    }
+
     /** Lists objects under a prefix (newest last). Requires real credentials; returns [] without them. */
     static async listObjects({ prefix }) {
         if (!HAS_AWS_CREDS) return [];
