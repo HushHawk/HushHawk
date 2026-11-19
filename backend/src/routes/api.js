@@ -3411,8 +3411,26 @@ apiRouter.post('/skip-tracing', async (req, res, next) => {
     }
 });
 
+// The queue as a BatchLeads upload list. Traces run inside BatchLeads; their results come back through the BatchLeads webhook.
+apiRouter.get('/skip-tracing/queue-export', async (req, res, next) => {
+    try {
+        const { rows } = await pool.query(
+            `SELECT person.full_name AS "ownerName", property.address_line1 AS address, property.city,
+                    COALESCE(property.state_code, 'FL') AS state, property.postal_code AS zip,
+                    county.county_name AS county, property.parcel_raw AS parcel
+             FROM core.leads lead JOIN core.properties property USING (property_id)
+             JOIN ref.counties county ON county.county_id = property.county_id
+             LEFT JOIN core.people person ON person.person_id = lead.person_id
+             WHERE lead.status = 'QUEUED_FOR_SKIP_TRACE'
+             ORDER BY lead.created_at DESC`);
+        res.json({ total: rows.length, rows, webhookUrl: publicWebhookUrl('/api/v1/integrations/batchleads/webhook') });
+    } catch (error) {
+        next(error);
+    }
+});
+
 apiRouter.post('/skip-tracing/batch', (req, res) => {
-    res.status(503).json({ error: 'Batch contact verification requires a configured skip-tracing provider.' });
+    res.status(503).json({ error: 'Traces are run in BatchLeads. Use "Export queue for BatchLeads", upload the file there, and the results arrive here automatically.' });
 });
 
 // --- Facebook Leads: real leads whose first source is Facebook ---
@@ -3851,8 +3869,9 @@ apiRouter.post('/county-records/push-to-skip-trace', async (req, res) => {
             if (typeof id !== 'string' || !UUID_REGEX.test(id)) continue;
             const leadId = crypto.randomUUID();
             const { rowCount } = await pool.query(
-                `INSERT INTO core.leads (lead_id, property_id, first_source_code, status, created_at)
-                 SELECT $1, property_id, 'COUNTY_TAX_DELINQUENT', 'QUEUED_FOR_SKIP_TRACE', $3
+                // A parcel waiting for a trace has no owner contact yet, so it is not counted as a seller lead until one is found.
+                `INSERT INTO core.leads (lead_id, property_id, first_source_code, status, created_at, lead_kind, lead_kind_reason, lead_kind_set_by, lead_kind_set_at)
+                 SELECT $1, property_id, 'COUNTY', 'QUEUED_FOR_SKIP_TRACE', $3, 'AUTOMATED', 'County record waiting for a skip trace', 'system', now()
                  FROM core.properties WHERE property_id = $2`,
                 [leadId, id, now]
             );
