@@ -78,7 +78,7 @@ export class DirectMailTrackerService {
             `WITH candidates AS (
                 SELECT piece_id, property_id, address
                 FROM core.direct_mail_pieces
-                WHERE crown_key = $1 AND ($2::uuid IS NULL OR piece_id = $2)
+                WHERE (crown_key = $1 OR crown_key = $8) AND ($2::uuid IS NULL OR piece_id = $2)
                 LIMIT 2
             ), matched AS (
                 SELECT * FROM candidates WHERE (SELECT count(*) FROM candidates) = 1
@@ -94,7 +94,7 @@ export class DirectMailTrackerService {
                 FROM scan WHERE p.piece_id = scan.piece_id
             ), interaction AS (
                 INSERT INTO core.interactions (property_id, method, direction, actor_id, result, notes)
-                SELECT prop.property_id, 'DIRECT_MAIL', 'INBOUND', 'Homeowner QR Scan', 'QR_SCANNED', $1
+                SELECT prop.property_id, 'MAIL', 'INBOUND', 'Homeowner QR Scan', 'QR_SCANNED', $1
                 FROM scan JOIN matched USING (piece_id)
                 JOIN core.properties prop ON prop.property_id = matched.property_id
             ), notification AS (
@@ -109,7 +109,8 @@ export class DirectMailTrackerService {
                 FROM scan
             )
             SELECT * FROM scan`,
-            [parsed.cleanKey, pieceId, parsed.pillarCode, ip, userAgent, city, region]
+            // $8: the key exactly as printed (e.g. DUV-0306180000R-ABS-001); parsing re-orders it, so both forms are matched
+            [parsed.cleanKey, pieceId, parsed.pillarCode, ip, userAgent, city, region, String(crownKey || '').trim().toUpperCase()]
         );
         if (!scan) return null;
 
