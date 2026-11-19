@@ -5,7 +5,18 @@
  */
 const NAMED = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ', ndash: '–', mdash: '—', hellip: '…', rsquo: '’', lsquo: '‘', rdquo: '”', ldquo: '“', bull: '•', copy: '©' };
 
+// Some senders encode twice (&amp;amp;), so decode until nothing changes (at most three passes).
 export function decodeEntities(text) {
+    let current = String(text);
+    for (let i = 0; i < 3; i++) {
+        const next = decodeOnce(current);
+        if (next === current) break;
+        current = next;
+    }
+    return current;
+}
+
+function decodeOnce(text) {
     return String(text).replace(/&(#x[0-9a-f]+|#\d+|[a-z]+);/gi, (match, code) => {
         if (code[0] === '#') {
             const n = code[1].toLowerCase() === 'x' ? parseInt(code.slice(2), 16) : parseInt(code.slice(1), 10);
