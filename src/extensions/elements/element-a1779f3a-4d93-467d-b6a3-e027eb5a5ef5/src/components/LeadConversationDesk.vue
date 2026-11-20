@@ -1266,6 +1266,8 @@ onUnmounted(() => {
   word-break: break-word;
 }
 
+:root:not(.ww-app-theme-dark) .bubble-inline-link { color: #7a5a12; }
+:root:not(.ww-app-theme-dark) .bubble-link { color: #6b4e0f; background: rgba(160, 120, 30, .1); border-color: rgba(122, 90, 18, .45); }
 .bubble-inline-link { color: #edcf7c; text-decoration: underline; font-weight: 600; word-break: break-all; }
 .bubble-links { display: flex; flex-direction: column; gap: 4px; margin-top: 8px; }
 .bubble-link {

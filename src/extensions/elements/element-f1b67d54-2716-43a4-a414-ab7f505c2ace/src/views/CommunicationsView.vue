@@ -1128,6 +1128,9 @@ export default {
 }
 
 /* Communications Light Mode Scoped Overrides */
+:root:not(.ww-app-theme-dark) .msg-link { color: #7a5a12; }
+:root:not(.ww-app-theme-dark) .msg-link-chip { color: #6b4e0f; background: rgba(160, 120, 30, .1); border-color: rgba(122, 90, 18, .45); }
+:root:not(.ww-app-theme-dark) .msg-link-chip:hover { background: rgba(160, 120, 30, .18); }
 :root:not(.ww-app-theme-dark) .thread-card .contact-name {
   color: #18273c !important;
   font-weight: 700 !important;
