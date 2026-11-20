@@ -751,9 +751,12 @@ test('Podio email feed items keep the full body and links, and an older cut-off 
         fields: [field('Mode', { text: 'Inbound' }), field('Type', { text: 'Email' }), field('From Email', email), field('Caller Name', 'Link Test'), field('Email Subject', 'Off-market deal'), field('Email Body', html)] };
     const originalFetch = globalThis.fetch, originalAuth = PodioService.authenticateApp;
     PodioService.authenticateApp = async () => ({ access_token: 'test' });
+    item.file_count = 1;
     globalThis.fetch = async (url, init) => String(url).startsWith('https://api.podio.com/item/app/')
         ? new Response(JSON.stringify({ items: [item] }), { status: 200, headers: { 'content-type': 'application/json' } })
-        : originalFetch(url, init);
+        : String(url) === `https://api.podio.com/item/${itemId}`
+            ? new Response(JSON.stringify({ files: [{ file_id: 555, name: 'deal.pdf', mimetype: 'application/pdf', size: 12345 }] }), { status: 200, headers: { 'content-type': 'application/json' } })
+            : originalFetch(url, init);
     try {
         // an older sync stored this email cut off at 180 characters with no links
         await PodioSyncService.syncCommunications(1);
@@ -761,6 +764,8 @@ test('Podio email feed items keep the full body and links, and an older cut-off 
         assert.ok(msg, 'the email was saved');
         assert.ok(msg.content.length > 400, 'the body is not cut at 180 characters');
         assert.deepEqual(msg.links, [{ text: 'View property photos', url: 'https://photos.test/p?utm=1&x=2' }]);
+        const { rows: [withFiles] } = await pool.query('SELECT attachments FROM core.conversation_desk_messages WHERE id = $1', [`msg-podio-${itemId}`]);
+        assert.deepEqual(withFiles.attachments, [{ fileId: 555, name: 'deal.pdf', mimetype: 'application/pdf', size: 12345 }], 'files on the Podio item are recorded');
         await pool.query("UPDATE core.conversation_desk_messages SET content = 'Subject: Old — cut off', links = NULL WHERE id = $1", [`msg-podio-${itemId}`]);
         await PodioSyncService.syncCommunications(1);
         const detail = await asJson(await json('GET', `/lead-desk/threads/${msg.thread_id}`));

@@ -474,6 +474,15 @@ export class PodioSyncService {
                         itemDate
                     ]);
 
+                    // The app's item list only gives a file count; the files themselves come with the full item.
+                    let files = Array.isArray(it.files) ? it.files : [];
+                    if (!files.length && Number(it.file_count) > 0) {
+                        try {
+                            const full = await fetch(`https://api.podio.com/item/${it.item_id}`, { headers: { 'Authorization': `OAuth2 ${token}` } });
+                            if (full.ok) files = (await full.json()).files || [];
+                        } catch (fileErr) { console.warn(`[PodioSync] Files for item ${it.item_id} not read:`, fileErr.message); }
+                    }
+
                     // Upsert message in core.conversation_desk_messages
                     await pool.query(`
                         INSERT INTO core.conversation_desk_messages
@@ -489,8 +498,8 @@ export class PodioSyncService {
                         itemDate,
                         links.length ? JSON.stringify(links) : null,
                         // files attached to the Podio item (email attachments, inline images); shown through our own download route
-                        Array.isArray(it.files) && it.files.length
-                            ? JSON.stringify(it.files.slice(0, 30).map(f => ({ fileId: Number(f.file_id), name: String(f.name || 'file').slice(0, 200), mimetype: String(f.mimetype || 'application/octet-stream').slice(0, 100), size: Number(f.size) || 0 })))
+                        files.length
+                            ? JSON.stringify(files.slice(0, 30).map(f => ({ fileId: Number(f.file_id), name: String(f.name || 'file').slice(0, 200), mimetype: String(f.mimetype || 'application/octet-stream').slice(0, 100), size: Number(f.size) || 0 })))
                             : null
                     ]);
 
