@@ -117,6 +117,16 @@
                 <a v-for="(link, li) in messageLinks(msg)" :key="li" class="msg-link-chip" :href="link.url" target="_blank" rel="noopener noreferrer nofollow" :title="link.url">🔗 {{ link.text }}</a>
               </div>
               <p v-if="missingLinkCount(msg)" class="msg-link-missing">{{ missingLinkCount(msg) === 1 ? 'A link' : missingLinkCount(msg) + ' links' }} in this email ({{ missingLinkNames(msg) }}) {{ missingLinkCount(msg) === 1 ? 'was' : 'were' }} removed by the email import before it reached HushHawk. Open the original email to use {{ missingLinkCount(msg) === 1 ? 'it' : 'them' }}.</p>
+              <div v-if="visibleAttachments(msg).length" class="msg-attachments">
+                <template v-for="att in visibleAttachments(msg)" :key="att.fileId">
+                  <a v-if="isImageAttachment(att)" class="att-thumb" href="#" :title="att.name" @click.prevent="openAttachment(att)">
+                    <img v-if="attachmentUrls[att.fileId]" :src="attachmentUrls[att.fileId]" :alt="att.name" />
+                    <span v-else class="att-loading">{{ attachmentErrors[att.fileId] ? 'Not available' : 'Loading…' }}</span>
+                  </a>
+                  <a v-else class="att-file" href="#" @click.prevent="openAttachment(att)">📎 {{ att.name }} <small>{{ fileSize(att.size) }}</small></a>
+                </template>
+              </div>
+              <p v-if="hiddenIconCount(msg)" class="att-note">{{ hiddenIconCount(msg) }} small signature image{{ hiddenIconCount(msg) === 1 ? '' : 's' }} (logos, social icons) not shown.</p>
               <div v-if="msg.callDuration" class="call-meta">
                 <span v-html="icons.phone" class="tiny-icon"></span>
                 <span>Call Duration: {{ msg.callDuration }}</span>
@@ -268,6 +278,8 @@ export default {
       isSyncing: false,
       showIntel: true,
       activeThread: null,
+      attachmentUrls: {},
+      attachmentErrors: {},
       quickTemplates: [
         { label: 'Cash Offer', text: 'Hi, this is HushHawk. Is now a good time to discuss your cash offer?' },
         { label: 'Inspection Request', text: 'Good morning! Our field underwriter would like to schedule a 15-minute walkthrough of the property tomorrow between 1-3 PM. Does that time work?' },
@@ -276,6 +288,10 @@ export default {
       threads: []
     };
   },
+  watch: {
+    activeThread(thread) { this.loadAttachmentPreviews(thread); }
+  },
+  beforeUnmount() { Object.values(this.attachmentUrls).forEach(u => URL.revokeObjectURL(u)); },
   computed: {
     unreadCount() {
       return this.threads.filter(t => t.unread).length;
@@ -306,6 +322,36 @@ export default {
   methods: {
     textParts,
     messageLinks,
+    // Attachments come from Podio through our own route; the sign-in travels with each request, so files are fetched
+    // here and shown from memory. Tiny images (under 2 KB) are email-signature logos and social icons and are not shown.
+    isImageAttachment(att) { return /^image\/(png|jpe?g|gif|webp)$/i.test(att.mimetype || ''); },
+    visibleAttachments(msg) { return (Array.isArray(msg && msg.attachments) ? msg.attachments : []).filter(a => a && a.fileId && !(this.isImageAttachment(a) && Number(a.size) > 0 && Number(a.size) < 2048)); },
+    hiddenIconCount(msg) { return (Array.isArray(msg && msg.attachments) ? msg.attachments : []).filter(a => a && this.isImageAttachment(a) && Number(a.size) > 0 && Number(a.size) < 2048).length; },
+    fileSize(n) { n = Number(n) || 0; return n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : n >= 1024 ? Math.round(n / 1024) + ' KB' : n + ' B'; },
+    async fetchAttachment(att) {
+      const res = await fetch(`/api/v1/communications/attachments/${att.fileId}`);
+      if (!res.ok) { const d = await res.json().catch(() => ({})); throw new Error(d.error || `HTTP ${res.status}`); }
+      return res.blob();
+    },
+    async loadAttachmentPreviews(thread) {
+      if (!thread || !Array.isArray(thread.messages)) return;
+      for (const msg of thread.messages) {
+        for (const att of this.visibleAttachments(msg)) {
+          if (!this.isImageAttachment(att) || this.attachmentUrls[att.fileId] || this.attachmentErrors[att.fileId]) continue;
+          try { const blob = await this.fetchAttachment(att); this.attachmentUrls = { ...this.attachmentUrls, [att.fileId]: URL.createObjectURL(blob) }; }
+          catch (e) { this.attachmentErrors = { ...this.attachmentErrors, [att.fileId]: e.message }; }
+        }
+      }
+    },
+    async openAttachment(att) {
+      const viewable = this.isImageAttachment(att) || /pdf/i.test(att.mimetype || '');
+      const win = viewable ? window.open('', '_blank') : null;
+      try {
+        const url = this.attachmentUrls[att.fileId] || URL.createObjectURL(await this.fetchAttachment(att));
+        if (viewable) { if (win) win.location.href = url; else window.open(url, '_blank'); }
+        else { const a = document.createElement('a'); a.href = url; a.download = att.name || 'file'; document.body.appendChild(a); a.click(); a.remove(); }
+      } catch (e) { if (win) win.close(); this.attachmentErrors = { ...this.attachmentErrors, [att.fileId]: e.message }; }
+    },
     missingLinkCount(msg) { return (Array.isArray(msg && msg.links) ? msg.links : []).filter(l => l && l.missing).length; },
     missingLinkNames(msg) { return (msg.links || []).filter(l => l && l.missing).map(l => l.text).slice(0, 3).join(', '); },
     async syncPodioAndSmrtPhone() {
@@ -994,6 +1040,14 @@ export default {
 .send-btn :deep(svg) { width: 16px; height: 16px; }
 .send-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(201, 164, 72, 0.35); }
 .send-btn:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; }
+.msg-attachments { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.att-thumb { display: grid; place-items: center; width: 132px; height: 96px; border: 1px solid rgba(201, 164, 72, .45); border-radius: 8px; overflow: hidden; background: rgba(0, 0, 0, .06); }
+.att-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.att-loading { font-size: 11px; color: var(--hh-muted, #8b9ab0); }
+.att-file { display: inline-flex; align-items: center; gap: 6px; padding: 7px 11px; border: 1px solid rgba(201, 164, 72, .45); border-radius: 8px; color: #edcf7c; font-size: 12.5px; font-weight: 600; text-decoration: none; overflow-wrap: anywhere; }
+.att-file small { color: var(--hh-muted, #8b9ab0); font-weight: 500; }
+:root:not(.ww-app-theme-dark) .att-file { color: #6b4e0f; }
+.att-note { margin: 6px 0 0; font-size: 11px; color: var(--hh-muted, #8b9ab0); }
 .msg-link-missing { margin: 8px 0 0; padding: 6px 10px; border-left: 3px solid #c9a448; border-radius: 4px; background: rgba(201, 164, 72, 0.08); color: var(--hh-muted, #8b9ab0); font-size: 11.5px; line-height: 1.4; }
 
 /* Right: Intel Panel */

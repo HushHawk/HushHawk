@@ -477,9 +477,9 @@ export class PodioSyncService {
                     // Upsert message in core.conversation_desk_messages
                     await pool.query(`
                         INSERT INTO core.conversation_desk_messages
-                        (id, thread_id, sender_type, sender_name, content, sent_at, created_at, links)
-                        VALUES ($1, $2, $3, $4, $5, $6, $6, $7)
-                        ON CONFLICT (id) DO UPDATE SET content = EXCLUDED.content, links = EXCLUDED.links
+                        (id, thread_id, sender_type, sender_name, content, sent_at, created_at, links, attachments)
+                        VALUES ($1, $2, $3, $4, $5, $6, $6, $7, $8)
+                        ON CONFLICT (id) DO UPDATE SET content = EXCLUDED.content, links = EXCLUDED.links, attachments = EXCLUDED.attachments
                     `, [
                         msgId,
                         threadId,
@@ -487,7 +487,11 @@ export class PodioSyncService {
                         isInbound ? callerName : 'Podio user',
                         content,
                         itemDate,
-                        links.length ? JSON.stringify(links) : null
+                        links.length ? JSON.stringify(links) : null,
+                        // files attached to the Podio item (email attachments, inline images); shown through our own download route
+                        Array.isArray(it.files) && it.files.length
+                            ? JSON.stringify(it.files.slice(0, 30).map(f => ({ fileId: Number(f.file_id), name: String(f.name || 'file').slice(0, 200), mimetype: String(f.mimetype || 'application/octet-stream').slice(0, 100), size: Number(f.size) || 0 })))
+                            : null
                     ]);
 
                     // A reply that asks to stop is a legal opt-out: add the sender to the do-not-contact list so the outbound gate blocks them.
@@ -1229,4 +1233,12 @@ export class PodioSyncService {
             }
         };
     }
+}
+
+/** Streams one file that is attached to a synced message, from Podio, using the app's own Podio sign-in. */
+export async function fetchPodioFile(fileId) {
+    const auth = await PodioService.authenticateApp(PodioSyncService.LEADS_APP_ID, PodioSyncService.APP_TOKEN);
+    const res = await fetch(`https://api.podio.com/file/${Number(fileId)}/raw`, { headers: { Authorization: `OAuth2 ${auth.access_token}` }, signal: AbortSignal.timeout(30000) });
+    if (!res.ok) throw new Error(`Podio returned ${res.status} for that file`);
+    return res;
 }
