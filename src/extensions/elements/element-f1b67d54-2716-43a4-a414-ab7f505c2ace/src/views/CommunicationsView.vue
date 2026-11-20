@@ -112,7 +112,10 @@
                 <span v-if="msg.source" class="msg-source-tag">{{ msg.source }}</span>
                 <span class="msg-time">{{ msg.time }}</span>
               </div>
-              <p class="bubble-text">{{ msg.text }}</p>
+              <p class="bubble-text"><template v-for="(part, pi) in textParts(msg.text)" :key="pi"><a v-if="part.url" class="msg-link" :href="part.url" target="_blank" rel="noopener noreferrer nofollow" :title="part.url">{{ part.label }}</a><template v-else>{{ part.text }}</template></template></p>
+              <div v-if="messageLinks(msg).length" class="msg-link-chips">
+                <a v-for="(link, li) in messageLinks(msg)" :key="li" class="msg-link-chip" :href="link.url" target="_blank" rel="noopener noreferrer nofollow" :title="link.url">🔗 {{ link.text }}</a>
+              </div>
               <div v-if="msg.callDuration" class="call-meta">
                 <span v-html="icons.phone" class="tiny-icon"></span>
                 <span>Call Duration: {{ msg.callDuration }}</span>
@@ -226,6 +229,28 @@
 <script>
 import { icons } from '../icons.js';
 
+// Turns the addresses in a message into clickable links (http/https only). Rendered with plain text nodes, never as HTML.
+const URL_IN_TEXT = /https?:\/\/[^\s<>"'\])]+/g;
+function isSafeHttp(u) { try { return /^https?:$/.test(new URL(u).protocol); } catch (e) { return false; } }
+function shortUrl(u) { try { const x = new URL(u); const rest = (x.pathname + x.search).replace(/^\/$/, ''); return x.hostname.replace(/^www\./, '') + (rest.length > 24 ? rest.slice(0, 24) + '…' : rest); } catch (e) { return u; } }
+function textParts(text) {
+  const s = String(text || ''); const parts = []; let last = 0; let m;
+  URL_IN_TEXT.lastIndex = 0;
+  while ((m = URL_IN_TEXT.exec(s))) {
+    const url = m[0].replace(/[.,;:!?]+$/, '');
+    if (m.index > last) parts.push({ text: s.slice(last, m.index) });
+    parts.push(isSafeHttp(url) ? { url, label: shortUrl(url) } : { text: url });
+    last = m.index + url.length;
+    URL_IN_TEXT.lastIndex = last;
+  }
+  if (last < s.length) parts.push({ text: s.slice(last) });
+  return parts;
+}
+function messageLinks(msg) {
+  return (Array.isArray(msg && msg.links) ? msg.links : []).filter(l => l && l.text && isSafeHttp(l.url)).slice(0, 25);
+}
+
+
 export default {
   name: 'CommunicationsView',
   props: {
@@ -278,6 +303,8 @@ export default {
     this.loadCommunications();
   },
   methods: {
+    textParts,
+    messageLinks,
     async syncPodioAndSmrtPhone() {
       if (this.isSyncing) return;
       this.isSyncing = true;
@@ -757,7 +784,13 @@ export default {
 
 .bubble-text {
   margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
+.msg-link { color: #edcf7c; text-decoration: underline; font-weight: 600; word-break: break-all; }
+.msg-link-chips { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+.msg-link-chip { display: block; padding: 8px 12px; border: 1px solid rgba(237, 207, 124, .5); border-radius: 8px; background: rgba(237, 207, 124, .1); color: #edcf7c; font-size: 12.5px; font-weight: 700; text-decoration: none; overflow-wrap: anywhere; }
+.msg-link-chip:hover { background: rgba(237, 207, 124, .2); }
 
 .simulate-call-btn {
   background: rgba(34, 197, 94, 0.15);

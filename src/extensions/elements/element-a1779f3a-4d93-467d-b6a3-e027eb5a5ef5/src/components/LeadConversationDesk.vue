@@ -184,7 +184,7 @@
               }"
             >
               <div class="message-bubble">
-                <p class="bubble-text">{{ msg.content }}</p>
+                <p class="bubble-text"><template v-for="(part, pi) in textParts(msg.content)" :key="pi"><a v-if="part.url" class="bubble-inline-link" :href="part.url" target="_blank" rel="noopener noreferrer nofollow" :title="part.url">{{ part.label }}</a><template v-else>{{ part.text }}</template></template></p>
                 <div v-if="safeLinks(msg).length" class="bubble-links">
                   <a v-for="(link, li) in safeLinks(msg)" :key="li" class="bubble-link" :href="link.url" target="_blank" rel="noopener noreferrer nofollow" :title="link.url">🔗 {{ link.text }}</a>
                 </div>
@@ -329,6 +329,27 @@ function getScoreClass(score) {
   if (score >= 90) return 'score-high';
   if (score >= 80) return 'score-med';
   return 'score-normal';
+}
+
+// Turns the addresses in a message into clickable links (http/https only). Rendered with plain text nodes, never as HTML.
+const URL_IN_TEXT = /https?:\/\/[^\s<>"'\])]+/g;
+function isSafeHttp(u) { try { return /^https?:$/.test(new URL(u).protocol); } catch (e) { return false; } }
+function shortUrl(u) { try { const x = new URL(u); const rest = (x.pathname + x.search).replace(/^\/$/, ''); return x.hostname.replace(/^www\./, '') + (rest.length > 24 ? rest.slice(0, 24) + '…' : rest); } catch (e) { return u; } }
+function textParts(text) {
+  const s = String(text || ''); const parts = []; let last = 0; let m;
+  URL_IN_TEXT.lastIndex = 0;
+  while ((m = URL_IN_TEXT.exec(s))) {
+    const url = m[0].replace(/[.,;:!?]+$/, '');
+    if (m.index > last) parts.push({ text: s.slice(last, m.index) });
+    parts.push(isSafeHttp(url) ? { url, label: shortUrl(url) } : { text: url });
+    last = m.index + url.length;
+    URL_IN_TEXT.lastIndex = last;
+  }
+  if (last < s.length) parts.push({ text: s.slice(last) });
+  return parts;
+}
+function messageLinks(msg) {
+  return (Array.isArray(msg && msg.links) ? msg.links : []).filter(l => l && l.text && isSafeHttp(l.url)).slice(0, 25);
 }
 
 // Only plain http(s) links are ever shown as clickable; anything else (javascript:, data:, file:) is dropped here as well as on the server.
@@ -1245,6 +1266,7 @@ onUnmounted(() => {
   word-break: break-word;
 }
 
+.bubble-inline-link { color: #edcf7c; text-decoration: underline; font-weight: 600; word-break: break-all; }
 .bubble-links { display: flex; flex-direction: column; gap: 4px; margin-top: 8px; }
 .bubble-link {
   display: block;

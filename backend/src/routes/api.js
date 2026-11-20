@@ -4067,7 +4067,7 @@ apiRouter.get('/communications', async (req, res) => {
         let messagesByThread = {};
         if (threadIds.length > 0) {
             const msgsQuery = `
-                SELECT id, thread_id, sender_type, sender_name, content, sent_at
+                SELECT id, thread_id, sender_type, sender_name, content, links, sent_at
                 FROM core.conversation_desk_messages
                 WHERE thread_id = ANY($1)
                 ORDER BY sent_at ASC
@@ -4080,6 +4080,7 @@ apiRouter.get('/communications', async (req, res) => {
                     sender: m.sender_type === 'lead' ? 'contact' : 'rep',
                     name: m.sender_name,
                     text: m.content,
+                    links: Array.isArray(m.links) ? m.links : [],
                     time: new Date(m.sent_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }),
                     outgoing: m.sender_type !== 'lead'
                 });

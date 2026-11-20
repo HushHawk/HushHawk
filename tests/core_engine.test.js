@@ -718,9 +718,17 @@ test('incoming email: links are kept with their wording, text is complete, unsaf
     // senders that encode twice still give a working address, and a link shown both as a button and as text is listed once
     r = extractEmail('<a href="https://www.dropbox.com/scl/fo/x/y?rlkey=z&amp;amp;st=b&amp;amp;dl=0">https://www.dropbox.com/scl/fo/x/y?rlkey=z&amp;amp;st=b&amp;amp;dl=0</a>');
     assert.deepEqual(r.links, [{ text: 'dropbox.com', url: 'https://www.dropbox.com/scl/fo/x/y?rlkey=z&st=b&dl=0' }]);
+    // text emails that write links as [address](address): the brackets go, the address stays once, and the words before it label the link
+    r = extractEmail('Cash only.\nView Property Photos: [https://www.dropbox.com/scl/fo/a/b?rlkey=k&st=s&dl=0](https://www.dropbox.com/scl/fo/a/b?rlkey=k&st=s&dl=0)\nReply for access.');
+    assert.equal(r.text, 'Cash only.\nView Property Photos: https://www.dropbox.com/scl/fo/a/b?rlkey=k&st=s&dl=0\nReply for access.');
+    assert.deepEqual(r.links, [{ text: 'View Property Photos', url: 'https://www.dropbox.com/scl/fo/a/b?rlkey=k&st=s&dl=0' }]);
+    r = extractEmail('See [the photos](https://share.test/x) and [https://b.test/y]');
+    assert.equal(r.text, 'See the photos https://share.test/x and https://b.test/y');
+    assert.deepEqual(r.links.map(l => l.text), ['the photos', 'b.test']);
+    assert.equal(extractEmail('[click](javascript:alert(1))').links.length, 0);
     // 8. plain-text email with a written-out address
     r = extractEmail('Photos here: https://share.test/album/9.\nThanks');
-    assert.deepEqual(r.links, [{ text: 'share.test', url: 'https://share.test/album/9' }]);
+    assert.deepEqual(r.links, [{ text: 'Photos here', url: 'https://share.test/album/9' }]);
 });
 
 test('Podio email feed items keep the full body and links, and an older cut-off message is updated', async () => {
@@ -750,6 +758,10 @@ test('Podio email feed items keep the full body and links, and an older cut-off 
         const shown = detail.body.messages.find(m => m.id === `msg-podio-${itemId}`);
         assert.deepEqual(shown.links, [{ text: 'View property photos', url: 'https://photos.test/p?utm=1&x=2' }]);
         assert.ok(shown.content.length > 400);
+        // the Communications page gets the same links
+        const comms = await asJson(await json('GET', '/communications'));
+        const commsMsg = comms.body.threads.find(th => th.id === msg.thread_id).messages.find(m => m.id === `msg-podio-${itemId}`);
+        assert.deepEqual(commsMsg.links, [{ text: 'View property photos', url: 'https://photos.test/p?utm=1&x=2' }]);
     } finally {
         globalThis.fetch = originalFetch; PodioService.authenticateApp = originalAuth;
     }

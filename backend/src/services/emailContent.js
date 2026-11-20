@@ -86,11 +86,25 @@ export function extractEmail(body) {
             if (url) add(anchorLabel(m[2], url), url);
         }
     }
-    const text = isHtml ? htmlToText(raw) : decodeEntities(raw).replace(/\r\n?/g, '\n').trim();
-    // Plain-text emails (and addresses written out in HTML text) carry bare links too.
-    for (const found of text.match(/https?:\/\/[^\s<>"')\]]+/gi) || []) {
-        const url = safeUrl(found.replace(/[.,;:!?]+$/, ''));
-        if (url) add(anchorLabel('', url), url);
+    let text = isHtml ? htmlToText(raw) : decodeEntities(raw).replace(/\r\n?/g, '\n').trim();
+    // Emails that arrive as text often carry links written as [label](address) or [address]. Keep the address once,
+    // without the brackets, so it reads cleanly and can be clicked; a real label is kept as the link's wording.
+    text = text.replace(/\[([^\]\n]{1,300})\]\((https?:\/\/[^\s)]+)\)/gi, (whole, label, href) => {
+        const url = safeUrl(href);
+        if (!url) return label;
+        const isAddress = /^https?:\/\//i.test(label.trim());
+        if (!isAddress) { add(collapse(label).slice(0, 120), url); return `${label} ${url}`; }
+        return url;
+    }).replace(/\[(https?:\/\/[^\s\]]+)\]/gi, '$1');
+    // Bare addresses: use the words just before the address on the same line ("View Property Photos:") as the label.
+    const bare = /https?:\/\/[^\s<>"')\]]+/gi;
+    let found;
+    while ((found = bare.exec(text))) {
+        const url = safeUrl(found[0].replace(/[.,;:!?]+$/, ''));
+        if (!url) continue;
+        const before = text.slice(Math.max(0, found.index - 80), found.index).split('\n').pop();
+        const phrase = /([A-Za-z][A-Za-z0-9 '&/-]{2,60}?)\s*[:\-–]\s*$/.exec(before);
+        add(phrase ? phrase[1].trim() : anchorLabel('', url), url);
     }
     return { text, links };
 }
