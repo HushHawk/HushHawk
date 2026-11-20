@@ -934,3 +934,21 @@ test('premium mail designs: identity, previews, and one-click setup of matching 
         Mail.templateStore.load = original.load; Mail.templateStore.save = original.save;
     }
 });
+
+test('email attachments: placeholders are tidied, files are kept, and only attached files can be fetched', async () => {
+    const { extractEmail } = await import('../backend/src/services/emailContent.js');
+    const r = extractEmail('Hello<br/><br/>[cid:378ef5af-6b49]<br/><br/>P: (850) 561-5730<br/>[facebook icon] [twitter icon] [linkedin icon]<br/>Attachments:<br/>image.png<br/>image.png<br/>report.pdf<br/>');
+    assert.equal(r.text, 'Hello\n\nP: (850) 561-5730');
+    // the download route refuses files that are not attached to a stored message
+    assert.equal((await json('GET', '/communications/attachments/123456789')).status, 404);
+    assert.equal((await json('GET', '/communications/attachments/abc')).status, 400);
+    const thread = `th-att-${Date.now()}`;
+    await pool.query("INSERT INTO core.conversation_desk_threads (id, platform_id, contact_name, property_address) VALUES ($1, 'email', 'Att Test', '')", [thread]);
+    await pool.query(`INSERT INTO core.conversation_desk_messages (id, thread_id, sender_type, sender_name, content, sent_at, attachments) VALUES ($1, $2, 'lead', 'Att Test', 'see file', now(), $3)`,
+        [`${thread}-m`, thread, JSON.stringify([{ fileId: 987654321, name: 'photo.jpg', mimetype: 'image/jpeg', size: 50000 }])]);
+    const comms = await asJson(await json('GET', '/communications'));
+    const m = comms.body.threads.find(t => t.id === thread).messages[0];
+    assert.deepEqual(m.attachments, [{ fileId: 987654321, name: 'photo.jpg', mimetype: 'image/jpeg', size: 50000 }]);
+    const desk = await asJson(await json('GET', `/lead-desk/threads/${thread}`));
+    assert.equal(desk.body.messages[0].attachments[0].name, 'photo.jpg');
+});

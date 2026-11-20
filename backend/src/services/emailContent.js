@@ -105,6 +105,13 @@ export function extractEmail(body) {
         .replace(/\[([^\]\n]{1,300})\]\s*\((?!https?:)[^)\s]{0,40}\)/gi, (whole, label) => noteMissing(label))
         .replace(/\[(https?:\/\/[^\s\]]+)\]/gi, '$1')
         .replace(/\[([A-Za-z][A-Za-z ]{0,30}\blink)\]/gi, (whole, label) => noteMissing(label));
+    // Inline-image references ([cid:...]), social-icon placeholders ([facebook icon]) and the import's own list of
+    // attachment names carry nothing readable; the real files are shown separately as attachments.
+    text = text
+        .replace(/\[cid:[^\]\n]{1,200}\]/gi, '')
+        .replace(/\[[A-Za-z][A-Za-z0-9 ._-]{0,40}\s(?:icon|logo)\]/gi, '')
+        .replace(/(?:^|\n)\s*Attachments:\s*(?:\n\s*[^\n]{1,120}\.[A-Za-z0-9]{2,5}\s*)+$/i, '')
+        .replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
     // Bare addresses: use the words just before the address on the same line ("View Property Photos:") as the label.
     const bare = /https?:\/\/[^\s<>"')\]]+/gi;
     let found;

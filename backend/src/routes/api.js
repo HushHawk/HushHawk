@@ -19,7 +19,7 @@ import { SmrtPhoneService } from '../services/smrtPhoneService.js';
 import { DealFunnelService } from '../services/dealFunnelService.js';
 import { LeadDeskService } from '../services/leadDeskService.js';
 import { OutreachActionsService } from '../services/outreachActionsService.js';
-import { PodioSyncService } from '../services/podioSyncService.js';
+import { PodioSyncService, fetchPodioFile } from '../services/podioSyncService.js';
 import { DeliveryService } from '../services/deliveryService.js';
 import { MetaService, META_PLATFORMS } from '../services/metaService.js';
 import { LeadClassifierService } from '../services/leadClassifierService.js';
@@ -4035,6 +4035,29 @@ apiRouter.post('/county-records/push-to-skip-trace', async (req, res) => {
 });
 
 // --- Communications (Real PostgreSQL Database) ---
+// A file attached to a synced message. Only files that belong to a stored message can be fetched, so this cannot be
+// used to read other Podio files. Images and PDFs open in the browser; everything else downloads.
+apiRouter.get('/communications/attachments/:fileId', async (req, res) => {
+    const fileId = Number(req.params.fileId);
+    if (!Number.isSafeInteger(fileId) || fileId <= 0) return res.status(400).json({ error: 'Invalid file.' });
+    try {
+        const { rows: [owner] } = await pool.query(
+            `SELECT a->>'name' AS name, a->>'mimetype' AS mimetype FROM core.conversation_desk_messages m, jsonb_array_elements(coalesce(m.attachments, '[]'::jsonb)) a
+             WHERE (a->>'fileId')::bigint = $1 LIMIT 1`, [fileId]);
+        if (!owner) return res.status(404).json({ error: 'That file is not attached to any message.' });
+        const upstream = await fetchPodioFile(fileId);
+        const type = /^[\w.+-]+\/[\w.+-]+$/.test(owner.mimetype || '') ? owner.mimetype : 'application/octet-stream';
+        const inline = /^(image\/(png|jpe?g|gif|webp)|application\/pdf)$/i.test(type);
+        const name = String(owner.name || 'file').replace(/[^\w.\- ]/g, '_').slice(0, 120);
+        const body = Buffer.from(await upstream.arrayBuffer());
+        if (body.length > 25 * 1024 * 1024) return res.status(413).json({ error: 'The file is too large to show here.' });
+        res.set({ 'Content-Type': type, 'Content-Disposition': `${inline ? 'inline' : 'attachment'}; filename="${name}"`, 'Cache-Control': 'private, max-age=3600', 'X-Content-Type-Options': 'nosniff', 'Content-Security-Policy': "default-src 'none'; img-src 'self' data:; style-src 'unsafe-inline'" }).send(body);
+    } catch (err) {
+        console.error('[Attachment Error]', err.message);
+        res.status(502).json({ error: 'The file could not be loaded from Podio.' });
+    }
+});
+
 apiRouter.get('/communications', async (req, res) => {
     try {
         const threadsQuery = `
@@ -4067,7 +4090,7 @@ apiRouter.get('/communications', async (req, res) => {
         let messagesByThread = {};
         if (threadIds.length > 0) {
             const msgsQuery = `
-                SELECT id, thread_id, sender_type, sender_name, content, links, sent_at
+                SELECT id, thread_id, sender_type, sender_name, content, links, attachments, sent_at
                 FROM core.conversation_desk_messages
                 WHERE thread_id = ANY($1)
                 ORDER BY sent_at ASC
@@ -4081,6 +4104,7 @@ apiRouter.get('/communications', async (req, res) => {
                     name: m.sender_name,
                     text: m.content,
                     links: Array.isArray(m.links) ? m.links : [],
+                    attachments: Array.isArray(m.attachments) ? m.attachments : [],
                     time: new Date(m.sent_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }),
                     outgoing: m.sender_type !== 'lead'
                 });
