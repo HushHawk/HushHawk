@@ -185,6 +185,7 @@
             >
               <div class="message-bubble">
                 <p class="bubble-text"><template v-for="(part, pi) in textParts(msg.content)" :key="pi"><a v-if="part.url" class="bubble-inline-link" :href="part.url" target="_blank" rel="noopener noreferrer nofollow" :title="part.url">{{ part.label }}</a><template v-else>{{ part.text }}</template></template></p>
+                <p v-if="(msg.links || []).some(l => l && l.missing)" class="bubble-link-missing">Some links in this email ({{ (msg.links || []).filter(l => l && l.missing).map(l => l.text).slice(0, 3).join(', ') }}) were removed by the email import before it reached HushHawk.</p>
                 <div v-if="safeLinks(msg).length" class="bubble-links">
                   <a v-for="(link, li) in safeLinks(msg)" :key="li" class="bubble-link" :href="link.url" target="_blank" rel="noopener noreferrer nofollow" :title="link.url">🔗 {{ link.text }}</a>
                 </div>
@@ -1269,6 +1270,7 @@ onUnmounted(() => {
 :root:not(.ww-app-theme-dark) .bubble-inline-link { color: #7a5a12; }
 :root:not(.ww-app-theme-dark) .bubble-link { color: #6b4e0f; background: rgba(160, 120, 30, .1); border-color: rgba(122, 90, 18, .45); }
 .bubble-inline-link { color: #edcf7c; text-decoration: underline; font-weight: 600; word-break: break-all; }
+.bubble-link-missing { margin: 8px 0 0; padding: 6px 10px; border-left: 3px solid #c9a448; border-radius: 4px; background: rgba(201, 164, 72, .08); color: #8b9ab0; font-size: 11px; line-height: 1.4; }
 .bubble-links { display: flex; flex-direction: column; gap: 4px; margin-top: 8px; }
 .bubble-link {
   display: block;

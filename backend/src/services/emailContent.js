@@ -87,15 +87,24 @@ export function extractEmail(body) {
         }
     }
     let text = isHtml ? htmlToText(raw) : decodeEntities(raw).replace(/\r\n?/g, '\n').trim();
-    // Emails that arrive as text often carry links written as [label](address) or [address]. Keep the address once,
-    // without the brackets, so it reads cleanly and can be clicked; a real label is kept as the link's wording.
-    text = text.replace(/\[([^\]\n]{1,300})\]\((https?:\/\/[^\s)]+)\)/gi, (whole, label, href) => {
-        const url = safeUrl(href);
-        if (!url) return label;
-        const isAddress = /^https?:\/\//i.test(label.trim());
-        if (!isAddress) { add(collapse(label).slice(0, 120), url); return `${label} ${url}`; }
-        return url;
-    }).replace(/\[(https?:\/\/[^\s\]]+)\]/gi, '$1');
+    // Emails that arrive as text often carry markdown: **bold**, [label](address), [address](address), or a label and its
+    // address split over two lines. The address is kept once without brackets (so it can be clicked) and a real label
+    // becomes the link's wording. Links that the sender's import replaced with a placeholder ("(link)", "[Dropbox link]")
+    // have no address left; they are recorded as missing so the screen can say so instead of showing a dead link.
+    let missing = 0;
+    const noteMissing = label => { missing += 1; const name = collapse(label || 'Link').slice(0, 120); if (links.length < 25) links.push({ text: name, url: null, missing: true }); return name; };
+    text = text
+        .replace(/\*\*([^*\n]{1,300})\*\*/g, '$1')
+        .replace(/\[([^\]\n]{1,300})\]\s*\((https?:\/\/[^\s)]+)\)/gi, (whole, label, href) => {
+            const url = safeUrl(href);
+            if (!url) return label;
+            if (/^https?:\/\//i.test(label.trim())) return url;
+            add(collapse(label).slice(0, 120), url);
+            return label;
+        })
+        .replace(/\[([^\]\n]{1,300})\]\s*\((?!https?:)[^)\s]{0,40}\)/gi, (whole, label) => noteMissing(label))
+        .replace(/\[(https?:\/\/[^\s\]]+)\]/gi, '$1')
+        .replace(/\[([A-Za-z][A-Za-z ]{0,30}\blink)\]/gi, (whole, label) => noteMissing(label));
     // Bare addresses: use the words just before the address on the same line ("View Property Photos:") as the label.
     const bare = /https?:\/\/[^\s<>"')\]]+/gi;
     let found;
@@ -106,5 +115,5 @@ export function extractEmail(body) {
         const phrase = /([A-Za-z][A-Za-z0-9 '&/-]{2,60}?)\s*[:\-–]\s*$/.exec(before);
         add(phrase ? phrase[1].trim() : anchorLabel('', url), url);
     }
-    return { text, links };
+    return { text, links, missing };
 }

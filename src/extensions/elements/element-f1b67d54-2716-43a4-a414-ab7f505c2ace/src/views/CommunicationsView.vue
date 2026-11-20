@@ -116,6 +116,7 @@
               <div v-if="messageLinks(msg).length" class="msg-link-chips">
                 <a v-for="(link, li) in messageLinks(msg)" :key="li" class="msg-link-chip" :href="link.url" target="_blank" rel="noopener noreferrer nofollow" :title="link.url">🔗 {{ link.text }}</a>
               </div>
+              <p v-if="missingLinkCount(msg)" class="msg-link-missing">{{ missingLinkCount(msg) === 1 ? 'A link' : missingLinkCount(msg) + ' links' }} in this email ({{ missingLinkNames(msg) }}) {{ missingLinkCount(msg) === 1 ? 'was' : 'were' }} removed by the email import before it reached HushHawk. Open the original email to use {{ missingLinkCount(msg) === 1 ? 'it' : 'them' }}.</p>
               <div v-if="msg.callDuration" class="call-meta">
                 <span v-html="icons.phone" class="tiny-icon"></span>
                 <span>Call Duration: {{ msg.callDuration }}</span>
@@ -150,10 +151,10 @@
             <textarea
               v-model="outgoingText"
               rows="2"
-              placeholder="Type your message, cash offer, or touch update... (Press Enter to Send)"
+              placeholder="Write a reply…  Enter sends · Shift+Enter adds a line"
               @keydown.enter.exact.prevent="sendMessage"
             ></textarea>
-            <button class="btn btn-primary send-btn" :disabled="sending || !outgoingText.trim()" @click="sendMessage">
+            <button class="send-btn" :disabled="sending || !outgoingText.trim()" @click="sendMessage">
               <span v-html="icons.send"></span>
               {{ sending ? 'Sending…' : 'Send' }}
             </button>
@@ -305,6 +306,8 @@ export default {
   methods: {
     textParts,
     messageLinks,
+    missingLinkCount(msg) { return (Array.isArray(msg && msg.links) ? msg.links : []).filter(l => l && l.missing).length; },
+    missingLinkNames(msg) { return (msg.links || []).filter(l => l && l.missing).map(l => l.text).slice(0, 3).join(', '); },
     async syncPodioAndSmrtPhone() {
       if (this.isSyncing) return;
       this.isSyncing = true;
@@ -944,24 +947,54 @@ export default {
 
 .input-row {
   display: flex;
-  gap: 0.5rem;
+  align-items: stretch;
+  gap: 0.6rem;
 }
 
 .input-row textarea {
   flex: 1;
+  min-height: 48px;
+  max-height: 160px;
   background: var(--hh-control, #04182d);
-  border: 1px solid var(--hh-border, rgba(255, 255, 255, 0.12));
-  border-radius: 8px;
-  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--hh-border, rgba(255, 255, 255, 0.14));
+  border-radius: 12px;
+  padding: 0.7rem 0.9rem;
   color: var(--hh-text, #f8fafc);
-  font-size: 0.85rem;
+  font-family: inherit;
+  font-size: 0.875rem;
+  line-height: 1.45;
   outline: none;
-  resize: none;
+  resize: vertical;
+  box-sizing: border-box;
+  transition: border-color .2s, box-shadow .2s;
 }
 
+.input-row textarea::placeholder { color: var(--hh-muted, #8b9ab0); font-family: inherit; font-size: 0.85rem; }
+.input-row textarea:focus { border-color: #c9a448; box-shadow: 0 0 0 3px rgba(237, 207, 124, 0.18); }
+
 .send-btn {
-  align-self: flex-end;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-width: 104px;
+  padding: 0 1.1rem;
+  border: 1px solid #c9a448;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #edcf7c, #c9a448);
+  color: #1a1408;
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(201, 164, 72, 0.25);
+  transition: transform .15s, box-shadow .2s, opacity .2s;
 }
+.send-btn :deep(svg) { width: 16px; height: 16px; }
+.send-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(201, 164, 72, 0.35); }
+.send-btn:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; }
+.msg-link-missing { margin: 8px 0 0; padding: 6px 10px; border-left: 3px solid #c9a448; border-radius: 4px; background: rgba(201, 164, 72, 0.08); color: var(--hh-muted, #8b9ab0); font-size: 11.5px; line-height: 1.4; }
 
 /* Right: Intel Panel */
 .intel-panel {
