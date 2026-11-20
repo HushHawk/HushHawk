@@ -689,7 +689,7 @@ test('incoming email: links are kept with their wording, text is complete, unsaf
     const { extractEmail, safeUrl } = await import('../backend/src/services/emailContent.js');
 
     // 1. plain text, no links
-    assert.deepEqual(extractEmail('Hello there\nSecond line'), { text: 'Hello there\nSecond line', links: [] });
+    assert.deepEqual(extractEmail('Hello there\nSecond line'), { text: 'Hello there\nSecond line', links: [], missing: 0 });
     // 2. one link in HTML, wording preserved
     let r = extractEmail('<p>Deal at <b>1382 Labelle St</b></p><p><a href="https://photos.example.com/deal/1">View property photos</a></p>');
     assert.deepEqual(r.links, [{ text: 'View property photos', url: 'https://photos.example.com/deal/1' }]);
@@ -723,9 +723,18 @@ test('incoming email: links are kept with their wording, text is complete, unsaf
     assert.equal(r.text, 'Cash only.\nView Property Photos: https://www.dropbox.com/scl/fo/a/b?rlkey=k&st=s&dl=0\nReply for access.');
     assert.deepEqual(r.links, [{ text: 'View Property Photos', url: 'https://www.dropbox.com/scl/fo/a/b?rlkey=k&st=s&dl=0' }]);
     r = extractEmail('See [the photos](https://share.test/x) and [https://b.test/y]');
-    assert.equal(r.text, 'See the photos https://share.test/x and https://b.test/y');
+    assert.equal(r.text, 'See the photos and https://b.test/y');
     assert.deepEqual(r.links.map(l => l.text), ['the photos', 'b.test']);
-    assert.equal(extractEmail('[click](javascript:alert(1))').links.length, 0);
+    // a label and its address split across two lines, and bold marks, as some deal emails arrive
+    r = extractEmail('1. **$205k list** - [View Deal]\n(https://track.test/tr/cl/AbC_123-x?y=1)\nDone');
+    assert.equal(r.text, '1. $205k list - View Deal\nDone');
+    assert.deepEqual(r.links, [{ text: 'View Deal', url: 'https://track.test/tr/cl/AbC_123-x?y=1' }]);
+    // links the import replaced with placeholders are reported as missing, never shown as a dead link
+    r = extractEmail('View photos: [Dropbox link]. Also [See full address, photo gallery](link) and [Analyze a property →](link)');
+    assert.equal(r.text, 'View photos: Dropbox link. Also See full address, photo gallery and Analyze a property →');
+    assert.equal(r.missing, 3);
+    assert.ok(r.links.every(l => l.missing && l.url === null));
+    assert.equal(extractEmail('[click](javascript:alert(1))').links.filter(l => l.url).length, 0, 'an unsafe address is never kept');
     // 8. plain-text email with a written-out address
     r = extractEmail('Photos here: https://share.test/album/9.\nThanks');
     assert.deepEqual(r.links, [{ text: 'Photos here', url: 'https://share.test/album/9' }]);
